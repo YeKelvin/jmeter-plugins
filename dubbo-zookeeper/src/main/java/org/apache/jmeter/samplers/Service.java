@@ -14,6 +14,7 @@ import java.lang.reflect.Method;
  * Date: 2018-05-11
  * Time: 15:53
  */
+
 public class Service {
     private static ApplicationContext ctx = new ClassPathXmlApplicationContext("ApplicationContext.xml");
     private String className;
@@ -21,13 +22,19 @@ public class Service {
     private Parameter params;
 
     /**
-     * @param className  类名（含完整包路径）
+     * @param classFullName  类名
      * @param methodName 方法名
-     * @param json       请求json
      */
-    public Service(String className, String methodName, String json) throws ClassNotFoundException {
-        this.className = className;
-        this.method = ReflectUtil.getMethod(className, methodName);
+    public Service(String classFullName, String methodName) throws ClassNotFoundException {
+        this.className = getClassName(classFullName);
+        this.method = ReflectUtil.getMethod(classFullName, methodName);
+    }
+
+    /**
+     * json报文转换为dto对象
+     * @param json 接口入参json报文
+     */
+    public void setParams(String json) {
         this.params = new Parameter(json);
     }
 
@@ -42,7 +49,7 @@ public class Service {
      * 反射调用方法名为methodName的方法
      */
     public Response invoke() throws InvocationTargetException, IllegalAccessException {
-        Object response = method.invoke(getBean(getClassName()), getParams());
+        Object response = method.invoke(getBean(className), getParams());
         return new Response(response);
     }
 
@@ -59,8 +66,8 @@ public class Service {
     /**
      * 由于入參className包含包路径名，需要分割提取真正的类名
      */
-    private String getClassName() {
-        String[] classNames = className.split("\\.");
+    private String getClassName(String classFullName) {
+        String[] classNames = classFullName.split("\\.");
         return classNames[classNames.length - 1];
     }
 

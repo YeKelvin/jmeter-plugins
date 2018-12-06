@@ -7,9 +7,6 @@ import org.apache.jmeter.samplers.utils.TelnetUtil;
 import pers.kelvin.util.ExceptionUtil;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * @author KelvinYe
@@ -100,17 +97,17 @@ public class DubboTelnet extends AbstractJavaSamplerClient {
         return "false";
     }
 
-    private static String EXPECTION_PATTERN_STR = "[^\\&\\&|\\|\\|]*[\\&\\&|\\|\\|]{2}[^\\&\\&|\\|\\|]*";
+    /*private static String EXPECTION_PATTERN_STR = "[^\\&\\&|\\|\\|]*[\\&\\&|\\|\\|]{2}[^\\&\\&|\\|\\|]*";
     private static String EXPECTION_MATCHES_PATTERN_STR = "(" + EXPECTION_PATTERN_STR + ")*";
     private static Pattern expectionPattern = Pattern.compile(EXPECTION_PATTERN_STR);
 
-    /**
+    *//**
      * 根据预期结果表达式断言响应数据转并返回布尔值结果
      *
      * @param response  响应数据
      * @param expection 预期结果表达式
      * @return 结果
-     */
+     *//*
     private boolean getExpectionAsBoolean(String response, String expection) {
         // 去空格
         expection = expection = expection.trim();
@@ -169,5 +166,5 @@ public class DubboTelnet extends AbstractJavaSamplerClient {
         for (String str : expectionList) {
             System.out.println(str);
         }
-    }
+    }*/
 }

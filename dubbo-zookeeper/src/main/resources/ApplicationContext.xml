@@ -4,13 +4,17 @@
        xmlns:context="http://www.springframework.org/schema/context"
        xmlns:dubbo="http://code.alibabatech.com/schema/dubbo"
        xsi:schemaLocation="http://www.springframework.org/schema/beans
-	                    http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd http://code.alibabatech.com/schema/dubbo http://code.alibabatech.com/schema/dubbo/dubbo.xsd">
+	                    http://www.springframework.org/schema/beans/spring-beans.xsd
+	                    http://www.springframework.org/schema/context
+	                    http://www.springframework.org/schema/context/spring-context.xsd
+	                    http://code.alibabatech.com/schema/dubbo
+	                    http://code.alibabatech.com/schema/dubbo/dubbo.xsd">
 
     <context:property-placeholder location="classpath:/dubbo.properties"/>
 
     <dubbo:application name="jmeter.dubbo.zookeeper"/>
     <dubbo:registry address="${zookeeper.url}" protocol="zookeeper"/>
 
-    <import resource="classpath:/consumer-*.xml"/>
+    <import resource="classpath*:/consumer/**.xml"/>
 
 </beans>
