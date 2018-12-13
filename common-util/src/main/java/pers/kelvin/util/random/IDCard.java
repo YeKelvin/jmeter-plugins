@@ -11,15 +11,27 @@ import java.util.Set;
  */
 public class IDCard {
     /**
-     * 随机生成身份证号码
+     * 随机生成大陆身份证号码
      */
-    public static String generate() {
-        StringBuffer generater = new StringBuffer();
-        generater.append(randomAreaCode());
-        generater.append(randomBirthday());
-        generater.append(randomCode());
-        generater.append(calcTrailingNumber(generater.toString().toCharArray()));
-        return generater.toString();
+    public static String idGenerate() {
+        StringBuffer idCard = new StringBuffer();
+        idCard.append(randomAreaCode());
+        idCard.append(randomBirthday());
+        idCard.append(randomCode());
+        idCard.append(calcTrailingNumber(idCard.toString().toCharArray()));
+        return idCard.toString();
+    }
+
+    /**
+     * 随机生成港澳台身份证号码，810000 | 820000 | 830000
+     */
+    public static String idGenerate(String prefix) {
+        StringBuffer idCard = new StringBuffer();
+        idCard.append(prefix);
+        idCard.append(randomBirthday());
+        idCard.append(randomCode());
+        idCard.append(calcTrailingNumber(idCard.toString().toCharArray()));
+        return idCard.toString();
     }
 
     /**

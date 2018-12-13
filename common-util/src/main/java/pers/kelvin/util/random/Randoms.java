@@ -68,14 +68,35 @@ public class Randoms {
      * 获取身份证ID
      */
     public static String getIDCard() {
-        return IDCard.generate();
+        return IDCard.idGenerate();
+    }
+
+    /**
+     * 获取香港身份证ID
+     */
+    public static String getHKIDCard() {
+        return IDCard.idGenerate("810000");
+    }
+
+    /**
+     * 获取澳门身份证ID
+     */
+    public static String getMacaoIDCard() {
+        return IDCard.idGenerate("820000");
+    }
+
+    /**
+     * 获取台湾身份证ID
+     */
+    public static String getTWIDCard() {
+        return IDCard.idGenerate("830000");
     }
 
     /**
      * 获取15位身份证ID
      */
     public static String getIDCard15() {
-        String idCard = IDCard.generate();
+        String idCard = IDCard.idGenerate();
         return idCard.substring(0, 6) + idCard.substring(8, 17);
     }
 
