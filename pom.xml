@@ -38,6 +38,9 @@
         <zookeeper.version>3.4.6</zookeeper.version>
         <zkclient.version>0.10</zkclient.version>
         <lombok.version>1.16.16</lombok.version>
+        <testng.version>6.14.2</testng.version>
+        <freemarker.version>2.3.28</freemarker.version>
+        <jsoup.version>1.11.3</jsoup.version>
     </properties>
 
     <dependencyManagement>
@@ -93,9 +96,19 @@
                 <version>3.1.2</version>
             </dependency>
             <dependency>
+                <groupId>org.freemarker</groupId>
+                <artifactId>freemarker</artifactId>
+                <version>${freemarker.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.jsoup</groupId>
+                <artifactId>jsoup</artifactId>
+                <version>${jsoup.version}</version>
+            </dependency>
+            <dependency>
                 <groupId>org.testng</groupId>
                 <artifactId>testng</artifactId>
-                <version>6.14.2</version>
+                <version>${testng.version}</version>
                 <scope>test</scope>
             </dependency>
             <dependency>
