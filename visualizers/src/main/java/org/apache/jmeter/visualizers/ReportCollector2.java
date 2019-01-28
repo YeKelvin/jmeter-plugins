@@ -1,27 +1,25 @@
 package org.apache.jmeter.visualizers;
 
 
-import com.aventstack.extentreports.markuputils.Markup;
-import com.aventstack.extentreports.markuputils.MarkupHelper;
+import org.apache.jmeter.engine.event.LoopIterationEvent;
 import org.apache.jmeter.samplers.SampleEvent;
 import org.apache.jmeter.samplers.SampleListener;
 import org.apache.jmeter.samplers.SampleResult;
 import org.apache.jmeter.services.FileServer;
 import org.apache.jmeter.testelement.AbstractTestElement;
+import org.apache.jmeter.testelement.TestIterationListener;
 import org.apache.jmeter.testelement.TestStateListener;
 import org.apache.jmeter.testelement.ThreadListener;
-import org.apache.jmeter.threads.JMeterContextService;
 import org.apache.jmeter.util.JMeterUtils;
 
 import java.io.File;
 
 
-public class ReportCollector2 extends AbstractTestElement implements TestStateListener, ThreadListener, SampleListener {
+public class ReportCollector2 extends AbstractTestElement implements TestStateListener,
+        ThreadListener, SampleListener, TestIterationListener {
     public static final String REPORT_NAME = "ReportName";
     public static final String IS_APPEND = "IsAppend";
     public static final String JSON_OUTPUT = "JsonOutput";
-
-    private ReportManager reportManager;
 
     public ReportCollector2() {
         super();
@@ -38,13 +36,13 @@ public class ReportCollector2 extends AbstractTestElement implements TestStateLi
     }
 
     /**
-     * 测试计划开始时创建testSuite
+     * 测试计划（TestPlan）开始时创建 testSuite
      */
     @Override
     public void testStarted(String host) {
-        // 测试报告输出到jmeterHome/testreport/reportName.html
-        String reportPath = getReportPath();
-        reportManager = new ReportManager(reportPath);
+        ReportManager.createReportDataSet();
+        ReportManager.getReport().createTestSuite(getScriptName());
+
     }
 
     @Override
@@ -53,92 +51,115 @@ public class ReportCollector2 extends AbstractTestElement implements TestStateLi
     }
 
     /**
-     * 整个测试计划结束时将ExtendReport收集的所有数据写入html文件
+     * 测试计划（TestPlan）执行结束后把数据写入 HTML文件中
      */
     @Override
     public void testEnded(String host) {
-        reportManager.flush();
+        ReportManager.flush(getReportPath());
+        ReportManager.clearReportDataSet();
     }
 
     /**
-     * 线程开始时创建ExtendReport.Node
+     * 线程(TestCase)开始时创建 testCase
      */
     @Override
     public void threadStarted() {
-        String threadName = JMeterContextService.getContext().getThread().getThreadName();
-        ExtentManager.putTestCase(threadName, ExtentManager.getTestSuite().createNode(threadName));
+        ReportManager.getReport().getTestSuite(getScriptName()).createTestCase(getThreadName());
     }
 
     @Override
     public void threadFinished() {
-        // not used
+        // pass
     }
 
     /**
-     * 将测试请求和响应写入Html
+     * 将测试样本（TestSample）的标题、请求和响应数据写入 HTML
      */
     @Override
     public void sampleOccurred(SampleEvent sampleEvent) {
-        String threadName = JMeterContextService.getContext().getThread().getThreadName();
+        TestSuiteData testSuite = ReportManager.getReport().getTestSuite(getScriptName());
+        TestCaseData testCase = testSuite.getTestCase(getThreadName());
+        TestCaseStepData testCaseStep = new TestCaseStepData();
+
         SampleResult result = sampleEvent.getResult();
-        // 表格化测试数据
-        String[][] sampleInfo = {{result.getSampleLabel()}, {result.getSamplerData()}, {result.getResponseDataAsString()}};
-        Markup m = MarkupHelper.createTable(sampleInfo);
+        testCaseStep.setTestCaseStepTile(result.getSampleLabel());
+        testCaseStep.setTestCaseRequest(result.getSamplerData());
+        testCaseStep.setTestCaseResponse(result.getResponseDataAsString());
 
         if (result.isSuccessful()) {
-            ExtentManager.getTestCase(threadName).pass(m);
+            testCaseStep.pass();
+            testCase.pass();
+            testSuite.pass();
         } else {
-            ExtentManager.getTestCase(threadName).fail(m);
+            testCaseStep.fail();
+            testCase.fail();
+            testSuite.fail();
         }
+        testCase.putTestCaseStep(testCaseStep);
+
         // 另外把 sample 执行结果打印到控制台
-        printConsoleInfo(result.isSuccessful(), threadName);
+        printStatusToConsole(result.isSuccessful(), getThreadName());
     }
 
     @Override
     public void sampleStarted(SampleEvent sampleEvent) {
-        // not used
+        // pass
     }
 
     @Override
     public void sampleStopped(SampleEvent sampleEvent) {
-        // not used
+        // pass
     }
 
+    @Override
+    public void testIterationStart(LoopIterationEvent loopIterationEvent) {
+        // pass
+    }
+
+    /**
+     * 获取脚本名称（去文件后缀）
+     */
     private String getScriptName() {
         String scriptName = FileServer.getFileServer().getScriptName();
         return scriptName.substring(0, scriptName.length() - 4);
     }
 
     private String getReportName() {
-        // Non-Gui模式下，命令行存在 -JreportName 参数时，优先读取 reportName
+        // Non-Gui下，命令行存在 -JreportName 参数时，优先读取 reportName
         return JMeterUtils.getPropDefault("reportName", getPropertyAsString(REPORT_NAME));
     }
 
     private String getIsAppend() {
-        // Non-Gui模式下，命令行存在 -JisAppend 参数时，优先读取 isAppend
+        // Non-Gui下，命令行存在 -JisAppend 参数时，优先读取 isAppend
         return JMeterUtils.getPropDefault("isAppend", getPropertyAsString(IS_APPEND));
     }
 
     private String getJsonOutput() {
-        // Non-Gui模式下，命令行存在 -JjsonOutput 参数时，优先读取 jsonOutput
+        // Non-Gui下，命令行存在 -JjsonOutput 参数时，优先读取 jsonOutput
         return JMeterUtils.getPropDefault("jsonOutput", getPropertyAsString(JSON_OUTPUT));
     }
 
     private String getReportPath() {
         return JMeterUtils.getJMeterHome() + File.separator +
                 "htmlreport" + File.separator +
-                suffixHTMLAppend(getReportName());
+                appendHTMLSuffix(getReportName());
     }
 
-    private String suffixHTMLAppend(String name) {
-        if (name.endsWith(".html")) {
+    /**
+     * 为测试报告名称添加.html后缀
+     */
+    private String appendHTMLSuffix(String name) {
+        if (name.endsWith(ReportManager.REPORT_FILE_SUFFIX)) {
             return name;
         } else {
-            return name + ".html";
+            return name + ReportManager.REPORT_FILE_SUFFIX;
         }
     }
 
-    private void printConsoleInfo(boolean isSuccessful, String message) {
+    /**
+     * 控制台打印执行状态信息
+     */
+    private void printStatusToConsole(boolean isSuccessful, String message) {
         if (isSuccessful) {
             System.out.println("[true] - " + message);
         } else {

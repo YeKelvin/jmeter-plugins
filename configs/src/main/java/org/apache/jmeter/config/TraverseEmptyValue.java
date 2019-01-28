@@ -22,7 +22,7 @@ public class TraverseEmptyValue extends ConfigTestElement implements LoopIterati
     private static final Logger logger = LogUtil.getLogger(TraverseEmptyValue.class);
 
     public static final String PATAMS = "Patams";
-    public static final String EMPTYCHECKEXPECTION = "EmptyCheckExpection";
+    public static final String EMPTY_CHECK_EXPECTION = "EmptyCheckExpection";
     private Iterator jsonPathIterator = null;
 
 
@@ -98,7 +98,7 @@ public class TraverseEmptyValue extends ConfigTestElement implements LoopIterati
     public String getEmptyCheckExpection() {
         //使testEL元素只读，即不能参数化
         setRunningVersion(false);
-        return getPropertyAsString(TraverseEmptyValue.EMPTYCHECKEXPECTION);
+        return getPropertyAsString(TraverseEmptyValue.EMPTY_CHECK_EXPECTION);
     }
 
     /**

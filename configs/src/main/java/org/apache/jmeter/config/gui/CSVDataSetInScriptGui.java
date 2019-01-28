@@ -61,7 +61,7 @@ public class CSVDataSetInScriptGui extends AbstractConfigGui {
     @Override
     public void modifyTestElement(TestElement el) {
         super.configureTestElement(el);
-        el.setProperty(CSVDataSetInScript.VARIABLENAMES, variableNamesTextField.getText());
+        el.setProperty(CSVDataSetInScript.VARIABLE_NAMES, variableNamesTextField.getText());
         el.setProperty(CSVDataSetInScript.DATA, dataTextArea.getText());
     }
 
@@ -71,7 +71,7 @@ public class CSVDataSetInScriptGui extends AbstractConfigGui {
     @Override
     public void configure(TestElement el) {
         super.configure(el);
-        variableNamesTextField.setText(el.getPropertyAsString(CSVDataSetInScript.VARIABLENAMES));
+        variableNamesTextField.setText(el.getPropertyAsString(CSVDataSetInScript.VARIABLE_NAMES));
         dataTextArea.setInitialText(el.getPropertyAsString(CSVDataSetInScript.DATA));
         dataTextArea.setCaretPosition(0);
     }
@@ -85,9 +85,9 @@ public class CSVDataSetInScriptGui extends AbstractConfigGui {
 
     private JPanel createVariableNamesPanel() {
         variableNamesTextField = new JTextField(10);
-        variableNamesTextField.setName(CSVDataSetInScript.VARIABLENAMES);
+        variableNamesTextField.setName(CSVDataSetInScript.VARIABLE_NAMES);
 
-        JLabel label = new JLabel(CSVDataSetInScript.VARIABLENAMES);
+        JLabel label = new JLabel(CSVDataSetInScript.VARIABLE_NAMES);
         label.setLabelFor(variableNamesTextField);
 
         JPanel panel = new JPanel(new BorderLayout(5, 0));

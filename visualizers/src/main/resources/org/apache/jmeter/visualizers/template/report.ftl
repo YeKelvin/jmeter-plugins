@@ -225,10 +225,7 @@
     var app = new Vue({
         el: '#app',
         data: {
-            testSuiteList: [
-                { testSuiteName: '111.jmx' },
-                { testSuiteName: '222.jmx' }
-            ]
+            testSuiteList: ${testSuiteList}
         },
         methods: {
             showThisTestSuiteDetail: function(index){

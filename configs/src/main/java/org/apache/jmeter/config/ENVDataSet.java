@@ -25,14 +25,14 @@ import java.util.Map;
  */
 public class ENVDataSet extends ConfigTestElement implements TestStateListener {
     private static final Logger logger = LogUtil.getLogger(ENVDataSet.class);
-    public static final String CONFIGNAME = "ConfigName";
+    public static final String CONFIG_NAME = "ConfigName";
 
     public ENVDataSet() {
         super();
     }
 
     public String getFileName() {
-        return JMeterUtils.getPropDefault("configName", getPropertyAsString(ENVDataSet.CONFIGNAME));
+        return JMeterUtils.getPropDefault("configName", getPropertyAsString(ENVDataSet.CONFIG_NAME));
     }
 
     public String getFilePath() {
@@ -72,7 +72,7 @@ public class ENVDataSet extends ConfigTestElement implements TestStateListener {
     @Override
     public void testStarted(String s) {
         // 把测试环境配置文件名添加到jmeter线程变量中
-        JMeterContextService.getContext().getVariables().put(CONFIGNAME, getFileName());
+        JMeterContextService.getContext().getVariables().put(CONFIG_NAME, getFileName());
         // 将配置文件中的所有属性逐一添加到jmeter线程变量中
         HashMap<String, String> envMap = getEnvMap(getFilePath());
         for (Map.Entry<String, String> entry : envMap.entrySet()) {

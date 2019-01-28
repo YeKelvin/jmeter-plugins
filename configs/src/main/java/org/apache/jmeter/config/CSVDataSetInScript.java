@@ -17,7 +17,7 @@ import java.util.List;
 public class CSVDataSetInScript extends ConfigTestElement implements LoopIterationListener {
     private static final Logger logger = LogUtil.getLogger(CSVDataSetInScript.class);
 
-    public static final String VARIABLENAMES = "VariableNames";
+    public static final String VARIABLE_NAMES = "VariableNames";
     public static final String DATA = "Data";
     private String[] varNames = null;
     private int varNamesLength = 0;
@@ -69,7 +69,7 @@ public class CSVDataSetInScript extends ConfigTestElement implements LoopIterati
     }
 
     public String getVariableNames() {
-        return getPropertyAsString(CSVDataSetInScript.VARIABLENAMES);
+        return getPropertyAsString(CSVDataSetInScript.VARIABLE_NAMES);
     }
 
     public String getData() {

@@ -18,7 +18,7 @@ public class TestCaseStepData {
 
     private String testCaseStepID;
 
-    private String status;
+    private boolean status;
 
     private String testCaseStepTile;
 
@@ -27,5 +27,13 @@ public class TestCaseStepData {
     private String testCaseRequest;
 
     private String testCaseResponse;
+
+    public void pass() {
+        status = true;
+    }
+
+    public void fail() {
+        status = false;
+    }
 
 }

@@ -3,6 +3,7 @@ package org.apache.jmeter.visualizers.gui;
 
 import org.apache.jmeter.testelement.TestElement;
 import org.apache.jmeter.visualizers.ReportCollector;
+import org.apache.jmeter.visualizers.ReportCollector2;
 
 import javax.swing.*;
 import java.awt.*;
@@ -39,7 +40,7 @@ public class LocalTestReportGui extends AbstractListenerGui {
 
     @Override
     public TestElement createTestElement() {
-        ReportCollector info = new ReportCollector();
+        ReportCollector2 info = new ReportCollector2();
         modifyTestElement(info);
         return info;
     }

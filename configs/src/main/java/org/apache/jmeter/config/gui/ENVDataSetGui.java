@@ -73,7 +73,7 @@ public class ENVDataSetGui extends AbstractConfigGui {
     @Override
     public void modifyTestElement(TestElement el) {
         super.configureTestElement(el);
-        el.setProperty(ENVDataSet.CONFIGNAME, (String) configNameComboBox.getSelectedItem());
+        el.setProperty(ENVDataSet.CONFIG_NAME, (String) configNameComboBox.getSelectedItem());
     }
 
     /**
@@ -82,7 +82,7 @@ public class ENVDataSetGui extends AbstractConfigGui {
     @Override
     public void configure(TestElement el) {
         super.configure(el);
-        String fileName = el.getPropertyAsString(ENVDataSet.CONFIGNAME);
+        String fileName = el.getPropertyAsString(ENVDataSet.CONFIG_NAME);
         configNameComboBox.setSelectedItem(fileName);
         tableModel.clearData();
         if (el instanceof ENVDataSet && fileName != null && !fileName.isEmpty()) {
@@ -107,9 +107,9 @@ public class ENVDataSetGui extends AbstractConfigGui {
 
     private JPanel createConfigNamePanel() {
         configNameComboBox = new JComboBox<>();
-        configNameComboBox.setName(ENVDataSet.CONFIGNAME);
+        configNameComboBox.setName(ENVDataSet.CONFIG_NAME);
         comboBoxAddItem(getEnvList(getConfigPath()));
-        JLabel label = new JLabel(ENVDataSet.CONFIGNAME);
+        JLabel label = new JLabel(ENVDataSet.CONFIG_NAME);
         label.setLabelFor(configNameComboBox);
         JPanel jPanel = new JPanel(new BorderLayout(5, 0));
         jPanel.add(label, BorderLayout.WEST);

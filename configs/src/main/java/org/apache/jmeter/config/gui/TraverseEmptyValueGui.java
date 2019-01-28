@@ -59,7 +59,7 @@ public class TraverseEmptyValueGui extends AbstractConfigGui {
     public void modifyTestElement(TestElement el) {
         super.configureTestElement(el);
         el.setProperty(TraverseEmptyValue.PATAMS, patamsTextArea.getText());
-        el.setProperty(TraverseEmptyValue.EMPTYCHECKEXPECTION, emptyCheckExpectionTextArea.getText());
+        el.setProperty(TraverseEmptyValue.EMPTY_CHECK_EXPECTION, emptyCheckExpectionTextArea.getText());
     }
 
     /**
@@ -70,7 +70,7 @@ public class TraverseEmptyValueGui extends AbstractConfigGui {
         super.configure(el);
         patamsTextArea.setInitialText(el.getPropertyAsString(TraverseEmptyValue.PATAMS));
         patamsTextArea.setCaretPosition(0);
-        emptyCheckExpectionTextArea.setInitialText(el.getPropertyAsString(TraverseEmptyValue.EMPTYCHECKEXPECTION));
+        emptyCheckExpectionTextArea.setInitialText(el.getPropertyAsString(TraverseEmptyValue.EMPTY_CHECK_EXPECTION));
         emptyCheckExpectionTextArea.setCaretPosition(0);
     }
 
@@ -97,7 +97,7 @@ public class TraverseEmptyValueGui extends AbstractConfigGui {
     private JPanel createEmptyCheckExpectionPanel() {
         emptyCheckExpectionTextArea = JSyntaxTextArea.getInstance(10, 10);
 
-        JLabel label = new JLabel(TraverseEmptyValue.EMPTYCHECKEXPECTION);
+        JLabel label = new JLabel(TraverseEmptyValue.EMPTY_CHECK_EXPECTION);
         label.setLabelFor(emptyCheckExpectionTextArea);
 
         JPanel panel = new JPanel(new BorderLayout());
