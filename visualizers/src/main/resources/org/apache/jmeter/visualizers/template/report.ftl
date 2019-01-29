@@ -47,8 +47,7 @@
             flex-direction: column;
         }
 
-        .header,
-        .footer {
+        .header {
             background: -webkit-linear-gradient(left, #319be9, #3448a1);
             background: -moz-linear-gradient(left, #319be9, #3448a1);
             background: -o-linear-gradient(left, #319be9, #3448a1);
@@ -80,14 +79,20 @@
         }
 
         .icon {
-            width: 2em;
-            height: 2em;
+            width: 1.5em;
+            height: 1.5em;
             vertical-align: -0.15em;
             fill: currentColor;
             overflow: hidden;
         }
 
+        .break-word {
+            word-wrap: break-word;
+            word-break: break-all;
+        }
+
         .test-suite {
+            overflow: auto;
         }
 
         .test-suite-list {
@@ -106,45 +111,59 @@
             border-top: 1px solid #ebeef5;
         }
 
-        .test-suite-name {
+        .test-suite-title {
             margin: 10px;
+            cursor: pointer;
         }
 
-        .test-case-name {
+        .test-case {
+            overflow: auto;
+        }
+
+        .test-case-title {
             margin: 10px;
             font-size: 20px;
         }
 
-        .test-case-step-name {
+        .test-case-step-title {
             margin: 15px;
             display: inline-flex;
             align-items: center;
         }
 
-        .test-case-step el-collapse:last-child{
-            border: 0;
-        }
-
-        .test-data {
-            justify-content: center;
-            /* align-items: center; */
-        }
-
-        .test-case-step-detail{
+        .test-case-step-detail {
             padding-left: 40px;
             padding-right: 40px;
         }
 
-        .test-case-step-detail table{
+        .test-case-step-detail table {
             border-collapse: collapse;
             border: none;
         }
 
-        .test-case-step-detail table tr{
+        .test-case-step-detail table tr {
             border-bottom: 1px solid #ebeef5;
         }
 
-        .test-case-step-detail table tr:last-child{
+        .test-case-step-detail table tr:last-child {
+            border-bottom: 0;
+        }
+
+        .test-case-step-detail table tr td:first-child {
+            vertical-align: top;
+            border-right: 1px solid #ebeef5;
+        }
+
+        /* Element-ui style*/
+        /* .el-collapse-item__content {
+            padding-bottom: 0;
+        } */
+
+        .test-case-step .el-collapse-item:last-child .el-collapse-item__wrap {
+            border-bottom: 0;
+        }
+
+        .test-case-step .el-collapse-item:last-child .el-collapse-item__header {
             border-bottom: 0;
         }
     </style>
@@ -159,8 +178,8 @@
                 <div class="test-suite max-size">
                     <ul class="test-suite-list">
                         <li v-for="(testSuite, index) in testSuiteList">
-                            <div class="test-suite-name" @click="showThisTestSuiteDetail(index)">
-                                <span>{{ testSuite['testSuiteName'] }}</span>
+                            <div class="test-suite-title" @click="showThisTestSuiteDetail(index)">
+                                <span>{{ testSuite['title'] }}</span>
                                 <div>
                                     <svg class="icon" aria-hidden="true">
                                         <use xlink:href="#icon-pass"></use>
@@ -175,36 +194,34 @@
             <div class="container main max-size">
                 <div class="test-case max-size">
                     <el-collapse accordion>
-                        <el-collapse-item name="1">
+                        <el-collapse-item v-for="testCase in testSuiteList[currentTestSuiteIndex]['testCaseList']"
+                                          :name="testCase['id']">
                             <template slot="title">
-                                <div class="test-case-name">
-                                    【个账】重置登录密码，baseReqKeyType=OPERATOR_NO 1-1
-                                </div>
+                                <span class="test-case-title">{{ testCase['title']}}</span>
                             </template>
 
                             <div class="test-case-step">
                                 <el-collapse accordion>
-                                    <el-collapse-item name="1">
+                                    <el-collapse-item v-for="testCaseStep in testCase['testCaseStepList']"
+                                                      :name="testCaseStep['id']">
                                         <template slot="title">
-                                            <div class="test-case-step-name">
+                                            <div class="test-case-step-title">
                                                 <svg class="icon" aria-hidden="true">
-                                                    <use xlink:href="#icon-pass"></use>
+                                                    <use v-if="testCaseStep['status']" xlink:href="#icon-pass"></use>
+                                                    <use v-else xlink:href="#icon-failure"></use>
                                                 </svg>
-                                                <svg class="icon" aria-hidden="true">
-                                                    <use xlink:href="#icon-failure"></use>
-                                                </svg>
-                                                <span>CustomerProdFacade.createPersonCustomer</span>
+                                                <span>{{ testCaseStep['tile'] }}</span>
                                             </div>
                                         </template>
-                                        <div class="test-case-step-detail max-size">
+                                        <div class="test-case-step-detail">
                                             <table>
                                                 <tr>
                                                     <td>Request:</td>
-                                                    <td>RequestData</td>
+                                                    <td class="break-word">{{ testCaseStep['request'] }}</td>
                                                 </tr>
                                                 <tr>
                                                     <td>Response:</td>
-                                                    <td>ResponseData</td>
+                                                    <td class="break-word">{{ testCaseStep['response'] }}</td>
                                                 </tr>
                                             </table>
                                         </div>
@@ -217,7 +234,6 @@
             </div>
         </div>
 
-        <!-- <div class="container footer"><div>Footer</div></div> -->
     </div>
 </div>
 
@@ -225,10 +241,12 @@
     var app = new Vue({
         el: '#app',
         data: {
+            currentTestSuiteIndex: 0,
             testSuiteList: ${testSuiteList}
         },
         methods: {
             showThisTestSuiteDetail: function(index){
+                currentTestSuiteIndex = index
                 console.info(index)
             }
         }

@@ -16,17 +16,17 @@ import lombok.ToString;
 @ToString
 public class TestCaseStepData {
 
-    private String testCaseStepID;
+    private String id;
 
     private boolean status;
 
-    private String testCaseStepTile;
+    private String tile;
 
-    private String testCaseStepDescription;
+    private String description;
 
-    private String testCaseRequest;
+    private String request;
 
-    private String testCaseResponse;
+    private String response;
 
     public void pass() {
         status = true;

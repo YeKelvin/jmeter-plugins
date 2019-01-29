@@ -38,7 +38,7 @@ public class FreemarkerUtil {
             // 通过一个文件输出流写到相应的文件中
             File file = new File(outputFilePath);
             BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(
-                    new FileOutputStream(file, true), StandardCharsets.UTF_8));
+                    new FileOutputStream(file, false), StandardCharsets.UTF_8));
             Template temp = getTemplate(templateName);
             temp.process(root, bw);
             bw.flush();

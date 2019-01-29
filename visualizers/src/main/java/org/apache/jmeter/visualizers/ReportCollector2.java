@@ -10,6 +10,7 @@ import org.apache.jmeter.testelement.AbstractTestElement;
 import org.apache.jmeter.testelement.TestIterationListener;
 import org.apache.jmeter.testelement.TestStateListener;
 import org.apache.jmeter.testelement.ThreadListener;
+import org.apache.jmeter.threads.JMeterContextService;
 import org.apache.jmeter.util.JMeterUtils;
 
 import java.io.File;
@@ -82,9 +83,9 @@ public class ReportCollector2 extends AbstractTestElement implements TestStateLi
         TestCaseStepData testCaseStep = new TestCaseStepData();
 
         SampleResult result = sampleEvent.getResult();
-        testCaseStep.setTestCaseStepTile(result.getSampleLabel());
-        testCaseStep.setTestCaseRequest(result.getSamplerData());
-        testCaseStep.setTestCaseResponse(result.getResponseDataAsString());
+        testCaseStep.setTile(result.getSampleLabel());
+        testCaseStep.setRequest(result.getSamplerData());
+        testCaseStep.setResponse(result.getResponseDataAsString());
 
         if (result.isSuccessful()) {
             testCaseStep.pass();
@@ -122,6 +123,11 @@ public class ReportCollector2 extends AbstractTestElement implements TestStateLi
     private String getScriptName() {
         String scriptName = FileServer.getFileServer().getScriptName();
         return scriptName.substring(0, scriptName.length() - 4);
+    }
+
+    @Override
+    public String getThreadName(){
+        return JMeterContextService.getContext().getThread().getThreadName();
     }
 
     private String getReportName() {

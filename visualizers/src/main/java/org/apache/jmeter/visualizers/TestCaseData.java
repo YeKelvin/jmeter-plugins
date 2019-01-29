@@ -5,6 +5,7 @@ import lombok.Setter;
 import lombok.ToString;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 
 /**
@@ -19,30 +20,35 @@ import java.util.HashMap;
 @ToString(exclude = "testCaseStepMap")
 public class TestCaseData {
 
-    private String testCaseID;
+    private String id;
 
     private boolean status;
 
-    private String testCaseTitle;
+    private String title;
 
     private ArrayList<TestCaseStepData> testCaseStepList;
 
+    private transient String testCaseStepPrefixID;
+
+    private transient int testCaseStepstartID = 1;
+
     private transient HashMap<String, TestCaseStepData> testCaseStepMap;
 
+    public TestCaseData(String prefixID) {
+        testCaseStepPrefixID = prefixID + "-";
+        testCaseStepMap = new HashMap<>(16);
+    }
+
     public void createTestCaseStep(String title) {
-        if (testCaseStepMap == null) {
-            testCaseStepMap = new HashMap<>(16);
-        }
         TestCaseStepData testCaseStep = new TestCaseStepData();
-        testCaseStep.setTestCaseStepTile(title);
+        testCaseStep.setTile(title);
+        testCaseStep.setId(testCaseStepPrefixID + testCaseStepstartID++);
         testCaseStepMap.put(title, testCaseStep);
     }
 
     public void putTestCaseStep(TestCaseStepData testCaseStep) {
-        if (testCaseStepMap == null) {
-            testCaseStepMap = new HashMap<>(16);
-        }
-        testCaseStepMap.put(testCaseStep.getTestCaseStepTile(), testCaseStep);
+        testCaseStep.setId(testCaseStepPrefixID + testCaseStepstartID++);
+        testCaseStepMap.put(testCaseStep.getTile(), testCaseStep);
     }
 
     public TestCaseStepData getTestCaseStep(String title) {
@@ -54,6 +60,10 @@ public class TestCaseData {
         for (String key : testCaseStepMap.keySet()) {
             testCaseStepList.add(testCaseStepMap.get(key));
         }
+    }
+
+    public void reverse() {
+        Collections.reverse(testCaseStepList);
     }
 
     public void pass() {

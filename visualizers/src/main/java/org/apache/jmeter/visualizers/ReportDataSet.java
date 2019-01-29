@@ -5,6 +5,7 @@ import lombok.Setter;
 import lombok.ToString;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 
 /**
@@ -19,26 +20,22 @@ import java.util.HashMap;
 @ToString(exclude = "testSuiteMap")
 public class ReportDataSet {
 
-    private int startID;
-
     private ArrayList<TestSuiteData> testSuiteList;
 
     private transient HashMap<String, TestSuiteData> testSuiteMap;
 
+    public ReportDataSet() {
+        testSuiteMap = new HashMap<>(16);
+    }
+
     public void createTestSuite(String title) {
-        if (testSuiteMap == null) {
-            testSuiteMap = new HashMap<>(16);
-        }
         TestSuiteData testSuite = new TestSuiteData();
-        testSuite.setTestSuiteTitle(title);
+        testSuite.setTitle(title);
         testSuiteMap.put(title, testSuite);
     }
 
     public void putTestSuite(TestSuiteData testSuite) {
-        if (testSuiteMap == null) {
-            testSuiteMap = new HashMap<>(16);
-        }
-        testSuiteMap.put(testSuite.getTestSuiteTitle(), testSuite);
+        testSuiteMap.put(testSuite.getTitle(), testSuite);
     }
 
     public TestSuiteData getTestSuite(String title) {
@@ -50,6 +47,10 @@ public class ReportDataSet {
         for (String key : testSuiteMap.keySet()) {
             testSuiteList.add(testSuiteMap.get(key));
         }
+    }
+
+    public void reverse() {
+        Collections.reverse(testSuiteList);
     }
 
 }

@@ -28,10 +28,13 @@ public class ReportManager {
 
     private static void traverseReportData() {
         reportDataSet.testSuiteMapConvertToList();
+        reportDataSet.reverse();
         for (TestSuiteData testSuite : reportDataSet.getTestSuiteList()) {
             testSuite.testCaseMapConvertToList();
+            testSuite.reverse();
             for (TestCaseData testCase : testSuite.getTestCaseList()) {
                 testCase.testCaseStepMapConvertToList();
+                testCase.reverse();
             }
         }
     }
@@ -50,23 +53,5 @@ public class ReportManager {
     public static void clearReportDataSet() {
         reportDataSet = null;
     }
-
-    //public static void main(String[] args) {
-    //    ReportManager reportManager = new ReportManager("C:\\Users\\Administrator\\Desktop\\test_test.html");
-    //    reportManager.getReport().createTestSuite("scriptName");
-    //    reportManager.getReport().getTestSuite("scriptName").createTestCase("threadName");
-    //
-    //    TestSuiteData testSuite = reportManager.getReport().getTestSuite("scriptName");
-    //    TestCaseData testCase = testSuite.getTestCase("threadName");
-    //    TestCaseStepData testCaseStep = new TestCaseStepData();
-    //    testCaseStep.setTestCaseStepTile("sampleLabel");
-    //    testCaseStep.setTestCaseRequest("samplerData");
-    //    testCaseStep.setTestCaseResponse("responseDataAsString");
-    //    testCaseStep.pass();
-    //    testCase.pass();
-    //    testSuite.pass();
-    //    testCase.putTestCaseStep(testCaseStep);
-    //    reportManager.flush();
-    //}
 
 }
