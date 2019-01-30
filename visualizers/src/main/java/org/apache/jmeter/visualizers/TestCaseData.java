@@ -5,7 +5,7 @@ import lombok.Setter;
 import lombok.ToString;
 
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 
 /**
@@ -62,8 +62,8 @@ public class TestCaseData {
         }
     }
 
-    public void reverse() {
-        Collections.reverse(testCaseStepList);
+    public void sort() {
+        testCaseStepList.sort(Comparator.comparing(TestCaseStepData::getId));
     }
 
     public void pass() {

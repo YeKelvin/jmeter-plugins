@@ -5,7 +5,6 @@ import lombok.Setter;
 import lombok.ToString;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 
 /**
@@ -47,10 +46,6 @@ public class ReportDataSet {
         for (String key : testSuiteMap.keySet()) {
             testSuiteList.add(testSuiteMap.get(key));
         }
-    }
-
-    public void reverse() {
-        Collections.reverse(testSuiteList);
     }
 
 }

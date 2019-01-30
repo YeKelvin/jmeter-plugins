@@ -28,13 +28,12 @@ public class ReportManager {
 
     private static void traverseReportData() {
         reportDataSet.testSuiteMapConvertToList();
-        reportDataSet.reverse();
         for (TestSuiteData testSuite : reportDataSet.getTestSuiteList()) {
             testSuite.testCaseMapConvertToList();
-            testSuite.reverse();
+            testSuite.sort();
             for (TestCaseData testCase : testSuite.getTestCaseList()) {
                 testCase.testCaseStepMapConvertToList();
-                testCase.reverse();
+                testCase.sort();
             }
         }
     }
