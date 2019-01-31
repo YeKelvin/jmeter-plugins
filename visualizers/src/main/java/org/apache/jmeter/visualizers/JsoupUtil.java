@@ -4,8 +4,7 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
 
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 import java.nio.charset.StandardCharsets;
 
 /**
@@ -16,18 +15,34 @@ import java.nio.charset.StandardCharsets;
  * Time     11:27
  */
 public class JsoupUtil {
+
+    public static Document getDocument(String htmlFilePath) throws IOException {
+        return Jsoup.parse(new File(htmlFilePath), StandardCharsets.UTF_8.name());
+    }
+
     /**
      * 解析 HTML文件，获取最后一个 <script>标签的 js脚本
      *
-     * @param htmlFilePath html文件路径
+     * @param doc Document对象
      * @return js脚本内容
-     * @throws IOException html文件不存在
      */
-    public static String getScriptData(String htmlFilePath) throws IOException {
-        Document doc = Jsoup.parse(new File(htmlFilePath), StandardCharsets.UTF_8.name());
-        Elements scripts = doc.getElementsByTag("script");
-        return scripts.last().data();
+    public static Elements extractScriptTabList(Document doc) {
+        return doc.getElementsByTag("script");
     }
 
+    /**
+     * 写 html到文件
+     *
+     * @param doc      Document对象
+     * @param filePath 输出文件的路径
+     * @throws IOException 异常
+     */
+    public static void documentToFile(Document doc, String filePath) throws IOException {
+        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(
+                new FileOutputStream(
+                        new File(filePath), false), StandardCharsets.UTF_8));
+        bw.write(doc.html());
+        bw.close();
+    }
 
 }
