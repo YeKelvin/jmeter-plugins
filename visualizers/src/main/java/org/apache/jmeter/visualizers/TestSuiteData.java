@@ -22,9 +22,17 @@ public class TestSuiteData {
 
     private boolean status;
 
+    private String startTime;
+
+    private String endTime;
+
     private String title;
 
     private ArrayList<TestCaseData> testCaseList;
+
+    private long startTimestamp;
+
+    private long endTimestamp;
 
     private transient int testCaseStartID = 1;
 
