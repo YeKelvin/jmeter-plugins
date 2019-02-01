@@ -70,8 +70,10 @@ public class ReportManager {
             String testSuiteListValue = JavaScriptUtil.extractTestSuiteList(jsContent);
             // 按顺序整理测试报告数据
             traverseReportData();
-            // 向数组最后添加新数据
-            testSuiteListValue = JavaScriptUtil.appendTestSuiteList(testSuiteListValue, reportDataSet.getTestSuiteList());
+            // 循环向数组添加新数据
+            for (TestSuiteData testSuite : reportDataSet.getTestSuiteList()) {
+                testSuiteListValue = JavaScriptUtil.appendTestSuiteList(testSuiteListValue, testSuite);
+            }
             // 更新js脚本内容
             jsContent = JavaScriptUtil.updateTestSuiteList(jsContent, testSuiteListValue);
             // 将更新后的js写入doc
