@@ -1,5 +1,6 @@
 package org.apache.jmeter.visualizers;
 
+import org.jsoup.nodes.DataNode;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
@@ -53,24 +54,33 @@ public class ReportManager {
         FreemarkerUtil.outputFile("report.ftl", getTemplateRootData(), reportPath);
     }
 
-    public static void updateHTML(String reportPath, Object appendObject) throws IOException {
-        // 解析html
-        Document doc = JsoupUtil.getDocument(reportPath);
-        // 提取script标签表列
-        Elements scripts = JsoupUtil.extractScriptTabList(doc);
-        // 提取js脚本内容（最后一个script标签为Vue的app脚本）
-        Element vueAppJs = scripts.last();
-        String jsContent = vueAppJs.data();
-        // 提取 js中 testSuiteList的值
-        String testSuiteListValue = JavaScriptContentUtil.extractTestSuiteList(jsContent);
-        // 向数组最后添加新数据
-        testSuiteListValue = JavaScriptContentUtil.appendTestSuiteList(testSuiteListValue, appendObject);
-        // 更新js脚本内容
-        jsContent = JavaScriptContentUtil.updateTestSuiteList(jsContent, testSuiteListValue);
-
-        vueAppJs.text(jsContent);
-
-        JsoupUtil.documentToFile(doc, reportPath);
+    public static void appendDataToHtmlFile(String reportPath) {
+        try {
+            // 解析html
+            Document doc = JsoupUtil.getDocument(reportPath);
+            // 设置缩进距离
+            doc.outputSettings().indentAmount(2);
+            // 提取<script>标签表列
+            Elements scripts = JsoupUtil.extractScriptTabList(doc);
+            // 提取<script>标签（最后一个script标签为Vue.js）
+            Element vueAppJs = scripts.last();
+            // 获取js脚本内容
+            String jsContent = vueAppJs.data();
+            // 提取 js中 testSuiteList的值
+            String testSuiteListValue = JavaScriptUtil.extractTestSuiteList(jsContent);
+            // 按顺序整理测试报告数据
+            traverseReportData();
+            // 向数组最后添加新数据
+            testSuiteListValue = JavaScriptUtil.appendTestSuiteList(testSuiteListValue, reportDataSet.getTestSuiteList());
+            // 更新js脚本内容
+            jsContent = JavaScriptUtil.updateTestSuiteList(jsContent, testSuiteListValue);
+            // 将更新后的js写入doc
+            ((DataNode) vueAppJs.childNode(0)).setWholeData(jsContent);
+            // 将更新后的 html写入文件
+            JsoupUtil.documentToFile(doc, reportPath);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     public static void clearReportDataSet() {

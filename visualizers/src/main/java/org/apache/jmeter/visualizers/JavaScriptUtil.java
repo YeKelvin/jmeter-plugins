@@ -3,9 +3,6 @@ package org.apache.jmeter.visualizers;
 import com.jayway.jsonpath.Configuration;
 import com.jayway.jsonpath.DocumentContext;
 import com.jayway.jsonpath.JsonPath;
-import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
 
 import java.io.IOException;
 import java.util.regex.Matcher;
@@ -18,7 +15,7 @@ import java.util.regex.Pattern;
  * Date     2019-01-30
  * Time     17:45
  */
-public class JavaScriptContentUtil {
+public class JavaScriptUtil {
 
     private static String TEST_SUITE_LIST_NAME = "testSuiteList: ";
 
@@ -49,7 +46,8 @@ public class JavaScriptContentUtil {
      */
     public static String updateTestSuiteList(String jsContent, String newValue) {
         Matcher matcher = regex.matcher(jsContent);
-        return matcher.replaceAll(Matcher.quoteReplacement(TEST_SUITE_LIST_NAME + newValue));
+        return matcher.replaceAll(
+                Matcher.quoteReplacement(TEST_SUITE_LIST_NAME + newValue));
     }
 
     /**
@@ -68,10 +66,10 @@ public class JavaScriptContentUtil {
 
     public static void main(String[] args) throws IOException {
         String path = "F:\\Jmeter\\apache-jmeter-3.1\\htmlreport\\repor_test_testt.html";
-        Document doc = JsoupUtil.getDocument(path);
-        Elements scripts = JsoupUtil.extractScriptTabList(doc);
-        Element vueAppJs = scripts.last();
-        String jsContent = vueAppJs.data();
+        //Document doc = JsoupUtil.getDocument(path);
+        //Elements scripts = JsoupUtil.extractScriptTabList(doc);
+        //Element vueAppJs = scripts.last();
+        //String jsContent = vueAppJs.data();
 
         ReportDataSet dataSet = new ReportDataSet();
         dataSet.createTestSuite("testSuite");
@@ -85,13 +83,13 @@ public class JavaScriptContentUtil {
         testCaseStep.setResponse("response");
         dataSet.testSuiteMapConvertToList();
 
-        String testSuiteListValue = JavaScriptContentUtil.extractTestSuiteList(jsContent);
-        testSuiteListValue = JavaScriptContentUtil.appendTestSuiteList(testSuiteListValue, dataSet.getTestSuiteList());
-
-        jsContent = JavaScriptContentUtil.updateTestSuiteList(jsContent, testSuiteListValue);
-        System.out.println(jsContent);
-
-
+        //String testSuiteListValue = JavaScriptUtil.extractTestSuiteList(jsContent);
+        //testSuiteListValue = JavaScriptUtil.appendTestSuiteList(testSuiteListValue, dataSet.getTestSuiteList());
+        //jsContent = JavaScriptUtil.updateTestSuiteList(jsContent, testSuiteListValue);
+        //DataNode data = (DataNode)vueAppJs.childNode(0);
+        //data.setWholeData(jsContent);
+        //
+        //System.out.println(doc.html());
     }
 }
 

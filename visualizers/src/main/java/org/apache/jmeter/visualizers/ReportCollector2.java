@@ -56,7 +56,11 @@ public class ReportCollector2 extends AbstractTestElement implements TestStateLi
      */
     @Override
     public void testEnded(String host) {
-        ReportManager.flush(getReportPath());
+        if (Boolean.valueOf(getIsAppend())) {
+            ReportManager.appendDataToHtmlFile(getReportPath());
+        }else {
+            ReportManager.flush(getReportPath());
+        }
         ReportManager.clearReportDataSet();
     }
 
