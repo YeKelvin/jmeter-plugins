@@ -26,6 +26,12 @@ public class TestCaseData {
 
     private String title;
 
+    private String startTime;
+
+    private String endTime;
+
+    private String elapsedTime;
+
     private ArrayList<TestCaseStepData> testCaseStepList;
 
     private transient String testCaseStepPrefixID;
@@ -33,6 +39,10 @@ public class TestCaseData {
     private transient int testCaseStepstartID = 1;
 
     private transient HashMap<String, TestCaseStepData> testCaseStepMap;
+
+    public TestCaseData() {
+        testCaseStepMap = new HashMap<>(16);
+    }
 
     public TestCaseData(String prefixID) {
         testCaseStepPrefixID = prefixID + "-";

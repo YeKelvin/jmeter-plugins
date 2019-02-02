@@ -20,6 +20,8 @@ public class TestCaseStepData {
 
     private boolean status;
 
+    private String elapsedTime;
+
     private String tile;
 
     private String description;

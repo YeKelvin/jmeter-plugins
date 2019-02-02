@@ -12,12 +12,14 @@ import org.apache.jmeter.testelement.TestStateListener;
 import org.apache.jmeter.testelement.ThreadListener;
 import org.apache.jmeter.threads.JMeterContextService;
 import org.apache.jmeter.util.JMeterUtils;
+import pers.kelvin.util.TimeUtil;
 
 import java.io.File;
 
 
 public class ReportCollector2 extends AbstractTestElement implements TestStateListener,
         ThreadListener, SampleListener, TestIterationListener {
+    public static final String DATE_FORMAT_PATTERN = "yyyy.MM.dd HH:mm:ss";
     public static final String REPORT_NAME = "ReportName";
     public static final String IS_APPEND = "IsAppend";
     public static final String JSON_OUTPUT = "JsonOutput";
@@ -42,8 +44,10 @@ public class ReportCollector2 extends AbstractTestElement implements TestStateLi
     @Override
     public void testStarted(String host) {
         ReportManager.createReportDataSet();
-        ReportManager.getReport().createTestSuite(getScriptName());
-
+        TestSuiteData testSuiteData = new TestSuiteData();
+        testSuiteData.setTitle(getScriptName());
+        testSuiteData.setStartTime(TimeUtil.currentTimeAsString(DATE_FORMAT_PATTERN));
+        ReportManager.getReport().putTestSuite(testSuiteData);
     }
 
     @Override
@@ -56,9 +60,14 @@ public class ReportCollector2 extends AbstractTestElement implements TestStateLi
      */
     @Override
     public void testEnded(String host) {
+        TestSuiteData testSuiteData = ReportManager.getReport().getTestSuite(getScriptName());
+        testSuiteData.setEndTime(TimeUtil.currentTimeAsString(DATE_FORMAT_PATTERN));
+        testSuiteData.setElapsedTime(
+                TimeUtil.formatElapsedTimeAsHMSMs(
+                        testSuiteData.getEndTime(), testSuiteData.getStartTime(), DATE_FORMAT_PATTERN));
         if (Boolean.valueOf(getIsAppend())) {
             ReportManager.appendDataToHtmlFile(getReportPath());
-        }else {
+        } else {
             ReportManager.flush(getReportPath());
         }
         ReportManager.clearReportDataSet();
@@ -69,12 +78,20 @@ public class ReportCollector2 extends AbstractTestElement implements TestStateLi
      */
     @Override
     public void threadStarted() {
-        ReportManager.getReport().getTestSuite(getScriptName()).createTestCase(getThreadName());
+        TestSuiteData testSuiteData = ReportManager.getReport().getTestSuite(getScriptName());
+        TestCaseData testCaseData = new TestCaseData(String.valueOf(testSuiteData.getTestCaseStartID()));
+        testCaseData.setTitle(getThreadName());
+        testCaseData.setStartTime(TimeUtil.currentTimeAsString(DATE_FORMAT_PATTERN));
+        testSuiteData.putTestCase(testCaseData);
     }
 
     @Override
     public void threadFinished() {
-        // pass
+        TestCaseData testCaseData = ReportManager.getReport().getTestSuite(getScriptName()).getTestCase(getThreadName());
+        testCaseData.setEndTime(TimeUtil.currentTimeAsString(DATE_FORMAT_PATTERN));
+        testCaseData.setElapsedTime(
+                TimeUtil.formatElapsedTimeAsHMSMs(
+                        testCaseData.getEndTime(), testCaseData.getStartTime(), DATE_FORMAT_PATTERN));
     }
 
     /**
@@ -130,7 +147,7 @@ public class ReportCollector2 extends AbstractTestElement implements TestStateLi
     }
 
     @Override
-    public String getThreadName(){
+    public String getThreadName() {
         return JMeterContextService.getContext().getThread().getThreadName();
     }
 

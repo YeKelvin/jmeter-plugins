@@ -19,7 +19,10 @@ public class ReportData {
     private String testSuiteTile;
     private String testCaseTile;
     private String testCaseStepTile;
+    private String id;
+    private boolean status;
     private String request;
     private String response;
+
 
 }

@@ -26,13 +26,11 @@ public class TestSuiteData {
 
     private String endTime;
 
+    private String elapsedTime;
+
     private String title;
 
     private ArrayList<TestCaseData> testCaseList;
-
-    private long startTimestamp;
-
-    private long endTimestamp;
 
     private transient int testCaseStartID = 1;
 
