@@ -16,6 +16,13 @@ import java.nio.charset.StandardCharsets;
  */
 public class JsoupUtil {
 
+    /**
+     * 获取 html文档对象
+     *
+     * @param htmlFilePath 文件路径
+     * @return Document对象
+     * @throws IOException 文件不存在
+     */
     public static Document getDocument(String htmlFilePath) throws IOException {
         return Jsoup.parse(new File(htmlFilePath), StandardCharsets.UTF_8.name());
     }

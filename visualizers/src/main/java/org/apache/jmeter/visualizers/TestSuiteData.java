@@ -57,6 +57,9 @@ public class TestSuiteData {
         return testCaseMap.get(title);
     }
 
+    /**
+     * map转list
+     */
     public void testCaseMapConvertToList() {
         testCaseList = new ArrayList<>();
         for (String key : testCaseMap.keySet()) {
@@ -64,10 +67,16 @@ public class TestSuiteData {
         }
     }
 
+    /**
+     * list升序排序
+     */
     public void sort() {
         testCaseList.sort(Comparator.comparingInt(obj -> Integer.valueOf(obj.getId())));
     }
 
+    /**
+     * 设置TestSuite为测试通过
+     */
     public void pass() {
         if (status) {
             return;
@@ -75,6 +84,9 @@ public class TestSuiteData {
         status = true;
     }
 
+    /**
+     * 设置TestSuite为测试失败
+     */
     public void fail() {
         if (!status) {
             return;

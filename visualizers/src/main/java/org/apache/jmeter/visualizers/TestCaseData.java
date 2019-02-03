@@ -65,6 +65,9 @@ public class TestCaseData {
         return testCaseStepMap.get(title);
     }
 
+    /**
+     * map转list
+     */
     public void testCaseStepMapConvertToList() {
         testCaseStepList = new ArrayList<>();
         for (String key : testCaseStepMap.keySet()) {
@@ -72,10 +75,16 @@ public class TestCaseData {
         }
     }
 
+    /**
+     * list升序排序
+     */
     public void sort() {
         testCaseStepList.sort(Comparator.comparing(TestCaseStepData::getId));
     }
 
+    /**
+     * 设置TestCase为测试通过
+     */
     public void pass() {
         if (status) {
             return;
@@ -83,6 +92,9 @@ public class TestCaseData {
         status = true;
     }
 
+    /**
+     * 设置TestCase为测试失败
+     */
     public void fail() {
         if (!status) {
             return;

@@ -20,6 +20,13 @@ public class FreemarkerUtil {
 
     private static final String TEMPLATE_LOCATION = "template";
 
+    /**
+     * 获取 freemarker html模版
+     *
+     * @param name 模版名称
+     * @return Template对象
+     * @throws IOException 文件不存在
+     */
     public static Template getTemplate(String name) throws IOException {
         // 通过Freemaker的Configuration读取相应的ftl
         Configuration cfg = new Configuration(Configuration.VERSION_2_3_28);
@@ -35,10 +42,9 @@ public class FreemarkerUtil {
      */
     public static void outputFile(String templateName, Map<String, Object> root, String outputFilePath) {
         try {
-            // 通过一个文件输出流写到相应的文件中
-            File file = new File(outputFilePath);
             BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(
-                    new FileOutputStream(file, false), StandardCharsets.UTF_8));
+                    new FileOutputStream(
+                            new File(outputFilePath), false), StandardCharsets.UTF_8));
             Template temp = getTemplate(templateName);
             temp.process(root, bw);
             bw.flush();

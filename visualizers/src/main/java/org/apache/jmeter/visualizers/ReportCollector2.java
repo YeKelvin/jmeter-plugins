@@ -87,11 +87,12 @@ public class ReportCollector2 extends AbstractTestElement implements TestStateLi
 
     @Override
     public void threadFinished() {
-        TestCaseData testCaseData = ReportManager.getReport().getTestSuite(getScriptName()).getTestCase(getThreadName());
-        testCaseData.setEndTime(TimeUtil.currentTimeAsString(DATE_FORMAT_PATTERN));
-        testCaseData.setElapsedTime(
-                TimeUtil.formatElapsedTimeAsHMSMs(
-                        testCaseData.getEndTime(), testCaseData.getStartTime(), DATE_FORMAT_PATTERN));
+        System.out.println(getThreadName());
+        //TestCaseData testCaseData = ReportManager.getReport().getTestSuite(getScriptName()).getTestCase(getThreadName());
+        //testCaseData.setEndTime(TimeUtil.currentTimeAsString(DATE_FORMAT_PATTERN));
+        //testCaseData.setElapsedTime(
+        //        TimeUtil.formatElapsedTimeAsHMSMs(
+        //                testCaseData.getEndTime(), testCaseData.getStartTime(), DATE_FORMAT_PATTERN));
     }
 
     /**
@@ -166,6 +167,9 @@ public class ReportCollector2 extends AbstractTestElement implements TestStateLi
         return JMeterUtils.getPropDefault("jsonOutput", getPropertyAsString(JSON_OUTPUT));
     }
 
+    /**
+     * 获取测试报告路径
+     */
     private String getReportPath() {
         return JMeterUtils.getJMeterHome() + File.separator +
                 "htmlreport" + File.separator +

@@ -30,10 +30,16 @@ public class TestCaseStepData {
 
     private String response;
 
+    /**
+     * 设置TestCaseStep为测试通过
+     */
     public void pass() {
         status = true;
     }
 
+    /**
+     * 设置TestCaseStep为测试失败
+     */
     public void fail() {
         status = false;
     }

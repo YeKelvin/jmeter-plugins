@@ -41,6 +41,9 @@ public class ReportDataSet {
         return testSuiteMap.get(title);
     }
 
+    /**
+     * map转list
+     */
     public void testSuiteMapConvertToList() {
         testSuiteList = new ArrayList<>();
         for (String key : testSuiteMap.keySet()) {

@@ -75,6 +75,9 @@ public class JavaScriptUtil {
         return ctx.jsonString();
     }
 
+    /**
+     * 获取 JsonPath配置对象
+     */
     private static Configuration getJsonPathConfigWithGson() {
         if (config == null) {
             Configuration.setDefaults(new Configuration.Defaults() {
