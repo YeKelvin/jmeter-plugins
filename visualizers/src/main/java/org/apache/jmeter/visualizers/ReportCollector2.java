@@ -87,12 +87,7 @@ public class ReportCollector2 extends AbstractTestElement implements TestStateLi
 
     @Override
     public void threadFinished() {
-        System.out.println(getThreadName());
-        //TestCaseData testCaseData = ReportManager.getReport().getTestSuite(getScriptName()).getTestCase(getThreadName());
-        //testCaseData.setEndTime(TimeUtil.currentTimeAsString(DATE_FORMAT_PATTERN));
-        //testCaseData.setElapsedTime(
-        //        TimeUtil.formatElapsedTimeAsHMSMs(
-        //                testCaseData.getEndTime(), testCaseData.getStartTime(), DATE_FORMAT_PATTERN));
+        // pass
     }
 
     /**
@@ -104,11 +99,13 @@ public class ReportCollector2 extends AbstractTestElement implements TestStateLi
         TestCaseData testCase = testSuite.getTestCase(getThreadName());
         TestCaseStepData testCaseStep = new TestCaseStepData();
 
+        // 设置测试数据
         SampleResult result = sampleEvent.getResult();
         testCaseStep.setTile(result.getSampleLabel());
         testCaseStep.setRequest(result.getSamplerData());
         testCaseStep.setResponse(result.getResponseDataAsString());
 
+        // 设置测试结果
         if (result.isSuccessful()) {
             testCaseStep.pass();
             testCase.pass();
@@ -118,6 +115,14 @@ public class ReportCollector2 extends AbstractTestElement implements TestStateLi
             testCase.fail();
             testSuite.fail();
         }
+
+        // 每次sample执行完毕覆盖testCase中的时间
+        testCase.setEndTime(TimeUtil.currentTimeAsString(DATE_FORMAT_PATTERN));
+        testCase.setElapsedTime(
+                TimeUtil.formatElapsedTimeAsHMSMs(
+                        testCase.getEndTime(), testCase.getStartTime(), DATE_FORMAT_PATTERN));
+
+        // 把测试步骤数据添加至测试案例集中
         testCase.putTestCaseStep(testCaseStep);
 
         // 另外把 sample 执行结果打印到控制台
