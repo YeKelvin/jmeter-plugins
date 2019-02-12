@@ -1,8 +1,10 @@
 package org.apache.jmeter.visualizers;
 
+import org.apache.jmeter.util.JMeterUtils;
 import org.jsoup.nodes.DataNode;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
+import pers.kelvin.util.TimeUtil;
 import pers.kelvin.util.json.JsonUtil;
 
 import java.io.IOException;
@@ -17,6 +19,8 @@ import java.util.Map;
  * Time     16:51
  */
 public class ReportManager {
+
+    public static final String DATE_FORMAT_PATTERN = "yyyy.MM.dd HH:mm:ss";
 
     public static String REPORT_FILE_SUFFIX = ".html";
 
@@ -45,12 +49,22 @@ public class ReportManager {
         }
     }
 
+    private static ReportInfo getReportInfo() {
+        ReportInfo reportInfo = new ReportInfo();
+        String currentTime = TimeUtil.currentTimeAsString(DATE_FORMAT_PATTERN);
+        reportInfo.setCreateTime(currentTime);
+        reportInfo.setLastUpdateTime(currentTime);
+        reportInfo.setToolName("Jmeter " + JMeterUtils.getJMeterVersion());
+        return reportInfo;
+    }
+
     /**
      * 组装并返回 freemarker引擎所需变量
      */
     private static Map<String, Object> getTemplateRootData() {
         Map<String, Object> root = new HashMap<>(1);
         traverseReportData();
+        root.put("reportInfo", JsonUtil.toJson(getReportInfo()));
         root.put("testSuiteList", JsonUtil.toJson(reportDataSet.getTestSuiteList()));
         return root;
     }

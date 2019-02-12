@@ -14,7 +14,7 @@ import lombok.ToString;
 @Setter
 @Getter
 @ToString
-public class ReportData {
+public class SampleData {
 
     private String testSuiteTile;
     private String testCaseTile;

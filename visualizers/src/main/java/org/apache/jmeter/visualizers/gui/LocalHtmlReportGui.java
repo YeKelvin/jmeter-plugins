@@ -8,11 +8,11 @@ import org.apache.jmeter.visualizers.ReportCollector2;
 import javax.swing.*;
 import java.awt.*;
 
-public class LocalTestReportGui extends AbstractListenerGui {
+public class LocalHtmlReportGui extends AbstractListenerGui {
     private JTextField reportNameTextField;
     private JComboBox<String> isAppendComboBox;
 
-    public LocalTestReportGui() {
+    public LocalHtmlReportGui() {
         super();
         init();
     }
@@ -30,7 +30,7 @@ public class LocalTestReportGui extends AbstractListenerGui {
 
     @Override
     public String getStaticLabel() {
-        return "Local Test Report";
+        return "Local HTML Report";
     }
 
     @Override

@@ -85,6 +85,7 @@ public class TimeUtil {
         return System.currentTimeMillis() - startTime;
     }
 
+
     /**
      * 格式化时间差（00h:00m:00s + 00ms）
      */
@@ -96,12 +97,22 @@ public class TimeUtil {
         return String.format("%02dh:%02dm:%02ds + %dms", hour, min, s, ms);
     }
 
-    public static String formatElapsedTimeAsHMSMs(String startTime, String endTime, String dateFormatPattern) {
+    /**
+     * 格式化时间差（00h:00m:00s）
+     */
+    public static String formatElapsedTimeAsHMS(long elapsedTime) {
+        long hour = elapsedTime / (60 * 60 * 1000);
+        long min = (elapsedTime / (60 * 1000)) - (hour * 60);
+        long s = (elapsedTime / 1000) - (hour * 60 * 60) - (min * 60);
+        return String.format("%02dh:%02dm:%02ds", hour, min, s);
+    }
+
+    public static String formatElapsedTimeAsHMS(String startTime, String endTime, String dateFormatPattern) {
         SimpleDateFormat sdf = new SimpleDateFormat(dateFormatPattern);
         long startTimestamp = stringToTimestamp(startTime, sdf);
         long endTimestamp = stringToTimestamp(endTime, sdf);
         long elapsedTime = endTimestamp - startTimestamp;
-        return formatElapsedTimeAsHMSMs(elapsedTime);
+        return formatElapsedTimeAsHMS(elapsedTime);
     }
 
     public static void main(String[] args) {

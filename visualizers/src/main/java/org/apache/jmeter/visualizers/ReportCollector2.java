@@ -63,9 +63,10 @@ public class ReportCollector2 extends AbstractTestElement implements TestStateLi
         TestSuiteData testSuiteData = ReportManager.getReport().getTestSuite(getScriptName());
         testSuiteData.setEndTime(TimeUtil.currentTimeAsString(DATE_FORMAT_PATTERN));
         testSuiteData.setElapsedTime(
-                TimeUtil.formatElapsedTimeAsHMSMs(
-                        testSuiteData.getEndTime(), testSuiteData.getStartTime(), DATE_FORMAT_PATTERN));
-        if (Boolean.valueOf(getIsAppend())) {
+                TimeUtil.formatElapsedTimeAsHMS(
+                        testSuiteData.getStartTime(), testSuiteData.getEndTime(), DATE_FORMAT_PATTERN));
+        // 如判断为追加模式且 html文件存在时，以追加模式写入数据，否则以新建模式写入数据
+        if (Boolean.valueOf(getIsAppend()) && fileExists(getReportPath())) {
             ReportManager.appendDataToHtmlFile(getReportPath());
         } else {
             ReportManager.flush(getReportPath());
@@ -102,6 +103,7 @@ public class ReportCollector2 extends AbstractTestElement implements TestStateLi
         // 设置测试数据
         SampleResult result = sampleEvent.getResult();
         testCaseStep.setTile(result.getSampleLabel());
+        testCaseStep.setElapsedTime(getSampleElapsedTime(result));
         testCaseStep.setRequest(result.getSamplerData());
         testCaseStep.setResponse(result.getResponseDataAsString());
 
@@ -116,11 +118,11 @@ public class ReportCollector2 extends AbstractTestElement implements TestStateLi
             testSuite.fail();
         }
 
-        // 每次sample执行完毕覆盖testCase中的时间
+        // 每次sample执行完毕覆盖testCase的完成时间和耗时
         testCase.setEndTime(TimeUtil.currentTimeAsString(DATE_FORMAT_PATTERN));
         testCase.setElapsedTime(
-                TimeUtil.formatElapsedTimeAsHMSMs(
-                        testCase.getEndTime(), testCase.getStartTime(), DATE_FORMAT_PATTERN));
+                TimeUtil.formatElapsedTimeAsHMS(
+                        testCase.getStartTime(), testCase.getEndTime(), DATE_FORMAT_PATTERN));
 
         // 把测试步骤数据添加至测试案例集中
         testCase.putTestCaseStep(testCaseStep);
@@ -201,5 +203,23 @@ public class ReportCollector2 extends AbstractTestElement implements TestStateLi
         } else {
             System.err.println("[false]- " + message);
         }
+    }
+
+    /**
+     * 获取 sample的耗时
+     *
+     * @param result SampleResult对象
+     * @return 耗时(xxms)
+     */
+    private String getSampleElapsedTime(SampleResult result) {
+        return result.getEndTime() - result.getStartTime() + "ms";
+    }
+
+    /**
+     * 判断文件是否存在
+     */
+    private boolean fileExists(String filePath) {
+        File file = new File(filePath);
+        return file.exists();
     }
 }
