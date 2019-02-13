@@ -74,7 +74,7 @@ public class ReportManager {
      *
      * @param reportPath 测试报告路径
      */
-    public static void flush(String reportPath) {
+    public synchronized static void flush(String reportPath) {
         FreemarkerUtil.outputFile("report.ftl", getTemplateRootData(), reportPath);
     }
 
@@ -83,7 +83,7 @@ public class ReportManager {
      *
      * @param reportPath 测试报告路径
      */
-    public static void appendDataToHtmlFile(String reportPath) {
+    public synchronized static void appendDataToHtmlFile(String reportPath) {
         try {
             // 解析html
             Document doc = JsoupUtil.getDocument(reportPath);
@@ -95,6 +95,11 @@ public class ReportManager {
             String jsContent = vueAppJs.data();
             // 提取 js中 testSuiteList的值
             String testSuiteListValue = JavaScriptUtil.extractTestSuiteList(jsContent);
+            // 提取 js中 reportInfo的值
+            String reportInfoValue = JavaScriptUtil.extractReportInfo(jsContent);
+            // 更新 lastUpdateTime
+            reportInfoValue = JavaScriptUtil.updateLastUpdateTime(reportInfoValue,
+                    TimeUtil.currentTimeAsString(DATE_FORMAT_PATTERN));
             // 按顺序整理测试报告数据
             traverseReportData();
             // 循环向数组添加新数据
@@ -102,6 +107,7 @@ public class ReportManager {
                 testSuiteListValue = JavaScriptUtil.appendTestSuiteList(testSuiteListValue, testSuite);
             }
             // 更新js脚本内容
+            jsContent = JavaScriptUtil.updateReportInfo(jsContent, reportInfoValue);
             jsContent = JavaScriptUtil.updateTestSuiteList(jsContent, testSuiteListValue);
             // 将更新后的js写入doc
             ((DataNode) vueAppJs.childNode(0)).setWholeData(jsContent);

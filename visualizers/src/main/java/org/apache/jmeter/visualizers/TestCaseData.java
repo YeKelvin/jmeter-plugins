@@ -79,7 +79,7 @@ public class TestCaseData {
      * list升序排序
      */
     public void sort() {
-        testCaseStepList.sort(Comparator.comparing(TestCaseStepData::getId));
+        testCaseStepList.sort(Comparator.comparingInt(obj -> Integer.valueOf(obj.getId())));
     }
 
     /**

@@ -22,7 +22,7 @@ public class ReportCollector2 extends AbstractTestElement implements TestStateLi
     public static final String DATE_FORMAT_PATTERN = "yyyy.MM.dd HH:mm:ss";
     public static final String REPORT_NAME = "ReportName";
     public static final String IS_APPEND = "IsAppend";
-    public static final String JSON_OUTPUT = "JsonOutput";
+    public static final String DATA_FILE_NAME = "DataFileName";
 
     public ReportCollector2() {
         super();
@@ -171,7 +171,7 @@ public class ReportCollector2 extends AbstractTestElement implements TestStateLi
 
     private String getJsonOutput() {
         // Non-Gui下，命令行存在 -JjsonOutput 参数时，优先读取 jsonOutput
-        return JMeterUtils.getPropDefault("jsonOutput", getPropertyAsString(JSON_OUTPUT));
+        return JMeterUtils.getPropDefault("jsonOutput", getPropertyAsString(DATA_FILE_NAME));
     }
 
     /**
