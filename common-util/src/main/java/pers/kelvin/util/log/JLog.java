@@ -2,6 +2,7 @@ package pers.kelvin.util.log;
 
 
 import org.apache.jmeter.util.JMeterUtils;
+import pers.kelvin.util.FileUtil;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
@@ -12,23 +13,19 @@ import java.util.Date;
  * @author KelvinYe
  */
 public class JLog {
-    /**
-     * 获取当前系统换行符
-     */
-    private static String lineSep = System.getProperty("line.separator");
     private static File logFile;
 
     public static void error(String className, String methodName, String request, String response, long elapsed) {
-        String content = String.format("【%s.%s】-【elapsed %s ms】 ", className, methodName, elapsed) + lineSep +
-                request + lineSep +
-                response + lineSep + lineSep;
+        String content = String.format("【%s.%s】-【elapsed %s ms】 ", className, methodName, elapsed) + FileUtil.LINE_SEPARATOR +
+                request + FileUtil.LINE_SEPARATOR +
+                response + FileUtil.LINE_SEPARATOR + FileUtil.LINE_SEPARATOR;
         write(getLogFile(), content);
     }
 
     public static File getLogFile() {
         if (logFile == null) {
             logFile = new File(getLogName());
-            createParentDir(logFile);
+            FileUtil.createParentDir(logFile);
         }
         return logFile;
     }
@@ -49,11 +46,5 @@ public class JLog {
         return JMeterUtils.getJMeterHome() + File.separator +
                 "log" + File.separator +
                 "error-" + (new SimpleDateFormat("MMdd-HHmmss")).format(new Date()) + ".log";
-    }
-
-    private static void createParentDir(File file) {
-        if (!file.getParentFile().exists()) {
-            file.getParentFile().mkdirs();
-        }
     }
 }

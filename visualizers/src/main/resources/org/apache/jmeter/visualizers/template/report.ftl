@@ -458,6 +458,7 @@
             this.currentTestSuiteIndex = index
             this.testCaseActiveName = ''
             this.testCaseStepActiveName = ''
+            this.testCaseFilterValue = null
           },
           isTrueFilter: function(currentObj) {
             return currentObj['status'] === true
@@ -481,9 +482,7 @@
             this.currentTestSuiteIndex = 0
             this.testCaseActiveName = ''
             this.testCaseStepActiveName = ''
-            if(newValue === null){
-              this.testCaseFilterValue = null
-            }
+            this.testCaseFilterValue = null
           },
           updateTestCaseFilterValue: function(newValue) {
             this.testCaseFilterValue = newValue

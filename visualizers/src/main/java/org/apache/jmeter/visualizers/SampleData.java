@@ -16,47 +16,24 @@ import lombok.ToString;
 @ToString
 public class SampleData {
 
-    private TestSuite testSuite;
-    private TestCase testCase;
-    private TestCaseStep testCaseStep;
+    private static int startId = 0;
 
-    public SampleData() {
-        testSuite = new TestSuite();
-        testCase = new TestCase();
-        testCaseStep = new TestCaseStep();
+    private String id;
+    private String testSuiteTitle;
+    private String testCaseTitle;
+    private String sampleTitle;
+    private String startTime;
+    private String endTime;
+    private String elapsedTime;
+    private boolean status;
+    private String request;
+    private String response;
+
+    public static String getId() {
+        return String.valueOf(startId++);
     }
 
-
-    @Setter
-    @Getter
-    @ToString
-    private class TestSuite {
-        private String title;
-        private String startTime;
-        private String endTime;
+    public static void resetId() {
+        startId = 0;
     }
-
-    @Setter
-    @Getter
-    @ToString
-    private class TestCase {
-        private String id;
-        private String title;
-        private String startTime;
-        private String endTime;
-    }
-
-    @Setter
-    @Getter
-    @ToString
-    private class TestCaseStep {
-        private String id;
-        private String title;
-        private String startTime;
-        private String endTime;
-        private boolean status;
-        private String request;
-        private String response;
-    }
-
 }

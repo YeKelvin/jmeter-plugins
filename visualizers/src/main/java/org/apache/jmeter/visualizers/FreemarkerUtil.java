@@ -4,6 +4,7 @@ package org.apache.jmeter.visualizers;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
+import pers.kelvin.util.FileUtil;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
@@ -42,9 +43,10 @@ public class FreemarkerUtil {
      */
     public static void outputFile(String templateName, Map<String, Object> root, String outputFilePath) {
         try {
+            File file = new File(outputFilePath);
+            FileUtil.createParentDir(file);
             BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(
-                    new FileOutputStream(
-                            new File(outputFilePath), false), StandardCharsets.UTF_8));
+                    new FileOutputStream(file, false), StandardCharsets.UTF_8));
             Template temp = getTemplate(templateName);
             temp.process(root, bw);
             bw.flush();

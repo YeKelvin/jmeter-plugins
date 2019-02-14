@@ -1,21 +1,10 @@
 package org.apache.jmeter.visualizers;
 
-import com.google.gson.Gson;
-import com.jayway.jsonpath.Configuration;
 import com.jayway.jsonpath.DocumentContext;
 import com.jayway.jsonpath.JsonPath;
-import com.jayway.jsonpath.Option;
-import com.jayway.jsonpath.spi.json.GsonJsonProvider;
-import com.jayway.jsonpath.spi.json.JsonProvider;
-import com.jayway.jsonpath.spi.mapper.GsonMappingProvider;
-import com.jayway.jsonpath.spi.mapper.MappingProvider;
-import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
+import pers.kelvin.util.json.JsonPathUtil;
 
 import java.io.IOException;
-import java.util.EnumSet;
-import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -39,10 +28,6 @@ public class JavaScriptUtil {
     private static Pattern testSuiteListRegex = Pattern.compile(TEST_SUITE_LIST_VALUE_PATTERN);
 
     private static Pattern reportInfoRegex = Pattern.compile(REPORT_INFO_VALUE_PATTERN);
-
-    private static Gson gson = new Gson();
-
-    private static Configuration config;
 
     /**
      * 提取js脚本中 testSuiteList的值
@@ -107,7 +92,7 @@ public class JavaScriptUtil {
      * @return 更新后的reportInfo的json串
      */
     public static String updateLastUpdateTime(String reportInfo, Object lastUpdateTime) {
-        DocumentContext ctx = JsonPath.using(getJsonPathConfigWithGson()).parse(reportInfo);
+        DocumentContext ctx = JsonPathUtil.jsonParse(reportInfo);
         ctx.set("$.lastUpdateTime", lastUpdateTime);
         return ctx.jsonString();
     }
@@ -120,38 +105,9 @@ public class JavaScriptUtil {
      * @return 添加后的完整的 testSuiteList值
      */
     public static String appendTestSuiteList(String testSuiteList, Object appendValue) {
-        DocumentContext ctx = JsonPath.using(getJsonPathConfigWithGson()).parse(testSuiteList);
+        DocumentContext ctx = JsonPathUtil.jsonParse(testSuiteList);
         ctx.add("$", appendValue);
         return ctx.jsonString();
-    }
-
-    /**
-     * 获取 JsonPath配置对象
-     */
-    private static Configuration getJsonPathConfigWithGson() {
-        if (config == null) {
-            Configuration.setDefaults(new Configuration.Defaults() {
-                private final JsonProvider jsonProvider = new GsonJsonProvider(gson);
-                private final MappingProvider mappingProvider = new GsonMappingProvider(gson);
-
-                @Override
-                public JsonProvider jsonProvider() {
-                    return jsonProvider;
-                }
-
-                @Override
-                public MappingProvider mappingProvider() {
-                    return mappingProvider;
-                }
-
-                @Override
-                public Set<Option> options() {
-                    return EnumSet.noneOf(Option.class);
-                }
-            });
-            config = Configuration.defaultConfiguration();
-        }
-        return config;
     }
 
     public static void main(String[] args) throws IOException {

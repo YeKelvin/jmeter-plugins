@@ -22,7 +22,7 @@ public class ReportManager {
 
     public static final String DATE_FORMAT_PATTERN = "yyyy.MM.dd HH:mm:ss";
 
-    public static String REPORT_FILE_SUFFIX = ".html";
+    public static String HTML_SUFFIX = ".html";
 
     private static ReportDataSet reportDataSet;
 
@@ -37,7 +37,7 @@ public class ReportManager {
     /**
      * 将测试报告数据集中的map转为list，且list升序排序
      */
-    private static void traverseReportData() {
+    public static void traverseReportData() {
         reportDataSet.testSuiteMapConvertToList();
         for (TestSuiteData testSuite : reportDataSet.getTestSuiteList()) {
             testSuite.testCaseMapConvertToList();
@@ -49,6 +49,9 @@ public class ReportManager {
         }
     }
 
+    /**
+     * 获取报告创建时间、最后更新时间和jmeter版本信息
+     */
     private static ReportInfo getReportInfo() {
         ReportInfo reportInfo = new ReportInfo();
         String currentTime = TimeUtil.currentTimeAsString(DATE_FORMAT_PATTERN);
