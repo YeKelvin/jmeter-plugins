@@ -22,7 +22,7 @@ public class TestCaseData {
 
     private String id;
 
-    private boolean status;
+    private boolean status = true;
 
     private String title;
 
@@ -86,9 +86,6 @@ public class TestCaseData {
      * 设置TestCase为测试通过
      */
     public void pass() {
-        if (status) {
-            return;
-        }
         status = true;
     }
 

@@ -2,7 +2,7 @@ package org.apache.jmeter.visualizers.gui;
 
 
 import org.apache.jmeter.testelement.TestElement;
-import org.apache.jmeter.visualizers.ReportCollector;
+import org.apache.jmeter.visualizers.ExtentReportCollector;
 
 import javax.swing.*;
 import java.awt.*;
@@ -39,7 +39,7 @@ public class ExtentHtmlReportGui extends AbstractListenerGui {
 
     @Override
     public TestElement createTestElement() {
-        ReportCollector info = new ReportCollector();
+        ExtentReportCollector info = new ExtentReportCollector();
         modifyTestElement(info);
         return info;
     }
@@ -47,15 +47,15 @@ public class ExtentHtmlReportGui extends AbstractListenerGui {
     @Override
     public void configure(TestElement el) {
         super.configure(el);
-        reportNameTextField.setText(el.getPropertyAsString(ReportCollector.REPORTNAME));
-        isAppendComboBox.setSelectedItem(el.getPropertyAsString(ReportCollector.ISAPPEND));
+        reportNameTextField.setText(el.getPropertyAsString(ExtentReportCollector.REPORTNAME));
+        isAppendComboBox.setSelectedItem(el.getPropertyAsString(ExtentReportCollector.ISAPPEND));
     }
 
     @Override
     public void modifyTestElement(TestElement el) {
         super.configureTestElement(el);
-        el.setProperty(ReportCollector.REPORTNAME, reportNameTextField.getText());
-        el.setProperty(ReportCollector.ISAPPEND, (String) isAppendComboBox.getSelectedItem());
+        el.setProperty(ExtentReportCollector.REPORTNAME, reportNameTextField.getText());
+        el.setProperty(ExtentReportCollector.ISAPPEND, (String) isAppendComboBox.getSelectedItem());
     }
 
     @Override
@@ -67,8 +67,8 @@ public class ExtentHtmlReportGui extends AbstractListenerGui {
 
     private JPanel createReportNamePanel() {
         reportNameTextField = new JTextField(10);
-        reportNameTextField.setName(ReportCollector.REPORTNAME);
-        JLabel label = new JLabel(ReportCollector.REPORTNAME);
+        reportNameTextField.setName(ExtentReportCollector.REPORTNAME);
+        JLabel label = new JLabel(ExtentReportCollector.REPORTNAME);
         label.setLabelFor(reportNameTextField);
         JPanel jPanel = new JPanel(new BorderLayout(5, 0));
         jPanel.add(label, BorderLayout.WEST);
@@ -78,10 +78,10 @@ public class ExtentHtmlReportGui extends AbstractListenerGui {
 
     private JPanel createIsAppendPanel() {
         isAppendComboBox = new JComboBox<>();
-        isAppendComboBox.setName(ReportCollector.ISAPPEND);
+        isAppendComboBox.setName(ExtentReportCollector.ISAPPEND);
         isAppendComboBox.addItem("true");
         isAppendComboBox.addItem("false");
-        JLabel label = new JLabel(ReportCollector.ISAPPEND);
+        JLabel label = new JLabel(ExtentReportCollector.ISAPPEND);
         label.setLabelFor(isAppendComboBox);
         JPanel jPanel = new JPanel(new BorderLayout(5, 0));
         jPanel.add(label, BorderLayout.WEST);

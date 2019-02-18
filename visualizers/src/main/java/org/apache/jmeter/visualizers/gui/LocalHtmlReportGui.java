@@ -2,8 +2,8 @@ package org.apache.jmeter.visualizers.gui;
 
 
 import org.apache.jmeter.testelement.TestElement;
+import org.apache.jmeter.visualizers.ExtentReportCollector;
 import org.apache.jmeter.visualizers.ReportCollector;
-import org.apache.jmeter.visualizers.ReportCollector2;
 
 import javax.swing.*;
 import java.awt.*;
@@ -40,7 +40,7 @@ public class LocalHtmlReportGui extends AbstractListenerGui {
 
     @Override
     public TestElement createTestElement() {
-        ReportCollector2 info = new ReportCollector2();
+        ReportCollector info = new ReportCollector();
         modifyTestElement(info);
         return info;
     }
@@ -48,15 +48,15 @@ public class LocalHtmlReportGui extends AbstractListenerGui {
     @Override
     public void configure(TestElement el) {
         super.configure(el);
-        reportNameTextField.setText(el.getPropertyAsString(ReportCollector.REPORTNAME));
-        isAppendComboBox.setSelectedItem(el.getPropertyAsString(ReportCollector.ISAPPEND));
+        reportNameTextField.setText(el.getPropertyAsString(ExtentReportCollector.REPORTNAME));
+        isAppendComboBox.setSelectedItem(el.getPropertyAsString(ExtentReportCollector.ISAPPEND));
     }
 
     @Override
     public void modifyTestElement(TestElement el) {
         super.configureTestElement(el);
-        el.setProperty(ReportCollector.REPORTNAME, reportNameTextField.getText());
-        el.setProperty(ReportCollector.ISAPPEND, (String) isAppendComboBox.getSelectedItem());
+        el.setProperty(ExtentReportCollector.REPORTNAME, reportNameTextField.getText());
+        el.setProperty(ExtentReportCollector.ISAPPEND, (String) isAppendComboBox.getSelectedItem());
     }
 
     @Override
@@ -68,8 +68,8 @@ public class LocalHtmlReportGui extends AbstractListenerGui {
 
     private JPanel createReportNamePanel() {
         reportNameTextField = new JTextField(10);
-        reportNameTextField.setName(ReportCollector.REPORTNAME);
-        JLabel label = new JLabel(ReportCollector.REPORTNAME);
+        reportNameTextField.setName(ExtentReportCollector.REPORTNAME);
+        JLabel label = new JLabel(ExtentReportCollector.REPORTNAME);
         label.setLabelFor(reportNameTextField);
         JPanel jPanel = new JPanel(new BorderLayout(5, 0));
         jPanel.add(label, BorderLayout.WEST);
@@ -79,10 +79,10 @@ public class LocalHtmlReportGui extends AbstractListenerGui {
 
     private JPanel createIsAppendPanel() {
         isAppendComboBox = new JComboBox<>();
-        isAppendComboBox.setName(ReportCollector.ISAPPEND);
+        isAppendComboBox.setName(ExtentReportCollector.ISAPPEND);
         isAppendComboBox.addItem("true");
         isAppendComboBox.addItem("false");
-        JLabel label = new JLabel(ReportCollector.ISAPPEND);
+        JLabel label = new JLabel(ExtentReportCollector.ISAPPEND);
         label.setLabelFor(isAppendComboBox);
         JPanel jPanel = new JPanel(new BorderLayout(5, 0));
         jPanel.add(label, BorderLayout.WEST);
@@ -97,7 +97,8 @@ public class LocalHtmlReportGui extends AbstractListenerGui {
                 "3. 执行前必须先在 jmeterHome 下创建 htmlreport 目录\n" +
                 "4. Non-Gui模式命令解释：\n" +
                 "   a. 存在 -JreportName 参数时，优先读取 ${__P(reportName)} HTML报告名称\n" +
-                "   b. 存在 -JisAppend 参数时，优先读取 ${__P(isAppend)} 追加模式\n";
+                "   b. 存在 -JisAppend 参数时，优先读取 ${__P(isAppend)} 追加模式\n" +
+                "   c. 存在 -JdataFileName 参数时，优先读取 ${__P(dataFileName)} 数据文件名称";
         JTextArea textArea = new JTextArea(note);
         textArea.setLineWrap(true);
         textArea.setEditable(false);

@@ -20,7 +20,7 @@ import java.util.HashMap;
 @ToString(exclude = "testCaseMap")
 public class TestSuiteData {
 
-    private boolean status;
+    private boolean status = true;
 
     private String startTime;
 
@@ -78,9 +78,6 @@ public class TestSuiteData {
      * 设置TestSuite为测试通过
      */
     public void pass() {
-        if (status) {
-            return;
-        }
         status = true;
     }
 

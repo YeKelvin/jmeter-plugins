@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="UTF-8" />
-    <title>Title</title>
+    <title>HTML Report</title>
     <script src="https://cdn.jsdelivr.net/npm/vue@2.5.22/dist/vue.min.js"></script>
     <script src="https://unpkg.com/element-ui@2.4.11/lib/index.js"></script>
     <script>
@@ -41,6 +41,10 @@
         }
 
         .vertical {
+            -webkit-flex-direction: column;
+            -moz-flex-direction: column;
+            -ms-flex-direction: column;
+            -o-flex-direction: column;
             flex-direction: column;
         }
 
@@ -52,11 +56,21 @@
             background: linear-gradient(left, #319be9, #3448a1);
             color: white;
             font-size: 20px;
-            justify-content: space-between;
-            align-items: center;
             width: 100%;
-            height: 60px;
+            min-height: 60px;
             padding-left: 10px;
+
+            -webkit-justify-content: space-between;
+            -moz-justify-content: space-between;
+            -ms-justify-content: space-between;
+            -o-justify-content: space-between;
+            justify-content: space-between;
+
+            -webkit-align-items:center;
+            -moz-align-items:center;
+            -ms-align-items:center;
+            -o-align-items:center;
+            align-items: center;
         }
 
         .header-info {
@@ -70,20 +84,40 @@
         .aside {
             background-color: white;
             color: #333;
-            justify-content: center;
-            align-items: center;
             min-width: 300px;
             width: 400px;
             height: 100%;
             border: 1px solid #ebeef5;
+
+            -webkit-justify-content: center;
+            -moz-justify-content: center;
+            -ms-justify-content: center;
+            -o-justify-content: center;
+            justify-content: center;
+
+            -webkit-align-items:center;
+            -moz-align-items:center;
+            -ms-align-items:center;
+            -o-align-items:center;
+            align-items: center;
         }
 
         .main {
             background-color: white;
             color: #333;
-            justify-content: center;
-            align-items: center;
             border: 1px solid #ebeef5;
+
+            -webkit-justify-content: center;
+            -moz-justify-content: center;
+            -ms-justify-content: center;
+            -o-justify-content: center;
+            justify-content: center;
+
+            -webkit-align-items:center;
+            -moz-align-items:center;
+            -ms-align-items:center;
+            -o-align-items:center;
+            align-items: center;
         }
 
         .icon {
@@ -115,11 +149,18 @@
             margin: 10px;
             font-size: 15px;
             min-height: 20px;
+            -webkit-justify-content: space-between;
+            -moz-justify-content: space-between;
+            -ms-justify-content: space-between;
+            -o-justify-content: space-between;
             justify-content: space-between;
         }
 
         .test-suite__filter {
             border: 2px solid rgb(30, 144, 255);
+            -webkit-border-radius: 10px;
+            -moz-border-radius: 10px;
+            -o-border-radius: 10px;
             border-radius: 10px;
             padding-left: 5px;
         }
@@ -153,9 +194,17 @@
         }
 
         .test-suite__time_and_status {
-            display: flex;
-            align-items: center;
+            -webkit-justify-content: space-between;
+            -moz-justify-content: space-between;
+            -ms-justify-content: space-between;
+            -o-justify-content: space-between;
             justify-content: space-between;
+
+            -webkit-align-items:center;
+            -moz-align-items:center;
+            -ms-align-items:center;
+            -o-align-items:center;
+            align-items: center;
         }
 
         .test-case {
@@ -169,12 +218,24 @@
         }
 
         .test-case__time_and_filter {
-            align-items: center;
+            -webkit-justify-content: space-between;
+            -moz-justify-content: space-between;
+            -ms-justify-content: space-between;
+            -o-justify-content: space-between;
             justify-content: space-between;
+
+            -webkit-align-items:center;
+            -moz-align-items:center;
+            -ms-align-items:center;
+            -o-align-items:center;
+            align-items: center;
         }
 
         .test-case__filter {
             border: 2px solid #1e90ff;
+            -webkit-border-radius: 10px;
+            -moz-border-radius: 10px;
+            -o-border-radius: 10px;
             border-radius: 10px;
             padding-left: 5px;
             font-size: 15px;
@@ -200,7 +261,10 @@
         }
 
         .test-case-step__title {
-            display: flex;
+            -webkit-align-items:center;
+            -moz-align-items:center;
+            -ms-align-items:center;
+            -o-align-items:center;
             align-items: center;
         }
 
@@ -348,7 +412,7 @@
                             <li v-for="(testSuite, index) in filterTestSuiteList">
                                 <div class="test-suite__title" @click="showThisTestSuiteDetail(index)">
                                     <div class="break-word" :class="{failure : !testSuite['status']}">{{ testSuite['title'] }}</div>
-                                    <div class="test-suite__time_and_status">
+                                    <div class="container test-suite__time_and_status">
                                         <span class="time">{{ testSuite['startTime'] }}</span>
                                         <svg class="icon" aria-hidden="true">
                                             <use v-if="testSuite['status']" xlink:href="#icon-pass"></use>
@@ -409,7 +473,7 @@
                                         <el-collapse-item v-for="testCaseStep in testCase['testCaseStepList']" :name="testCaseStep['id']"
                                                           :key="testCaseStep['id']">
                                             <template slot="title">
-                                                <div class="test-case-step__title">
+                                                <div class="container test-case-step__title">
                                                     <svg class="icon" aria-hidden="true">
                                                         <use v-if="testCaseStep['status']" xlink:href="#icon-pass"></use>
                                                         <use v-else xlink:href="#icon-failure"></use>
