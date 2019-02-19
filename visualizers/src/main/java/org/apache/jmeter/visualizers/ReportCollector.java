@@ -22,6 +22,9 @@ import java.io.File;
 import java.util.ArrayList;
 
 
+/**
+ * @author KelvinYe
+ */
 public class ReportCollector extends AbstractTestElement implements TestStateListener,
         ThreadListener, SampleListener, TestIterationListener {
     public static final String DATE_FORMAT_PATTERN = "yyyy.MM.dd HH:mm:ss";
@@ -80,8 +83,6 @@ public class ReportCollector extends AbstractTestElement implements TestStateLis
         // 如命令模式有 -PdataFileName选项，则输出数据文件
         if (isOutputDataFile()) {
             outputDataFile();
-            // 删除临时数据文件
-            //FileUtil.deleteFile(getDataFilePath(true));
         }
 
         // 测试结束时重置测试数据集
@@ -137,11 +138,6 @@ public class ReportCollector extends AbstractTestElement implements TestStateLis
 
         // 把测试步骤数据添加至测试案例集中
         testCase.putTestCaseStep(testCaseStep);
-
-        // 如命令模式有 -PdataFileName选项，则输出数据文件
-        if (isOutputDataFile()) {
-            appendDataFile(result);
-        }
 
         // 另外把 sample 执行结果打印到控制台
         printStatusToConsole(result.isSuccessful(), getThreadName());
@@ -201,19 +197,10 @@ public class ReportCollector extends AbstractTestElement implements TestStateLis
 
     /**
      * 获取数据文件路径
-     *
-     * @param isRunning 是否测试运行中
-     * @return 文件路径
      */
-    private String getDataFilePath(boolean isRunning) {
-        String fileName = getDataFileName();
-        if (isRunning) {
-            fileName += "-running";
-        }
+    private String getDataFilePath() {
         return JMeterUtils.getJMeterHome() + File.separator +
-                "htmlreport" + File.separator +
-                "datafile" + File.separator +
-                fileName;
+                "htmlreport" + File.separator + "datafile" + File.separator + getDataFileName();
     }
 
     /**
@@ -256,35 +243,18 @@ public class ReportCollector extends AbstractTestElement implements TestStateLis
         return getDataFileName() != null && !"".equals(getDataFileName());
     }
 
-    private void appendDataFile(SampleResult result) {
-        SampleData sampleData = new SampleData();
-        sampleData.setId(SampleData.getId());
-        sampleData.setTestSuiteTitle(getScriptName());
-        sampleData.setTestCaseTitle(getThreadName());
-        sampleData.setSampleTitle(result.getSampleLabel());
-        sampleData.setStartTime(TimeUtil.timeStampToString(result.getStartTime(), DATE_FORMAT_PATTERN));
-        sampleData.setEndTime(TimeUtil.timeStampToString(result.getEndTime(), DATE_FORMAT_PATTERN));
-        sampleData.setElapsedTime(getSampleElapsedTime(result));
-        sampleData.setStatus(result.isSuccessful());
-        sampleData.setRequest(result.getSamplerData());
-        sampleData.setResponse(result.getResponseDataAsString());
-
-        String jsonData = JsonUtil.toJson(sampleData);
-        FileUtil.appendFile(getDataFilePath(true), jsonData + FileUtil.LINE_SEPARATOR);
-    }
-
     private void outputDataFile() {
         ReportManager.traverseReportData();
         ArrayList<TestSuiteData> testSuiteList = ReportManager.getReport().getTestSuiteList();
 
         // 如为append模式则追加写文件
-        if (Boolean.valueOf(getIsAppend()) && FileUtil.exists(getDataFilePath(false))) {
+        if (Boolean.valueOf(getIsAppend()) && FileUtil.exists(getDataFilePath())) {
             // 循环添加数据
             for (TestSuiteData testSuite : testSuiteList) {
-                appendListJsonToFile(getDataFilePath(false), testSuite);
+                appendListJsonToFile(getDataFilePath(), testSuite);
             }
         } else {
-            FileUtil.outputFile(getDataFilePath(false), JsonUtil.toJson(testSuiteList));
+            FileUtil.outputFile(getDataFilePath(), JsonUtil.toJson(testSuiteList));
         }
     }
 
