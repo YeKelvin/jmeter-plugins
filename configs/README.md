@@ -8,8 +8,8 @@
 #### 1.2 使用说明
 a. 在 jmeter根目录新建 config文件夹；  
 b. 在 config文件夹下新建 xxx.env文件；  
-c. 编辑 xxx.env文件，格式为: `{"key1":"value1","key2":"value2",...}` ；  
-d. 在 jmeter GUI中右键测试计划（TestPlan）添加-配置元件-ENV Data Set ；  
+c. 编辑 xxx.env文件，格式为: `{"key1":"value1","key2":"value2",...}`；  
+d. 在 jmeter GUI中右键测试计划（TestPlan）添加-配置元件-ENV Data Set；  
 e. 在 ENV Data Set GUI中选择对应的ConfigName即可读取文件中自定义的变量；  
 f. 在编写脚本时可通过占位符 `${keyName}`应用。  
 
@@ -23,8 +23,8 @@ f. 在编写脚本时可通过占位符 `${keyName}`应用。
 目的是便于维护枚举数量少的字段，不用另外打开文件再维护，提高编写效率。
 
 #### 2.2 使用说明
-a. 在 jmeter GUI中右键线程组（Thread）添加-配置元件-CSV Data Set In Script ；  
-b. 在 CSV Data Set In Script GUI中填写 VariableNames和 Data ；  
+a. 在 jmeter GUI中右键线程组（Thread）添加-配置元件-CSV Data Set In Script；  
+b. 在 CSV Data Set In Script GUI中填写 VariableNames和 Data；  
 c. 设置线程组循环次数为永远，当遍历完所有枚举后会自动停止，无需手动计算循环次数。  
 
 #### 2.3 截图
@@ -35,8 +35,8 @@ c. 设置线程组循环次数为永远，当遍历完所有枚举后会自动�
 用于遍历报文字段做非空校验，遍历完毕后线程自动停止。
 
 #### 3.2 使用说明
-a. 在 jmeter GUI中右键线程组（Thread）添加-配置元件-Traverse Empty Value ；  
-b. 在 Traverse Empty Value GUI中填写 Params和 EmptyCheckExpection ；  
+a. 在 jmeter GUI中右键线程组（Thread）添加-配置元件-Traverse Empty Value；  
+b. 在 Traverse Empty Value GUI中填写 Params和 EmptyCheckExpection；  
 c. 设置线程组循环次数为永远，当遍历完所有字段后会自动停止，无需手动计算循环次数。  
 
 #### 3.3 截图

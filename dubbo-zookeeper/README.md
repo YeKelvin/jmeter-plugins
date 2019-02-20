@@ -13,12 +13,12 @@ Dubbo性能测试插件。
     zookeeper.url=xxx.xxx.xxx.xxx:0000 
     dubbo.timeout=20000
     ```
-5. 在 jmeter GUI中测试计划（TestPlan）最下方 Add directory or jar to classpath添加`../lib/ext/spring`和`../config/spring` ；
-6. 在 jmeter GUI中右键线程组（Thread）添加-Sampler-Java Sample ；
-7. 在 Java Sample GUI中类名称选择 `org.apache.jmeter.samplers.DubboZK` ；
+5. 在 jmeter GUI中测试计划（TestPlan）最下方 Add directory or jar to classpath添加`../lib/ext/spring`和`../config/spring`；
+6. 在 jmeter GUI中右键线程组（Thread）添加-Sampler-Java Sample；
+7. 在 Java Sample GUI中类名称选择 `org.apache.jmeter.samplers.DubboZK`；
 
 #### 插件参数说明
-- classFullName为 Api类名，包含包名，如 `packageName.className` ；
+- classFullName为 Api类名，包含包名，如 `packageName.className`；
 - methodName为 Api类的方法名；
 - params为请求报文；
 - expection为预期结果，true或 false。
