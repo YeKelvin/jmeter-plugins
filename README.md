@@ -1,16 +1,12 @@
 # jmeter-plugins
-
 #### 项目介绍
-
 jmeter 用于自动化接口测试的一系列插件。
 
 #### 打包：
-
 1. 编译打包：`mvn clean assembly:assembly`。
 2. 将编译好的jar包放至 `jmeterHome/lib/ext`目录下。
 
 #### 插件介绍：
-
 - Configs [查看详细](https://github.com/YeKelvin/jmeter-plugins/tree/master/configs)
 
   - ENV Data Set：根据 .env后缀文件加载测试环境配置信息，脚本中通过${key}占位符引用。
