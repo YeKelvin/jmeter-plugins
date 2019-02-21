@@ -1,17 +1,30 @@
 package org.apache.jmeter.samplers;
 
+import groovy.lang.Binding;
+import groovy.lang.GroovyShell;
+import groovy.util.GroovyScriptEngine;
+import groovy.util.Eval;
 import org.apache.jmeter.config.Arguments;
 import org.apache.jmeter.protocol.java.sampler.AbstractJavaSamplerClient;
 import org.apache.jmeter.protocol.java.sampler.JavaSamplerContext;
+import org.apache.jmeter.samplers.utils.GroovyUtil;
+import org.apache.jmeter.samplers.utils.JsonPathUtil;
 import org.apache.jmeter.samplers.utils.TelnetUtil;
+import org.slf4j.Logger;
 import pers.kelvin.util.ExceptionUtil;
+import pers.kelvin.util.log.LogUtil;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * @author KelvinYe
  */
 public class DubboTelnet extends AbstractJavaSamplerClient {
+    private static final Logger logger = LogUtil.getLogger(DubboTelnet.class);
+
     private String inf;
     private TelnetUtil telnet;
     private String connectErrorMessage;
@@ -64,10 +77,8 @@ public class DubboTelnet extends AbstractJavaSamplerClient {
         if (telnet != null) {
             // telnet连接成功则invoke报文
             dubboResponse = telnet.invokeDubbo(inf, params);
-            if (dubboResponse.contains(expection)) {
-                // 判断结果是否包含期望值
-                isSuccess = true;
-            }
+            // 预期结果判断
+            isSuccess = getSuccessful(dubboResponse, expection);
         } else {
             // telnet连接失败输出报错信息
             dubboResponse = connectErrorMessage;
@@ -97,74 +108,18 @@ public class DubboTelnet extends AbstractJavaSamplerClient {
         return "false";
     }
 
-    /*private static String EXPECTION_PATTERN_STR = "[^\\&\\&|\\|\\|]*[\\&\\&|\\|\\|]{2}[^\\&\\&|\\|\\|]*";
-    private static String EXPECTION_MATCHES_PATTERN_STR = "(" + EXPECTION_PATTERN_STR + ")*";
-    private static Pattern expectionPattern = Pattern.compile(EXPECTION_PATTERN_STR);
-
-    *//**
-     * 根据预期结果表达式断言响应数据转并返回布尔值结果
-     *
-     * @param response  响应数据
-     * @param expection 预期结果表达式
-     * @return 结果
-     *//*
-    private boolean getExpectionAsBoolean(String response, String expection) {
-        // 去空格
-        expection = expection = expection.trim();
-        // 判断是否为多条件表达式
-        boolean isMatch = Pattern.matches(EXPECTION_MATCHES_PATTERN_STR, expection);
-        if (!isMatch) {
-            // 如匹配不到 && 或 || 字符则直接返回
-            return response.contains(expection);
-        } else {
-
-            return false;
-        }
-    }
-
-    private static ArrayList<String> expectionConvertToList(String expection) {
-        ArrayList<String> expectionList = new ArrayList<>();
-        Matcher matcher = expectionPattern.matcher(expection);
-        while (matcher.find()) {
-            if (!matcher.group().isEmpty()) {
-                expectionList.add(matcher.group());
+    private boolean getSuccessful(String responseData, String expection) {
+        if (GroovyUtil.isExpression(expection)) {
+            if (GroovyUtil.verifyExpression(expection) && GroovyUtil.verifyBrackets(expection)) {
+                String expression = GroovyUtil.transformExpression(expection);
+                Binding binding = new Binding();
+                binding.setVariable("response", responseData);
+                return (boolean) GroovyUtil.eval(binding, expression);
+            } else {
+                logger.error("预期结果表达式语法有误");
+                return false;
             }
         }
-        return expectionList;
+        return responseData.contains(expection);
     }
-
-    private static boolean exec(ArrayList<String> expectionList) {
-        boolean result = false;
-        for (int i = 0; i < expectionList.size(); i++) {
-            String expection= expectionList.get(i);
-            if (i == 0) {
-                if (isAnd(expection)) {
-                    String[] expections = expection.split("&&|\\|\\|");
-                }
-            }
-        }
-
-    }
-
-    private static boolean isAnd(String expection) {
-        return expection.contains("&&");
-    }
-
-    public static void main(String[] args) {
-        String data = "{\"result\":\"aa\",\"isSuccess\"true}";
-        String expection = "\"isSuccess\"true||\"aa\":\"aa\"&&\"bb\":\"bb\"||\"cc\":\"cc\"";
-        //String expection = "\"isSuccess\"true";
-        //String patternStr = "([^\\&\\&|\\|\\|]*[\\&\\&|\\|\\|]{2}[^\\&\\&|\\|\\|]*)*";
-        //String patternStr = "[^\\&\\&|\\|\\|]*[\\&\\&|\\|\\|]{2}[^\\&\\&|\\|\\|]*";
-        //
-        //Pattern pattern = Pattern.compile(EXPECTION_HEAD_PATTERN_STR);
-        //Matcher matcher = pattern.matcher(expection);
-        //while (matcher.find()) {
-        //    System.out.println("result:[" + matcher.group() + "]");
-        //}
-        ArrayList<String> expectionList = expectionConvertToList(expection);
-        for (String str : expectionList) {
-            System.out.println(str);
-        }
-    }*/
 }
