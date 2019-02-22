@@ -1,168 +1,119 @@
 package org.apache.jmeter.samplers;
 
-import org.apache.jmeter.config.Argument;
-import org.apache.jmeter.config.Arguments;
-import org.apache.jmeter.engine.util.ValueReplacer;
-import org.apache.jmeter.functions.InvalidVariableException;
-import org.apache.jmeter.protocol.java.sampler.AbstractJavaSamplerClient;
-import org.apache.jmeter.protocol.java.sampler.JavaSamplerContext;
-import org.apache.jmeter.samplers.utils.JsonFileUtil;
-import org.apache.jmeter.samplers.utils.JsonPathUtil;
-import org.apache.jmeter.samplers.utils.TelnetUtil;
-import org.apache.jmeter.testelement.TestPlan;
-import org.apache.jmeter.threads.JMeterContextService;
-import org.apache.jmeter.threads.JMeterVariables;
+import org.apache.jmeter.testbeans.TestBean;
 import org.apache.jmeter.util.JMeterUtils;
+import org.slf4j.Logger;
 import pers.kelvin.util.ExceptionUtil;
+import pers.kelvin.util.log.LogUtil;
 
 import java.io.File;
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Properties;
 
 /**
+ * Description
+ *
  * @author KelvinYe
+ * Date     2019-02-22
+ * Time     11:47
  */
-public class DubboTelnetByFile extends AbstractJavaSamplerClient {
-    private String interfaceName;
-    private TelnetUtil telnet;
-    private String connectErrorMessage;
-    private String configFilePath = JMeterUtils.getJMeterHome() + File.separator +
-            "config" + File.separator +
-            "config.json";
+public class DubboTelnetByFile extends AbstractSampler implements TestBean {
 
-    /**
-     * 设置默认传参
-     */
-    @Override
-    public Arguments getDefaultParameters() {
-        Arguments params = new Arguments();
-        params.addArgument("address", "ip:port");
-        params.addArgument("interface", "");
-        params.addArgument("jsonPaths", "");
-        params.addArgument("expection", "\"success\":true");
-        return params;
+    private static final Logger logger = LogUtil.getLogger(DubboTelnetByFile.class);
+
+    public static final String ADDRESS = "address";
+    public static final String INTERFACE_NAME = "interfaceName";
+    public static final String PARAMS = "params";
+    public static final String EXPECTION = "expection";
+    public static final String USE_TEMPLATE = "useTemplate";
+    public static final String INTERFACE_SYSTEM = "interfaceSystem";
+    public static final String TEMPLATE_NAME = "templateName";
+    public static final String TEMPLATE_CONTENT = "templateContent";
+
+    private static String configFilePath = JMeterUtils.getJMeterHome() + File.separator + "config" + File.separator + "config.json";
+
+    public DubboTelnetByFile() {
+        super();
     }
 
-    /**
-     * 测试执行初始化操作
-     */
-    @Override
-    public void setupTest(JavaSamplerContext ctx) {
-        String[] address = ctx.getParameter("address").split(":");
-        String ip = address[0];
-        String port = address.length == 1 ? "0" : address[1];
-        interfaceName = ctx.getParameter("interface", "");
-        try {
-            telnet = new TelnetUtil(ip, port);
-        } catch (IOException | NumberFormatException e) {
-            connectErrorMessage = ExceptionUtil.getStackTrace(e);
-        }
+    public String getAddress() {
+        return this.getPropertyAsString(ADDRESS);
     }
 
-    /**
-     * 测试执行
-     */
+    public void setAddress(String address) {
+        this.setProperty(ADDRESS, address);
+    }
+
+    public String getInterfaceName() {
+        return this.getPropertyAsString(INTERFACE_NAME);
+    }
+
+    public void setInterfaceName(String interfaceName) {
+        this.setProperty(INTERFACE_NAME, interfaceName);
+    }
+
+    public String getParams() {
+        return this.getPropertyAsString(PARAMS);
+    }
+
+    public void setParams(String params) {
+        this.setProperty(PARAMS, params);
+    }
+
+    public String getExpection() {
+        return this.getPropertyAsString(EXPECTION);
+    }
+
+    public void setExpection(String expection) {
+        this.setProperty(EXPECTION, expection);
+    }
+
+    public String getUseTemplate() {
+        return this.getPropertyAsString(USE_TEMPLATE);
+    }
+
+    public void setUseTemplate(String useTemplate) {
+        this.setProperty(USE_TEMPLATE, useTemplate);
+    }
+
+    public String getInterfaceSystem() {
+        return this.getPropertyAsString(INTERFACE_SYSTEM);
+    }
+
+    public void setTemplateSystem(String templateSystem) {
+        this.setProperty(INTERFACE_SYSTEM, templateSystem);
+    }
+
+    public String getTemplateName() {
+        return this.getPropertyAsString(TEMPLATE_NAME);
+    }
+
+    public void setTemplateName(String templateName) {
+        this.setProperty(TEMPLATE_NAME, templateName);
+    }
+
+    public String getTemplateContent() {
+        return this.getPropertyAsString(TEMPLATE_CONTENT);
+    }
+
+    public void setTemplateContent(String templateContent) {
+        this.setProperty(TEMPLATE_CONTENT, templateContent);
+    }
+
+
     @Override
-    public SampleResult runTest(JavaSamplerContext ctx) {
+    public SampleResult sample(Entry entry) {
         SampleResult result = new SampleResult();
         result.setEncodingAndType("UTF-8");
-        String jsonPaths = ctx.getParameter("jsonPaths", "");
-        String expection = ctx.getParameter("expection", "");
-        JsonPathUtil jsonUtil = new JsonPathUtil();
-        boolean isSuccess = false;
-        String dubboResponse = "";
         try {
-            // 根据接口名获取json模版
-            String templateJson = JsonFileUtil.readJsonFile(configFilePath, interfaceName);
-            // 根据jsonPaths更新json
-            String requestJson = jsonUtil.updateJson(jsonPaths, templateJson);
-            // 替换json中的key和function值
-            requestJson = replaceValues(requestJson);
-            result.setSamplerData(requestJson);
-            result.sampleStart();
-            if (telnet != null) {
-                // telnet连接成功则开始invoke报文
-                dubboResponse = telnet.invokeDubbo(interfaceName, requestJson);
-                if (dubboResponse.contains(expection)) {
-                    // 判断结果是否包含期望值
-                    isSuccess = true;
-                }
-            } else {
-                // telnet连接失败输出报错信息
-                dubboResponse = connectErrorMessage;
-            }
+            logger.info("address" + getAddress());
+            logger.info("interfaceName" + getInterfaceName());
+            logger.info("params" + getParams());
+            logger.info("expection" + getExpection());
         } catch (Exception e) {
-            // 异常后，判断是否已开始统计sample时间，没有则开始统计
-            if (result.isStampedAtStart()) {
-                result.sampleStart();
-            }
-            dubboResponse = ExceptionUtil.getStackTrace(e);
+            logger.error(ExceptionUtil.getStackTrace(e));
         } finally {
             result.sampleEnd();
-            result.setSuccessful(isSuccess);
-            result.setResponseData(dubboResponse, "UTF-8");
-            result.setResponseCode(getResponseCode(dubboResponse));
         }
+
         return result;
     }
-
-    /**
-     * 测试执行结束释放操作
-     */
-    @Override
-    public void teardownTest(JavaSamplerContext ctx) {
-        if (telnet != null) {
-            telnet.disconnect();
-        }
-    }
-
-    /**
-     * 将JMeterVariables转换为Map
-     */
-    private Map<String, String> varsToMap(JMeterVariables vars) {
-        Map<String, String> varMap = new HashMap<>();
-        Iterator<Map.Entry<String, Object>> iterator = vars.getIterator();
-        while (iterator.hasNext()) {
-            Map.Entry<String, Object> entry = iterator.next();
-            String key = entry.getKey();
-            Object value = entry.getValue();
-            if (value instanceof String) {
-                varMap.put(key, (String) value);
-            } else {
-                varMap.put(key, value.toString());
-            }
-        }
-        return varMap;
-    }
-
-
-    private TestPlan getTestPlan() {
-        TestPlan testPlan = new TestPlan();
-        Properties props = JMeterUtils.getJMeterProperties();
-        for (String name : props.stringPropertyNames()) {
-            testPlan.addParameter(name, props.getProperty(name));
-        }
-        return testPlan;
-    }
-
-
-    private String replaceValues(String values) throws InvalidVariableException {
-        Argument element = new Argument("replaceValues", values);
-        ValueReplacer replacer = new ValueReplacer(getTestPlan());
-        replacer.addVariables(varsToMap(JMeterContextService.getContext().getVariables()));
-        replacer.replaceValues(element);
-        element.setRunningVersion(true);
-        return element.getValue();
-    }
-
-    private String getResponseCode(String responseData) {
-        if (responseData.contains("\"success\":true")) {
-            return "true";
-        }
-        return "false";
-    }
-
 }
