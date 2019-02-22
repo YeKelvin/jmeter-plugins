@@ -1,23 +1,16 @@
 package org.apache.jmeter.samplers;
 
 import groovy.lang.Binding;
-import groovy.lang.GroovyShell;
-import groovy.util.GroovyScriptEngine;
-import groovy.util.Eval;
 import org.apache.jmeter.config.Arguments;
 import org.apache.jmeter.protocol.java.sampler.AbstractJavaSamplerClient;
 import org.apache.jmeter.protocol.java.sampler.JavaSamplerContext;
 import org.apache.jmeter.samplers.utils.GroovyUtil;
-import org.apache.jmeter.samplers.utils.JsonPathUtil;
 import org.apache.jmeter.samplers.utils.TelnetUtil;
 import org.slf4j.Logger;
 import pers.kelvin.util.ExceptionUtil;
 import pers.kelvin.util.log.LogUtil;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * @author KelvinYe
@@ -87,7 +80,6 @@ public class DubboTelnet extends AbstractJavaSamplerClient {
         result.sampleEnd();
         result.setSuccessful(isSuccess);
         result.setResponseData(dubboResponse, "UTF-8");
-        result.setResponseCode(getResponseCode(dubboResponse));
         return result;
     }
 
@@ -101,20 +93,18 @@ public class DubboTelnet extends AbstractJavaSamplerClient {
         }
     }
 
-    private String getResponseCode(String responseData) {
-        if (responseData.contains("\"success\":true")) {
-            return "true";
-        }
-        return "false";
-    }
-
     private boolean getSuccessful(String responseData, String expection) {
         if (GroovyUtil.isExpression(expection)) {
             if (GroovyUtil.verifyExpression(expection) && GroovyUtil.verifyBrackets(expection)) {
-                String expression = GroovyUtil.transformExpression(expection);
-                Binding binding = new Binding();
-                binding.setVariable("response", responseData);
-                return (boolean) GroovyUtil.eval(binding, expression);
+                try {
+                    String expression = GroovyUtil.transformExpression(expection);
+                    Binding binding = new Binding();
+                    binding.setVariable("response", responseData);
+                    return (boolean) GroovyUtil.eval(binding, expression);
+                } catch (Exception e) {
+                    logger.error(ExceptionUtil.getStackTrace(e));
+                    return false;
+                }
             } else {
                 logger.error("预期结果表达式语法有误");
                 return false;
