@@ -2,7 +2,6 @@ package org.apache.jmeter.visualizers.gui;
 
 
 import org.apache.jmeter.testelement.TestElement;
-import org.apache.jmeter.visualizers.ExtentReportCollector;
 import org.apache.jmeter.visualizers.ReportCollector;
 
 import javax.swing.*;
@@ -48,15 +47,15 @@ public class LocalHtmlReportGui extends AbstractListenerGui {
     @Override
     public void configure(TestElement el) {
         super.configure(el);
-        reportNameTextField.setText(el.getPropertyAsString(ExtentReportCollector.REPORTNAME));
-        isAppendComboBox.setSelectedItem(el.getPropertyAsString(ExtentReportCollector.ISAPPEND));
+        reportNameTextField.setText(el.getPropertyAsString(ReportCollector.REPORT_NAME));
+        isAppendComboBox.setSelectedItem(el.getPropertyAsString(ReportCollector.IS_APPEND));
     }
 
     @Override
     public void modifyTestElement(TestElement el) {
         super.configureTestElement(el);
-        el.setProperty(ExtentReportCollector.REPORTNAME, reportNameTextField.getText());
-        el.setProperty(ExtentReportCollector.ISAPPEND, (String) isAppendComboBox.getSelectedItem());
+        el.setProperty(ReportCollector.REPORT_NAME, reportNameTextField.getText());
+        el.setProperty(ReportCollector.IS_APPEND, (String) isAppendComboBox.getSelectedItem());
     }
 
     @Override
@@ -68,8 +67,8 @@ public class LocalHtmlReportGui extends AbstractListenerGui {
 
     private JPanel createReportNamePanel() {
         reportNameTextField = new JTextField(10);
-        reportNameTextField.setName(ExtentReportCollector.REPORTNAME);
-        JLabel label = new JLabel(ExtentReportCollector.REPORTNAME);
+        reportNameTextField.setName(ReportCollector.REPORT_NAME);
+        JLabel label = new JLabel(ReportCollector.REPORT_NAME);
         label.setLabelFor(reportNameTextField);
         JPanel jPanel = new JPanel(new BorderLayout(5, 0));
         jPanel.add(label, BorderLayout.WEST);
@@ -79,10 +78,10 @@ public class LocalHtmlReportGui extends AbstractListenerGui {
 
     private JPanel createIsAppendPanel() {
         isAppendComboBox = new JComboBox<>();
-        isAppendComboBox.setName(ExtentReportCollector.ISAPPEND);
+        isAppendComboBox.setName(ReportCollector.IS_APPEND);
         isAppendComboBox.addItem("true");
         isAppendComboBox.addItem("false");
-        JLabel label = new JLabel(ExtentReportCollector.ISAPPEND);
+        JLabel label = new JLabel(ReportCollector.IS_APPEND);
         label.setLabelFor(isAppendComboBox);
         JPanel jPanel = new JPanel(new BorderLayout(5, 0));
         jPanel.add(label, BorderLayout.WEST);
