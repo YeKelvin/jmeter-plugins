@@ -3,6 +3,7 @@ package org.apache.jmeter.samplers.utils;
 
 import org.slf4j.Logger;
 import pers.kelvin.util.Config;
+import pers.kelvin.util.exception.ServiceException;
 import pers.kelvin.util.log.LogUtil;
 
 import java.io.*;
@@ -24,9 +25,12 @@ public class JsonFileUtil {
      */
     public static String readJsonFile(String configFilePath, String interfaceName) throws IOException {
         // 获取配置文件中的json模版存放目录
-        String rootDir = Config.get(configFilePath).get("templateJsonDir");
+        String templateJsonDir = Config.get(configFilePath).get("templateJsonDir");
         // 根据入參interfaceName去templateJsonDir递归搜索获取绝对路径
-        String interfacePath = JsonFileUtil.findInterfacePathByKeywords(rootDir, interfaceName);
+        String interfacePath = JsonFileUtil.findInterfacePathByKeywords(templateJsonDir, interfaceName);
+        if (interfacePath == null) {
+            throw new ServiceException(String.format("%s 模版在 %s目录搜索路径失败", interfaceName, templateJsonDir));
+        }
         // 根据绝对路径获取json模版内容
         return JsonFileUtil.readJsonFileToString(interfacePath);
     }
@@ -57,21 +61,28 @@ public class JsonFileUtil {
                 return file.getAbsolutePath();
             }
         }
-        return String.format("%s%s...%s%s.json template file not found.", rootDir, File.separator, File.separator, interfaceName);
+        logger.error(String.format(
+                "%s%s...%s%s.json template file not found.", rootDir, File.separator, File.separator, interfaceName));
+        // 搜索不到路径时返回null
+        return null;
     }
 
 
     public static String readJsonFileToString(String filePath) throws IOException {
-        String content = "";
+        StringBuilder content = new StringBuilder();
         File file = new File(filePath);
-        InputStreamReader reader = new InputStreamReader(new FileInputStream(file), Charset.forName("UTF-8"));
-        BufferedReader bufferedReader = new BufferedReader(reader);
-        String lineTxt;
-        while ((lineTxt = bufferedReader.readLine()) != null) {
-            content += lineTxt;
+        if (file.exists()) {
+            InputStreamReader reader = new InputStreamReader(new FileInputStream(file), Charset.forName("UTF-8"));
+            BufferedReader bufferedReader = new BufferedReader(reader);
+            String lineTxt;
+            while ((lineTxt = bufferedReader.readLine()) != null) {
+                content.append(lineTxt);
+            }
+            reader.close();
+            return content.toString();
         }
-        reader.close();
-        return content;
+        // 文件不存在时返回null
+        return null;
     }
 
 }

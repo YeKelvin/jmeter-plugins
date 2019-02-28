@@ -3,7 +3,7 @@ package org.apache.jmeter.samplers;
 import org.apache.jmeter.config.Arguments;
 import org.apache.jmeter.protocol.java.sampler.AbstractJavaSamplerClient;
 import org.apache.jmeter.protocol.java.sampler.JavaSamplerContext;
-import pers.kelvin.util.ExceptionUtil;
+import pers.kelvin.util.exception.ExceptionUtil;
 import pers.kelvin.util.log.JLog;
 
 public class DubboZK extends AbstractJavaSamplerClient {

@@ -1,4 +1,4 @@
-package pers.kelvin.util;
+package pers.kelvin.util.exception;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;

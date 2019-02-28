@@ -7,7 +7,7 @@ import org.apache.jmeter.protocol.java.sampler.JavaSamplerContext;
 import org.apache.jmeter.samplers.utils.GroovyUtil;
 import org.apache.jmeter.samplers.utils.TelnetUtil;
 import org.slf4j.Logger;
-import pers.kelvin.util.ExceptionUtil;
+import pers.kelvin.util.exception.ExceptionUtil;
 import pers.kelvin.util.log.LogUtil;
 
 import java.io.IOException;

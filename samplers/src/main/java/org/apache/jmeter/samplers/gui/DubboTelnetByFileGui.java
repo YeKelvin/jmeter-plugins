@@ -3,12 +3,15 @@ package org.apache.jmeter.samplers.gui;
 import org.apache.jmeter.gui.util.JSyntaxTextArea;
 import org.apache.jmeter.gui.util.JTextScrollPane;
 import org.apache.jmeter.samplers.DubboTelnetByFile;
+import org.apache.jmeter.samplers.utils.JsonFileUtil;
 import org.apache.jmeter.testelement.TestElement;
 import org.slf4j.Logger;
+import pers.kelvin.util.exception.ExceptionUtil;
 import pers.kelvin.util.log.LogUtil;
 
 import javax.swing.*;
 import java.awt.*;
+import java.io.IOException;
 
 /**
  * Description
@@ -26,7 +29,6 @@ public class DubboTelnetByFileGui extends AbstractSamplerGui {
     private JTextField expectionTextField;
     private JComboBox<String> useTemplateComboBox;
     private JTextField interfaceSystemTextField;
-    private JTextField templateNameTextField;
     private JSyntaxTextArea templateContentTextArea;
 
     public DubboTelnetByFileGui() {
@@ -46,7 +48,6 @@ public class DubboTelnetByFileGui extends AbstractSamplerGui {
         box.add(getExpectionPanel());
         box.add(getUseTemplatePanel());
         box.add(getInterfaceSystemPanel());
-        box.add(getTemplateNamePanel());
         box.add(getTemplateContentPanel());
 
         add(box, BorderLayout.NORTH);
@@ -78,22 +79,21 @@ public class DubboTelnetByFileGui extends AbstractSamplerGui {
         element.setProperty(DubboTelnetByFile.EXPECTION, expectionTextField.getText());
         element.setProperty(DubboTelnetByFile.USE_TEMPLATE, (String) useTemplateComboBox.getSelectedItem());
         element.setProperty(DubboTelnetByFile.INTERFACE_SYSTEM, interfaceSystemTextField.getText());
-        element.setProperty(DubboTelnetByFile.TEMPLATE_NAME, templateNameTextField.getText());
-        element.setProperty(DubboTelnetByFile.TEMPLATE_CONTENT, templateContentTextArea.getText());
     }
 
     @Override
-    public void configure(TestElement element) {
-        super.configure(element);
-        addressTextField.setText(element.getPropertyAsString(DubboTelnetByFile.ADDRESS));
-        interfaceNameTextField.setText(element.getPropertyAsString(DubboTelnetByFile.INTERFACE_NAME));
-        paramsTextArea.setInitialText(element.getPropertyAsString(DubboTelnetByFile.PARAMS));
+    public void configure(TestElement el) {
+        super.configure(el);
+        addressTextField.setText(el.getPropertyAsString(DubboTelnetByFile.ADDRESS));
+        interfaceNameTextField.setText(el.getPropertyAsString(DubboTelnetByFile.INTERFACE_NAME));
+        paramsTextArea.setInitialText(el.getPropertyAsString(DubboTelnetByFile.PARAMS));
         paramsTextArea.setCaretPosition(0);
-        expectionTextField.setText(element.getPropertyAsString(DubboTelnetByFile.EXPECTION));
-        useTemplateComboBox.setSelectedItem(element.getPropertyAsString(DubboTelnetByFile.USE_TEMPLATE));
-        interfaceSystemTextField.setText(element.getPropertyAsString(DubboTelnetByFile.INTERFACE_SYSTEM));
-        templateNameTextField.setText(element.getPropertyAsString(DubboTelnetByFile.TEMPLATE_NAME));
-        templateContentTextArea.setInitialText(element.getPropertyAsString(DubboTelnetByFile.TEMPLATE_CONTENT));
+        expectionTextField.setText(el.getPropertyAsString(DubboTelnetByFile.EXPECTION));
+        useTemplateComboBox.setSelectedItem(el.getPropertyAsString(DubboTelnetByFile.USE_TEMPLATE));
+        interfaceSystemTextField.setText(el.getPropertyAsString(DubboTelnetByFile.INTERFACE_SYSTEM));
+        templateContentTextArea.setInitialText(getTemplateContent(
+                el.getPropertyAsBoolean(DubboTelnetByFile.USE_TEMPLATE, false),
+                el.getPropertyAsString(DubboTelnetByFile.INTERFACE_NAME)));
         templateContentTextArea.setCaretPosition(0);
     }
 
@@ -106,7 +106,6 @@ public class DubboTelnetByFileGui extends AbstractSamplerGui {
         expectionTextField.setText("");
         useTemplateComboBox.setSelectedItem("");
         interfaceSystemTextField.setText("");
-        templateNameTextField.setText("");
         templateContentTextArea.setInitialText("");
     }
 
@@ -133,7 +132,7 @@ public class DubboTelnetByFileGui extends AbstractSamplerGui {
     }
 
     private JPanel getParamsPanel() {
-        paramsTextArea = JSyntaxTextArea.getInstance(10, 20);
+        paramsTextArea = JSyntaxTextArea.getInstance(8, 20);
         JLabel label = new JLabel(DubboTelnetByFile.PARAMS);
         label.setLabelFor(paramsTextArea);
         JPanel panel = new JPanel(new BorderLayout());
@@ -177,24 +176,25 @@ public class DubboTelnetByFileGui extends AbstractSamplerGui {
         return panel;
     }
 
-    private JPanel getTemplateNamePanel() {
-        templateNameTextField = new JTextField(10);
-        templateNameTextField.setName(DubboTelnetByFile.TEMPLATE_NAME);
-        JLabel label = new JLabel(DubboTelnetByFile.TEMPLATE_NAME);
-        label.setLabelFor(templateNameTextField);
-        JPanel panel = new JPanel(new BorderLayout(5, 0));
-        panel.add(label, BorderLayout.WEST);
-        panel.add(templateNameTextField, BorderLayout.CENTER);
-        return panel;
-    }
-
     private JPanel getTemplateContentPanel() {
-        templateContentTextArea = JSyntaxTextArea.getInstance(10, 20);
+        templateContentTextArea = JSyntaxTextArea.getInstance(8, 20);
         JLabel label = new JLabel(DubboTelnetByFile.TEMPLATE_CONTENT);
         label.setLabelFor(templateContentTextArea);
         JPanel panel = new JPanel(new BorderLayout());
         panel.add(label, BorderLayout.NORTH);
         panel.add(JTextScrollPane.getInstance(templateContentTextArea), BorderLayout.CENTER);
         return panel;
+    }
+
+    private String getTemplateContent(boolean useTemplate, String interfaceName) {
+        if (useTemplate) {
+            try {
+                return JsonFileUtil.readJsonFile(DubboTelnetByFile.CONFIG_FILE_PATH, interfaceName);
+            } catch (IOException e) {
+                logger.warn(ExceptionUtil.getStackTrace(e));
+            }
+            return "";
+        }
+        return "";
     }
 }

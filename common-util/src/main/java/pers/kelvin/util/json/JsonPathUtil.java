@@ -10,7 +10,10 @@ import com.jayway.jsonpath.spi.json.JsonProvider;
 import com.jayway.jsonpath.spi.mapper.GsonMappingProvider;
 import com.jayway.jsonpath.spi.mapper.MappingProvider;
 
+import java.lang.reflect.Array;
+import java.util.Arrays;
 import java.util.EnumSet;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -31,26 +34,11 @@ public class JsonPathUtil {
      */
     public static Configuration getJsonPathConfigWithGson() {
         if (config == null) {
-            Configuration.setDefaults(new Configuration.Defaults() {
-                private final JsonProvider jsonProvider = new GsonJsonProvider(gson);
-                private final MappingProvider mappingProvider = new GsonMappingProvider(gson);
-
-                @Override
-                public JsonProvider jsonProvider() {
-                    return jsonProvider;
-                }
-
-                @Override
-                public MappingProvider mappingProvider() {
-                    return mappingProvider;
-                }
-
-                @Override
-                public Set<Option> options() {
-                    return EnumSet.noneOf(Option.class);
-                }
-            });
-            config = Configuration.defaultConfiguration();
+            config = Configuration.builder()
+                    .jsonProvider(new GsonJsonProvider(gson))
+                    .mappingProvider(new GsonMappingProvider(gson))
+                    .options(EnumSet.noneOf(Option.class))
+                    .build();
         }
         return config;
     }
@@ -60,5 +48,21 @@ public class JsonPathUtil {
      */
     public static DocumentContext jsonParse(String json) {
         return JsonPath.using(getJsonPathConfigWithGson()).parse(json);
+    }
+
+    /**
+     * 获取json报文所有可遍历的JsonPath地址
+     */
+    public static List<String> getJsonPathList(String json) {
+        Configuration conf = Configuration.builder().options(Option.AS_PATH_LIST).build();
+        return JsonPath.using(conf).parse(json).read("$..*");
+    }
+
+    public static void main(String[] args) {
+        String json = "[{\"customerType\":\"ORG\",\"loginName\":\"${mobile}\"}]";
+        List<String> jsonPathList = getJsonPathList(json);
+        for (String jsonPath : jsonPathList) {
+            System.out.println(jsonPath);
+        }
     }
 }
