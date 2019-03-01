@@ -61,8 +61,10 @@ public class JsonPathUtil {
     public static void main(String[] args) {
         String json = "[{\"customerType\":\"ORG\",\"loginName\":\"${mobile}\"}]";
         List<String> jsonPathList = getJsonPathList(json);
+        DocumentContext ctx = JsonPathUtil.jsonParse(json);
         for (String jsonPath : jsonPathList) {
-            System.out.println(jsonPath);
+            String va = ctx.read(jsonPath);
+            System.out.println(va);
         }
     }
 }

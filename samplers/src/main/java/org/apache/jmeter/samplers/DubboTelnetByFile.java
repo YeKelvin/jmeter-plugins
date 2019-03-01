@@ -1,15 +1,19 @@
 package org.apache.jmeter.samplers;
 
+import com.google.gson.JsonObject;
+import com.google.gson.reflect.TypeToken;
 import com.jayway.jsonpath.DocumentContext;
 import groovy.lang.Binding;
-import org.apache.jmeter.config.Arguments;
-import org.apache.jmeter.config.ConfigTestElement;
+import org.apache.jmeter.engine.util.ValueReplacer;
+import org.apache.jmeter.functions.InvalidVariableException;
 import org.apache.jmeter.samplers.utils.GroovyUtil;
 import org.apache.jmeter.samplers.utils.JsonFileUtil;
 import org.apache.jmeter.samplers.utils.TelnetUtil;
-import org.apache.jmeter.testelement.TestElement;
+import org.apache.jmeter.threads.JMeterContextService;
+import org.apache.jmeter.threads.JMeterVariables;
 import org.apache.jmeter.util.JMeterUtils;
 import org.slf4j.Logger;
+import pers.kelvin.util.StringUtil;
 import pers.kelvin.util.exception.ExceptionUtil;
 import pers.kelvin.util.exception.ServiceException;
 import pers.kelvin.util.json.JsonPathUtil;
@@ -18,9 +22,11 @@ import pers.kelvin.util.log.LogUtil;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 
 /**
  * Description
@@ -36,6 +42,7 @@ public class DubboTelnetByFile extends AbstractSampler {
     public static final String ADDRESS = "address";
     public static final String INTERFACE_NAME = "interfaceName";
     public static final String PARAMS = "params";
+    public static final String JSON_PATHS = "jsonPaths";
     public static final String EXPECTION = "expection";
     public static final String USE_TEMPLATE = "useTemplate";
     public static final String INTERFACE_SYSTEM = "interfaceSystem";
@@ -52,7 +59,9 @@ public class DubboTelnetByFile extends AbstractSampler {
         boolean isSuccess = false;
         String responseData = "";
         try {
-            String requestData = transformParams(getParams(), getUseTemplate());
+            // 入参数据验证
+            verifyData();
+            String requestData = getRequestData(getParams(), getUseTemplate());
             result.setSamplerData(requestData);
             result.sampleStart();
             responseData = invokeMethod(getAddress(), getInterfaceName(), requestData);
@@ -72,40 +81,71 @@ public class DubboTelnetByFile extends AbstractSampler {
         return result;
     }
 
+    private String getRequestData(String params, boolean useTemplate) throws IOException {
+        // 用户设置使用模版且params不为空时才取json模版
+        if (useTemplate) {
+            String requestData = transformParams(params);
+            requestData = transformDataByJsonPaths(requestData);
+            return requestData;
+        }
+        // 不使用json模版时原值返回
+        return params;
+    }
+
+    private String transformDataByJsonPaths(String data) {
+        String jsonPaths = getJsonPaths();
+        if (StringUtil.isNotBlank(jsonPaths)) {
+            try {
+                Type hashMapType = new TypeToken<HashMap<String, Object>>() {
+                }.getType();
+                HashMap<String, Object> jsonPathMap = JsonUtil.getGsonInstance().fromJson(jsonPaths, hashMapType);
+                DocumentContext ctx = JsonPathUtil.jsonParse(toArrayJson(data));
+                for (Map.Entry<String, Object> entry : jsonPathMap.entrySet()) {
+                    ctx.set(entry.getKey(), entry.getValue());
+                }
+                data = ctx.jsonString();
+                data = data.substring(1, data.length() - 1);
+            } catch (Exception e) {
+                logger.error("jsonPaths格式必须为 {\"jsonPath\",\"newValue\"...}");
+            }
+        }
+        // jsonPaths为空时原值返回
+        return data;
+    }
+
     /**
      * 参数化${}占位符
      *
-     * @param params      json报文
-     * @param useTemplate 是否使用json模版
+     * @param params json报文
      * @return 参数化替换后的json报文
      */
-    private String transformParams(String params, boolean useTemplate) throws IOException {
-        if (useTemplate) {
-            // 根据接口名获取json模版
-            String templateJson = JsonFileUtil.readJsonFile(CONFIG_FILE_PATH, getInterfaceName());
-            if (templateJson == null) {
-                throw new ServiceException(String.format("%s json模版获取失败", getInterfaceName()));
-            }
+    private String transformParams(String params) throws IOException {
+        String requestData = "";
+        // 根据接口名获取json模版
+        String templateJson = JsonFileUtil.readJsonFile(CONFIG_FILE_PATH, getInterfaceName());
+        if (templateJson == null) {
+            throw new ServiceException(String.format("%s json模版获取失败", getInterfaceName()));
+        }
+        if (StringUtil.isNotBlank(params)) {
             // 根据params转换为如要替换json模版的jsonPath列表
             List<String> jsonPathList = JsonPathUtil.getJsonPathList(toArrayJson(params));
-            System.out.println(JsonUtil.toJson(jsonPathList));
+            // 解析json
             DocumentContext paramsDCtx = JsonPathUtil.jsonParse(toArrayJson(params));
             DocumentContext templateJsonDCtx = JsonPathUtil.jsonParse(toArrayJson(templateJson));
+            // 根据params替换json模版
             for (String jsonPath : jsonPathList) {
                 Object newValue = paramsDCtx.read(jsonPath);
-                System.out.println(JsonUtil.toJson(newValue));
-                if (newValue instanceof HashMap) {
-                    System.out.println("continue - " + JsonUtil.toJson(newValue));
+                if (newValue instanceof JsonObject) {
                     continue;
                 }
                 templateJsonDCtx.set(jsonPath, newValue);
             }
-            String requestData = templateJsonDCtx.jsonString();
-            requestData = requestData.substring(1, requestData.length() - 2);
-            return replaceValue(requestData);
+            requestData = templateJsonDCtx.jsonString();
+            requestData = requestData.substring(1, requestData.length() - 1);
+        } else {
+            requestData = templateJson;
         }
-        // 不使用json模版时原值返回
-        return params;
+        return replaceValue(requestData);
     }
 
 
@@ -116,15 +156,42 @@ public class DubboTelnetByFile extends AbstractSampler {
         return "[" + json + "]";
     }
 
+    private void putAllProps(Map<String, String> map) {
+        Properties props = JMeterUtils.getJMeterProperties();
+        for (String keyName : props.stringPropertyNames()) {
+            map.put(keyName, props.getProperty(keyName));
+        }
+    }
+
+    private void putAllVars(Map<String, String> map) {
+        JMeterVariables vars = JMeterContextService.getContext().getVariables();
+        for (Map.Entry<String, Object> var : vars.entrySet()) {
+            map.put(var.getKey(), String.valueOf(var.getValue()));
+        }
+    }
+
+    private Map<String, String> getUserVariables() {
+        Map<String, String> map = new HashMap<>();
+        putAllProps(map);
+        putAllVars(map);
+        return map;
+    }
+
     /**
      * 控制TestElement的runningVersion，替换为${}占位符真值
      */
     private String replaceValue(String value) {
         setProperty(REPLACE_VALUE, value);
-        setRunningVersion(true);
-        String afterReplaceValue = getPropertyAsString(REPLACE_VALUE);
-        removeProperty(REPLACE_VALUE);
-        return afterReplaceValue;
+        ValueReplacer replacer = new ValueReplacer();
+        replacer.setUserDefinedVariables(getUserVariables());
+        try {
+            replacer.replaceValues(this);
+            setRunningVersion(true);
+            return getPropertyAsString(REPLACE_VALUE);
+        } catch (InvalidVariableException e) {
+            logger.error(ExceptionUtil.getStackTrace(e));
+        }
+        return value;
     }
 
     /**
@@ -141,7 +208,9 @@ public class DubboTelnetByFile extends AbstractSampler {
         String port = addressArray.length == 1 ? "0000" : addressArray[1];
 
         TelnetUtil telnet = new TelnetUtil(ip, port);
-        return telnet.invokeDubbo(interfaceName, requestData);
+        String response = telnet.invokeDubbo(interfaceName, requestData);
+        telnet.disconnect();
+        return response;
     }
 
     /**
@@ -173,6 +242,21 @@ public class DubboTelnetByFile extends AbstractSampler {
         return responseData.contains(expection);
     }
 
+    private void verifyData() {
+        if (StringUtil.isBlank(getAddress())) {
+            throw new ServiceException("address 服务地址不能为空");
+        }
+        if (StringUtil.isBlank(getInterfaceName())) {
+            throw new ServiceException("interfaceName 接口名不能为空");
+        }
+        if (!getUseTemplate() && StringUtil.isBlank(getParams())) {
+            throw new ServiceException("不使用json模版时，params 参数不能为空");
+        }
+        if (StringUtil.isBlank(getExpection())) {
+            throw new ServiceException("expection 预期结果不能为空");
+        }
+    }
+
     private String getAddress() {
         return getPropertyAsString(ADDRESS);
     }
@@ -183,6 +267,10 @@ public class DubboTelnetByFile extends AbstractSampler {
 
     private String getParams() {
         return getPropertyAsString(PARAMS);
+    }
+
+    private String getJsonPaths() {
+        return getPropertyAsString(JSON_PATHS);
     }
 
     private String getExpection() {
