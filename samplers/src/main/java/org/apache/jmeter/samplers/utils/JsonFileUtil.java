@@ -29,7 +29,7 @@ public class JsonFileUtil {
         // 根据入參interfaceName去templateJsonDir递归搜索获取绝对路径
         String interfacePath = JsonFileUtil.findInterfacePathByKeywords(templateJsonDir, interfaceName);
         if (interfacePath == null) {
-            throw new ServiceException(String.format("%s 模版在 %s目录搜索路径失败", interfaceName, templateJsonDir));
+            throw new ServiceException(String.format("\"%s\" json模版不存在", interfaceName));
         }
         // 根据绝对路径获取json模版内容
         return JsonFileUtil.readJsonFileToString(interfacePath);
@@ -61,7 +61,7 @@ public class JsonFileUtil {
                 return file.getAbsolutePath();
             }
         }
-        logger.error(String.format(
+        logger.warn(String.format(
                 "%s%s...%s%s.json template file not found.", rootDir, File.separator, File.separator, interfaceName));
         // 搜索不到路径时返回null
         return null;

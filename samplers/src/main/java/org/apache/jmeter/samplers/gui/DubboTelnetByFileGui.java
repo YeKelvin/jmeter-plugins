@@ -8,6 +8,7 @@ import org.apache.jmeter.samplers.utils.JsonFileUtil;
 import org.apache.jmeter.testelement.TestElement;
 import org.slf4j.Logger;
 import pers.kelvin.util.StringUtil;
+import pers.kelvin.util.exception.ServiceException;
 import pers.kelvin.util.log.LogUtil;
 
 import javax.swing.*;
@@ -220,7 +221,7 @@ public class DubboTelnetByFileGui extends AbstractSamplerGui {
         if (useTemplate && StringUtil.isNotBlank(interfaceName)) {
             try {
                 return JsonFileUtil.readJsonFile(DubboTelnetByFile.CONFIG_FILE_PATH, interfaceName);
-            } catch (IOException e) {
+            } catch (IOException | ServiceException e) {
                 return e.getMessage();
             }
         }
