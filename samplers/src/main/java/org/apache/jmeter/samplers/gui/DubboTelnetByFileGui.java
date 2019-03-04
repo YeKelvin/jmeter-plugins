@@ -2,6 +2,7 @@ package org.apache.jmeter.samplers.gui;
 
 import org.apache.jmeter.gui.util.JSyntaxTextArea;
 import org.apache.jmeter.gui.util.JTextScrollPane;
+import org.apache.jmeter.gui.util.VerticalPanel;
 import org.apache.jmeter.samplers.DubboTelnetByFile;
 import org.apache.jmeter.samplers.utils.JsonFileUtil;
 import org.apache.jmeter.testelement.TestElement;
@@ -33,26 +34,36 @@ public class DubboTelnetByFileGui extends AbstractSamplerGui {
     private JSyntaxTextArea templateContentTextArea;
 
     public DubboTelnetByFileGui() {
-        super();
         init();
     }
 
     private void init() {
-        setLayout(new BorderLayout());
+        setLayout(new BorderLayout(0, 10));
         setBorder(makeBorder());
+        add(makeTitlePanel(), BorderLayout.NORTH);
 
-        Box box = Box.createVerticalBox();
-        box.add(makeTitlePanel());
-        box.add(getAddressPanel());
-        box.add(getInterfaceNamePanel());
-        box.add(getParamsPanel());
-        box.add(getJsonPathPanel());
-        box.add(getExpectionPanel());
-        box.add(getUseTemplatePanel());
-        box.add(getInterfaceSystemPanel());
-        box.add(getTemplateContentPanel());
+        VerticalPanel mainPanel = new VerticalPanel();
 
-        add(box, BorderLayout.NORTH);
+        VerticalPanel interfacePanel = new VerticalPanel();
+        interfacePanel.setBorder(BorderFactory.createTitledBorder(
+                BorderFactory.createEtchedBorder(), "Dubbo Interface Info"));
+        interfacePanel.add(getAddressPanel());
+        interfacePanel.add(getInterfaceNamePanel());
+        interfacePanel.add(getParamsPanel());
+        interfacePanel.add(getJsonPathPanel());
+        interfacePanel.add(getExpectionPanel());
+
+        VerticalPanel templatePanel = new VerticalPanel();
+        templatePanel.setBorder(BorderFactory.createTitledBorder(
+                BorderFactory.createEtchedBorder(), "Json Template Info"));
+        templatePanel.add(getUseTemplatePanel());
+        templatePanel.add(getInterfaceSystemPanel());
+        templatePanel.add(getTemplateContentPanel());
+
+        mainPanel.add(interfacePanel);
+        mainPanel.add(templatePanel);
+
+        add(mainPanel, BorderLayout.CENTER);
     }
 
     @Override
@@ -118,7 +129,7 @@ public class DubboTelnetByFileGui extends AbstractSamplerGui {
     private JPanel getAddressPanel() {
         addressTextField = new JTextField(10);
         addressTextField.setName(DubboTelnetByFile.ADDRESS);
-        JLabel label = new JLabel(DubboTelnetByFile.ADDRESS);
+        JLabel label = new JLabel(DubboTelnetByFile.ADDRESS + ":");
         label.setLabelFor(addressTextField);
         JPanel panel = new JPanel(new BorderLayout(5, 0));
         panel.add(label, BorderLayout.WEST);
@@ -129,7 +140,7 @@ public class DubboTelnetByFileGui extends AbstractSamplerGui {
     private JPanel getInterfaceNamePanel() {
         interfaceNameTextField = new JTextField(10);
         interfaceNameTextField.setName(DubboTelnetByFile.INTERFACE_NAME);
-        JLabel label = new JLabel(DubboTelnetByFile.INTERFACE_NAME);
+        JLabel label = new JLabel(DubboTelnetByFile.INTERFACE_NAME + ":");
         label.setLabelFor(interfaceNameTextField);
         JPanel panel = new JPanel(new BorderLayout(5, 0));
         panel.add(label, BorderLayout.WEST);
@@ -139,7 +150,7 @@ public class DubboTelnetByFileGui extends AbstractSamplerGui {
 
     private JPanel getParamsPanel() {
         paramsTextArea = JSyntaxTextArea.getInstance(4, 20);
-        JLabel label = new JLabel(DubboTelnetByFile.PARAMS);
+        JLabel label = new JLabel(DubboTelnetByFile.PARAMS + ":");
         label.setLabelFor(paramsTextArea);
         JPanel panel = new JPanel(new BorderLayout());
         panel.add(label, BorderLayout.NORTH);
@@ -149,7 +160,7 @@ public class DubboTelnetByFileGui extends AbstractSamplerGui {
 
     private JPanel getJsonPathPanel() {
         jsonPathsTextArea = JSyntaxTextArea.getInstance(4, 20);
-        JLabel label = new JLabel(DubboTelnetByFile.JSON_PATHS);
+        JLabel label = new JLabel(DubboTelnetByFile.JSON_PATHS + ":");
         label.setLabelFor(jsonPathsTextArea);
         JPanel panel = new JPanel(new BorderLayout());
         panel.add(label, BorderLayout.NORTH);
@@ -160,7 +171,7 @@ public class DubboTelnetByFileGui extends AbstractSamplerGui {
     private JPanel getExpectionPanel() {
         expectionTextField = new JTextField(10);
         expectionTextField.setName(DubboTelnetByFile.EXPECTION);
-        JLabel label = new JLabel(DubboTelnetByFile.EXPECTION);
+        JLabel label = new JLabel(DubboTelnetByFile.EXPECTION + ":");
         label.setLabelFor(expectionTextField);
         JPanel panel = new JPanel(new BorderLayout(5, 0));
         panel.add(label, BorderLayout.WEST);
@@ -173,7 +184,7 @@ public class DubboTelnetByFileGui extends AbstractSamplerGui {
         useTemplateComboBox.setName(DubboTelnetByFile.USE_TEMPLATE);
         useTemplateComboBox.addItem("true");
         useTemplateComboBox.addItem("false");
-        JLabel label = new JLabel(DubboTelnetByFile.USE_TEMPLATE);
+        JLabel label = new JLabel(DubboTelnetByFile.USE_TEMPLATE + ":");
         label.setLabelFor(useTemplateComboBox);
         JPanel jPanel = new JPanel(new BorderLayout(5, 0));
         jPanel.add(label, BorderLayout.WEST);
@@ -184,7 +195,7 @@ public class DubboTelnetByFileGui extends AbstractSamplerGui {
     private JPanel getInterfaceSystemPanel() {
         interfaceSystemTextField = new JTextField(10);
         interfaceSystemTextField.setName(DubboTelnetByFile.INTERFACE_SYSTEM);
-        JLabel label = new JLabel(DubboTelnetByFile.INTERFACE_SYSTEM);
+        JLabel label = new JLabel(DubboTelnetByFile.INTERFACE_SYSTEM + ":");
         label.setLabelFor(interfaceSystemTextField);
         JPanel panel = new JPanel(new BorderLayout(5, 0));
         panel.add(label, BorderLayout.WEST);
@@ -194,7 +205,7 @@ public class DubboTelnetByFileGui extends AbstractSamplerGui {
 
     private JPanel getTemplateContentPanel() {
         templateContentTextArea = JSyntaxTextArea.getInstance(8, 20);
-        JLabel label = new JLabel(DubboTelnetByFile.TEMPLATE_CONTENT);
+        JLabel label = new JLabel(DubboTelnetByFile.TEMPLATE_CONTENT + ":");
         label.setLabelFor(templateContentTextArea);
         JPanel panel = new JPanel(new BorderLayout());
         panel.add(label, BorderLayout.NORTH);
@@ -215,4 +226,5 @@ public class DubboTelnetByFileGui extends AbstractSamplerGui {
         }
         return "";
     }
+
 }
