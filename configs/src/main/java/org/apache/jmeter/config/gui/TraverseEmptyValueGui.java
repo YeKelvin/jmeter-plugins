@@ -3,6 +3,7 @@ package org.apache.jmeter.config.gui;
 import org.apache.jmeter.config.TraverseEmptyValue;
 import org.apache.jmeter.gui.util.JSyntaxTextArea;
 import org.apache.jmeter.gui.util.JTextScrollPane;
+import org.apache.jmeter.gui.util.VerticalPanel;
 import org.apache.jmeter.testelement.TestElement;
 
 import javax.swing.*;
@@ -14,23 +15,34 @@ import java.awt.*;
  * Time: 11:10
  */
 public class TraverseEmptyValueGui extends AbstractConfigGui {
+    private static final int H_GAP = 5;
+    private static final int V_GAP = 10;
+    private static final int LABEL_WIDTH = 130;
+    private static final int LABEL_HEIGHT = 10;
+
     private JSyntaxTextArea patamsTextArea;
     private JSyntaxTextArea emptyCheckExpectionTextArea;
 
     public TraverseEmptyValueGui() {
-        super();
         init();
     }
 
     private void init() {
         setLayout(new BorderLayout());
         setBorder(makeBorder());
+        add(makeTitlePanel(), BorderLayout.NORTH);
 
-        Box box = Box.createVerticalBox();
-        box.add(makeTitlePanel());
-        box.add(createPatamsPanel());
-        box.add(createEmptyCheckExpectionPanel());
-        add(box, BorderLayout.NORTH);
+        VerticalPanel configPanel = new VerticalPanel();
+        configPanel.setBorder(BorderFactory.createTitledBorder(
+                BorderFactory.createEtchedBorder(), "Configure the Data Source"));
+        configPanel.add(getPatamsPanel());
+        configPanel.add(getEmptyCheckExpectionPanel());
+
+        VerticalPanel mainPanel = new VerticalPanel();
+        mainPanel.add(configPanel);
+        mainPanel.add(getNotePanel());
+
+        add(mainPanel, BorderLayout.CENTER);
     }
 
     @Override
@@ -81,41 +93,55 @@ public class TraverseEmptyValueGui extends AbstractConfigGui {
         emptyCheckExpectionTextArea.setInitialText("");
     }
 
-    private JPanel createPatamsPanel() {
+    private JPanel getPatamsPanel() {
         patamsTextArea = JSyntaxTextArea.getInstance(10, 10);
+        patamsTextArea.setName(TraverseEmptyValue.PATAMS);
 
-        JLabel label = new JLabel(TraverseEmptyValue.PATAMS);
+        JLabel label = new JLabel(TraverseEmptyValue.PATAMS+":");
         label.setLabelFor(patamsTextArea);
+        label.setHorizontalAlignment(SwingConstants.RIGHT);
+        label.setVerticalAlignment(SwingConstants.TOP);
+        label.setPreferredSize(new Dimension(LABEL_WIDTH, LABEL_HEIGHT));
 
-        JPanel panel = new JPanel(new BorderLayout());
-        panel.add(label, BorderLayout.NORTH);
+        JPanel panel = new JPanel(new BorderLayout(H_GAP, V_GAP));
+        panel.add(label, BorderLayout.WEST);
         panel.add(JTextScrollPane.getInstance(patamsTextArea), BorderLayout.CENTER);
 
         return panel;
     }
 
-    private JPanel createEmptyCheckExpectionPanel() {
+    private JPanel getEmptyCheckExpectionPanel() {
         emptyCheckExpectionTextArea = JSyntaxTextArea.getInstance(10, 10);
+        emptyCheckExpectionTextArea.setName(TraverseEmptyValue.EMPTY_CHECK_EXPECTION);
 
-        JLabel label = new JLabel(TraverseEmptyValue.EMPTY_CHECK_EXPECTION);
+        JLabel label = new JLabel(TraverseEmptyValue.EMPTY_CHECK_EXPECTION+":");
         label.setLabelFor(emptyCheckExpectionTextArea);
+        label.setHorizontalAlignment(SwingConstants.RIGHT);
+        label.setVerticalAlignment(SwingConstants.TOP);
+        label.setPreferredSize(new Dimension(LABEL_WIDTH, LABEL_HEIGHT));
 
-        JPanel panel = new JPanel(new BorderLayout());
-        panel.add(label, BorderLayout.NORTH);
+        JPanel panel = new JPanel(new BorderLayout(H_GAP, V_GAP));
+        panel.add(label, BorderLayout.WEST);
         panel.add(JTextScrollPane.getInstance(emptyCheckExpectionTextArea), BorderLayout.CENTER);
 
+        return panel;
+    }
+
+    private JPanel getNotePanel() {
         String note = "说明：\n" +
-                "1. Params为原接口请求报文，例如： \"key1\":\"val1\",\"key2\":\"val2\"\n" +
-                "2. EmptyCheckExpection为接口各字段非空校验预期结果，例如： \"key1\":true,\"key2\":false\n" +
-                "3. 遍历的key以EmptyCheckExpection的内容为准\n"+
-                "4. 请将线程组设置为无限循环，数据遍历完毕时线程组将自动停止循环\n" +
-                "5. 请求报文变量名默认=params，预期结果变量名默认=expection，当前JsonPath变量名默认=jsonPath\n"+
-                "6. 该插件中数据参数化不会替换具体的值，请在使用的位置利用${__eval(${params})}函数替换";
+                "1. Params为原接口请求报文，例如： \"key1\":\"val1\",\"key2\":\"val2\"；\n" +
+                "2. EmptyCheckExpection为接口各字段非空校验预期结果，例如： \"key1\":true,\"key2\":false；\n" +
+                "3. 遍历的 key以 EmptyCheckExpection的内容为准；\n"+
+                "4. 请将线程组设置为无限循环，数据遍历完毕时线程组将自动停止循环；\n" +
+                "5. 请求报文变量名默认=params，预期结果变量名默认=expection，当前 JsonPath变量名默认=jsonPath；\n"+
+                "6. 该插件中数据参数化不会替换具体的值，请在使用的位置利用 ${__eval(${params})} 函数替换。";
         JTextArea textArea = new JTextArea(note);
         textArea.setLineWrap(true);
         textArea.setEditable(false);
         textArea.setBackground(this.getBackground());
-        panel.add(textArea, BorderLayout.SOUTH);
+
+        JPanel panel = new JPanel(new BorderLayout(H_GAP, V_GAP));
+        panel.add(textArea, BorderLayout.CENTER);
 
         return panel;
     }

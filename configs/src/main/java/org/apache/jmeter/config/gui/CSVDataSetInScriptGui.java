@@ -3,6 +3,7 @@ package org.apache.jmeter.config.gui;
 import org.apache.jmeter.config.CSVDataSetInScript;
 import org.apache.jmeter.gui.util.JSyntaxTextArea;
 import org.apache.jmeter.gui.util.JTextScrollPane;
+import org.apache.jmeter.gui.util.VerticalPanel;
 import org.apache.jmeter.testelement.TestElement;
 
 import javax.swing.*;
@@ -14,26 +15,35 @@ import java.awt.*;
  * Time: 11:10
  */
 public class CSVDataSetInScriptGui extends AbstractConfigGui {
+    private static final int H_GAP = 5;
+    private static final int V_GAP = 10;
+    private static final int LABEL_WIDTH = 100;
+    private static final int LABEL_HEIGHT = 10;
+
     private JTextField variableNamesTextField;
     private JSyntaxTextArea dataTextArea;
 
     public CSVDataSetInScriptGui() {
-        super();
         init();
     }
 
     private void init() {
         setLayout(new BorderLayout());
         setBorder(makeBorder());
+        add(makeTitlePanel(), BorderLayout.NORTH);
 
-        Box box = Box.createVerticalBox();
-        box.add(makeTitlePanel());
-        box.add(createVariableNamesPanel());
-        add(box, BorderLayout.NORTH);
+        VerticalPanel configPanel = new VerticalPanel();
+        configPanel.setBorder(BorderFactory.createTitledBorder(
+                BorderFactory.createEtchedBorder(), "Configure the Data Source"));
+        configPanel.add(getVariableNamesPanel());
 
-        JPanel panel = createDataPanel();
-        add(panel, BorderLayout.CENTER);
-        add(Box.createVerticalStrut(panel.getPreferredSize().height), BorderLayout.WEST);
+        VerticalPanel mainPanel = new VerticalPanel();
+        mainPanel.add(configPanel);
+        mainPanel.add(getDataPanel());
+        mainPanel.add(getNotePanel());
+
+        add(mainPanel, BorderLayout.CENTER);
+        //add(Box.createVerticalStrut(panel.getPreferredSize().height), BorderLayout.WEST);
     }
 
     @Override
@@ -83,38 +93,48 @@ public class CSVDataSetInScriptGui extends AbstractConfigGui {
         dataTextArea.setInitialText("");
     }
 
-    private JPanel createVariableNamesPanel() {
+    private JPanel getVariableNamesPanel() {
         variableNamesTextField = new JTextField(10);
         variableNamesTextField.setName(CSVDataSetInScript.VARIABLE_NAMES);
 
-        JLabel label = new JLabel(CSVDataSetInScript.VARIABLE_NAMES);
+        JLabel label = new JLabel(CSVDataSetInScript.VARIABLE_NAMES + ":");
         label.setLabelFor(variableNamesTextField);
+        label.setHorizontalAlignment(SwingConstants.RIGHT);
+        label.setVerticalAlignment(SwingConstants.CENTER);
+        label.setPreferredSize(new Dimension(LABEL_WIDTH, LABEL_HEIGHT));
 
-        JPanel panel = new JPanel(new BorderLayout(5, 0));
+        JPanel panel = new JPanel(new BorderLayout(H_GAP, V_GAP));
         panel.add(label, BorderLayout.WEST);
         panel.add(variableNamesTextField, BorderLayout.CENTER);
 
         return panel;
     }
 
-    private JPanel createDataPanel() {
+    private JPanel getDataPanel() {
         dataTextArea = JSyntaxTextArea.getInstance(20, 20);
+        dataTextArea.setName(CSVDataSetInScript.DATA);
 
-        JLabel label = new JLabel(CSVDataSetInScript.DATA);
+        JLabel label = new JLabel(CSVDataSetInScript.DATA + ":");
         label.setLabelFor(dataTextArea);
 
-        JPanel panel = new JPanel(new BorderLayout());
+        JPanel panel = new JPanel(new BorderLayout(H_GAP, V_GAP));
         panel.add(label, BorderLayout.NORTH);
         panel.add(JTextScrollPane.getInstance(dataTextArea), BorderLayout.CENTER);
 
+        return panel;
+    }
+
+    private JPanel getNotePanel() {
         String note = "说明：\n" +
-                "1. 以 “，” 逗号作为引用名和数据的分隔符\n" +
-                "2. 请将线程组设置为无限循环，数据遍历完毕时线程组将自动停止循环";
+                "1. 以 “，” 逗号作为引用名和数据的分隔符；\n" +
+                "2. 请将线程组设置为无限循环，数据遍历完毕时线程组将自动停止循环。";
         JTextArea textArea = new JTextArea(note);
         textArea.setLineWrap(true);
         textArea.setEditable(false);
         textArea.setBackground(this.getBackground());
-        panel.add(textArea, BorderLayout.SOUTH);
+
+        JPanel panel = new JPanel(new BorderLayout(H_GAP, V_GAP));
+        panel.add(textArea, BorderLayout.CENTER);
 
         return panel;
     }

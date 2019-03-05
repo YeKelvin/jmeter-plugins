@@ -3,6 +3,7 @@ package org.apache.jmeter.config.gui;
 import org.apache.jmeter.config.Argument;
 import org.apache.jmeter.config.ENVDataSet;
 import org.apache.jmeter.gui.util.HeaderAsPropertyRenderer;
+import org.apache.jmeter.gui.util.VerticalPanel;
 import org.apache.jmeter.testelement.TestElement;
 import org.apache.jmeter.util.JMeterUtils;
 import org.apache.jorphan.gui.GuiUtils;
@@ -20,32 +21,36 @@ import java.util.Map;
  * @author KelvinYe
  */
 public class ENVDataSetGui extends AbstractConfigGui {
+    private static final int H_GAP = 5;
+    private static final int V_GAP = 10;
+    private static final int LABEL_WIDTH = 100;
+    private static final int LABEL_HEIGHT = 10;
+
     private JComboBox<String> configNameComboBox;
     private JTable table;
     private ObjectTableModel tableModel;
 
     public ENVDataSetGui() {
-        super();
         init();
     }
 
     private void init() {
         setLayout(new BorderLayout());
         setBorder(makeBorder());
+        add(makeTitlePanel(), BorderLayout.NORTH);
 
-        Box box = Box.createVerticalBox();
-        box.add(makeTitlePanel());
-        box.add(createConfigNamePanel());
-        box.add(createNotePanel());
+        VerticalPanel configPanel = new VerticalPanel();
+        configPanel.setBorder(BorderFactory.createTitledBorder(
+                BorderFactory.createEtchedBorder(), "Configure the Data Source"));
+        configPanel.add(getConfigNamePanel());
 
-        JPanel panel = new JPanel();
-        panel.setLayout(new BorderLayout());
-        panel.add(createTablePanel(), BorderLayout.CENTER);
-        panel.add(Box.createVerticalStrut(70), BorderLayout.WEST);
+        VerticalPanel mainPanel = new VerticalPanel();
+        mainPanel.add(configPanel);
+        mainPanel.add(createTablePanel());
 
-        add(box, BorderLayout.NORTH);
-        add(panel, BorderLayout.CENTER);
-        table.revalidate();
+        add(mainPanel, BorderLayout.CENTER);
+        add(getNotePanel(), BorderLayout.SOUTH);
+
     }
 
     @Override
@@ -105,36 +110,50 @@ public class ENVDataSetGui extends AbstractConfigGui {
         tableModel.clearData();
     }
 
-    private JPanel createConfigNamePanel() {
+    private JPanel getConfigNamePanel() {
         configNameComboBox = new JComboBox<>();
         configNameComboBox.setName(ENVDataSet.CONFIG_NAME);
         comboBoxAddItem(getEnvList(getConfigPath()));
-        JLabel label = new JLabel(ENVDataSet.CONFIG_NAME);
+
+        JLabel label = new JLabel(ENVDataSet.CONFIG_NAME + ":");
         label.setLabelFor(configNameComboBox);
-        JPanel jPanel = new JPanel(new BorderLayout(5, 0));
-        jPanel.add(label, BorderLayout.WEST);
-        jPanel.add(configNameComboBox, BorderLayout.CENTER);
-        return jPanel;
+        label.setHorizontalAlignment(SwingConstants.RIGHT);
+        label.setVerticalAlignment(SwingConstants.CENTER);
+        label.setPreferredSize(new Dimension(LABEL_WIDTH, LABEL_HEIGHT));
+
+        JPanel panel = new JPanel(new BorderLayout(H_GAP, V_GAP));
+        panel.add(label, BorderLayout.WEST);
+        panel.add(configNameComboBox, BorderLayout.CENTER);
+        return panel;
     }
 
-    private JTextArea createNotePanel() {
+    private JPanel getNotePanel() {
         String note = "\n说明：\n" +
-                "1. ConfigName为配置文件名称，文件后缀为.env ，内容为json ，且必须存放在 jmeterHome/config 目录下\n" +
-                "2. Non-Gui模式下，命令行存在 -JconfigName 参数时，优先读取 ${__P(configName)} 配置文件\n";
+                "1. ConfigName为配置文件名称，文件后缀为.env ，内容为json ，且必须存放在 jmeterHome/config 目录下；\n" +
+                "2. Non-Gui模式下，命令行存在 -JconfigName 参数时，优先读取 ${__P(configName)} 配置文件。\n";
         JTextArea textArea = new JTextArea(note);
         textArea.setLineWrap(true);
         textArea.setEditable(false);
         textArea.setBackground(this.getBackground());
-        return textArea;
+
+        JPanel panel = new JPanel(new BorderLayout(H_GAP, V_GAP));
+        panel.add(textArea, BorderLayout.CENTER);
+        return panel;
     }
 
-    private Component createTablePanel() {
+    private JPanel createTablePanel() {
         initializeTableModel();
         table = new JTable(tableModel);
         table.getTableHeader().setDefaultRenderer(new HeaderAsPropertyRenderer());
         table.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
+        table.revalidate();
         JMeterUtils.applyHiDPI(table);
-        return makeScrollPane(table);
+
+        JPanel panel = new JPanel(new BorderLayout(H_GAP, V_GAP));
+        panel.add(makeScrollPane(table), BorderLayout.CENTER);
+        panel.add(Box.createVerticalStrut(70), BorderLayout.WEST);
+
+        return panel;
     }
 
     private void initializeTableModel() {

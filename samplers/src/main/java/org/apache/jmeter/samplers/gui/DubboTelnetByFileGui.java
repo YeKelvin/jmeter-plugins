@@ -24,6 +24,10 @@ import java.io.IOException;
  */
 public class DubboTelnetByFileGui extends AbstractSamplerGui {
     private static final Logger logger = LogUtil.getLogger(DubboTelnetByFileGui.class);
+    private static final int H_GAP = 5;
+    private static final int V_GAP = 10;
+    private static final int LABEL_WIDTH = 100;
+    private static final int LABEL_HEIGHT = 10;
 
     private JTextField addressTextField;
     private JTextField interfaceNameTextField;
@@ -43,11 +47,9 @@ public class DubboTelnetByFileGui extends AbstractSamplerGui {
         setBorder(makeBorder());
         add(makeTitlePanel(), BorderLayout.NORTH);
 
-        VerticalPanel mainPanel = new VerticalPanel();
-
         VerticalPanel interfacePanel = new VerticalPanel();
         interfacePanel.setBorder(BorderFactory.createTitledBorder(
-                BorderFactory.createEtchedBorder(), "Dubbo Interface Info"));
+                BorderFactory.createEtchedBorder(), "Configure the Interface Data Source"));
         interfacePanel.add(getAddressPanel());
         interfacePanel.add(getInterfaceNamePanel());
         interfacePanel.add(getParamsPanel());
@@ -56,11 +58,12 @@ public class DubboTelnetByFileGui extends AbstractSamplerGui {
 
         VerticalPanel templatePanel = new VerticalPanel();
         templatePanel.setBorder(BorderFactory.createTitledBorder(
-                BorderFactory.createEtchedBorder(), "Json Template Info"));
+                BorderFactory.createEtchedBorder(), "Configure the Template Data Source"));
         templatePanel.add(getUseTemplatePanel());
         templatePanel.add(getInterfaceSystemPanel());
         templatePanel.add(getTemplateContentPanel());
 
+        VerticalPanel mainPanel = new VerticalPanel();
         mainPanel.add(interfacePanel);
         mainPanel.add(templatePanel);
 
@@ -130,9 +133,14 @@ public class DubboTelnetByFileGui extends AbstractSamplerGui {
     private JPanel getAddressPanel() {
         addressTextField = new JTextField(10);
         addressTextField.setName(DubboTelnetByFile.ADDRESS);
+
         JLabel label = new JLabel(DubboTelnetByFile.ADDRESS + ":");
         label.setLabelFor(addressTextField);
-        JPanel panel = new JPanel(new BorderLayout(5, 0));
+        label.setHorizontalAlignment(SwingConstants.RIGHT);
+        label.setVerticalAlignment(SwingConstants.CENTER);
+        label.setPreferredSize(new Dimension(LABEL_WIDTH, LABEL_HEIGHT));
+
+        JPanel panel = new JPanel(new BorderLayout(H_GAP, V_GAP));
         panel.add(label, BorderLayout.WEST);
         panel.add(addressTextField, BorderLayout.CENTER);
         return panel;
@@ -141,9 +149,14 @@ public class DubboTelnetByFileGui extends AbstractSamplerGui {
     private JPanel getInterfaceNamePanel() {
         interfaceNameTextField = new JTextField(10);
         interfaceNameTextField.setName(DubboTelnetByFile.INTERFACE_NAME);
+
         JLabel label = new JLabel(DubboTelnetByFile.INTERFACE_NAME + ":");
         label.setLabelFor(interfaceNameTextField);
-        JPanel panel = new JPanel(new BorderLayout(5, 0));
+        label.setHorizontalAlignment(SwingConstants.RIGHT);
+        label.setVerticalAlignment(SwingConstants.CENTER);
+        label.setPreferredSize(new Dimension(LABEL_WIDTH, LABEL_HEIGHT));
+
+        JPanel panel = new JPanel(new BorderLayout(H_GAP, V_GAP));
         panel.add(label, BorderLayout.WEST);
         panel.add(interfaceNameTextField, BorderLayout.CENTER);
         return panel;
@@ -151,20 +164,32 @@ public class DubboTelnetByFileGui extends AbstractSamplerGui {
 
     private JPanel getParamsPanel() {
         paramsTextArea = JSyntaxTextArea.getInstance(4, 20);
+        paramsTextArea.setName(DubboTelnetByFile.PARAMS);
+
         JLabel label = new JLabel(DubboTelnetByFile.PARAMS + ":");
         label.setLabelFor(paramsTextArea);
-        JPanel panel = new JPanel(new BorderLayout());
-        panel.add(label, BorderLayout.NORTH);
+        label.setHorizontalAlignment(SwingConstants.RIGHT);
+        label.setVerticalAlignment(SwingConstants.TOP);
+        label.setPreferredSize(new Dimension(LABEL_WIDTH, LABEL_HEIGHT));
+
+        JPanel panel = new JPanel(new BorderLayout(H_GAP, V_GAP));
+        panel.add(label, BorderLayout.WEST);
         panel.add(JTextScrollPane.getInstance(paramsTextArea), BorderLayout.CENTER);
         return panel;
     }
 
     private JPanel getJsonPathPanel() {
         jsonPathsTextArea = JSyntaxTextArea.getInstance(4, 20);
+        jsonPathsTextArea.setName(DubboTelnetByFile.JSON_PATHS);
+
         JLabel label = new JLabel(DubboTelnetByFile.JSON_PATHS + ":");
         label.setLabelFor(jsonPathsTextArea);
-        JPanel panel = new JPanel(new BorderLayout());
-        panel.add(label, BorderLayout.NORTH);
+        label.setHorizontalAlignment(SwingConstants.RIGHT);
+        label.setVerticalAlignment(SwingConstants.TOP);
+        label.setPreferredSize(new Dimension(LABEL_WIDTH, LABEL_HEIGHT));
+
+        JPanel panel = new JPanel(new BorderLayout(H_GAP, V_GAP));
+        panel.add(label, BorderLayout.WEST);
         panel.add(JTextScrollPane.getInstance(jsonPathsTextArea), BorderLayout.CENTER);
         return panel;
     }
@@ -172,9 +197,14 @@ public class DubboTelnetByFileGui extends AbstractSamplerGui {
     private JPanel getExpectionPanel() {
         expectionTextField = new JTextField(10);
         expectionTextField.setName(DubboTelnetByFile.EXPECTION);
+
         JLabel label = new JLabel(DubboTelnetByFile.EXPECTION + ":");
         label.setLabelFor(expectionTextField);
-        JPanel panel = new JPanel(new BorderLayout(5, 0));
+        label.setHorizontalAlignment(SwingConstants.RIGHT);
+        label.setVerticalAlignment(SwingConstants.CENTER);
+        label.setPreferredSize(new Dimension(LABEL_WIDTH, LABEL_HEIGHT));
+
+        JPanel panel = new JPanel(new BorderLayout(H_GAP, V_GAP));
         panel.add(label, BorderLayout.WEST);
         panel.add(expectionTextField, BorderLayout.CENTER);
         return panel;
@@ -185,9 +215,14 @@ public class DubboTelnetByFileGui extends AbstractSamplerGui {
         useTemplateComboBox.setName(DubboTelnetByFile.USE_TEMPLATE);
         useTemplateComboBox.addItem("true");
         useTemplateComboBox.addItem("false");
+
         JLabel label = new JLabel(DubboTelnetByFile.USE_TEMPLATE + ":");
         label.setLabelFor(useTemplateComboBox);
-        JPanel jPanel = new JPanel(new BorderLayout(5, 0));
+        label.setHorizontalAlignment(SwingConstants.RIGHT);
+        label.setVerticalAlignment(SwingConstants.CENTER);
+        label.setPreferredSize(new Dimension(LABEL_WIDTH, LABEL_HEIGHT));
+
+        JPanel jPanel = new JPanel(new BorderLayout(H_GAP, V_GAP));
         jPanel.add(label, BorderLayout.WEST);
         jPanel.add(useTemplateComboBox, BorderLayout.CENTER);
         return jPanel;
@@ -196,9 +231,14 @@ public class DubboTelnetByFileGui extends AbstractSamplerGui {
     private JPanel getInterfaceSystemPanel() {
         interfaceSystemTextField = new JTextField(10);
         interfaceSystemTextField.setName(DubboTelnetByFile.INTERFACE_SYSTEM);
+
         JLabel label = new JLabel(DubboTelnetByFile.INTERFACE_SYSTEM + ":");
         label.setLabelFor(interfaceSystemTextField);
-        JPanel panel = new JPanel(new BorderLayout(5, 0));
+        label.setHorizontalAlignment(SwingConstants.RIGHT);
+        label.setVerticalAlignment(SwingConstants.CENTER);
+        label.setPreferredSize(new Dimension(LABEL_WIDTH, LABEL_HEIGHT));
+
+        JPanel panel = new JPanel(new BorderLayout(H_GAP, V_GAP));
         panel.add(label, BorderLayout.WEST);
         panel.add(interfaceSystemTextField, BorderLayout.CENTER);
         return panel;
@@ -206,10 +246,16 @@ public class DubboTelnetByFileGui extends AbstractSamplerGui {
 
     private JPanel getTemplateContentPanel() {
         templateContentTextArea = JSyntaxTextArea.getInstance(8, 20);
+        templateContentTextArea.setName(DubboTelnetByFile.TEMPLATE_CONTENT);
+
         JLabel label = new JLabel(DubboTelnetByFile.TEMPLATE_CONTENT + ":");
         label.setLabelFor(templateContentTextArea);
-        JPanel panel = new JPanel(new BorderLayout());
-        panel.add(label, BorderLayout.NORTH);
+        label.setHorizontalAlignment(SwingConstants.RIGHT);
+        label.setVerticalAlignment(SwingConstants.TOP);
+        label.setPreferredSize(new Dimension(LABEL_WIDTH, LABEL_HEIGHT));
+
+        JPanel panel = new JPanel(new BorderLayout(H_GAP, V_GAP));
+        panel.add(label, BorderLayout.WEST);
         panel.add(JTextScrollPane.getInstance(templateContentTextArea), BorderLayout.CENTER);
         return panel;
     }
