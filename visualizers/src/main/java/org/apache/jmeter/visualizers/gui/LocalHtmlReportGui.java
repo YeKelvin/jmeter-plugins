@@ -4,6 +4,7 @@ package org.apache.jmeter.visualizers.gui;
 import org.apache.jmeter.gui.util.VerticalPanel;
 import org.apache.jmeter.testelement.TestElement;
 import org.apache.jmeter.visualizers.ReportCollector;
+import pers.kelvin.util.GuiUtil;
 
 import javax.swing.*;
 import java.awt.*;
@@ -27,8 +28,7 @@ public class LocalHtmlReportGui extends AbstractListenerGui {
         add(makeTitlePanel(), BorderLayout.NORTH);
 
         VerticalPanel htmlPanel = new VerticalPanel();
-        htmlPanel.setBorder(BorderFactory.createTitledBorder(
-                BorderFactory.createEtchedBorder(), "Configure the Data Source"));
+        htmlPanel.setBorder(GuiUtil.createTitledBorder("Configure the Data Source"));
         htmlPanel.add(getReportNamePanel());
         htmlPanel.add(getIsAppendPanel());
 
@@ -84,17 +84,13 @@ public class LocalHtmlReportGui extends AbstractListenerGui {
         reportNameTextField = new JTextField(10);
         reportNameTextField.setName(ReportCollector.REPORT_NAME);
 
-        JLabel label = new JLabel(ReportCollector.REPORT_NAME + ":");
+        JLabel label = GuiUtil.createTextFieldLabel(ReportCollector.REPORT_NAME + ":", LABEL_WIDTH, LABEL_HEIGHT);
         label.setLabelFor(reportNameTextField);
-        label.setHorizontalAlignment(SwingConstants.RIGHT);
-        label.setVerticalAlignment(SwingConstants.CENTER);
-        label.setPreferredSize(new Dimension(LABEL_WIDTH, LABEL_HEIGHT));
 
-        JPanel jPanel = new JPanel(new BorderLayout(H_GAP, V_GAP));
-        jPanel.add(label, BorderLayout.WEST);
-        jPanel.add(reportNameTextField, BorderLayout.CENTER);
-
-        return jPanel;
+        JPanel panel = new JPanel(new BorderLayout(H_GAP, V_GAP));
+        panel.add(label, BorderLayout.WEST);
+        panel.add(reportNameTextField, BorderLayout.CENTER);
+        return panel;
     }
 
     private JPanel getIsAppendPanel() {
@@ -103,17 +99,13 @@ public class LocalHtmlReportGui extends AbstractListenerGui {
         isAppendComboBox.addItem("true");
         isAppendComboBox.addItem("false");
 
-        JLabel label = new JLabel(ReportCollector.IS_APPEND + ":");
+        JLabel label = GuiUtil.createTextFieldLabel(ReportCollector.IS_APPEND + ":",LABEL_WIDTH, LABEL_HEIGHT);
         label.setLabelFor(isAppendComboBox);
-        label.setHorizontalAlignment(SwingConstants.RIGHT);
-        label.setVerticalAlignment(SwingConstants.CENTER);
-        label.setPreferredSize(new Dimension(LABEL_WIDTH, LABEL_HEIGHT));
 
-        JPanel jPanel = new JPanel(new BorderLayout(H_GAP, V_GAP));
-        jPanel.add(label, BorderLayout.WEST);
-        jPanel.add(isAppendComboBox, BorderLayout.CENTER);
-
-        return jPanel;
+        JPanel panel = new JPanel(new BorderLayout(H_GAP, V_GAP));
+        panel.add(label, BorderLayout.WEST);
+        panel.add(isAppendComboBox, BorderLayout.CENTER);
+        return panel;
     }
 
     private JPanel getNoteJPanel() {
@@ -130,9 +122,8 @@ public class LocalHtmlReportGui extends AbstractListenerGui {
         textArea.setEditable(false);
         textArea.setBackground(this.getBackground());
 
-        JPanel jPanel = new JPanel(new BorderLayout(H_GAP, V_GAP));
-        jPanel.add(textArea, BorderLayout.CENTER);
-
-        return jPanel;
+        JPanel panel = new JPanel(new BorderLayout(H_GAP, V_GAP));
+        panel.add(textArea, BorderLayout.CENTER);
+        return panel;
     }
 }

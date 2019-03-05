@@ -5,6 +5,7 @@ import org.apache.jmeter.gui.util.JSyntaxTextArea;
 import org.apache.jmeter.gui.util.JTextScrollPane;
 import org.apache.jmeter.gui.util.VerticalPanel;
 import org.apache.jmeter.testelement.TestElement;
+import pers.kelvin.util.GuiUtil;
 
 import javax.swing.*;
 import java.awt.*;
@@ -30,20 +31,18 @@ public class CSVDataSetInScriptGui extends AbstractConfigGui {
     private void init() {
         setLayout(new BorderLayout());
         setBorder(makeBorder());
-        add(makeTitlePanel(), BorderLayout.NORTH);
 
         VerticalPanel configPanel = new VerticalPanel();
-        configPanel.setBorder(BorderFactory.createTitledBorder(
-                BorderFactory.createEtchedBorder(), "Configure the Data Source"));
+        configPanel.setBorder(GuiUtil.createTitledBorder("Configure the Data Source"));
         configPanel.add(getVariableNamesPanel());
 
         VerticalPanel mainPanel = new VerticalPanel();
+        mainPanel.add(makeTitlePanel());
         mainPanel.add(configPanel);
-        mainPanel.add(getDataPanel());
-        mainPanel.add(getNotePanel());
 
-        add(mainPanel, BorderLayout.CENTER);
-        //add(Box.createVerticalStrut(panel.getPreferredSize().height), BorderLayout.WEST);
+        add(mainPanel, BorderLayout.NORTH);
+        add(getDataPanel(), BorderLayout.CENTER);
+        add(getNotePanel(), BorderLayout.SOUTH);
     }
 
     @Override
@@ -97,16 +96,12 @@ public class CSVDataSetInScriptGui extends AbstractConfigGui {
         variableNamesTextField = new JTextField(10);
         variableNamesTextField.setName(CSVDataSetInScript.VARIABLE_NAMES);
 
-        JLabel label = new JLabel(CSVDataSetInScript.VARIABLE_NAMES + ":");
+        JLabel label = GuiUtil.createTextFieldLabel(CSVDataSetInScript.VARIABLE_NAMES + ":", LABEL_WIDTH, LABEL_HEIGHT);
         label.setLabelFor(variableNamesTextField);
-        label.setHorizontalAlignment(SwingConstants.RIGHT);
-        label.setVerticalAlignment(SwingConstants.CENTER);
-        label.setPreferredSize(new Dimension(LABEL_WIDTH, LABEL_HEIGHT));
 
         JPanel panel = new JPanel(new BorderLayout(H_GAP, V_GAP));
         panel.add(label, BorderLayout.WEST);
         panel.add(variableNamesTextField, BorderLayout.CENTER);
-
         return panel;
     }
 
@@ -120,7 +115,6 @@ public class CSVDataSetInScriptGui extends AbstractConfigGui {
         JPanel panel = new JPanel(new BorderLayout(H_GAP, V_GAP));
         panel.add(label, BorderLayout.NORTH);
         panel.add(JTextScrollPane.getInstance(dataTextArea), BorderLayout.CENTER);
-
         return panel;
     }
 
@@ -135,7 +129,6 @@ public class CSVDataSetInScriptGui extends AbstractConfigGui {
 
         JPanel panel = new JPanel(new BorderLayout(H_GAP, V_GAP));
         panel.add(textArea, BorderLayout.CENTER);
-
         return panel;
     }
 

@@ -9,6 +9,7 @@ import org.apache.jmeter.util.JMeterUtils;
 import org.apache.jorphan.gui.GuiUtils;
 import org.apache.jorphan.gui.ObjectTableModel;
 import org.apache.jorphan.reflect.Functor;
+import pers.kelvin.util.GuiUtil;
 
 import javax.swing.*;
 import java.awt.*;
@@ -37,18 +38,17 @@ public class ENVDataSetGui extends AbstractConfigGui {
     private void init() {
         setLayout(new BorderLayout());
         setBorder(makeBorder());
-        add(makeTitlePanel(), BorderLayout.NORTH);
 
         VerticalPanel configPanel = new VerticalPanel();
-        configPanel.setBorder(BorderFactory.createTitledBorder(
-                BorderFactory.createEtchedBorder(), "Configure the Data Source"));
+        configPanel.setBorder(GuiUtil.createTitledBorder("Configure the Data Source"));
         configPanel.add(getConfigNamePanel());
 
         VerticalPanel mainPanel = new VerticalPanel();
+        mainPanel.add(makeTitlePanel());
         mainPanel.add(configPanel);
-        mainPanel.add(createTablePanel());
 
-        add(mainPanel, BorderLayout.CENTER);
+        add(mainPanel, BorderLayout.NORTH);
+        add(createTablePanel(), BorderLayout.CENTER);
         add(getNotePanel(), BorderLayout.SOUTH);
 
     }
@@ -115,29 +115,12 @@ public class ENVDataSetGui extends AbstractConfigGui {
         configNameComboBox.setName(ENVDataSet.CONFIG_NAME);
         comboBoxAddItem(getEnvList(getConfigPath()));
 
-        JLabel label = new JLabel(ENVDataSet.CONFIG_NAME + ":");
+        JLabel label = GuiUtil.createTextFieldLabel(ENVDataSet.CONFIG_NAME + ":", LABEL_WIDTH, LABEL_HEIGHT);
         label.setLabelFor(configNameComboBox);
-        label.setHorizontalAlignment(SwingConstants.RIGHT);
-        label.setVerticalAlignment(SwingConstants.CENTER);
-        label.setPreferredSize(new Dimension(LABEL_WIDTH, LABEL_HEIGHT));
 
         JPanel panel = new JPanel(new BorderLayout(H_GAP, V_GAP));
         panel.add(label, BorderLayout.WEST);
         panel.add(configNameComboBox, BorderLayout.CENTER);
-        return panel;
-    }
-
-    private JPanel getNotePanel() {
-        String note = "\n说明：\n" +
-                "1. ConfigName为配置文件名称，文件后缀为.env ，内容为json ，且必须存放在 jmeterHome/config 目录下；\n" +
-                "2. Non-Gui模式下，命令行存在 -JconfigName 参数时，优先读取 ${__P(configName)} 配置文件。\n";
-        JTextArea textArea = new JTextArea(note);
-        textArea.setLineWrap(true);
-        textArea.setEditable(false);
-        textArea.setBackground(this.getBackground());
-
-        JPanel panel = new JPanel(new BorderLayout(H_GAP, V_GAP));
-        panel.add(textArea, BorderLayout.CENTER);
         return panel;
     }
 
@@ -152,7 +135,20 @@ public class ENVDataSetGui extends AbstractConfigGui {
         JPanel panel = new JPanel(new BorderLayout(H_GAP, V_GAP));
         panel.add(makeScrollPane(table), BorderLayout.CENTER);
         panel.add(Box.createVerticalStrut(70), BorderLayout.WEST);
+        return panel;
+    }
 
+    private JPanel getNotePanel() {
+        String note = "\n说明：\n" +
+                "1. ConfigName为配置文件名称，文件后缀为.env ，内容为json ，且必须存放在 jmeterHome/config 目录下；\n" +
+                "2. Non-Gui模式下，命令行存在 -JconfigName 参数时，优先读取 ${__P(configName)} 配置文件。\n";
+        JTextArea textArea = new JTextArea(note);
+        textArea.setLineWrap(true);
+        textArea.setEditable(false);
+        textArea.setBackground(this.getBackground());
+
+        JPanel panel = new JPanel(new BorderLayout(H_GAP, V_GAP));
+        panel.add(textArea, BorderLayout.CENTER);
         return panel;
     }
 

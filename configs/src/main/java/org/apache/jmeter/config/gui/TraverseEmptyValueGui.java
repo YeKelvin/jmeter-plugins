@@ -5,6 +5,7 @@ import org.apache.jmeter.gui.util.JSyntaxTextArea;
 import org.apache.jmeter.gui.util.JTextScrollPane;
 import org.apache.jmeter.gui.util.VerticalPanel;
 import org.apache.jmeter.testelement.TestElement;
+import pers.kelvin.util.GuiUtil;
 
 import javax.swing.*;
 import java.awt.*;
@@ -33,8 +34,7 @@ public class TraverseEmptyValueGui extends AbstractConfigGui {
         add(makeTitlePanel(), BorderLayout.NORTH);
 
         VerticalPanel configPanel = new VerticalPanel();
-        configPanel.setBorder(BorderFactory.createTitledBorder(
-                BorderFactory.createEtchedBorder(), "Configure the Data Source"));
+        configPanel.setBorder(GuiUtil.createTitledBorder("Configure the Data Source"));
         configPanel.add(getPatamsPanel());
         configPanel.add(getEmptyCheckExpectionPanel());
 
@@ -97,16 +97,12 @@ public class TraverseEmptyValueGui extends AbstractConfigGui {
         patamsTextArea = JSyntaxTextArea.getInstance(10, 10);
         patamsTextArea.setName(TraverseEmptyValue.PATAMS);
 
-        JLabel label = new JLabel(TraverseEmptyValue.PATAMS+":");
+        JLabel label = GuiUtil.createTextAreaLabel(TraverseEmptyValue.PATAMS + ":", LABEL_WIDTH, LABEL_HEIGHT);
         label.setLabelFor(patamsTextArea);
-        label.setHorizontalAlignment(SwingConstants.RIGHT);
-        label.setVerticalAlignment(SwingConstants.TOP);
-        label.setPreferredSize(new Dimension(LABEL_WIDTH, LABEL_HEIGHT));
 
         JPanel panel = new JPanel(new BorderLayout(H_GAP, V_GAP));
         panel.add(label, BorderLayout.WEST);
         panel.add(JTextScrollPane.getInstance(patamsTextArea), BorderLayout.CENTER);
-
         return panel;
     }
 
@@ -114,16 +110,12 @@ public class TraverseEmptyValueGui extends AbstractConfigGui {
         emptyCheckExpectionTextArea = JSyntaxTextArea.getInstance(10, 10);
         emptyCheckExpectionTextArea.setName(TraverseEmptyValue.EMPTY_CHECK_EXPECTION);
 
-        JLabel label = new JLabel(TraverseEmptyValue.EMPTY_CHECK_EXPECTION+":");
+        JLabel label = GuiUtil.createTextAreaLabel(TraverseEmptyValue.EMPTY_CHECK_EXPECTION + ":", LABEL_WIDTH, LABEL_HEIGHT);
         label.setLabelFor(emptyCheckExpectionTextArea);
-        label.setHorizontalAlignment(SwingConstants.RIGHT);
-        label.setVerticalAlignment(SwingConstants.TOP);
-        label.setPreferredSize(new Dimension(LABEL_WIDTH, LABEL_HEIGHT));
 
         JPanel panel = new JPanel(new BorderLayout(H_GAP, V_GAP));
         panel.add(label, BorderLayout.WEST);
         panel.add(JTextScrollPane.getInstance(emptyCheckExpectionTextArea), BorderLayout.CENTER);
-
         return panel;
     }
 
@@ -131,9 +123,9 @@ public class TraverseEmptyValueGui extends AbstractConfigGui {
         String note = "说明：\n" +
                 "1. Params为原接口请求报文，例如： \"key1\":\"val1\",\"key2\":\"val2\"；\n" +
                 "2. EmptyCheckExpection为接口各字段非空校验预期结果，例如： \"key1\":true,\"key2\":false；\n" +
-                "3. 遍历的 key以 EmptyCheckExpection的内容为准；\n"+
+                "3. 遍历的 key以 EmptyCheckExpection的内容为准；\n" +
                 "4. 请将线程组设置为无限循环，数据遍历完毕时线程组将自动停止循环；\n" +
-                "5. 请求报文变量名默认=params，预期结果变量名默认=expection，当前 JsonPath变量名默认=jsonPath；\n"+
+                "5. 请求报文变量名默认=params，预期结果变量名默认=expection，当前 JsonPath变量名默认=jsonPath；\n" +
                 "6. 该插件中数据参数化不会替换具体的值，请在使用的位置利用 ${__eval(${params})} 函数替换。";
         JTextArea textArea = new JTextArea(note);
         textArea.setLineWrap(true);
@@ -142,7 +134,6 @@ public class TraverseEmptyValueGui extends AbstractConfigGui {
 
         JPanel panel = new JPanel(new BorderLayout(H_GAP, V_GAP));
         panel.add(textArea, BorderLayout.CENTER);
-
         return panel;
     }
 
