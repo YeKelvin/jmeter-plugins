@@ -21,10 +21,10 @@ d. expection为预期结果，判断逻辑是根据接口响应报文是否包�
 Dubbo接口测试插件，报文维护在文件中，可基于复用原则维护脚本。
 
 #### 2.2 使用说明
-...
+a. 在 jmeter GUI中右键线程组（Thread）添加-Sampler-Dubbo Telnet By File；  
 
 #### 2.3 参数说明
 ...
 
 #### 2.4 截图
-...
+![dubbo-telnet-by-file.png](https://i.loli.net/2019/03/05/5c7e22dbec283.png)
