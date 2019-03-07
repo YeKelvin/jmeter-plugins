@@ -135,7 +135,7 @@ public class DubboTelnetByFileGui extends AbstractSamplerGui {
         addressTextField = new JTextField(10);
         addressTextField.setName(DubboTelnetByFile.ADDRESS);
 
-        JLabel label = GuiUtil.createTextFieldLabel(DubboTelnetByFile.ADDRESS + ":", LABEL_WIDTH, LABEL_HEIGHT);
+        JLabel label = GuiUtil.createTextFieldLabel("Address:", LABEL_WIDTH, LABEL_HEIGHT);
         label.setLabelFor(addressTextField);
 
         JPanel panel = new JPanel(new BorderLayout(H_GAP, V_GAP));
@@ -148,7 +148,7 @@ public class DubboTelnetByFileGui extends AbstractSamplerGui {
         interfaceNameTextField = new JTextField(10);
         interfaceNameTextField.setName(DubboTelnetByFile.INTERFACE_NAME);
 
-        JLabel label = GuiUtil.createTextFieldLabel(DubboTelnetByFile.INTERFACE_NAME + ":", LABEL_WIDTH, LABEL_HEIGHT);
+        JLabel label = GuiUtil.createTextFieldLabel("InterfaceName:", LABEL_WIDTH, LABEL_HEIGHT);
         label.setLabelFor(interfaceNameTextField);
 
         JPanel panel = new JPanel(new BorderLayout(H_GAP, V_GAP));
@@ -161,7 +161,7 @@ public class DubboTelnetByFileGui extends AbstractSamplerGui {
         paramsTextArea = JSyntaxTextArea.getInstance(5, 20);
         paramsTextArea.setName(DubboTelnetByFile.PARAMS);
 
-        JLabel label = GuiUtil.createTextAreaLabel(DubboTelnetByFile.PARAMS + ":", LABEL_WIDTH, LABEL_HEIGHT);
+        JLabel label = GuiUtil.createTextAreaLabel("Params:", LABEL_WIDTH, LABEL_HEIGHT);
         label.setLabelFor(paramsTextArea);
 
         JPanel panel = new JPanel(new BorderLayout(H_GAP, V_GAP));
@@ -174,7 +174,7 @@ public class DubboTelnetByFileGui extends AbstractSamplerGui {
         jsonPathsTextArea = JSyntaxTextArea.getInstance(2, 20);
         jsonPathsTextArea.setName(DubboTelnetByFile.JSON_PATHS);
 
-        JLabel label = GuiUtil.createTextAreaLabel(DubboTelnetByFile.JSON_PATHS + ":", LABEL_WIDTH, LABEL_HEIGHT);
+        JLabel label = GuiUtil.createTextAreaLabel("JsonPaths:", LABEL_WIDTH, LABEL_HEIGHT);
         label.setLabelFor(jsonPathsTextArea);
 
         JPanel panel = new JPanel(new BorderLayout(H_GAP, V_GAP));
@@ -187,7 +187,7 @@ public class DubboTelnetByFileGui extends AbstractSamplerGui {
         expectionTextField = new JTextField(10);
         expectionTextField.setName(DubboTelnetByFile.EXPECTION);
 
-        JLabel label = GuiUtil.createTextFieldLabel(DubboTelnetByFile.EXPECTION + ":", LABEL_WIDTH, LABEL_HEIGHT);
+        JLabel label = GuiUtil.createTextFieldLabel("Expection:", LABEL_WIDTH, LABEL_HEIGHT);
         label.setLabelFor(expectionTextField);
 
         JPanel panel = new JPanel(new BorderLayout(H_GAP, V_GAP));
@@ -202,7 +202,7 @@ public class DubboTelnetByFileGui extends AbstractSamplerGui {
         useTemplateComboBox.addItem("true");
         useTemplateComboBox.addItem("false");
 
-        JLabel label = GuiUtil.createTextFieldLabel(DubboTelnetByFile.USE_TEMPLATE + ":", LABEL_WIDTH, LABEL_HEIGHT);
+        JLabel label = GuiUtil.createTextFieldLabel("UseTemplate:", LABEL_WIDTH, LABEL_HEIGHT);
         label.setLabelFor(useTemplateComboBox);
 
         JPanel jPanel = new JPanel(new BorderLayout(H_GAP, V_GAP));
@@ -215,7 +215,7 @@ public class DubboTelnetByFileGui extends AbstractSamplerGui {
         interfaceSystemTextField = new JTextField(10);
         interfaceSystemTextField.setName(DubboTelnetByFile.INTERFACE_SYSTEM);
 
-        JLabel label = GuiUtil.createTextFieldLabel(DubboTelnetByFile.INTERFACE_SYSTEM + ":", LABEL_WIDTH, LABEL_HEIGHT);
+        JLabel label = GuiUtil.createTextFieldLabel("InterfaceSystem:", LABEL_WIDTH, LABEL_HEIGHT);
         label.setLabelFor(interfaceSystemTextField);
 
         JPanel panel = new JPanel(new BorderLayout(H_GAP, V_GAP));
@@ -228,7 +228,7 @@ public class DubboTelnetByFileGui extends AbstractSamplerGui {
         templateContentTextArea = JSyntaxTextArea.getInstance(8, 20);
         templateContentTextArea.setName(DubboTelnetByFile.TEMPLATE_CONTENT);
 
-        JLabel label = GuiUtil.createTextAreaLabel(DubboTelnetByFile.TEMPLATE_CONTENT + ":", LABEL_WIDTH, LABEL_HEIGHT);
+        JLabel label = GuiUtil.createTextAreaLabel("TemplateContent:", LABEL_WIDTH, LABEL_HEIGHT);
         label.setLabelFor(templateContentTextArea);
 
         JPanel panel = new JPanel(new BorderLayout(H_GAP, V_GAP));

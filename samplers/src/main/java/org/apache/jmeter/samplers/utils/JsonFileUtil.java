@@ -21,13 +21,34 @@ public class JsonFileUtil {
      *
      * @param configFilePath 配置文件路径
      * @param interfaceName  json文件名
-     * @return jsonContent
+     * @return json模版
      */
     public static String readJsonFile(String configFilePath, String interfaceName) throws IOException {
         // 获取配置文件中的json模版存放目录
         String templateJsonDir = Config.get(configFilePath).get("templateJsonDir");
         // 根据入參interfaceName去templateJsonDir递归搜索获取绝对路径
         String interfacePath = JsonFileUtil.findInterfacePathByKeywords(templateJsonDir, interfaceName);
+        if (interfacePath == null) {
+            throw new ServiceException(String.format("\"%s\" json模版不存在", interfaceName));
+        }
+        // 根据绝对路径获取json模版内容
+        return JsonFileUtil.readJsonFileToString(interfacePath);
+    }
+
+    /**
+     * 在系统名称的目录下查找json模版
+     *
+     * @param configFilePath 配置文件路径
+     * @param systemName     接口所属系统的目录名
+     * @param interfaceName  json文件名
+     * @return json模版
+     */
+    public static String readJsonFile(String configFilePath, String systemName, String interfaceName) throws IOException {
+        // 获取配置文件中的json模版存放目录
+        String templateJsonDir = Config.get(configFilePath).get("templateJsonDir");
+        // 根据入參interfaceName去templateJsonDir递归搜索获取绝对路径
+        String interfacePath = JsonFileUtil.findInterfacePathByKeywords(
+                templateJsonDir + File.separator + systemName, interfaceName);
         if (interfacePath == null) {
             throw new ServiceException(String.format("\"%s\" json模版不存在", interfaceName));
         }

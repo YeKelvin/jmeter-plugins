@@ -39,17 +39,17 @@ public class DubboTelnetByFile extends AbstractSampler {
 
     private static final Logger logger = LogUtil.getLogger(DubboTelnetByFile.class);
 
-    public static final String ADDRESS = "address";
-    public static final String INTERFACE_NAME = "interfaceName";
-    public static final String PARAMS = "params";
-    public static final String JSON_PATHS = "jsonPaths";
-    public static final String EXPECTION = "expection";
-    public static final String USE_TEMPLATE = "useTemplate";
-    public static final String INTERFACE_SYSTEM = "interfaceSystem";
-    public static final String TEMPLATE_CONTENT = "templateContent";
+    public static final String ADDRESS = "DubboTelnetByFile.Address";
+    public static final String INTERFACE_NAME = "DubboTelnetByFile.InterfaceName";
+    public static final String PARAMS = "DubboTelnetByFile.Params";
+    public static final String JSON_PATHS = "DubboTelnetByFile.JsonPaths";
+    public static final String EXPECTION = "DubboTelnetByFile.Expection";
+    public static final String USE_TEMPLATE = "DubboTelnetByFile.UseTemplate";
+    public static final String INTERFACE_SYSTEM = "DubboTelnetByFile.InterfaceSystem";
+    public static final String TEMPLATE_CONTENT = "DubboTelnetByFile.TemplateContent";
+    private static final String REPLACE_VALUE = "DubboTelnetByFile.ReplaceValue";
     public static final String CONFIG_FILE_PATH = JMeterUtils.getJMeterHome() + File.separator + "config" +
             File.separator + "config.json";
-    private static final String REPLACE_VALUE = "replaceValue";
 
     @Override
     public SampleResult sample(Entry entry) {
@@ -122,7 +122,7 @@ public class DubboTelnetByFile extends AbstractSampler {
     private String transformParams(String params) throws IOException {
         String requestData = "";
         // 根据接口名获取json模版
-        String templateJson = JsonFileUtil.readJsonFile(CONFIG_FILE_PATH, getInterfaceName());
+        String templateJson = readJsonFile();
         if (templateJson == null) {
             throw new ServiceException(String.format("%s json模版获取失败", getInterfaceName()));
         }
@@ -146,6 +146,14 @@ public class DubboTelnetByFile extends AbstractSampler {
             requestData = templateJson;
         }
         return replaceValue(requestData);
+    }
+
+    public String readJsonFile() throws IOException {
+        if (StringUtil.isNotBlank(getInterfaceSystem())) {
+            return JsonFileUtil.readJsonFile(CONFIG_FILE_PATH, getInterfaceSystem(), getInterfaceName());
+        } else {
+            return JsonFileUtil.readJsonFile(CONFIG_FILE_PATH, getInterfaceName());
+        }
     }
 
 
