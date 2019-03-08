@@ -96,8 +96,7 @@ public class CSVDataSetInScriptGui extends AbstractConfigGui {
         variableNamesTextField = new JTextField(10);
         variableNamesTextField.setName(CSVDataSetInScript.VARIABLE_NAMES);
 
-        JLabel label = GuiUtil.createTextFieldLabel(CSVDataSetInScript.VARIABLE_NAMES + ":", LABEL_WIDTH, LABEL_HEIGHT);
-        label.setLabelFor(variableNamesTextField);
+        JLabel label = GuiUtil.createTextFieldLabel("VariableNames:", variableNamesTextField,LABEL_WIDTH, LABEL_HEIGHT);
 
         JPanel panel = new JPanel(new BorderLayout(H_GAP, V_GAP));
         panel.add(label, BorderLayout.WEST);
@@ -109,7 +108,7 @@ public class CSVDataSetInScriptGui extends AbstractConfigGui {
         dataTextArea = JSyntaxTextArea.getInstance(20, 20);
         dataTextArea.setName(CSVDataSetInScript.DATA);
 
-        JLabel label = new JLabel(CSVDataSetInScript.DATA + ":");
+        JLabel label = new JLabel("CSV Data:");
         label.setLabelFor(dataTextArea);
 
         JPanel panel = new JPanel(new BorderLayout(H_GAP, V_GAP));

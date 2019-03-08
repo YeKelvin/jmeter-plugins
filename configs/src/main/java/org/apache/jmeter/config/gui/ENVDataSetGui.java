@@ -115,8 +115,7 @@ public class ENVDataSetGui extends AbstractConfigGui {
         configNameComboBox.setName(ENVDataSet.CONFIG_NAME);
         comboBoxAddItem(getEnvList(getConfigPath()));
 
-        JLabel label = GuiUtil.createTextFieldLabel(ENVDataSet.CONFIG_NAME + ":", LABEL_WIDTH, LABEL_HEIGHT);
-        label.setLabelFor(configNameComboBox);
+        JLabel label = GuiUtil.createTextFieldLabel("ConfigName:", configNameComboBox,LABEL_WIDTH, LABEL_HEIGHT);
 
         JPanel panel = new JPanel(new BorderLayout(H_GAP, V_GAP));
         panel.add(label, BorderLayout.WEST);

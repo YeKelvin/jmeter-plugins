@@ -22,6 +22,7 @@ public class TraverseEmptyValue extends ConfigTestElement implements LoopIterati
 
     public static final String USE_TEMPLATE = "TraverseEmptyValue.UseTemplate";
     public static final String INTERFACE_SYSTEM = "TraverseEmptyValue.InterfaceSystem";
+    public static final String INTERFACE_NAME = "TraverseEmptyValue.InterfaceName";
     public static final String PATAMS = "Patams";
     public static final String EMPTY_CHECK_EXPECTION = "EmptyCheckExpection";
     private Iterator jsonPathIterator = null;

@@ -23,6 +23,7 @@ public class TraverseEmptyValueGui extends AbstractConfigGui {
 
     private JComboBox<String> useTemplateComboBox;
     private JTextField interfaceSystemTextField;
+    private JTextField interfaceNameTextField;
     private JSyntaxTextArea patamsTextArea;
     private JSyntaxTextArea emptyCheckExpectionTextArea;
 
@@ -37,9 +38,10 @@ public class TraverseEmptyValueGui extends AbstractConfigGui {
 
         VerticalPanel templatePanel = new VerticalPanel();
         templatePanel.setBorder(BorderFactory.createTitledBorder(
-                BorderFactory.createEtchedBorder(), "Configure the Template Data Source"));
+                BorderFactory.createEtchedBorder(), "Configure the Template"));
         templatePanel.add(getUseTemplatePanel());
         templatePanel.add(getInterfaceSystemPanel());
+        templatePanel.add(getInterfaceNamePanel());
 
         VerticalPanel configPanel = new VerticalPanel();
         configPanel.setBorder(GuiUtil.createTitledBorder("Configure the Data Source"));
@@ -81,6 +83,7 @@ public class TraverseEmptyValueGui extends AbstractConfigGui {
         super.configureTestElement(el);
         el.setProperty(TraverseEmptyValue.USE_TEMPLATE, (String) useTemplateComboBox.getSelectedItem());
         el.setProperty(TraverseEmptyValue.INTERFACE_SYSTEM, interfaceSystemTextField.getText());
+        el.setProperty(TraverseEmptyValue.INTERFACE_NAME, interfaceNameTextField.getText());
         el.setProperty(TraverseEmptyValue.PATAMS, patamsTextArea.getText());
         el.setProperty(TraverseEmptyValue.EMPTY_CHECK_EXPECTION, emptyCheckExpectionTextArea.getText());
     }
@@ -93,6 +96,7 @@ public class TraverseEmptyValueGui extends AbstractConfigGui {
         super.configure(el);
         useTemplateComboBox.setSelectedItem(el.getPropertyAsString(TraverseEmptyValue.USE_TEMPLATE));
         interfaceSystemTextField.setText(el.getPropertyAsString(TraverseEmptyValue.INTERFACE_SYSTEM));
+        interfaceSystemTextField.setText(el.getPropertyAsString(TraverseEmptyValue.INTERFACE_NAME));
         patamsTextArea.setInitialText(el.getPropertyAsString(TraverseEmptyValue.PATAMS));
         patamsTextArea.setCaretPosition(0);
         emptyCheckExpectionTextArea.setInitialText(el.getPropertyAsString(TraverseEmptyValue.EMPTY_CHECK_EXPECTION));
@@ -104,6 +108,7 @@ public class TraverseEmptyValueGui extends AbstractConfigGui {
         super.clearGui();
         useTemplateComboBox.setSelectedItem("");
         interfaceSystemTextField.setText("");
+        interfaceNameTextField.setText("");
         patamsTextArea.setInitialText("");
         emptyCheckExpectionTextArea.setInitialText("");
     }
@@ -114,8 +119,7 @@ public class TraverseEmptyValueGui extends AbstractConfigGui {
         useTemplateComboBox.addItem("false");
         useTemplateComboBox.addItem("true");
 
-        JLabel label = GuiUtil.createTextFieldLabel("UseTemplate:", LABEL_WIDTH, LABEL_HEIGHT);
-        label.setLabelFor(useTemplateComboBox);
+        JLabel label = GuiUtil.createTextFieldLabel("UseTemplate:", useTemplateComboBox, LABEL_WIDTH, LABEL_HEIGHT);
 
         JPanel jPanel = new JPanel(new BorderLayout(H_GAP, V_GAP));
         jPanel.add(label, BorderLayout.WEST);
@@ -127,8 +131,7 @@ public class TraverseEmptyValueGui extends AbstractConfigGui {
         interfaceSystemTextField = new JTextField(10);
         interfaceSystemTextField.setName(TraverseEmptyValue.INTERFACE_SYSTEM);
 
-        JLabel label = GuiUtil.createTextFieldLabel("InterfaceSystem:", LABEL_WIDTH, LABEL_HEIGHT);
-        label.setLabelFor(interfaceSystemTextField);
+        JLabel label = GuiUtil.createTextFieldLabel("InterfaceSystem:", interfaceSystemTextField, LABEL_WIDTH, LABEL_HEIGHT);
 
         JPanel panel = new JPanel(new BorderLayout(H_GAP, V_GAP));
         panel.add(label, BorderLayout.WEST);
@@ -136,12 +139,23 @@ public class TraverseEmptyValueGui extends AbstractConfigGui {
         return panel;
     }
 
+    private JPanel getInterfaceNamePanel() {
+        interfaceNameTextField = new JTextField(10);
+        interfaceNameTextField.setName(TraverseEmptyValue.INTERFACE_NAME);
+
+        JLabel label = GuiUtil.createTextFieldLabel("InterfaceName:", interfaceNameTextField, LABEL_WIDTH, LABEL_HEIGHT);
+
+        JPanel panel = new JPanel(new BorderLayout(H_GAP, V_GAP));
+        panel.add(label, BorderLayout.WEST);
+        panel.add(interfaceNameTextField, BorderLayout.CENTER);
+        return panel;
+    }
+
     private JPanel getPatamsPanel() {
         patamsTextArea = JSyntaxTextArea.getInstance(8, 10);
         patamsTextArea.setName(TraverseEmptyValue.PATAMS);
 
-        JLabel label = GuiUtil.createTextAreaLabel("Patams:", LABEL_WIDTH, LABEL_HEIGHT);
-        label.setLabelFor(patamsTextArea);
+        JLabel label = GuiUtil.createTextAreaLabel("Patams:", patamsTextArea, LABEL_WIDTH, LABEL_HEIGHT);
 
         JPanel panel = new JPanel(new BorderLayout(H_GAP, V_GAP));
         panel.add(label, BorderLayout.WEST);
@@ -153,8 +167,7 @@ public class TraverseEmptyValueGui extends AbstractConfigGui {
         emptyCheckExpectionTextArea = JSyntaxTextArea.getInstance(8, 10);
         emptyCheckExpectionTextArea.setName(TraverseEmptyValue.EMPTY_CHECK_EXPECTION);
 
-        JLabel label = GuiUtil.createTextAreaLabel("EmptyCheckExpection:", LABEL_WIDTH, LABEL_HEIGHT);
-        label.setLabelFor(emptyCheckExpectionTextArea);
+        JLabel label = GuiUtil.createTextAreaLabel("EmptyCheckExpection:", emptyCheckExpectionTextArea, LABEL_WIDTH, LABEL_HEIGHT);
 
         JPanel panel = new JPanel(new BorderLayout(H_GAP, V_GAP));
         panel.add(label, BorderLayout.WEST);

@@ -81,6 +81,13 @@ public class DubboTelnetByFile extends AbstractSampler {
         return result;
     }
 
+    /**
+     * 获取请求报文
+     *
+     * @param params      参数
+     * @param useTemplate 是否使用模版
+     * @return 请求报文
+     */
     private String getRequestData(String params, boolean useTemplate) throws IOException {
         // 用户设置使用模版且params不为空时才取json模版
         if (useTemplate) {
@@ -92,6 +99,11 @@ public class DubboTelnetByFile extends AbstractSampler {
         return params;
     }
 
+    /**
+     * 根据JsonPaths替换模版json的值
+     *
+     * @param data json模版
+     */
     private String transformDataByJsonPaths(String data) {
         String jsonPaths = getJsonPaths();
         if (StringUtil.isNotBlank(jsonPaths)) {
@@ -99,7 +111,7 @@ public class DubboTelnetByFile extends AbstractSampler {
                 Type hashMapType = new TypeToken<HashMap<String, Object>>() {
                 }.getType();
                 HashMap<String, Object> jsonPathMap = JsonUtil.getGsonInstance().fromJson(jsonPaths, hashMapType);
-                DocumentContext ctx = JsonPathUtil.jsonParse(toArrayJson(data));
+                DocumentContext ctx = JsonPathUtil.jsonParse(JsonUtil.toArrayJson(data));
                 for (Map.Entry<String, Object> entry : jsonPathMap.entrySet()) {
                     ctx.set(entry.getKey(), entry.getValue());
                 }
@@ -114,10 +126,9 @@ public class DubboTelnetByFile extends AbstractSampler {
     }
 
     /**
-     * 参数化${}占位符
+     * 根据 Params替换模版 json的值，且将 jmeter的${}占位符替换为真值
      *
-     * @param params json报文
-     * @return 参数化替换后的json报文
+     * @param params jmeter Params入参
      */
     private String transformParams(String params) throws IOException {
         String requestData = "";
@@ -128,10 +139,10 @@ public class DubboTelnetByFile extends AbstractSampler {
         }
         if (StringUtil.isNotBlank(params)) {
             // 根据params转换为如要替换json模版的jsonPath列表
-            List<String> jsonPathList = JsonPathUtil.getJsonPathList(toArrayJson(params));
+            List<String> jsonPathList = JsonPathUtil.getJsonPathList(JsonUtil.toArrayJson(params));
             // 解析json
-            DocumentContext paramsDCtx = JsonPathUtil.jsonParse(toArrayJson(params));
-            DocumentContext templateJsonDCtx = JsonPathUtil.jsonParse(toArrayJson(templateJson));
+            DocumentContext paramsDCtx = JsonPathUtil.jsonParse(JsonUtil.toArrayJson(params));
+            DocumentContext templateJsonDCtx = JsonPathUtil.jsonParse(JsonUtil.toArrayJson(templateJson));
             // 根据params替换json模版
             for (String jsonPath : jsonPathList) {
                 Object newValue = paramsDCtx.read(jsonPath);
@@ -148,20 +159,12 @@ public class DubboTelnetByFile extends AbstractSampler {
         return replaceValue(requestData);
     }
 
-    public String readJsonFile() throws IOException {
+    private String readJsonFile() throws IOException {
         if (StringUtil.isNotBlank(getInterfaceSystem())) {
             return JsonFileUtil.readJsonFile(CONFIG_FILE_PATH, getInterfaceSystem(), getInterfaceName());
         } else {
             return JsonFileUtil.readJsonFile(CONFIG_FILE_PATH, getInterfaceName());
         }
-    }
-
-
-    /**
-     * 在json字符串最外层添加“[]”，转换为ArrayJson
-     */
-    public String toArrayJson(String json) {
-        return "[" + json + "]";
     }
 
     private void putAllProps(Map<String, String> map) {

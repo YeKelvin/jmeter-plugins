@@ -84,8 +84,7 @@ public class LocalHtmlReportGui extends AbstractListenerGui {
         reportNameTextField = new JTextField(10);
         reportNameTextField.setName(ReportCollector.REPORT_NAME);
 
-        JLabel label = GuiUtil.createTextFieldLabel(ReportCollector.REPORT_NAME + ":", LABEL_WIDTH, LABEL_HEIGHT);
-        label.setLabelFor(reportNameTextField);
+        JLabel label = GuiUtil.createTextFieldLabel("ReportName:", reportNameTextField, LABEL_WIDTH, LABEL_HEIGHT);
 
         JPanel panel = new JPanel(new BorderLayout(H_GAP, V_GAP));
         panel.add(label, BorderLayout.WEST);
@@ -99,8 +98,7 @@ public class LocalHtmlReportGui extends AbstractListenerGui {
         isAppendComboBox.addItem("true");
         isAppendComboBox.addItem("false");
 
-        JLabel label = GuiUtil.createTextFieldLabel(ReportCollector.IS_APPEND + ":",LABEL_WIDTH, LABEL_HEIGHT);
-        label.setLabelFor(isAppendComboBox);
+        JLabel label = GuiUtil.createTextFieldLabel("IsAppend:", isAppendComboBox, LABEL_WIDTH, LABEL_HEIGHT);
 
         JPanel panel = new JPanel(new BorderLayout(H_GAP, V_GAP));
         panel.add(label, BorderLayout.WEST);
