@@ -199,8 +199,8 @@ public class DubboTelnetByFileGui extends AbstractSamplerGui {
     private JPanel getUseTemplatePanel() {
         useTemplateComboBox = new JComboBox<>();
         useTemplateComboBox.setName(DubboTelnetByFile.USE_TEMPLATE);
-        useTemplateComboBox.addItem("true");
         useTemplateComboBox.addItem("false");
+        useTemplateComboBox.addItem("true");
 
         JLabel label = GuiUtil.createTextFieldLabel("UseTemplate:", LABEL_WIDTH, LABEL_HEIGHT);
         label.setLabelFor(useTemplateComboBox);
