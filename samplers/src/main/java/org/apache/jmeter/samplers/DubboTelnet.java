@@ -44,11 +44,7 @@ public class DubboTelnet extends AbstractJavaSamplerClient {
         String ip = address[0];
         String port = address.length == 1 ? "0" : address[1];
         inf = ctx.getParameter("interface", "");
-        try {
-            telnet = new TelnetUtil(ip, port);
-        } catch (IOException e) {
-            connectErrorMessage = ExceptionUtil.getStackTrace(e);
-        }
+        initTelnet(ip, port);
     }
 
     /**
@@ -111,5 +107,13 @@ public class DubboTelnet extends AbstractJavaSamplerClient {
             }
         }
         return responseData.contains(expection);
+    }
+
+    private void initTelnet(String ip,String port) {
+        try {
+            telnet = new TelnetUtil(ip, port);
+        } catch (IOException e) {
+            connectErrorMessage = ExceptionUtil.getStackTrace(e);
+        }
     }
 }
