@@ -95,8 +95,8 @@ public class LocalHtmlReportGui extends AbstractListenerGui {
     private JPanel getIsAppendPanel() {
         isAppendComboBox = new JComboBox<>();
         isAppendComboBox.setName(ReportCollector.IS_APPEND);
-        isAppendComboBox.addItem("true");
         isAppendComboBox.addItem("false");
+        isAppendComboBox.addItem("true");
 
         JLabel label = GuiUtil.createTextFieldLabel("IsAppend:", isAppendComboBox, LABEL_WIDTH, LABEL_HEIGHT);
 

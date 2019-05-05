@@ -1,6 +1,7 @@
 package pers.kelvin.util.json;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.jayway.jsonpath.JsonPath;
 
 import java.util.regex.Pattern;
@@ -9,7 +10,7 @@ import java.util.regex.Pattern;
  * @author KelvinYe
  */
 public class JsonUtil {
-    private static Gson gson = new Gson();
+    private static Gson gson = new GsonBuilder().serializeNulls().create();
 
     /**
      * 获取Gson实例

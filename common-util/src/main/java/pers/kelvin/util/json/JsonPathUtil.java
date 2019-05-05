@@ -1,20 +1,16 @@
 package pers.kelvin.util.json;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.jayway.jsonpath.Configuration;
 import com.jayway.jsonpath.DocumentContext;
 import com.jayway.jsonpath.JsonPath;
 import com.jayway.jsonpath.Option;
 import com.jayway.jsonpath.spi.json.GsonJsonProvider;
-import com.jayway.jsonpath.spi.json.JsonProvider;
 import com.jayway.jsonpath.spi.mapper.GsonMappingProvider;
-import com.jayway.jsonpath.spi.mapper.MappingProvider;
 
-import java.lang.reflect.Array;
-import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.List;
-import java.util.Set;
 
 /**
  * Description
@@ -25,7 +21,7 @@ import java.util.Set;
  */
 public class JsonPathUtil {
 
-    private static Gson gson = new Gson();
+    private static Gson gson = new GsonBuilder().serializeNulls().create();
 
     private static Configuration config;
 

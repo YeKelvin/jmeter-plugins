@@ -118,7 +118,7 @@ public class DubboTelnetByFile extends AbstractSampler {
                 data = ctx.jsonString();
                 data = data.substring(1, data.length() - 1);
             } catch (Exception e) {
-                logger.error("jsonPaths格式必须为 {\"jsonPath\",\"newValue\"...}");
+                logger.error("jsonPaths格式必须为 {\"jsonPath\":\"newValue\",\"jsonPath\":\"newValue\"...}");
             }
         }
         // jsonPaths为空时原值返回
