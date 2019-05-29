@@ -26,6 +26,16 @@ public class JsonPathUtil {
     private static Configuration config;
 
     /**
+     * @param json     json报文
+     * @param jsonPath json节点路径
+     * @return json值
+     */
+    public static String extractAsString(String json, String jsonPath) {
+        Object obj = JsonPath.read(json, jsonPath);
+        return obj == null ? null : obj.toString();
+    }
+
+    /**
      * 获取 JsonPath配置对象
      */
     public static Configuration getJsonPathConfigWithGson() {

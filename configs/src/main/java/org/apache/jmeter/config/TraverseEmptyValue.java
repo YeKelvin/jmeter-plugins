@@ -4,15 +4,22 @@ import com.jayway.jsonpath.DocumentContext;
 import com.jayway.jsonpath.JsonPath;
 import org.apache.jmeter.engine.event.LoopIterationEvent;
 import org.apache.jmeter.engine.event.LoopIterationListener;
+import org.apache.jmeter.util.JMeterUtils;
 import org.slf4j.Logger;
+import pers.kelvin.util.StringUtil;
+import pers.kelvin.util.exception.ExceptionUtil;
+import pers.kelvin.util.exception.ServiceException;
+import pers.kelvin.util.json.JsonFileUtil;
 import pers.kelvin.util.json.JsonPathUtil;
 import pers.kelvin.util.json.JsonUtil;
 import pers.kelvin.util.log.LogUtil;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.Iterator;
 
 /**
- * dubbo接口报文非空校验自动遍历
+ * Dubbo接口报文非空校验自动遍历
  * User: KelvinYe
  * Date: 2018-04-17
  * Time: 11:10
@@ -26,6 +33,8 @@ public class TraverseEmptyValue extends ConfigTestElement implements LoopIterati
     public static final String PATAMS = "Patams";
     public static final String EMPTY_CHECK_EXPECTION = "EmptyCheckExpection";
     private Iterator jsonPathIterator = null;
+    public static final String CONFIG_FILE_PATH = JMeterUtils.getJMeterHome() + File.separator + "config" +
+            File.separator + "config.json";
 
 
     @Override
@@ -60,10 +69,14 @@ public class TraverseEmptyValue extends ConfigTestElement implements LoopIterati
      * 根据JsonPath更新对应的值为null，然后将json字符串并放入变量名为params的jmeter变量中
      */
     private void putParams(String jsonPath) {
-        DocumentContext ctx = JsonPathUtil.jsonParse(JsonUtil.toArrayJson(getPatams()));
-        ctx.set(jsonPath, null);
-        String jsonStr = ctx.jsonString();
-        getThreadContext().getVariables().put("params", jsonStr.substring(1, jsonStr.length() - 1));
+        try {
+            DocumentContext ctx = JsonPathUtil.jsonParse(JsonUtil.toArrayJson(getPatams()));
+            ctx.set(jsonPath, null);
+            String jsonStr = ctx.jsonString();
+            getThreadContext().getVariables().put("params", jsonStr.substring(1, jsonStr.length() - 1));
+        } catch (Exception e) {
+            logger.error(ExceptionUtil.getStackTrace(e));
+        }
     }
 
     /**
@@ -79,9 +92,16 @@ public class TraverseEmptyValue extends ConfigTestElement implements LoopIterati
     /**
      * 获取脚本中的值
      */
-    public String getPatams() {
+    public String getPatams() throws IOException {
         //使testEL元素只读，即不能参数化
         setRunningVersion(false);
+        if (getUseTemplate()) {
+            String templateJson = readJsonFile();
+            if (templateJson == null) {
+                throw new ServiceException(String.format("%s json模版获取失败", getInterfaceName()));
+            }
+            return templateJson;
+        }
         return getPropertyAsString(TraverseEmptyValue.PATAMS);
     }
 
@@ -93,5 +113,26 @@ public class TraverseEmptyValue extends ConfigTestElement implements LoopIterati
         setRunningVersion(false);
         return getPropertyAsString(TraverseEmptyValue.EMPTY_CHECK_EXPECTION);
     }
+
+    private boolean getUseTemplate() {
+        return getPropertyAsBoolean(USE_TEMPLATE, false);
+    }
+
+    private String getInterfaceName() {
+        return getPropertyAsString(INTERFACE_NAME);
+    }
+
+    private String getInterfaceSystem() {
+        return getPropertyAsString(INTERFACE_SYSTEM);
+    }
+
+    private String readJsonFile() throws IOException {
+        if (StringUtil.isNotBlank(getInterfaceSystem())) {
+            return JsonFileUtil.readJsonFile(CONFIG_FILE_PATH, getInterfaceSystem(), getInterfaceName());
+        } else {
+            return JsonFileUtil.readJsonFile(CONFIG_FILE_PATH, getInterfaceName());
+        }
+    }
+
 
 }

@@ -32,6 +32,7 @@ public class DubboTelnet extends AbstractJavaSamplerClient {
         params.addArgument("interface", "");
         params.addArgument("params", "");
         params.addArgument("expection", "\"success\":true");
+        params.addArgument("telnetEncode", "UTF-8");
         return params;
     }
 
@@ -44,7 +45,8 @@ public class DubboTelnet extends AbstractJavaSamplerClient {
         String ip = address[0];
         String port = address.length == 1 ? "0" : address[1];
         inf = ctx.getParameter("interface", "");
-        initTelnet(ip, port);
+        String charset = ctx.getParameter("telnetEncode");
+        initTelnet(ip, port, charset);
     }
 
     /**
@@ -109,9 +111,9 @@ public class DubboTelnet extends AbstractJavaSamplerClient {
         return responseData.contains(expection);
     }
 
-    private void initTelnet(String ip,String port) {
+    private void initTelnet(String ip, String port, String charset) {
         try {
-            telnet = new TelnetUtil(ip, port);
+            telnet = new TelnetUtil(ip, port, charset);
         } catch (IOException e) {
             connectErrorMessage = ExceptionUtil.getStackTrace(e);
         }

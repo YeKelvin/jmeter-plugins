@@ -51,13 +51,6 @@ public class Randoms {
     }
 
     /**
-     * 获取当前时间
-     */
-    public static String getCurrentTime() {
-        return new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
-    }
-
-    /**
      * 获取日志ID
      */
     public static String getTraceLogId() {
@@ -137,6 +130,14 @@ public class Randoms {
      */
     public static String getTelecomMobileNumber() {
         return MobilePhone.getRandomTelecomCode() + getNumber(8);
+    }
+
+    /**
+     * 获取柬埔寨手机号
+     */
+    public static String getCambodiaMobileNumber() {
+        String[] mobileNumberInfo = CambodiaMobilePhone.getRandomPhoneCode();
+        return getNumber("855" + mobileNumberInfo[0], Integer.valueOf(mobileNumberInfo[1]));
     }
 
 }

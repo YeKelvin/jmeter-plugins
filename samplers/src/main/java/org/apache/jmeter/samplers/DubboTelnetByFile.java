@@ -7,7 +7,6 @@ import groovy.lang.Binding;
 import org.apache.jmeter.engine.util.ValueReplacer;
 import org.apache.jmeter.functions.InvalidVariableException;
 import org.apache.jmeter.samplers.utils.GroovyUtil;
-import org.apache.jmeter.samplers.utils.JsonFileUtil;
 import org.apache.jmeter.samplers.utils.TelnetUtil;
 import org.apache.jmeter.threads.JMeterContextService;
 import org.apache.jmeter.threads.JMeterVariables;
@@ -16,6 +15,7 @@ import org.slf4j.Logger;
 import pers.kelvin.util.StringUtil;
 import pers.kelvin.util.exception.ExceptionUtil;
 import pers.kelvin.util.exception.ServiceException;
+import pers.kelvin.util.json.JsonFileUtil;
 import pers.kelvin.util.json.JsonPathUtil;
 import pers.kelvin.util.json.JsonUtil;
 import pers.kelvin.util.log.LogUtil;
@@ -44,6 +44,7 @@ public class DubboTelnetByFile extends AbstractSampler {
     public static final String PARAMS = "DubboTelnetByFile.Params";
     public static final String JSON_PATHS = "DubboTelnetByFile.JsonPaths";
     public static final String EXPECTION = "DubboTelnetByFile.Expection";
+    public static final String TELNET_ENCODE = "DubboTelnetByFile.TelnetEncode";
     public static final String USE_TEMPLATE = "DubboTelnetByFile.UseTemplate";
     public static final String INTERFACE_SYSTEM = "DubboTelnetByFile.InterfaceSystem";
     public static final String TEMPLATE_CONTENT = "DubboTelnetByFile.TemplateContent";
@@ -218,7 +219,7 @@ public class DubboTelnetByFile extends AbstractSampler {
         String ip = addressArray[0];
         String port = addressArray.length == 1 ? "0000" : addressArray[1];
 
-        TelnetUtil telnet = new TelnetUtil(ip, port);
+        TelnetUtil telnet = new TelnetUtil(ip, port, getTelnetEncode());
         String response = telnet.invokeDubbo(interfaceName, requestData);
         telnet.disconnect();
         return response;
@@ -286,6 +287,10 @@ public class DubboTelnetByFile extends AbstractSampler {
 
     private String getExpection() {
         return getPropertyAsString(EXPECTION);
+    }
+
+    private String getTelnetEncode() {
+        return getPropertyAsString(TELNET_ENCODE);
     }
 
     private boolean getUseTemplate() {

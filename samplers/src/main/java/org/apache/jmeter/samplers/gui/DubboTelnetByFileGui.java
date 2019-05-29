@@ -4,7 +4,7 @@ import org.apache.jmeter.gui.util.JSyntaxTextArea;
 import org.apache.jmeter.gui.util.JTextScrollPane;
 import org.apache.jmeter.gui.util.VerticalPanel;
 import org.apache.jmeter.samplers.DubboTelnetByFile;
-import org.apache.jmeter.samplers.utils.JsonFileUtil;
+import pers.kelvin.util.json.JsonFileUtil;
 import org.apache.jmeter.testelement.TestElement;
 import org.slf4j.Logger;
 import pers.kelvin.util.GuiUtil;
@@ -36,6 +36,7 @@ public class DubboTelnetByFileGui extends AbstractSamplerGui {
     private JSyntaxTextArea paramsTextArea;
     private JSyntaxTextArea jsonPathsTextArea;
     private JTextField expectionTextField;
+    private JTextField telnetEncodeTextField;
     private JComboBox<String> useTemplateComboBox;
     private JTextField interfaceSystemTextField;
     private JSyntaxTextArea templateContentTextArea;
@@ -56,6 +57,7 @@ public class DubboTelnetByFileGui extends AbstractSamplerGui {
         interfacePanel.add(getParamsPanel());
         interfacePanel.add(getJsonPathPanel());
         interfacePanel.add(getExpectionPanel());
+        interfacePanel.add(getTelnetEncodePanel());
 
         VerticalPanel templatePanel = new VerticalPanel();
         templatePanel.setBorder(BorderFactory.createTitledBorder(
@@ -96,6 +98,7 @@ public class DubboTelnetByFileGui extends AbstractSamplerGui {
         element.setProperty(DubboTelnetByFile.PARAMS, paramsTextArea.getText());
         element.setProperty(DubboTelnetByFile.JSON_PATHS, jsonPathsTextArea.getText());
         element.setProperty(DubboTelnetByFile.EXPECTION, expectionTextField.getText());
+        element.setProperty(DubboTelnetByFile.TELNET_ENCODE, telnetEncodeTextField.getText());
         element.setProperty(DubboTelnetByFile.USE_TEMPLATE, (String) useTemplateComboBox.getSelectedItem());
         element.setProperty(DubboTelnetByFile.INTERFACE_SYSTEM, interfaceSystemTextField.getText());
     }
@@ -110,6 +113,7 @@ public class DubboTelnetByFileGui extends AbstractSamplerGui {
         jsonPathsTextArea.setInitialText(el.getPropertyAsString(DubboTelnetByFile.JSON_PATHS));
         jsonPathsTextArea.setCaretPosition(0);
         expectionTextField.setText(el.getPropertyAsString(DubboTelnetByFile.EXPECTION));
+        telnetEncodeTextField.setText(el.getPropertyAsString(DubboTelnetByFile.TELNET_ENCODE));
         useTemplateComboBox.setSelectedItem(el.getPropertyAsString(DubboTelnetByFile.USE_TEMPLATE));
         interfaceSystemTextField.setText(el.getPropertyAsString(DubboTelnetByFile.INTERFACE_SYSTEM));
         templateContentTextArea.setInitialText(getTemplateContent(
@@ -188,6 +192,18 @@ public class DubboTelnetByFileGui extends AbstractSamplerGui {
         JPanel panel = new JPanel(new BorderLayout(H_GAP, V_GAP));
         panel.add(label, BorderLayout.WEST);
         panel.add(expectionTextField, BorderLayout.CENTER);
+        return panel;
+    }
+
+    private JPanel getTelnetEncodePanel() {
+        telnetEncodeTextField = new JTextField(10);
+        telnetEncodeTextField.setName(DubboTelnetByFile.EXPECTION);
+
+        JLabel label = GuiUtil.createTextFieldLabel("TelnetEncode:", telnetEncodeTextField, LABEL_WIDTH, LABEL_HEIGHT);
+
+        JPanel panel = new JPanel(new BorderLayout(H_GAP, V_GAP));
+        panel.add(label, BorderLayout.WEST);
+        panel.add(telnetEncodeTextField, BorderLayout.CENTER);
         return panel;
     }
 

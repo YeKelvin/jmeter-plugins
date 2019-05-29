@@ -6,9 +6,13 @@ import org.apache.jmeter.gui.util.JTextScrollPane;
 import org.apache.jmeter.gui.util.VerticalPanel;
 import org.apache.jmeter.testelement.TestElement;
 import pers.kelvin.util.GuiUtil;
+import pers.kelvin.util.StringUtil;
+import pers.kelvin.util.exception.ServiceException;
+import pers.kelvin.util.json.JsonFileUtil;
 
 import javax.swing.*;
 import java.awt.*;
+import java.io.IOException;
 
 /**
  * User: KelvinYe
@@ -84,7 +88,9 @@ public class TraverseEmptyValueGui extends AbstractConfigGui {
         el.setProperty(TraverseEmptyValue.USE_TEMPLATE, (String) useTemplateComboBox.getSelectedItem());
         el.setProperty(TraverseEmptyValue.INTERFACE_SYSTEM, interfaceSystemTextField.getText());
         el.setProperty(TraverseEmptyValue.INTERFACE_NAME, interfaceNameTextField.getText());
-        el.setProperty(TraverseEmptyValue.PATAMS, patamsTextArea.getText());
+        if (!el.getPropertyAsBoolean(TraverseEmptyValue.USE_TEMPLATE, false)) {
+            el.setProperty(TraverseEmptyValue.PATAMS, patamsTextArea.getText());
+        }
         el.setProperty(TraverseEmptyValue.EMPTY_CHECK_EXPECTION, emptyCheckExpectionTextArea.getText());
     }
 
@@ -100,6 +106,9 @@ public class TraverseEmptyValueGui extends AbstractConfigGui {
         patamsTextArea.setInitialText(el.getPropertyAsString(TraverseEmptyValue.PATAMS));
         patamsTextArea.setCaretPosition(0);
         emptyCheckExpectionTextArea.setInitialText(el.getPropertyAsString(TraverseEmptyValue.EMPTY_CHECK_EXPECTION));
+        emptyCheckExpectionTextArea.setInitialText(getTemplateContent(
+                el.getPropertyAsBoolean(TraverseEmptyValue.USE_TEMPLATE, false),
+                el.getPropertyAsString(TraverseEmptyValue.INTERFACE_NAME)));
         emptyCheckExpectionTextArea.setCaretPosition(0);
     }
 
@@ -191,6 +200,28 @@ public class TraverseEmptyValueGui extends AbstractConfigGui {
         JPanel panel = new JPanel(new BorderLayout(H_GAP, V_GAP));
         panel.add(textArea, BorderLayout.CENTER);
         return panel;
+    }
+
+    /**
+     * 获取json模版内容
+     */
+    private String getTemplateContent(boolean useTemplate, String interfaceName) {
+        if (useTemplate && StringUtil.isNotBlank(interfaceName)) {
+            try {
+                return readJsonFile(interfaceName);
+            } catch (IOException | ServiceException e) {
+                return e.getMessage();
+            }
+        }
+        return "";
+    }
+
+    private String readJsonFile(String interfaceName) throws IOException, ServiceException {
+        if (StringUtil.isNotBlank(interfaceSystemTextField.getText())) {
+            return JsonFileUtil.readJsonFile(TraverseEmptyValue.CONFIG_FILE_PATH, interfaceSystemTextField.getText(), interfaceName);
+        } else {
+            return JsonFileUtil.readJsonFile(TraverseEmptyValue.CONFIG_FILE_PATH, interfaceName);
+        }
     }
 
 }

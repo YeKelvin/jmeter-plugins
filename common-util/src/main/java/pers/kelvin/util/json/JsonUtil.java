@@ -22,16 +22,6 @@ public class JsonUtil {
     }
 
     /**
-     * @param json     json报文
-     * @param jsonPath json节点路径
-     * @return json值
-     */
-    public static String readAsString(String json, String jsonPath) {
-        Object obj = JsonPath.read(json, jsonPath);
-        return obj == null ? null : obj.toString();
-    }
-
-    /**
      * 在原json最外层加 {} ，转换为object json
      */
     public static String toObjectJson(String json) {
