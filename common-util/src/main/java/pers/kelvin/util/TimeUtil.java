@@ -11,6 +11,7 @@ public class TimeUtil {
 
     /**
      * Date转String
+     * todo：DateUtils.parseDateStrictly("20171012 14:30:12", Locale.TRADITIONAL_CHINESE, "yyyyMMdd hh:mm:ss")
      */
     public static String dateToString(Date data, String dateFormatPattern) {
         SimpleDateFormat sdf = new SimpleDateFormat(dateFormatPattern);

@@ -1,12 +1,12 @@
 package org.apache.jmeter.config;
 
-import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import org.apache.jmeter.testelement.TestStateListener;
 import org.apache.jmeter.threads.JMeterContextService;
 import org.apache.jmeter.util.JMeterUtils;
 import org.slf4j.Logger;
 import pers.kelvin.util.exception.ExceptionUtil;
+import pers.kelvin.util.json.JsonUtil;
 import pers.kelvin.util.log.LogUtil;
 
 import java.io.File;
@@ -31,34 +31,67 @@ public class ENVDataSet extends ConfigTestElement implements TestStateListener {
         super();
     }
 
+    /**
+     * 获取环境变量配置文件名称
+     */
     public String getFileName() {
         return JMeterUtils.getPropDefault("configName", getPropertyAsString(ENVDataSet.CONFIG_NAME));
     }
 
+    /**
+     * 获取环境变量配置文件路径
+     */
     public String getFilePath() {
         return JMeterUtils.getJMeterHome() + File.separator + "config" + File.separator + getFileName();
     }
 
+
+    /**
+     * 读取json文件转换为HashMap
+     *
+     * @param filePath 文件路径
+     */
     public HashMap<String, String> getEnvMap(String filePath) {
         HashMap<String, String> envMap = new HashMap<>();
+        FileInputStream input = null;
+        InputStreamReader reader = null;
         try {
             if (isEnvFile(filePath)) {
-                FileInputStream input = new FileInputStream(filePath);
-                InputStreamReader reader = new InputStreamReader(input, Charset.forName("UTF-8"));
+                input = new FileInputStream(filePath);
+                reader = new InputStreamReader(input, Charset.forName("UTF-8"));
                 Type hashMap = new TypeToken<HashMap<String, String>>() {
                 }.getType();
-                envMap = new Gson().fromJson(reader, hashMap);
-                reader.close();
-                input.close();
+                envMap = JsonUtil.getGsonInstance().fromJson(reader, hashMap);
             } else {
                 logger.error("{}非\".env\"后缀配置文件", filePath);
             }
-        } catch (IOException e) {
+        } catch (Exception e) {
             logger.error(ExceptionUtil.getStackTrace(e));
+        } finally {
+            // 关闭流
+            try {
+                if (reader != null) {
+                    reader.close();
+                }
+            } catch (IOException e) {
+                logger.error(ExceptionUtil.getStackTrace(e));
+            }
+            try {
+                if (input != null) {
+                    input.close();
+                }
+            } catch (IOException e) {
+                logger.error(ExceptionUtil.getStackTrace(e));
+            }
         }
         return envMap;
     }
 
+    /**
+     * 判断文件后缀是否为env
+     *
+     * @param filePath 文件路径
+     */
     private Boolean isEnvFile(String filePath) {
         File file = new File(filePath);
         return file.isFile() && filePath.endsWith("env");

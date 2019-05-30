@@ -10,6 +10,7 @@ import org.apache.jorphan.gui.GuiUtils;
 import org.apache.jorphan.gui.ObjectTableModel;
 import org.apache.jorphan.reflect.Functor;
 import pers.kelvin.util.GuiUtil;
+import pers.kelvin.util.StringUtil;
 
 import javax.swing.*;
 import java.awt.*;
@@ -90,7 +91,7 @@ public class ENVDataSetGui extends AbstractConfigGui {
         String fileName = el.getPropertyAsString(ENVDataSet.CONFIG_NAME);
         configNameComboBox.setSelectedItem(fileName);
         tableModel.clearData();
-        if (el instanceof ENVDataSet && fileName != null && !fileName.isEmpty()) {
+        if (el instanceof ENVDataSet && StringUtil.isNotBlank(fileName)) {
             ENVDataSet envDataSet = (ENVDataSet) el;
             HashMap<String, String> envMap = envDataSet.getEnvMap(envDataSet.getFilePath());
             for (Map.Entry<String, String> entry : envMap.entrySet()) {
