@@ -1,16 +1,10 @@
 package pers.kelvin.util.ssh;
 
 
-import com.jcraft.jsch.ChannelExec;
-import com.jcraft.jsch.JSch;
-import com.jcraft.jsch.JSchException;
-import com.jcraft.jsch.Session;
+import com.jcraft.jsch.*;
 import org.apache.commons.io.IOUtils;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
@@ -81,45 +75,6 @@ public class SSHUtil {
         if (session != null && session.isConnected()) {
             session.disconnect();
         }
-    }
-
-    /**
-     * telnet连接
-     *
-     * @param session ssh会话对象
-     * @param host    地址
-     * @param port    端口
-     * @return
-     * @throws IOException
-     * @throws JSchException
-     */
-    public static String telnet(Session session, String host, String port) throws IOException, JSchException {
-        return executeCommand(session, "telnet " + host + " " + port);
-    }
-
-    /**
-     * 登出telnet
-     *
-     * @param session ssh会话对象
-     * @return
-     * @throws IOException
-     * @throws JSchException
-     */
-    public static String logoutTelnet(Session session) throws IOException, JSchException {
-        return executeCommand(session, "logout");
-    }
-
-    /**
-     * 调用dubbo接口
-     *
-     * @param session       ssh会话对象
-     * @param interfaceName 接口名称
-     * @param requestData   请求报文
-     * @return 响应报文
-     */
-    public String invokeDubbo(Session session, String interfaceName, String requestData)
-            throws IOException, JSchException {
-        return executeCommand(session, "invoke " + interfaceName + "(" + requestData + ")");
     }
 
 }

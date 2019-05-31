@@ -13,7 +13,7 @@ public class ConfigTest {
 
     @Test
     public void testGet() throws Exception {
-        String configFilePath = "F:\\Jmeter\\apache-jmeter-4.0\\config\\config.json";
+        String configFilePath = System.getProperty("user.dir")+"\\src\\test\\java\\pers\\kelvin\\util\\config.json";
         HashMap<String, String> configMap = Config.get(configFilePath);
         System.out.println(configMap);
     }

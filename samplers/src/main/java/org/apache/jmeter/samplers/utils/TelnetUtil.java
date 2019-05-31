@@ -25,8 +25,8 @@ public class TelnetUtil {
         // 设置连接超时时间ms
         telnet.setConnectTimeout(2000);
         telnet.connect(ip, Integer.parseInt(port));
-        in = new InputStreamReader(telnet.getInputStream(), Charset.forName("GBK"));
-        out = new PrintStream(telnet.getOutputStream(), true, "GBK");
+        in = new InputStreamReader(telnet.getInputStream(), Charset.forName("UTF-8"));
+        out = new PrintStream(telnet.getOutputStream(), true, "UTF-8");
     }
 
     public TelnetUtil(String ip, String port, String charset) throws IOException {
