@@ -36,10 +36,14 @@ public class DubboTelnetByFileGui extends AbstractSamplerGui {
     private JSyntaxTextArea paramsTextArea;
     private JSyntaxTextArea jsonPathsTextArea;
     private JTextField expectionTextField;
-    private JTextField telnetEncodeTextField;
+    private JTextField encodeTextField;
     private JComboBox<String> useTemplateComboBox;
     private JTextField interfaceSystemTextField;
     private JSyntaxTextArea templateContentTextArea;
+    private JTextField sshAddressTextField;
+    private JTextField sshUserNameTextField;
+    private JTextField sshPasswordTextField;
+
 
     public DubboTelnetByFileGui() {
         init();
@@ -57,18 +61,24 @@ public class DubboTelnetByFileGui extends AbstractSamplerGui {
         interfacePanel.add(getParamsPanel());
         interfacePanel.add(getJsonPathPanel());
         interfacePanel.add(getExpectionPanel());
-        interfacePanel.add(getTelnetEncodePanel());
+        interfacePanel.add(getEncodePanel());
 
         VerticalPanel templatePanel = new VerticalPanel();
-        templatePanel.setBorder(BorderFactory.createTitledBorder(
-                BorderFactory.createEtchedBorder(), "Configure the Template"));
+        templatePanel.setBorder(GuiUtil.createTitledBorder("Configure the Template"));
         templatePanel.add(getUseTemplatePanel());
         templatePanel.add(getInterfaceSystemPanel());
         templatePanel.add(getTemplateContentPanel());
 
+        VerticalPanel sshPanel = new VerticalPanel();
+        sshPanel.setBorder(GuiUtil.createTitledBorder("Configure the SSH"));
+        sshPanel.add(getSSHAddressPanel());
+        sshPanel.add(getSSHUserNamePanel());
+        sshPanel.add(getSSHPasswordPanel());
+
         VerticalPanel mainPanel = new VerticalPanel();
         mainPanel.add(interfacePanel);
         mainPanel.add(templatePanel);
+        mainPanel.add(sshPanel);
 
         add(mainPanel, BorderLayout.CENTER);
     }
@@ -98,9 +108,12 @@ public class DubboTelnetByFileGui extends AbstractSamplerGui {
         element.setProperty(DubboTelnetByFile.PARAMS, paramsTextArea.getText());
         element.setProperty(DubboTelnetByFile.JSON_PATHS, jsonPathsTextArea.getText());
         element.setProperty(DubboTelnetByFile.EXPECTION, expectionTextField.getText());
-        element.setProperty(DubboTelnetByFile.TELNET_ENCODE, telnetEncodeTextField.getText());
+        element.setProperty(DubboTelnetByFile.ENCODE, encodeTextField.getText());
         element.setProperty(DubboTelnetByFile.USE_TEMPLATE, (String) useTemplateComboBox.getSelectedItem());
         element.setProperty(DubboTelnetByFile.INTERFACE_SYSTEM, interfaceSystemTextField.getText());
+        element.setProperty(DubboTelnetByFile.SSH_ADDRESS, sshAddressTextField.getText());
+        element.setProperty(DubboTelnetByFile.SSH_USERNAME, sshUserNameTextField.getText());
+        element.setProperty(DubboTelnetByFile.SSH_PASSWORD, sshPasswordTextField.getText());
     }
 
     @Override
@@ -113,13 +126,16 @@ public class DubboTelnetByFileGui extends AbstractSamplerGui {
         jsonPathsTextArea.setInitialText(el.getPropertyAsString(DubboTelnetByFile.JSON_PATHS));
         jsonPathsTextArea.setCaretPosition(0);
         expectionTextField.setText(el.getPropertyAsString(DubboTelnetByFile.EXPECTION));
-        telnetEncodeTextField.setText(el.getPropertyAsString(DubboTelnetByFile.TELNET_ENCODE));
+        encodeTextField.setText(el.getPropertyAsString(DubboTelnetByFile.ENCODE));
         useTemplateComboBox.setSelectedItem(el.getPropertyAsString(DubboTelnetByFile.USE_TEMPLATE));
         interfaceSystemTextField.setText(el.getPropertyAsString(DubboTelnetByFile.INTERFACE_SYSTEM));
         templateContentTextArea.setInitialText(getTemplateContent(
                 el.getPropertyAsBoolean(DubboTelnetByFile.USE_TEMPLATE, false),
                 el.getPropertyAsString(DubboTelnetByFile.INTERFACE_NAME)));
         templateContentTextArea.setCaretPosition(0);
+        sshAddressTextField.setText(el.getPropertyAsString(DubboTelnetByFile.SSH_ADDRESS));
+        sshUserNameTextField.setText(el.getPropertyAsString(DubboTelnetByFile.SSH_USERNAME));
+        sshPasswordTextField.setText(el.getPropertyAsString(DubboTelnetByFile.SSH_PASSWORD));
     }
 
     @Override
@@ -133,6 +149,9 @@ public class DubboTelnetByFileGui extends AbstractSamplerGui {
         useTemplateComboBox.setSelectedItem("");
         interfaceSystemTextField.setText("");
         templateContentTextArea.setInitialText("");
+        sshAddressTextField.setText("");
+        sshUserNameTextField.setText("");
+        sshPasswordTextField.setText("");
     }
 
     private JPanel getAddressPanel() {
@@ -160,7 +179,7 @@ public class DubboTelnetByFileGui extends AbstractSamplerGui {
     }
 
     private JPanel getParamsPanel() {
-        paramsTextArea = JSyntaxTextArea.getInstance(5, 20);
+        paramsTextArea = JSyntaxTextArea.getInstance(5, 10);
         paramsTextArea.setName(DubboTelnetByFile.PARAMS);
 
         JLabel label = GuiUtil.createTextAreaLabel("Params:", paramsTextArea, LABEL_WIDTH, LABEL_HEIGHT);
@@ -172,7 +191,7 @@ public class DubboTelnetByFileGui extends AbstractSamplerGui {
     }
 
     private JPanel getJsonPathPanel() {
-        jsonPathsTextArea = JSyntaxTextArea.getInstance(2, 20);
+        jsonPathsTextArea = JSyntaxTextArea.getInstance(2, 10);
         jsonPathsTextArea.setName(DubboTelnetByFile.JSON_PATHS);
 
         JLabel label = GuiUtil.createTextAreaLabel("JsonPaths:", jsonPathsTextArea, LABEL_WIDTH, LABEL_HEIGHT);
@@ -195,15 +214,15 @@ public class DubboTelnetByFileGui extends AbstractSamplerGui {
         return panel;
     }
 
-    private JPanel getTelnetEncodePanel() {
-        telnetEncodeTextField = new JTextField(10);
-        telnetEncodeTextField.setName(DubboTelnetByFile.EXPECTION);
+    private JPanel getEncodePanel() {
+        encodeTextField = new JTextField(10);
+        encodeTextField.setName(DubboTelnetByFile.EXPECTION);
 
-        JLabel label = GuiUtil.createTextFieldLabel("TelnetEncode:", telnetEncodeTextField, LABEL_WIDTH, LABEL_HEIGHT);
+        JLabel label = GuiUtil.createTextFieldLabel("Encode:", encodeTextField, LABEL_WIDTH, LABEL_HEIGHT);
 
         JPanel panel = new JPanel(new BorderLayout(H_GAP, V_GAP));
         panel.add(label, BorderLayout.WEST);
-        panel.add(telnetEncodeTextField, BorderLayout.CENTER);
+        panel.add(encodeTextField, BorderLayout.CENTER);
         return panel;
     }
 
@@ -234,7 +253,7 @@ public class DubboTelnetByFileGui extends AbstractSamplerGui {
     }
 
     private JPanel getTemplateContentPanel() {
-        templateContentTextArea = JSyntaxTextArea.getInstance(8, 20);
+        templateContentTextArea = JSyntaxTextArea.getInstance(8, 10);
         templateContentTextArea.setName(DubboTelnetByFile.TEMPLATE_CONTENT);
 
         JLabel label = GuiUtil.createTextAreaLabel("TemplateContent:", templateContentTextArea, LABEL_WIDTH, LABEL_HEIGHT);
@@ -242,6 +261,42 @@ public class DubboTelnetByFileGui extends AbstractSamplerGui {
         JPanel panel = new JPanel(new BorderLayout(H_GAP, V_GAP));
         panel.add(label, BorderLayout.WEST);
         panel.add(JTextScrollPane.getInstance(templateContentTextArea), BorderLayout.CENTER);
+        return panel;
+    }
+
+    private JPanel getSSHAddressPanel() {
+        sshAddressTextField = new JTextField(10);
+        sshAddressTextField.setName(DubboTelnetByFile.SSH_ADDRESS);
+
+        JLabel label = GuiUtil.createTextFieldLabel("sshAddress:", sshAddressTextField, LABEL_WIDTH, LABEL_HEIGHT);
+
+        JPanel panel = new JPanel(new BorderLayout(H_GAP, V_GAP));
+        panel.add(label, BorderLayout.WEST);
+        panel.add(sshAddressTextField, BorderLayout.CENTER);
+        return panel;
+    }
+
+    private JPanel getSSHUserNamePanel() {
+        sshUserNameTextField = new JTextField(10);
+        sshUserNameTextField.setName(DubboTelnetByFile.SSH_USERNAME);
+
+        JLabel label = GuiUtil.createTextFieldLabel("sshUserName:", sshUserNameTextField, LABEL_WIDTH, LABEL_HEIGHT);
+
+        JPanel panel = new JPanel(new BorderLayout(H_GAP, V_GAP));
+        panel.add(label, BorderLayout.WEST);
+        panel.add(sshUserNameTextField, BorderLayout.CENTER);
+        return panel;
+    }
+
+    private JPanel getSSHPasswordPanel() {
+        sshPasswordTextField = new JTextField(10);
+        sshPasswordTextField.setName(DubboTelnetByFile.SSH_PASSWORD);
+
+        JLabel label = GuiUtil.createTextFieldLabel("sshPassword:", sshPasswordTextField, LABEL_WIDTH, LABEL_HEIGHT);
+
+        JPanel panel = new JPanel(new BorderLayout(H_GAP, V_GAP));
+        panel.add(label, BorderLayout.WEST);
+        panel.add(sshPasswordTextField, BorderLayout.CENTER);
         return panel;
     }
 

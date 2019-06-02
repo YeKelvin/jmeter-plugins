@@ -21,18 +21,18 @@ public class TelnetUtil {
     private InputStreamReader in;
     private PrintStream out;
 
-    public TelnetUtil(String ip, String port) throws IOException {
-        // 设置连接超时时间ms
-        telnet.setConnectTimeout(2000);
-        telnet.connect(ip, Integer.parseInt(port));
-        in = new InputStreamReader(telnet.getInputStream(), Charset.forName("UTF-8"));
-        out = new PrintStream(telnet.getOutputStream(), true, "UTF-8");
+    public TelnetUtil(String host, String port) throws IOException {
+        initTelnet(host, port, "UTF-8");
     }
 
-    public TelnetUtil(String ip, String port, String charset) throws IOException {
+    public TelnetUtil(String host, String port, String charset) throws IOException {
+        initTelnet(host, port, charset);
+    }
+
+    private void initTelnet(String host, String port, String charset) throws IOException {
         // 设置连接超时时间ms
         telnet.setConnectTimeout(2000);
-        telnet.connect(ip, Integer.parseInt(port));
+        telnet.connect(host, Integer.parseInt(port));
         in = new InputStreamReader(telnet.getInputStream(), Charset.forName(charset));
         out = new PrintStream(telnet.getOutputStream(), true, charset);
     }
@@ -40,12 +40,12 @@ public class TelnetUtil {
     /**
      * 调用dubbo接口
      *
-     * @param method  接口名
+     * @param interfaceName  接口名
      * @param request 请求报文
      * @return 响应报文
      */
-    public String invokeDubbo(String method, String request) {
-        return sendCommand("invoke " + method + "(" + request + ")");
+    public String invokeDubbo(String interfaceName, String request) {
+        return sendCommand("invoke " + interfaceName + "(" + request + ")");
     }
 
     /**

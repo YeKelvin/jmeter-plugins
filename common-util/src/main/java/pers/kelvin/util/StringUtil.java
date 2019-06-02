@@ -13,4 +13,12 @@ public class StringUtil {
     public static boolean isNotBlank(String str) {
         return !isBlank(str);
     }
+
+    public static boolean isNotBlank(String... strArray) {
+        boolean result = false;
+        for (String str : strArray) {
+            result = !isBlank(str);
+        }
+        return result;
+    }
 }

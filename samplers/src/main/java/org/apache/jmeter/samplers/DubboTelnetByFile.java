@@ -3,6 +3,7 @@ package org.apache.jmeter.samplers;
 import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
 import com.jayway.jsonpath.DocumentContext;
+import com.jcraft.jsch.JSchException;
 import groovy.lang.Binding;
 import org.apache.jmeter.engine.util.ValueReplacer;
 import org.apache.jmeter.functions.InvalidVariableException;
@@ -19,6 +20,7 @@ import pers.kelvin.util.json.JsonFileUtil;
 import pers.kelvin.util.json.JsonPathUtil;
 import pers.kelvin.util.json.JsonUtil;
 import pers.kelvin.util.log.LogUtil;
+import pers.kelvin.util.ssh.SSHTelnetClient;
 
 import java.io.File;
 import java.io.IOException;
@@ -44,13 +46,17 @@ public class DubboTelnetByFile extends AbstractSampler {
     public static final String PARAMS = "DubboTelnetByFile.Params";
     public static final String JSON_PATHS = "DubboTelnetByFile.JsonPaths";
     public static final String EXPECTION = "DubboTelnetByFile.Expection";
-    public static final String TELNET_ENCODE = "DubboTelnetByFile.TelnetEncode";
+    public static final String ENCODE = "DubboTelnetByFile.Encode";
     public static final String USE_TEMPLATE = "DubboTelnetByFile.UseTemplate";
     public static final String INTERFACE_SYSTEM = "DubboTelnetByFile.InterfaceSystem";
     public static final String TEMPLATE_CONTENT = "DubboTelnetByFile.TemplateContent";
+    public static final String SSH_ADDRESS = "DubboTelnetByFile.Address";
+    public static final String SSH_USERNAME = "DubboTelnetByFile.SSHUserName";
+    public static final String SSH_PASSWORD = "DubboTelnetByFile.SSHPassword";
     private static final String REPLACE_VALUE = "DubboTelnetByFile.ReplaceValue";
     public static final String CONFIG_FILE_PATH = JMeterUtils.getJMeterHome() + File.separator + "config" +
             File.separator + "config.json";
+    private static final int defaultTimeout = 5000;
 
     @Override
     public SampleResult sample(Entry entry) {
@@ -65,7 +71,7 @@ public class DubboTelnetByFile extends AbstractSampler {
             String requestData = getRequestData(getParams(), getUseTemplate());
             result.setSamplerData(requestData);
             result.sampleStart();
-            responseData = invokeMethod(getAddress(), getInterfaceName(), requestData);
+            responseData = invokeDubbo(getAddress(), getInterfaceName(), requestData);
             isSuccess = getSuccessful(responseData, getExpection());
         } catch (Exception e) {
             // 异常后，判断是否已开始统计sample时间，没有则开始统计
@@ -168,6 +174,11 @@ public class DubboTelnetByFile extends AbstractSampler {
         }
     }
 
+    /**
+     * 获取JMeter系统变量
+     *
+     * @param map
+     */
     private void putAllProps(Map<String, String> map) {
         Properties props = JMeterUtils.getJMeterProperties();
         for (String keyName : props.stringPropertyNames()) {
@@ -175,6 +186,11 @@ public class DubboTelnetByFile extends AbstractSampler {
         }
     }
 
+    /**
+     * 获取JMeter线程变量
+     *
+     * @param map
+     */
     private void putAllVars(Map<String, String> map) {
         JMeterVariables vars = JMeterContextService.getContext().getVariables();
         for (Map.Entry<String, Object> var : vars.entrySet()) {
@@ -209,17 +225,60 @@ public class DubboTelnetByFile extends AbstractSampler {
     /**
      * telnet invoke dubbo接口
      *
-     * @param address       dubbo接口地址
-     * @param interfaceName dubbo接口名称
-     * @param requestData   json报文
+     * @param address       地址，格式为host:port
+     * @param interfaceName 接口名称
+     * @param requestData   请求数据
      * @return 响应报文
      */
-    private String invokeMethod(String address, String interfaceName, String requestData) throws IOException {
+    private String invokeDubbo(String address, String interfaceName, String requestData) throws IOException, JSchException {
         String[] addressArray = address.split(":");
-        String ip = addressArray[0];
+        String host = addressArray[0];
         String port = addressArray.length == 1 ? "0000" : addressArray[1];
 
-        TelnetUtil telnet = new TelnetUtil(ip, port, getTelnetEncode());
+        if (isSSHTelnet()) {
+            return sshTelnetInvoke(host, port, interfaceName, requestData);
+        } else {
+            return telnetInvoke(host, port, interfaceName, requestData);
+        }
+    }
+
+    /**
+     * telnet直连服务器
+     *
+     * @param host          地址
+     * @param port          端口号
+     * @param interfaceName 接口名称
+     * @param requestData   请求数据
+     * @return 响应报文
+     * @throws IOException 输入输出流异常
+     */
+    private String telnetInvoke(String host, String port, String interfaceName, String requestData) throws IOException {
+        TelnetUtil telnet = new TelnetUtil(host, port, getTelnetEncode());
+        String response = telnet.invokeDubbo(interfaceName, requestData);
+        telnet.disconnect();
+        return response;
+    }
+
+    /**
+     * 先ssh连接跳板机后再telnet服务器
+     *
+     * @param host          地址
+     * @param port          端口号
+     * @param interfaceName 接口名称
+     * @param requestData   请求数据
+     * @return 响应报文
+     * @throws IOException   输入输出流异常
+     * @throws JSchException ssh连接异常
+     */
+    private String sshTelnetInvoke(String host, String port, String interfaceName, String requestData)
+            throws IOException, JSchException {
+        String[] sshAddressArray = getSSHAddress().split(":");
+        String sshHost = sshAddressArray[0];
+        String sshPort = sshAddressArray.length == 1 ? "22" : sshAddressArray[1];
+
+        SSHTelnetClient telnet = new SSHTelnetClient(sshHost, Integer.valueOf(sshPort),
+                getSSHUserName(), getSSHPassword(), defaultTimeout);
+        telnet.telnet(host, port);
         String response = telnet.invokeDubbo(interfaceName, requestData);
         telnet.disconnect();
         return response;
@@ -254,18 +313,29 @@ public class DubboTelnetByFile extends AbstractSampler {
         return responseData.contains(expection);
     }
 
+    /**
+     * 数据验证
+     */
     private void verifyData() {
         if (StringUtil.isBlank(getAddress())) {
-            throw new ServiceException("address 服务地址不能为空");
+            throw new ServiceException("address 服务器地址不能为空");
         }
         if (StringUtil.isBlank(getInterfaceName())) {
-            throw new ServiceException("interfaceName 接口名不能为空");
+            throw new ServiceException("interfaceName 接口名称不能为空");
         }
         if (!getUseTemplate() && StringUtil.isBlank(getParams())) {
-            throw new ServiceException("不使用json模版时，params 参数不能为空");
+            throw new ServiceException("不使用json模版时，params 请求参数不能为空");
         }
-        if (StringUtil.isBlank(getExpection())) {
-            throw new ServiceException("expection 预期结果不能为空");
+        if (isSSHTelnet()) {
+            if (StringUtil.isBlank(getSSHAddress())) {
+                throw new ServiceException("需要ssh连接时，address不能为空，格式为host:port");
+            }
+            if (StringUtil.isBlank(getSSHUserName())) {
+                throw new ServiceException("需要ssh连接时，userName不能为空");
+            }
+            if (StringUtil.isBlank(getSSHPassword())) {
+                throw new ServiceException("需要ssh连接时，password不能为空");
+            }
         }
     }
 
@@ -290,7 +360,7 @@ public class DubboTelnetByFile extends AbstractSampler {
     }
 
     private String getTelnetEncode() {
-        return getPropertyAsString(TELNET_ENCODE);
+        return getPropertyAsString(ENCODE, "UTF-8");
     }
 
     private boolean getUseTemplate() {
@@ -299,5 +369,22 @@ public class DubboTelnetByFile extends AbstractSampler {
 
     private String getInterfaceSystem() {
         return getPropertyAsString(INTERFACE_SYSTEM);
+    }
+
+    private String getSSHAddress() {
+        return getPropertyAsString(SSH_ADDRESS, "");
+    }
+
+
+    private String getSSHUserName() {
+        return getPropertyAsString(SSH_USERNAME, "");
+    }
+
+    private String getSSHPassword() {
+        return getPropertyAsString(SSH_PASSWORD, "");
+    }
+
+    private boolean isSSHTelnet() {
+        return StringUtil.isNotBlank(getSSHAddress(), getSSHUserName(), getSSHPassword());
     }
 }

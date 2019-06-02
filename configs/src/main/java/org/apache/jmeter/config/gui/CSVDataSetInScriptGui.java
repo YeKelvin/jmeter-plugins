@@ -105,7 +105,7 @@ public class CSVDataSetInScriptGui extends AbstractConfigGui {
     }
 
     private JPanel getDataPanel() {
-        dataTextArea = JSyntaxTextArea.getInstance(20, 20);
+        dataTextArea = JSyntaxTextArea.getInstance(20, 10);
         dataTextArea.setName(CSVDataSetInScript.DATA);
 
         JLabel label = new JLabel("CSV Data:");

@@ -29,7 +29,7 @@ public class GuiUtil {
         label.setLabelFor(labelFor);
         label.setHorizontalAlignment(SwingConstants.RIGHT);
         label.setVerticalAlignment(SwingConstants.CENTER);
-        label.setPreferredSize(new Dimension(width, height));
+//        label.setPreferredSize(new Dimension(width, height));
         return label;
     }
 
