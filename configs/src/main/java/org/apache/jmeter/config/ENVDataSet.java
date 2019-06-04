@@ -25,7 +25,7 @@ import java.util.Map;
  */
 public class ENVDataSet extends ConfigTestElement implements TestStateListener {
     private static final Logger logger = LogUtil.getLogger(ENVDataSet.class);
-    public static final String CONFIG_NAME = "ConfigName";
+    public static final String CONFIG_NAME = "ENVDataSet.ConfigName";
 
     public ENVDataSet() {
         super();

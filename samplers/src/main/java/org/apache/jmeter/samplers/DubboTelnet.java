@@ -32,7 +32,7 @@ public class DubboTelnet extends AbstractJavaSamplerClient {
         params.addArgument("address", "");
         params.addArgument("interface", "");
         params.addArgument("params", "");
-        params.addArgument("expection", "");
+        params.addArgument("expectation", "");
         params.addArgument("encode", "");
 //        params.addArgument("sshAddress", "");
 //        params.addArgument("sshUserName", "");
@@ -60,7 +60,7 @@ public class DubboTelnet extends AbstractJavaSamplerClient {
     @Override
     public SampleResult runTest(JavaSamplerContext ctx) {
         String params = ctx.getParameter("params", "");
-        String expection = ctx.getParameter("expection", "");
+        String expection = ctx.getParameter("expectation", "");
         String dubboResponse = "";
         boolean isSuccess = false;
 

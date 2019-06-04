@@ -91,7 +91,7 @@ public class TraverseEmptyValueGui extends AbstractConfigGui {
         if (!el.getPropertyAsBoolean(TraverseEmptyValue.USE_TEMPLATE, false)) {
             el.setProperty(TraverseEmptyValue.PATAMS, patamsTextArea.getText());
         }
-        el.setProperty(TraverseEmptyValue.EMPTY_CHECK_EXPECTION, emptyCheckExpectionTextArea.getText());
+        el.setProperty(TraverseEmptyValue.EMPTY_CHECK_EXPECTATION, emptyCheckExpectionTextArea.getText());
     }
 
     /**
@@ -105,7 +105,7 @@ public class TraverseEmptyValueGui extends AbstractConfigGui {
         interfaceSystemTextField.setText(el.getPropertyAsString(TraverseEmptyValue.INTERFACE_NAME));
         patamsTextArea.setInitialText(el.getPropertyAsString(TraverseEmptyValue.PATAMS));
         patamsTextArea.setCaretPosition(0);
-        emptyCheckExpectionTextArea.setInitialText(el.getPropertyAsString(TraverseEmptyValue.EMPTY_CHECK_EXPECTION));
+        emptyCheckExpectionTextArea.setInitialText(el.getPropertyAsString(TraverseEmptyValue.EMPTY_CHECK_EXPECTATION));
         emptyCheckExpectionTextArea.setInitialText(getTemplateContent(
                 el.getPropertyAsBoolean(TraverseEmptyValue.USE_TEMPLATE, false),
                 el.getPropertyAsString(TraverseEmptyValue.INTERFACE_NAME)));
@@ -174,7 +174,7 @@ public class TraverseEmptyValueGui extends AbstractConfigGui {
 
     private JPanel getEmptyCheckExpectionPanel() {
         emptyCheckExpectionTextArea = JSyntaxTextArea.getInstance(8, 10);
-        emptyCheckExpectionTextArea.setName(TraverseEmptyValue.EMPTY_CHECK_EXPECTION);
+        emptyCheckExpectionTextArea.setName(TraverseEmptyValue.EMPTY_CHECK_EXPECTATION);
 
         JLabel label = GuiUtil.createTextAreaLabel("EmptyCheckExpection:", emptyCheckExpectionTextArea, LABEL_WIDTH, LABEL_HEIGHT);
 
@@ -190,7 +190,7 @@ public class TraverseEmptyValueGui extends AbstractConfigGui {
                 "2. EmptyCheckExpection为接口各字段非空校验预期结果，例如： \"key1\":true,\"key2\":false；\n" +
                 "3. 遍历的 key以 EmptyCheckExpection的内容为准；\n" +
                 "4. 请将线程组设置为无限循环，数据遍历完毕时线程组将自动停止循环；\n" +
-                "5. 请求报文变量名默认=params，预期结果变量名默认=expection，当前 JsonPath变量名默认=jsonPath；\n" +
+                "5. 请求报文变量名默认=params，预期结果变量名默认=expectation，当前 JsonPath变量名默认=jsonPath；\n" +
                 "6. 该插件中数据参数化不会替换具体的值，请在使用的位置利用 ${__eval(${params})} 函数替换。";
         JTextArea textArea = new JTextArea(note);
         textArea.setLineWrap(true);

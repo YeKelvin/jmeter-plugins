@@ -22,12 +22,14 @@ public class SSHTelnetClient {
     private OutputStream out;
     private PrintStream printStream;
     private ChannelShell channelShell;
+    private String charsetName;
     private int timeout;
 
-    public SSHTelnetClient(String host, int port, String userName, String password, int timeout)
+    public SSHTelnetClient(String host, int port, String userName, String password, String charsetName, int timeout)
             throws JSchException, IOException {
-        JSch jsch = new JSch();
+        this.charsetName = charsetName;
         this.timeout = timeout;
+        JSch jsch = new JSch();
         session = jsch.getSession(userName, host, port);
         session.setPassword(password);
         // 第一次访问服务器时不用输入yes
@@ -43,36 +45,11 @@ public class SSHTelnetClient {
         //写入该流的数据  都将发送到远端
         out = channelShell.getOutputStream();
         //使用PrintStream 是为了使用println 这个方法，不需要每次手动给命令加\n
-        printStream = new PrintStream(out, true, "UTF-8");
+        printStream = new PrintStream(out, true, charsetName);
 //        System.out.println(readContainUntil("[" + userName));
         // 读取一次，减少输入流的消息
         readContainUntil("[" + userName);
     }
-
-//    public SSHTelnetClient(String host, int port, String userName, String password, int timeout, String googleCode)
-//            throws JSchException, IOException {
-//        JSch jsch = new JSch();
-//        this.timeout = timeout;
-//        session = jsch.getSession(userName, host, port);
-//        // 第一次访问服务器时不用输入yes
-//        session.setConfig("StrictHostKeyChecking", "no");
-//        session.setConfig("PreferredAuthentications", "keyboard-interactive,password");
-//        // 超时等待时间，单位毫秒
-//        session.setTimeout(timeout);
-//        session.connect();
-//        channelShell = (ChannelShell) session.openChannel("shell");
-//        //从远端到达的数据  从这个流读取
-//        in = channelShell.getInputStream();
-//        channelShell.setPty(true);
-//        channelShell.connect();
-//        //写入该流的数据  都将发送到远端
-//        out = channelShell.getOutputStream();
-//        //使用PrintStream 是为了使用println 这个方法，不需要每次手动给命令加\n
-//        printStream = new PrintStream(out);
-//        System.out.println(readContainUntil("[" + userName));
-//        // 读取一次，减少输入流的消息
-////        readContainUntil("[" + userName, timeout);
-//    }
 
     /**
      * telnet连接
@@ -150,27 +127,28 @@ public class SSHTelnetClient {
         byte[] tmp = new byte[10240];
         long startTime = System.currentTimeMillis();
         loopRead:
-            while (true) {
-                // 超时判断
-                long currentTime = System.currentTimeMillis();
-                if (currentTime - startTime > timeout) break;
-                if (in.available() > 0) {
-                    int i = in.read(tmp, 0, 10240);
-                    if (i < 0) break;
-                    String result = new String(tmp, 0, i);
-                    sb.append(result);
-                    for (String containStr : containStrArray) {
-                        if (result.contains(containStr)) {
-                            break loopRead;
-                        }
+        while (true) {
+            // 超时判断
+            long currentTime = System.currentTimeMillis();
+            if (currentTime - startTime > timeout) break;
+            if (in.available() > 0) {
+                int i = in.read(tmp, 0, 10240);
+                // read()返回-1时表示input stream已无数据
+                if (i < 0) break;
+                String result = new String(tmp, 0, i, charsetName);
+                sb.append(result);
+                for (String containStr : containStrArray) {
+                    if (result.contains(containStr)) {
+                        break loopRead;
                     }
                 }
             }
+        }
         return sb.toString();
     }
 
     /**
-     * 去读消息，直到消息包含指定的字符串，或超时
+     * 读消息，直到消息包含指定的字符串，或超时
      */
     public String readContainUntil(String containStr) throws IOException {
         StringBuffer sb = new StringBuffer();
@@ -182,11 +160,39 @@ public class SSHTelnetClient {
             if (currentTime - startTime > timeout) break;
             if (in.available() > 0) {
                 int i = in.read(tmp, 0, 1024);
+                // read()返回-1时表示input stream已无数据
                 if (i < 0) break;
-                String result = new String(tmp, 0, i);
+                String result = new String(tmp, 0, i, charsetName);
                 sb.append(result);
                 if (result.contains(containStr)) {
                     break;
+                }
+            }
+        }
+        return sb.toString();
+    }
+
+    private String readUntil(String endStr) throws IOException {
+        StringBuffer sb = new StringBuffer();
+        boolean flag = endStr != null && endStr.length() > 0;
+        char lastChar = (char) -1;
+        if (flag) {
+            lastChar = endStr.charAt(endStr.length() - 1);
+        }
+        int charCode = -1;
+
+        // read()返回-1时表示input stream已无数据
+        while ((charCode = in.read()) != -1) {
+            char ch = (char) charCode;
+            sb.append(ch);
+            if (flag) {
+                if (ch == lastChar && sb.toString().endsWith(endStr)) {
+                    return sb.substring(0, sb.length() - 7);
+                }
+            } else {
+                //如果没指定结束标识,匹配到默认结束标识字符时返回结果
+                if (ch == '>') {
+                    return sb.toString();
                 }
             }
         }

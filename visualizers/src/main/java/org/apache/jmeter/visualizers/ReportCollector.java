@@ -28,9 +28,9 @@ import java.util.ArrayList;
 public class ReportCollector extends AbstractTestElement implements TestStateListener,
         ThreadListener, SampleListener, TestIterationListener {
     public static final String DATE_FORMAT_PATTERN = "yyyy.MM.dd HH:mm:ss";
-    public static final String REPORT_NAME = "ReportName";
-    public static final String IS_APPEND = "IsAppend";
-    public static final String DATA_FILE_NAME = "DataFileName";
+    public static final String REPORT_NAME = "ReportCollector.ReportName";
+    public static final String IS_APPEND = "ReportCollector.IsAppend";
+    public static final String DATA_FILE_NAME = "ReportCollector.DataFileName";
 
     public ReportCollector() {
         super();

@@ -20,7 +20,7 @@ import java.util.Iterator;
 
 /**
  * Dubbo接口报文非空校验自动遍历
- * User: KelvinYe
+ * User: Kelvin.Ye
  * Date: 2018-04-17
  * Time: 11:10
  */
@@ -30,8 +30,8 @@ public class TraverseEmptyValue extends ConfigTestElement implements LoopIterati
     public static final String USE_TEMPLATE = "TraverseEmptyValue.UseTemplate";
     public static final String INTERFACE_SYSTEM = "TraverseEmptyValue.InterfaceSystem";
     public static final String INTERFACE_NAME = "TraverseEmptyValue.InterfaceName";
-    public static final String PATAMS = "Patams";
-    public static final String EMPTY_CHECK_EXPECTION = "EmptyCheckExpection";
+    public static final String PATAMS = "TraverseEmptyValue.Patams";
+    public static final String EMPTY_CHECK_EXPECTATION = "TraverseEmptyValue.EmptyCheckExpectation";
     private Iterator jsonPathIterator = null;
     public static final String CONFIG_FILE_PATH = JMeterUtils.getJMeterHome() + File.separator + "config" +
             File.separator + "config.json";
@@ -44,7 +44,7 @@ public class TraverseEmptyValue extends ConfigTestElement implements LoopIterati
 
 
     /**
-     * 循环获取jsonPath、expection 和 params，并放入vars变量中
+     * 循环获取jsonPath、expectation 和 params，并放入vars变量中
      */
     private void setVariables() {
         Iterator iter = getJsonPathIterator();
@@ -54,7 +54,7 @@ public class TraverseEmptyValue extends ConfigTestElement implements LoopIterati
             if (isSuccess instanceof Boolean) {
                 String expection = String.valueOf(isSuccess);
                 getThreadContext().getVariables().put("jsonPath", jsonPath);
-                getThreadContext().getVariables().put("expection", expection);
+                getThreadContext().getVariables().put("expectation", expection);
                 putParams(jsonPath);
             } else {
                 setVariables();
@@ -111,7 +111,7 @@ public class TraverseEmptyValue extends ConfigTestElement implements LoopIterati
     public String getEmptyCheckExpection() {
         //使testEL元素只读，即不能参数化
         setRunningVersion(false);
-        return getPropertyAsString(TraverseEmptyValue.EMPTY_CHECK_EXPECTION);
+        return getPropertyAsString(TraverseEmptyValue.EMPTY_CHECK_EXPECTATION);
     }
 
     private boolean getUseTemplate() {

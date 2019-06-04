@@ -45,12 +45,12 @@ public class DubboTelnetByFile extends AbstractSampler {
     public static final String INTERFACE_NAME = "DubboTelnetByFile.InterfaceName";
     public static final String PARAMS = "DubboTelnetByFile.Params";
     public static final String JSON_PATHS = "DubboTelnetByFile.JsonPaths";
-    public static final String EXPECTION = "DubboTelnetByFile.Expection";
+    public static final String EXPECTATION = "DubboTelnetByFile.Expectation";
     public static final String ENCODE = "DubboTelnetByFile.Encode";
     public static final String USE_TEMPLATE = "DubboTelnetByFile.UseTemplate";
     public static final String INTERFACE_SYSTEM = "DubboTelnetByFile.InterfaceSystem";
     public static final String TEMPLATE_CONTENT = "DubboTelnetByFile.TemplateContent";
-    public static final String SSH_ADDRESS = "DubboTelnetByFile.Address";
+    public static final String SSH_ADDRESS = "DubboTelnetByFile.SSHAddress";
     public static final String SSH_USERNAME = "DubboTelnetByFile.SSHUserName";
     public static final String SSH_PASSWORD = "DubboTelnetByFile.SSHPassword";
     private static final String REPLACE_VALUE = "DubboTelnetByFile.ReplaceValue";
@@ -69,7 +69,7 @@ public class DubboTelnetByFile extends AbstractSampler {
             // 入参数据验证
             verifyData();
             String requestData = getRequestData(getParams(), getUseTemplate());
-            result.setSamplerData(requestData);
+            result.setSamplerData(getInterfaceName() + "(" + requestData + ")");
             result.sampleStart();
             responseData = invokeDubbo(getAddress(), getInterfaceName(), requestData);
             isSuccess = getSuccessful(responseData, getExpection());
@@ -253,7 +253,7 @@ public class DubboTelnetByFile extends AbstractSampler {
      * @throws IOException 输入输出流异常
      */
     private String telnetInvoke(String host, String port, String interfaceName, String requestData) throws IOException {
-        TelnetUtil telnet = new TelnetUtil(host, port, getTelnetEncode());
+        TelnetUtil telnet = new TelnetUtil(host, port, getEncode());
         String response = telnet.invokeDubbo(interfaceName, requestData);
         telnet.disconnect();
         return response;
@@ -277,7 +277,7 @@ public class DubboTelnetByFile extends AbstractSampler {
         String sshPort = sshAddressArray.length == 1 ? "22" : sshAddressArray[1];
 
         SSHTelnetClient telnet = new SSHTelnetClient(sshHost, Integer.valueOf(sshPort),
-                getSSHUserName(), getSSHPassword(), defaultTimeout);
+                getSSHUserName(), getSSHPassword(), getEncode(), defaultTimeout);
         telnet.telnet(host, port);
         String response = telnet.invokeDubbo(interfaceName, requestData);
         telnet.disconnect();
@@ -356,11 +356,11 @@ public class DubboTelnetByFile extends AbstractSampler {
     }
 
     private String getExpection() {
-        return getPropertyAsString(EXPECTION);
+        return getPropertyAsString(EXPECTATION);
     }
 
-    private String getTelnetEncode() {
-        return getPropertyAsString(ENCODE, "UTF-8");
+    private String getEncode() {
+        return StringUtil.isBlank(getPropertyAsString(ENCODE)) ? "UTF-8" : getPropertyAsString(ENCODE);
     }
 
     private boolean getUseTemplate() {
