@@ -11,6 +11,8 @@ import pers.kelvin.util.exception.ExceptionUtil;
 import pers.kelvin.util.log.LogUtil;
 
 /**
+ * SSH本地端口转发插件
+ *
  * @author Kelvin.Ye
  */
 public class SSHPortForwarding extends ConfigTestElement implements TestStateListener {

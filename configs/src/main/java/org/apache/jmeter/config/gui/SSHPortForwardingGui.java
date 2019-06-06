@@ -10,6 +10,8 @@ import javax.swing.*;
 import java.awt.*;
 
 /**
+ * SSH本地端口转发插件
+ *
  * @author Kelvin.Ye
  */
 public class SSHPortForwardingGui extends AbstractConfigGui {

@@ -10,6 +10,8 @@ import javax.swing.*;
 import java.awt.*;
 
 /**
+ * SSH连接信息配置插件
+ *
  * @author Kelvin.Ye
  */
 public class SSHConnectionConfigurationGui extends AbstractConfigGui {

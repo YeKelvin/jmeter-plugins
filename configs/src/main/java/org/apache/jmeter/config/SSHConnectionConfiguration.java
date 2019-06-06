@@ -7,6 +7,8 @@ import org.slf4j.Logger;
 import pers.kelvin.util.log.LogUtil;
 
 /**
+ * SSH连接信息配置插件
+ *
  * @author Kelvin.Ye
  */
 public class SSHConnectionConfiguration extends ConfigTestElement implements TestStateListener {
