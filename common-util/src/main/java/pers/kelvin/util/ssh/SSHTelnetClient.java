@@ -1,9 +1,6 @@
 package pers.kelvin.util.ssh;
 
-import com.jcraft.jsch.ChannelShell;
-import com.jcraft.jsch.JSch;
-import com.jcraft.jsch.JSchException;
-import com.jcraft.jsch.Session;
+import com.jcraft.jsch.*;
 import org.slf4j.Logger;
 import pers.kelvin.util.StringUtil;
 import pers.kelvin.util.exception.ServiceException;
@@ -25,8 +22,9 @@ public class SSHTelnetClient {
     private String charsetName;
     private int timeout;
 
-    public SSHTelnetClient(String host, int port, String userName, String password, String charsetName, int timeout)
-            throws JSchException, IOException {
+    public SSHTelnetClient(String host, int port,
+                           String userName, String password,
+                           String charsetName, int timeout) throws JSchException, IOException {
         this.charsetName = charsetName;
         this.timeout = timeout;
         JSch jsch = new JSch();
@@ -37,6 +35,39 @@ public class SSHTelnetClient {
         // 超时等待时间，单位毫秒
         session.setTimeout(timeout);
         session.connect();
+        channelShell = (ChannelShell) session.openChannel("shell");
+        //从远端到达的数据  从这个流读取
+        in = channelShell.getInputStream();
+        channelShell.setPty(true);
+        channelShell.connect();
+        //写入该流的数据  都将发送到远端
+        out = channelShell.getOutputStream();
+        //使用PrintStream 是为了使用println 这个方法，不需要每次手动给命令加\n
+        printStream = new PrintStream(out, true, charsetName);
+//        System.out.println(readContainUntil("[" + userName));
+        // 读取一次，减少输入流的消息
+        readContainUntil("[" + userName);
+    }
+
+    public SSHTelnetClient(String host, int port,
+                           String userName, String password,
+                           String charsetName, int timeout,
+                           String secretKey) throws JSchException, IOException {
+        this.charsetName = charsetName;
+        this.timeout = timeout;
+        JSch jsch = new JSch();
+        UserInfo ui = new SSHUserInfo();
+        session = jsch.getSession(userName, host, port);
+        session.setPassword(password);
+        // 第一次访问服务器时不用输入yes
+        session.setConfig("StrictHostKeyChecking", "no");
+        session.setConfig("PreferredAuthentications", "keyboard-interactive,password,publickey");
+        session.setConfig("ForwardAgent", "yes");
+        // 超时等待时间，单位毫秒
+        session.setTimeout(timeout);
+        session.setUserInfo(ui);
+        session.connect();
+
         channelShell = (ChannelShell) session.openChannel("shell");
         //从远端到达的数据  从这个流读取
         in = channelShell.getInputStream();

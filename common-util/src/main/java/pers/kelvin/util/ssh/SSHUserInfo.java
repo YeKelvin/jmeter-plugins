@@ -18,18 +18,18 @@ public class SSHUserInfo implements UserInfo, UIKeyboardInteractive {
         return new String[0];
     }
 
-    public void setPassphrase(String passphrase) {
-        this.passphrase = passphrase;
-    }
+//    public void setPassphrase(String passphrase) {
+//        this.passphrase = passphrase;
+//    }
 
     @Override
     public String getPassphrase() {
         return passphrase;
     }
 
-    public void setPassword(String password) {
-        this.password = password;
-    }
+//    public void setPassword(String password) {
+//        this.password = password;
+//    }
 
     @Override
     public String getPassword() {
@@ -48,7 +48,8 @@ public class SSHUserInfo implements UserInfo, UIKeyboardInteractive {
 
     @Override
     public boolean promptYesNo(String message) {
-        return false;
+        // true表示运行时不会提示输入跳板机和目标机器的密码
+        return true;
     }
 
     @Override
