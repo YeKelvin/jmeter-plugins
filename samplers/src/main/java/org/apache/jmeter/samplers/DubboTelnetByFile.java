@@ -50,9 +50,6 @@ public class DubboTelnetByFile extends AbstractSampler {
     public static final String USE_TEMPLATE = "DubboTelnetByFile.UseTemplate";
     public static final String INTERFACE_SYSTEM = "DubboTelnetByFile.InterfaceSystem";
     public static final String TEMPLATE_CONTENT = "DubboTelnetByFile.TemplateContent";
-    public static final String SSH_ADDRESS = "DubboTelnetByFile.SSHAddress";
-    public static final String SSH_USERNAME = "DubboTelnetByFile.SSHUserName";
-    public static final String SSH_PASSWORD = "DubboTelnetByFile.SSHPassword";
     private static final String REPLACE_VALUE = "DubboTelnetByFile.ReplaceValue";
     public static final String CONFIG_FILE_PATH = JMeterUtils.getJMeterHome() + File.separator + "config" +
             File.separator + "config.json";
@@ -231,6 +228,7 @@ public class DubboTelnetByFile extends AbstractSampler {
      * @return 响应报文
      */
     private String invokeDubbo(String address, String interfaceName, String requestData) throws IOException, JSchException {
+        // 分割地址，格式为host:port
         String[] addressArray = address.split(":");
         String host = addressArray[0];
         String port = addressArray.length == 1 ? "0000" : addressArray[1];
@@ -272,6 +270,7 @@ public class DubboTelnetByFile extends AbstractSampler {
      */
     private String sshTelnetInvoke(String host, String port, String interfaceName, String requestData)
             throws IOException, JSchException {
+        // 分割地址，格式为host:port
         String[] sshAddressArray = getSSHAddress().split(":");
         String sshHost = sshAddressArray[0];
         String sshPort = sshAddressArray.length == 1 ? "22" : sshAddressArray[1];
@@ -326,17 +325,6 @@ public class DubboTelnetByFile extends AbstractSampler {
         if (!getUseTemplate() && StringUtil.isBlank(getParams())) {
             throw new ServiceException("不使用json模版时，params 请求参数不能为空");
         }
-        if (isSSHTelnet()) {
-            if (StringUtil.isBlank(getSSHAddress())) {
-                throw new ServiceException("需要ssh连接时，address不能为空，格式为host:port");
-            }
-            if (StringUtil.isBlank(getSSHUserName())) {
-                throw new ServiceException("需要ssh连接时，userName不能为空");
-            }
-            if (StringUtil.isBlank(getSSHPassword())) {
-                throw new ServiceException("需要ssh连接时，password不能为空");
-            }
-        }
     }
 
     private String getAddress() {
@@ -372,19 +360,18 @@ public class DubboTelnetByFile extends AbstractSampler {
     }
 
     private String getSSHAddress() {
-        return getPropertyAsString(SSH_ADDRESS, "");
+        return JMeterUtils.getProperty("sshAddress");
     }
 
-
     private String getSSHUserName() {
-        return getPropertyAsString(SSH_USERNAME, "");
+        return JMeterUtils.getProperty("sshUserName");
     }
 
     private String getSSHPassword() {
-        return getPropertyAsString(SSH_PASSWORD, "");
+        return JMeterUtils.getProperty("sshPassword");
     }
 
     private boolean isSSHTelnet() {
-        return StringUtil.isNotBlank(getSSHAddress(), getSSHUserName(), getSSHPassword());
+        return Boolean.valueOf(JMeterUtils.getPropDefault("isSSHConnect", "false"));
     }
 }

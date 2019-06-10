@@ -7,17 +7,17 @@ import pers.kelvin.util.exception.ServiceException;
 import pers.kelvin.util.log.LogUtil;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.InputStreamReader;
 import java.io.PrintStream;
+import java.nio.charset.Charset;
 
 public class SSHTelnetClient {
     private static final Logger logger = LogUtil.getLogger(SSHTelnetClient.class);
+    private static final String DUBBO_FLAG = "dubbo>";
 
     private Session session;
-    private InputStream in;
-    private OutputStream out;
-    private PrintStream printStream;
+    private InputStreamReader in;
+    private PrintStream out;
     private ChannelShell channelShell;
     private String charsetName;
     private int timeout;
@@ -35,18 +35,8 @@ public class SSHTelnetClient {
         // 超时等待时间，单位毫秒
         session.setTimeout(timeout);
         session.connect();
-        channelShell = (ChannelShell) session.openChannel("shell");
-        //从远端到达的数据  从这个流读取
-        in = channelShell.getInputStream();
-        channelShell.setPty(true);
-        channelShell.connect();
-        //写入该流的数据  都将发送到远端
-        out = channelShell.getOutputStream();
-        //使用PrintStream 是为了使用println 这个方法，不需要每次手动给命令加\n
-        printStream = new PrintStream(out, true, charsetName);
-//        System.out.println(readContainUntil("[" + userName));
-        // 读取一次，减少输入流的消息
-        readContainUntil("[" + userName);
+        openChannelByShell();
+
     }
 
     public SSHTelnetClient(String host, int port,
@@ -67,19 +57,21 @@ public class SSHTelnetClient {
         session.setTimeout(timeout);
         session.setUserInfo(ui);
         session.connect();
+        openChannelByShell();
+    }
 
+    private void openChannelByShell() throws JSchException, IOException {
         channelShell = (ChannelShell) session.openChannel("shell");
         //从远端到达的数据  从这个流读取
-        in = channelShell.getInputStream();
+        in = new InputStreamReader(channelShell.getInputStream(), Charset.forName(charsetName));
+//        in = channelShell.getInputStream();
         channelShell.setPty(true);
         channelShell.connect();
-        //写入该流的数据  都将发送到远端
-        out = channelShell.getOutputStream();
-        //使用PrintStream 是为了使用println 这个方法，不需要每次手动给命令加\n
-        printStream = new PrintStream(out, true, charsetName);
-//        System.out.println(readContainUntil("[" + userName));
+        //写入数据流，都将发送到远端使用PrintStream 是为了使用println 这个方法，不需要每次手动给命令加\n
+        out = new PrintStream(channelShell.getOutputStream(), true, charsetName);
         // 读取一次，减少输入流的消息
-        readContainUntil("[" + userName);
+        String connectMsg = readUntil("]$");
+        logger.debug("connectMsg=" + connectMsg);
     }
 
     /**
@@ -90,11 +82,12 @@ public class SSHTelnetClient {
      */
     public void telnet(String host, String port) throws IOException {
         write("telnet " + host + " " + port);
-        String telnetResult = readContainUntil("Escape character is '^]'.");
-//        System.out.println(telnetResult);
+        String telnetResult = readUntil("Escape character is '^]'.", "Connection refused", "No route to host");
+        logger.debug(telnetResult);
         if (!telnetResult.contains("Escape character is '^]'.")) {
-            throw new ServiceException("telnet连接失败\n" + telnetResult);
+            throw new ServiceException("telnet 连接失败\n" + telnetResult);
         }
+        readUntil("\n");
     }
 
     /**
@@ -107,30 +100,39 @@ public class SSHTelnetClient {
     public String invokeDubbo(String interfaceName, String requestData) throws IOException {
         write("invoke " + interfaceName + "(" + requestData + ")");
         // 读取invoke的命令消息，降低后续消息的解析难度
-//        System.out.println(readContainUntil("\n"));
-//        System.out.println(dubboResponseDataFormat(readContainUntil("elapsed:")));
-        readContainUntil("\n");
-//        return dubboResponseDataFormat(readContainUntil("elapsed:"));
-        return dubboResponseDataFormat(readContainUntil("elapsed:", "Failed to invoke"));
+        String invokeCommand = readUntil("\n");
+        logger.debug("invokeCommand=" + invokeCommand);
+        // 读取空行，减少无效数据
+        readUntil("\n");
+        String result = readUntil(DUBBO_FLAG);
+        logger.debug(result);
+        // 判断第一次读取是否只读到dubbo>标识符，如是则再读取一次
+        if (result.equals("dubbo>")) {
+            logger.debug("再读一次dubbo响应");
+            result = readUntil(DUBBO_FLAG);
+            logger.debug(result);
+        }
+        return extractResponse(result);
     }
 
     /**
-     * 对telnet dubbo接口返回的响应报文做字符过滤，包含去掉头尾的dubbo>表示和elapsed:耗时，
-     * 尽量只保留响应报文数据本身
+     * 提取响应内容本身，去掉尾部的dubbo>标识符和elapsed:耗时
      */
-    private String dubboResponseDataFormat(String responseData) {
-        if (StringUtil.isBlank(responseData)) {
+    private String extractResponse(String responseData) {
+        if (StringUtil.isBlank(responseData) || responseData.length() < 7) {
             return responseData;
         }
+        responseData = responseData.trim();
         int startIndex = 0;
         int endIndex = responseData.length() - 1;
-        if (responseData.startsWith("dubbo>")) {
+        if (responseData.startsWith(DUBBO_FLAG)) {
             startIndex = 6;
         }
-        if (responseData.endsWith("dubbo>")) {
+        if (responseData.endsWith(DUBBO_FLAG)) {
             endIndex = endIndex - 6;
         }
         responseData = responseData.substring(startIndex, endIndex);
+
         if (responseData.contains("elapsed:")) {
             String[] responseDatas = responseData.split("\n");
             responseData = responseDatas[0];
@@ -143,59 +145,50 @@ public class SSHTelnetClient {
      *
      * @param command 命令值
      */
-    public void write(String command) {
+    private void write(String command) {
         //写命令
-        printStream.println(command);
+        out.println(command);
         //发送命令
-        printStream.flush();
+        out.flush();
     }
 
     /**
-     * 去读消息，直到消息包含指定的字符串，或超时
+     * 发送exit命令
      */
-    public String readContainUntil(String... containStrArray) throws IOException {
+    private void exit() {
+        write("exit");
+    }
+
+
+    /**
+     * 读消息，直到读到指定字符串中的其中一个才返回，超时则直接返回
+     */
+    private String readUntil(String... endStrs) throws IOException {
         StringBuffer sb = new StringBuffer();
-        byte[] tmp = new byte[10240];
-        long startTime = System.currentTimeMillis();
-        loopRead:
-        while (true) {
-            // 超时判断
-            long currentTime = System.currentTimeMillis();
-            if (currentTime - startTime > timeout) break;
-            if (in.available() > 0) {
-                int i = in.read(tmp, 0, 10240);
-                // read()返回-1时表示input stream已无数据
-                if (i < 0) break;
-                String result = new String(tmp, 0, i, charsetName);
-                sb.append(result);
-                for (String containStr : containStrArray) {
-                    if (result.contains(containStr)) {
-                        break loopRead;
-                    }
-                }
+        boolean flag = endStrs != null && endStrs.length > 0 && !endStrs[0].isEmpty();
+        char[] lastChars = null;
+        if (flag) {
+            lastChars = new char[endStrs.length];
+            for (int i = 0; i < endStrs.length; i++) {
+                lastChars[i] = endStrs[i].charAt(endStrs[i].length() - 1);
             }
         }
-        return sb.toString();
-    }
-
-    /**
-     * 读消息，直到消息包含指定的字符串，或超时
-     */
-    public String readContainUntil(String containStr) throws IOException {
-        StringBuffer sb = new StringBuffer();
-        byte[] tmp = new byte[10240];
+        int charCode = -1;
         long startTime = System.currentTimeMillis();
-        while (true) {
+        // read()返回-1时表示input stream已无数据
+        while ((charCode = in.read()) != -1) {
             // 超时判断
             long currentTime = System.currentTimeMillis();
             if (currentTime - startTime > timeout) break;
-            if (in.available() > 0) {
-                int i = in.read(tmp, 0, 1024);
-                // read()返回-1时表示input stream已无数据
-                if (i < 0) break;
-                String result = new String(tmp, 0, i, charsetName);
-                sb.append(result);
-                if (result.contains(containStr)) {
+            char ch = (char) charCode;
+            sb.append(ch);
+            if (flag) {
+                if (isBreak(sb, ch, lastChars, endStrs)) {
+                    break;
+                }
+            } else {
+                //如果没指定结束标识,匹配到默认结束标识字符时返回结果
+                if (ch == '>') {
                     break;
                 }
             }
@@ -203,43 +196,23 @@ public class SSHTelnetClient {
         return sb.toString();
     }
 
-    private String readUntil(String endStr) throws IOException {
-        StringBuffer sb = new StringBuffer();
-        boolean flag = endStr != null && endStr.length() > 0;
-        char lastChar = (char) -1;
-        if (flag) {
-            lastChar = endStr.charAt(endStr.length() - 1);
-        }
-        int charCode = -1;
-
-        // read()返回-1时表示input stream已无数据
-        while ((charCode = in.read()) != -1) {
-            char ch = (char) charCode;
-            sb.append(ch);
-            if (flag) {
-                if (ch == lastChar && sb.toString().endsWith(endStr)) {
-                    return sb.substring(0, sb.length() - 7);
-                }
-            } else {
-                //如果没指定结束标识,匹配到默认结束标识字符时返回结果
-                if (ch == '>') {
-                    return sb.toString();
-                }
+    private boolean isBreak(StringBuffer sb, char currentChar, char[] lastChars, String[] endStrs) {
+        boolean isBreak = false;
+        for (int i = 0; i < lastChars.length; i++) {
+            if (currentChar == lastChars[i] && sb.toString().endsWith(endStrs[i])) {
+                isBreak = true;
+                break;
             }
         }
-        return sb.toString();
+        return isBreak;
     }
 
     /**
      * 关闭连接
      */
     public void disconnect() {
-        try {
-            if (out != null) {
-                out.close();
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
+        if (out != null) {
+            out.close();
         }
         try {
             if (in != null) {

@@ -12,7 +12,7 @@ import pers.kelvin.util.log.LogUtil;
  * @author Kelvin.Ye
  */
 public class SSHConnectionConfiguration extends ConfigTestElement implements TestStateListener {
-    private static final Logger logger = LogUtil.getLogger(ENVDataSet.class);
+    private static final Logger logger = LogUtil.getLogger(SSHConnectionConfiguration.class);
 
     public static final String SSH_ADDRESS = "SSHConnectionConfiguration.Address";
     public static final String SSH_USER_NAME = "SSHConnectionConfiguration.UserName";
@@ -30,10 +30,12 @@ public class SSHConnectionConfiguration extends ConfigTestElement implements Tes
      */
     @Override
     public void testStarted(String s) {
-        if (isSSHConnect()) {
-            getThreadContext().getVariables().put("sshAddress", getSSHAddress());
-            getThreadContext().getVariables().put("sshUserName", getSSHUserName());
-            getThreadContext().getVariables().put("sshPassword", getSSHPassword());
+        boolean isSSHConnect = isSSHConnect();
+        JMeterUtils.setProperty("isSSHConnect",String.valueOf(isSSHConnect));
+        if (isSSHConnect) {
+            JMeterUtils.setProperty("sshAddress", getSSHAddress());
+            JMeterUtils.setProperty("sshUserName", getSSHUserName());
+            JMeterUtils.setProperty("sshPassword", getSSHPassword());
         }
     }
 

@@ -16,7 +16,7 @@ import pers.kelvin.util.log.LogUtil;
  * @author Kelvin.Ye
  */
 public class SSHPortForwarding extends ConfigTestElement implements TestStateListener {
-    private static final Logger logger = LogUtil.getLogger(ENVDataSet.class);
+    private static final Logger logger = LogUtil.getLogger(SSHPortForwarding.class);
 
     public static final String SSH_ADDRESS = "SSHPortForwarding.Address";
     public static final String SSH_USER_NAME = "SSHPortForwarding.UserName";
@@ -75,10 +75,15 @@ public class SSHPortForwarding extends ConfigTestElement implements TestStateLis
     @Override
     public void testEnded(String s) {
         try {
-            String[] ports = session.getPortForwardingL();
-//            session.delPortForwardingL(ports[0]);
+            int localForwardingPort = getLocalForwardingPort();
+            session.delPortForwardingL(localForwardingPort);
+            logger.info("删除转发的端口=" + localForwardingPort);
         } catch (JSchException e) {
             logger.error(ExceptionUtil.getStackTrace(e));
+        } finally {
+            if (session != null) {
+                session.disconnect();
+            }
         }
     }
 
