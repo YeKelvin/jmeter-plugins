@@ -5,16 +5,7 @@ import com.google.common.collect.Maps;
 import java.util.Locale;
 import java.util.Map;
 
-/**
- * Encodes arbitrary byte arrays as case-insensitive base-32 strings.
- *
- * <p> The implementation is slightly different than in RFC 4648. During encoding, padding is not
- * added, and during decoding the last incomplete chunk is not taken into account. The result is
- * that multiple strings decode to the same byte array, for example, string of sixteen 7s ("7...7")
- * and seventeen 7s both decode to the same byte array.
- *
- * <p>TODO: Revisit this encoding and whether this ambiguity needs fixing.
- */
+
 public class Base32String {
     private static final String SEPARATOR = "-";
     private static final char[] DIGITS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ234567".toCharArray();
@@ -30,16 +21,12 @@ public class Base32String {
     }
 
     public static byte[] decode(String encoded) throws DecodingException {
-        // Remove whitespace and separators
         encoded = encoded.trim().replaceAll(SEPARATOR, "").replaceAll(" ", "");
 
-        // Remove padding. Note: the padding is used as hint to determine how many
-        // bits to decode from the last incomplete chunk (which is commented out
-        // below, so this may have been wrong to start with).
         encoded = encoded.replaceFirst("[=]*$", "");
 
-        // Canonicalize to all upper case
         encoded = encoded.toUpperCase(Locale.US);
+
         if (encoded.length() == 0) {
             return new byte[0];
         }
@@ -61,24 +48,17 @@ public class Base32String {
                 bitsLeft -= 8;
             }
         }
-        // We'll ignore leftover bits for now.
-        //
-        // if (next != outLength || bitsLeft >= SHIFT) {
-        //  throw new DecodingException("Bits left: " + bitsLeft);
-        // }
         return result;
     }
 
     public static String encode(byte[] data) {
         int dataLength = data.length;
+
         if (dataLength == 0) {
             return "";
         }
 
-        // SHIFT is the number of bits per output character, so the length of the
-        // output is the length of the input multiplied by 8/SHIFT, rounded up.
         if (dataLength >= (1 << 28)) {
-            // The computation below will fail, so don't do it.
             throw new IllegalArgumentException();
         }
 
@@ -107,9 +87,6 @@ public class Base32String {
         return result.toString();
     }
 
-    /**
-     * Exception thrown when decoding fails
-     */
     public static class DecodingException extends Exception {
         public DecodingException(String message) {
             super(message);
