@@ -42,19 +42,17 @@ public class SSHTelnetClient {
     public SSHTelnetClient(String host, int port,
                            String userName, String password,
                            String charsetName, int timeout,
-                           String secretKey) throws JSchException, IOException {
+                           String gCode) throws JSchException, IOException {
         this.charsetName = charsetName;
         this.timeout = timeout;
         JSch jsch = new JSch();
-        UserInfo ui = new SSHUserInfo();
+        SSHUserInfo ui = new SSHUserInfo();
         session = jsch.getSession(userName, host, port);
-        session.setPassword(password);
-        // 第一次访问服务器时不用输入yes
-        session.setConfig("StrictHostKeyChecking", "no");
-        session.setConfig("PreferredAuthentications", "keyboard-interactive,password");
-        session.setConfig("ForwardAgent", "yes");
-        // 超时等待时间，单位毫秒
         session.setTimeout(timeout);
+//        session.setPassword(gCode);
+        session.setConfig("StrictHostKeyChecking", "no");
+        session.setConfig("PreferredAuthentications", "keyboard-interactive,password,publickey");
+        session.setConfig("ForwardAgent", "yes");
         session.setUserInfo(ui);
         session.connect();
         openChannelByShell();
