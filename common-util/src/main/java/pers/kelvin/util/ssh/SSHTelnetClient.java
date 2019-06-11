@@ -51,7 +51,7 @@ public class SSHTelnetClient {
         session.setPassword(password);
         // 第一次访问服务器时不用输入yes
         session.setConfig("StrictHostKeyChecking", "no");
-        session.setConfig("PreferredAuthentications", "keyboard-interactive,password,publickey");
+        session.setConfig("PreferredAuthentications", "keyboard-interactive,password");
         session.setConfig("ForwardAgent", "yes");
         // 超时等待时间，单位毫秒
         session.setTimeout(timeout);
@@ -80,12 +80,12 @@ public class SSHTelnetClient {
      * @param host 服务器地址
      * @param port 端口号
      */
-    public void telnet(String host, String port) throws IOException {
-        write("telnet " + host + " " + port);
-        String telnetResult = readUntil("Escape character is '^]'.", "Connection refused", "No route to host");
+    public void telnetDubbo(String host, String port) throws IOException {
+        write("telnetDubbo " + host + " " + port);
+        String telnetResult = readUntil("Escape character is '^]'.", "]$");
         logger.debug(telnetResult);
         if (!telnetResult.contains("Escape character is '^]'.")) {
-            throw new ServiceException("telnet 连接失败\n" + telnetResult);
+            throw new ServiceException("telnetDubbo 连接失败\n" + telnetResult);
         }
         readUntil("\n");
     }

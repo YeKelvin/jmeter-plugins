@@ -220,7 +220,7 @@ public class DubboTelnetByFile extends AbstractSampler {
     }
 
     /**
-     * telnet invoke dubbo接口
+     * telnetDubbo invoke dubbo接口
      *
      * @param address       地址，格式为host:port
      * @param interfaceName 接口名称
@@ -277,7 +277,7 @@ public class DubboTelnetByFile extends AbstractSampler {
 
         SSHTelnetClient telnet = new SSHTelnetClient(sshHost, Integer.valueOf(sshPort),
                 getSSHUserName(), getSSHPassword(), getEncode(), defaultTimeout);
-        telnet.telnet(host, port);
+        telnet.telnetDubbo(host, port);
         String response = telnet.invokeDubbo(interfaceName, requestData);
         telnet.disconnect();
         return response;
