@@ -38,6 +38,9 @@ public class SSHPortForwarding extends ConfigTestElement implements TestStateLis
     @Override
     public void testStarted(String s) {
         if (isSSHPortForwarding()) {
+            String username = getSSHUserName();
+            String password = getSSHPassword();
+            int localForwardingPort = getLocalForwardingPort();
             // ssh地址解析
             String[] sshAddres = getSSHAddress().split(":");
             String sshHost = sshAddres[0];
@@ -48,16 +51,24 @@ public class SSHPortForwarding extends ConfigTestElement implements TestStateLis
             String remoteHost = remoteAddres[0];
             int remotePort = Integer.valueOf(remoteAddres.length == 1 ? "22" : remoteAddres[1]);
 
+            logger.debug("username=" + username);
+            logger.debug("password=" + password);
+            logger.debug("sshHost=" + sshHost);
+            logger.debug("sshPort=" + sshPort);
+            logger.debug("remoteHost=" + remoteHost);
+            logger.debug("remotePort=" + remotePort);
+            logger.debug("localForwardingPort=" + localForwardingPort);
+
             try {
                 // ssh连接
                 JSch jsch = new JSch();
-                session = jsch.getSession(getSSHUserName(), sshHost, sshPort);
-                session.setPassword(getSSHPassword());
+                session = jsch.getSession(username, sshHost, sshPort);
+                session.setPassword(password);
                 session.setConfig("StrictHostKeyChecking", "no");
-                session.connect();
                 // 本地端口转发
-                int assinged_port = session.setPortForwardingL(getLocalForwardingPort(), remoteHost, remotePort);
-                logger.info("本地转发端口=" + assinged_port);
+                session.setPortForwardingL(localForwardingPort, remoteHost, remotePort);
+                session.connect();
+                logger.info("本地转发端口=" + localForwardingPort);
             } catch (Exception e) {
                 logger.error(ExceptionUtil.getStackTrace(e));
             }
@@ -84,6 +95,7 @@ public class SSHPortForwarding extends ConfigTestElement implements TestStateLis
             if (session != null) {
                 session.disconnect();
             }
+            logger.debug("session连接关闭");
         }
     }
 

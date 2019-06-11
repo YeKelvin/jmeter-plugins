@@ -81,7 +81,7 @@ public class SSHTelnetClient {
      * @param port 端口号
      */
     public void telnetDubbo(String host, String port) throws IOException {
-        write("telnetDubbo " + host + " " + port);
+        write("telnet " + host + " " + port);
         String telnetResult = readUntil("Escape character is '^]'.", "]$");
         logger.debug(telnetResult);
         if (!telnetResult.contains("Escape character is '^]'.")) {
