@@ -9,7 +9,7 @@ import pers.kelvin.util.log.JLog;
 public class DubboZK extends AbstractJavaSamplerClient {
     private String classFullName;
     private String methodName;
-    private boolean expection;
+    private String expectation;
     private Service service;
     private String serviceInitErrorMessage;
 
@@ -19,7 +19,7 @@ public class DubboZK extends AbstractJavaSamplerClient {
         arguments.addArgument("classFullName", "");
         arguments.addArgument("methodName", "");
         arguments.addArgument("params", "");
-        arguments.addArgument("expection", "true");
+        arguments.addArgument("expectation", "");
         return arguments;
     }
 
@@ -27,12 +27,11 @@ public class DubboZK extends AbstractJavaSamplerClient {
     public void setupTest(JavaSamplerContext args) {
         classFullName = args.getParameter("classFullName");
         methodName = args.getParameter("methodName");
-        expection = Boolean.parseBoolean(args.getParameter("expection"));
+        expectation = args.getParameter("expectation");
         try {
             service = new Service(classFullName, methodName);
         } catch (Exception e) {
             serviceInitErrorMessage = ExceptionUtil.getStackTrace(e);
-            e.printStackTrace();
         }
 
     }
@@ -61,12 +60,11 @@ public class DubboZK extends AbstractJavaSamplerClient {
             response = service.invoke();
             result.sampleEnd();
             if (response != null) {
-                isSuccess = response.isSuccess() == expection;
                 responseData = response.toString();
+                isSuccess = responseData.contains(expectation);
             }
         } catch (Exception e) {
             responseData = ExceptionUtil.getStackTrace(e);
-            e.printStackTrace();
         } finally {
             result.setSuccessful(isSuccess);
             result.setSamplerData(params);

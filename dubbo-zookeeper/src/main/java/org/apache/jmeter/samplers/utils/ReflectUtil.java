@@ -19,7 +19,7 @@ public class ReflectUtil {
         return method;
     }
 
-    public static Method getMethod(Class<?> tclass, String methodName) throws ClassNotFoundException {
+    public static Method getMethod(Class<?> tclass, String methodName) {
         Method method = null;
         for (Method m : tclass.getDeclaredMethods()) {
             if (methodName.equals(m.getName())) {

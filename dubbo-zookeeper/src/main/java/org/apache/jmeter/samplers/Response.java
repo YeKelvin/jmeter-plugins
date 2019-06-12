@@ -15,16 +15,9 @@ import java.lang.reflect.Method;
  */
 public class Response {
     private Object response;
-    private Class<?> tclass;
 
     public Response(Object responseObj) {
         this.response = responseObj;
-        this.tclass = responseObj.getClass();
-    }
-
-    public Boolean isSuccess() throws InvocationTargetException, IllegalAccessException, ClassNotFoundException {
-        Method method = ReflectUtil.getMethod(tclass, "isSuccess");
-        return (Boolean) method.invoke(response);
     }
 
     @Override

@@ -24,7 +24,7 @@ public class Parameter {
     /**
      * 分割json报文，根据入參的类型，将json数据逐一实例化为java对象
      */
-    Object[] getParamsFromJson(Class<?>[] tclazzs) {
+    public Object[] getParamsFromJson(Class<?>[] tclazzs) {
         // 获取接口入參对象个数
         Object[] params = new Object[tclazzs.length];
         // 解析json报文

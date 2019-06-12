@@ -43,9 +43,8 @@ public class SSHTelnetClient {
         JSch jsch = new JSch();
         session = jsch.getSession(userName, host, port);
         session.setPassword(password);
-        // 第一次访问服务器时不用输入yes
+        // SSH客户端是否接受SSH服务端的hostkey
         session.setConfig("StrictHostKeyChecking", "no");
-        // 超时等待时间，单位毫秒
         session.setTimeout(timeout);
         session.connect();
         openChannelByShell();
@@ -77,9 +76,8 @@ public class SSHTelnetClient {
         session = jsch.getSession(userName, host, port);
         session.setTimeout(timeout);
         session.setConfig("StrictHostKeyChecking", "no");
-        session.setConfig("PreferredAuthentications", "keyboard-interactive,password,publickey");
-        session.setConfig("ForwardAgent", "yes");
-        session.setConfig("PubkeyAuthentication", "no");
+        // keyboard-interactive,password,publickey,gssapi-keyex,gssapi-with-mic
+        session.setConfig("PreferredAuthentications", "keyboard-interactive,password");
         session.setUserInfo(ui);
         session.connect();
         openChannelByShell();
@@ -128,11 +126,15 @@ public class SSHTelnetClient {
         readUntil("\n");
         String result = readUntil(DUBBO_FLAG);
         logger.debug(result);
-        // 判断第一次读取是否只读到dubbo>标识符，如是则再读取一次
+        // 第一次invoke命令后会返回一个dubbo>标识符，接收响应后还会再返回一个dubbo>标识符
+        // 判断第一次读取是否只读到一个dubbo>标识符，如果是则再读取一次
         if (result.equals("dubbo>")) {
             logger.debug("再读一次dubbo响应");
             result = readUntil(DUBBO_FLAG);
             logger.debug(result);
+        } else {
+            // 如果第一次就读取到响应，则还剩下一个dubbo>标识符在输入流里
+            readUntil(DUBBO_FLAG);
         }
         return extractResponse(result);
     }

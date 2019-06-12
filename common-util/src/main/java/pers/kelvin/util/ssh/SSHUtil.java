@@ -1,15 +1,15 @@
 package pers.kelvin.util.ssh;
 
 
-import com.jcraft.jsch.*;
+import com.jcraft.jsch.ChannelExec;
+import com.jcraft.jsch.JSch;
+import com.jcraft.jsch.JSchException;
+import com.jcraft.jsch.Session;
 import org.apache.commons.io.IOUtils;
 
-import java.io.*;
-import java.net.InetAddress;
-import java.net.Socket;
-import java.net.UnknownHostException;
+import java.io.IOException;
+import java.io.InputStream;
 import java.nio.charset.Charset;
-import java.util.Properties;
 
 /**
  * @author KelvinYe
@@ -28,9 +28,8 @@ public class SSHUtil {
     public static Session getSession(String host, int port, String userName, String password) throws JSchException {
         Session session = new JSch().getSession(userName, host, port);
         session.setPassword(password);
-        // 第一次访问服务器时不用输入yes
+        // SSH客户端是否接受SSH服务端的hostkey
         session.setConfig("StrictHostKeyChecking", "no");
-        // 超时等待时间，单位毫秒
         session.setTimeout(5000);
         session.connect();
         return session;
