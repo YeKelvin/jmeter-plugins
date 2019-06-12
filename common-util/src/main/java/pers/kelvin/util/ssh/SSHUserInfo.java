@@ -5,6 +5,7 @@ import com.jcraft.jsch.UserInfo;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.Arrays;
 
 
 public class SSHUserInfo implements UserInfo, UIKeyboardInteractive {
@@ -19,11 +20,13 @@ public class SSHUserInfo implements UserInfo, UIKeyboardInteractive {
 
     @Override
     public String getPassword() {
+        System.out.println("UserInfo.getPassword()");
         return passwd;
     }
 
     @Override
     public boolean promptYesNo(String str) {
+        System.out.println("UserInfo.promptYesNo()");
         Object[] options = {"yes", "no"};
         int foo = JOptionPane.showOptionDialog(null,
                 str,
@@ -37,16 +40,19 @@ public class SSHUserInfo implements UserInfo, UIKeyboardInteractive {
 
     @Override
     public String getPassphrase() {
+        System.out.println("UserInfo.getPassphrase()");
         return null;
     }
 
     @Override
     public boolean promptPassphrase(String message) {
+        System.out.println("UserInfo.promptPassphrase()");
         return false;
     }
 
     @Override
     public boolean promptPassword(String message) {
+        System.out.println("UserInfo.promptPassword()");
         Object[] ob = {passwordField};
         int result =
                 JOptionPane.showConfirmDialog(null, ob, message,
@@ -61,6 +67,7 @@ public class SSHUserInfo implements UserInfo, UIKeyboardInteractive {
 
     @Override
     public void showMessage(String message) {
+        System.out.println("UserInfo.showMessage()");
         JOptionPane.showMessageDialog(null, message);
     }
 
@@ -70,6 +77,12 @@ public class SSHUserInfo implements UserInfo, UIKeyboardInteractive {
                                               String instruction,
                                               String[] prompt,
                                               boolean[] echo) {
+        System.out.println("UserInfo.promptKeyboardInteractive()");
+        System.out.println("destination=" + destination);
+        System.out.println("name=" + name);
+        System.out.println("instruction=" + instruction);
+        System.out.println("prompt=" + Arrays.toString(prompt));
+        System.out.println("echo=" + Arrays.toString(echo));
         Container panel = new JPanel();
         panel.setLayout(new GridBagLayout());
 
@@ -109,6 +122,7 @@ public class SSHUserInfo implements UserInfo, UIKeyboardInteractive {
             for (int i = 0; i < prompt.length; i++) {
                 response[i] = texts[i].getText();
             }
+            System.out.println(Arrays.toString(response));
             return response;
         } else {
             // cancel

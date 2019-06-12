@@ -23,6 +23,7 @@ public class SSHConnectionConfigurationGui extends AbstractConfigGui {
     private JTextField sshAddressTextField;
     private JTextField sshUserNameTextField;
     private JTextField sshPasswordTextField;
+    private JTextField sshSecretKeyTextField;
 
     public SSHConnectionConfigurationGui() {
         init();
@@ -37,6 +38,7 @@ public class SSHConnectionConfigurationGui extends AbstractConfigGui {
         mainPanel.add(getSSHAddressPanel());
         mainPanel.add(getSSHUserNamePanel());
         mainPanel.add(getSSHPasswordPanel());
+        mainPanel.add(getSSHSecretKeyPanel());
 
         add(mainPanel, BorderLayout.CENTER);
     }
@@ -69,6 +71,7 @@ public class SSHConnectionConfigurationGui extends AbstractConfigGui {
         el.setProperty(SSHConnectionConfiguration.SSH_ADDRESS, sshAddressTextField.getText());
         el.setProperty(SSHConnectionConfiguration.SSH_USER_NAME, sshUserNameTextField.getText());
         el.setProperty(SSHConnectionConfiguration.SSH_PASSWORD, sshPasswordTextField.getText());
+        el.setProperty(SSHConnectionConfiguration.SSH_SECRET_KEY, sshSecretKeyTextField.getText());
     }
 
     /**
@@ -80,6 +83,7 @@ public class SSHConnectionConfigurationGui extends AbstractConfigGui {
         sshAddressTextField.setText(el.getPropertyAsString(SSHConnectionConfiguration.SSH_ADDRESS));
         sshUserNameTextField.setText(el.getPropertyAsString(SSHConnectionConfiguration.SSH_USER_NAME));
         sshPasswordTextField.setText(el.getPropertyAsString(SSHConnectionConfiguration.SSH_PASSWORD));
+        sshSecretKeyTextField.setText(el.getPropertyAsString(SSHConnectionConfiguration.SSH_SECRET_KEY));
     }
 
     @Override
@@ -88,6 +92,7 @@ public class SSHConnectionConfigurationGui extends AbstractConfigGui {
         sshAddressTextField.setText("");
         sshUserNameTextField.setText("");
         sshPasswordTextField.setText("");
+        sshSecretKeyTextField.setText("");
     }
 
     private JPanel getSSHAddressPanel() {
@@ -123,6 +128,18 @@ public class SSHConnectionConfigurationGui extends AbstractConfigGui {
         JPanel panel = new JPanel(new BorderLayout(H_GAP, V_GAP));
         panel.add(label, BorderLayout.WEST);
         panel.add(sshPasswordTextField, BorderLayout.CENTER);
+        return panel;
+    }
+
+    private JPanel getSSHSecretKeyPanel() {
+        sshSecretKeyTextField = new JTextField(10);
+        sshSecretKeyTextField.setName(SSHConnectionConfiguration.SSH_SECRET_KEY);
+
+        JLabel label = GuiUtil.createTextFieldLabel("SSHSecretKey:", sshSecretKeyTextField, LABEL_WIDTH, LABEL_HEIGHT);
+
+        JPanel panel = new JPanel(new BorderLayout(H_GAP, V_GAP));
+        panel.add(label, BorderLayout.WEST);
+        panel.add(sshSecretKeyTextField, BorderLayout.CENTER);
         return panel;
     }
 }

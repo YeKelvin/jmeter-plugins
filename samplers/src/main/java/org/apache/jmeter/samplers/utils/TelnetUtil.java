@@ -2,6 +2,10 @@ package org.apache.jmeter.samplers.utils;
 
 
 import org.apache.commons.net.telnet.TelnetClient;
+import org.apache.jmeter.samplers.DubboTelnetByFile;
+import org.slf4j.Logger;
+import pers.kelvin.util.exception.ExceptionUtil;
+import pers.kelvin.util.log.LogUtil;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -13,6 +17,8 @@ import java.nio.charset.Charset;
  * @author KelvinYe
  */
 public class TelnetUtil {
+    private static final Logger logger = LogUtil.getLogger(DubboTelnetByFile.class);
+
     public static String WINDOWS = "VT220";
     public static String UNIX = "VT100";
     public static String LINUX = "VT100";
@@ -40,8 +46,8 @@ public class TelnetUtil {
     /**
      * 调用dubbo接口
      *
-     * @param interfaceName  接口名
-     * @param request 请求报文
+     * @param interfaceName 接口名
+     * @param request       请求报文
      * @return 响应报文
      */
     public String invokeDubbo(String interfaceName, String request) {
@@ -52,18 +58,24 @@ public class TelnetUtil {
      * 关闭连接
      */
     public void disconnect() {
+        if (out != null) {
+            out.close();
+        }
+
         try {
-            if (out != null) {
-                out.close();
-            }
             if (in != null) {
                 in.close();
             }
+        } catch (Exception e) {
+            logger.error(ExceptionUtil.getStackTrace(e));
+        }
+
+        try {
             if (telnet != null) {
                 telnet.disconnect();
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error(ExceptionUtil.getStackTrace(e));
         }
     }
 

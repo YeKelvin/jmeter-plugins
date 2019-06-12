@@ -72,6 +72,8 @@ public class SSHPortForwarding extends ConfigTestElement implements TestStateLis
             } catch (Exception e) {
                 logger.error(ExceptionUtil.getStackTrace(e));
             }
+        } else {
+            logger.info("用户设置不需要进行端口转发");
         }
     }
 
@@ -85,17 +87,19 @@ public class SSHPortForwarding extends ConfigTestElement implements TestStateLis
      */
     @Override
     public void testEnded(String s) {
-        try {
-            int localForwardingPort = getLocalForwardingPort();
-            session.delPortForwardingL(localForwardingPort);
-            logger.info("删除转发的端口=" + localForwardingPort);
-        } catch (JSchException e) {
-            logger.error(ExceptionUtil.getStackTrace(e));
-        } finally {
-            if (session != null) {
-                session.disconnect();
+        if (isSSHPortForwarding() && session != null) {
+            try {
+                int localForwardingPort = getLocalForwardingPort();
+                session.delPortForwardingL(localForwardingPort);
+                logger.info("删除转发的端口=" + localForwardingPort);
+            } catch (JSchException e) {
+                logger.error(ExceptionUtil.getStackTrace(e));
+            } finally {
+                if (session != null) {
+                    session.disconnect();
+                }
+                logger.debug("session连接关闭");
             }
-            logger.debug("session连接关闭");
         }
     }
 

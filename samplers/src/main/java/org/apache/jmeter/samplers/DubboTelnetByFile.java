@@ -38,7 +38,6 @@ import java.util.Properties;
  * Time     11:47
  */
 public class DubboTelnetByFile extends AbstractSampler {
-
     private static final Logger logger = LogUtil.getLogger(DubboTelnetByFile.class);
 
     public static final String ADDRESS = "DubboTelnetByFile.Address";
@@ -173,9 +172,7 @@ public class DubboTelnetByFile extends AbstractSampler {
 
     /**
      * 获取JMeter系统变量
-     *
-     * @param map
-     */
+     **/
     private void putAllProps(Map<String, String> map) {
         Properties props = JMeterUtils.getJMeterProperties();
         for (String keyName : props.stringPropertyNames()) {
@@ -185,8 +182,6 @@ public class DubboTelnetByFile extends AbstractSampler {
 
     /**
      * 获取JMeter线程变量
-     *
-     * @param map
      */
     private void putAllVars(Map<String, String> map) {
         JMeterVariables vars = JMeterContextService.getContext().getVariables();
@@ -222,36 +217,39 @@ public class DubboTelnetByFile extends AbstractSampler {
     /**
      * telnetDubbo invoke dubbo接口
      *
-     * @param address       地址，格式为host:port
+     * @param dubboAddress  地址，格式为host:port
      * @param interfaceName 接口名称
      * @param requestData   请求数据
      * @return 响应报文
      */
-    private String invokeDubbo(String address, String interfaceName, String requestData) throws IOException, JSchException {
+    private String invokeDubbo(String dubboAddress, String interfaceName, String requestData)
+            throws IOException, JSchException {
         // 分割地址，格式为host:port
-        String[] addressArray = address.split(":");
-        String host = addressArray[0];
-        String port = addressArray.length == 1 ? "0000" : addressArray[1];
+        String[] address = dubboAddress.split(":");
+        String dubboHost = address[0];
+        String dubboPort = address.length == 1 ? "0000" : address[1];
 
+        System.out.println("isSSHTelnet()=" + isSSHTelnet());
         if (isSSHTelnet()) {
-            return sshTelnetInvoke(host, port, interfaceName, requestData);
+            return sshTelnetInvoke(dubboHost, dubboPort, interfaceName, requestData);
         } else {
-            return telnetInvoke(host, port, interfaceName, requestData);
+            return telnetInvoke(dubboHost, dubboPort, interfaceName, requestData);
         }
     }
 
     /**
      * telnet直连服务器
      *
-     * @param host          地址
-     * @param port          端口号
+     * @param dubboHost     地址
+     * @param dubboPort     端口号
      * @param interfaceName 接口名称
      * @param requestData   请求数据
      * @return 响应报文
      * @throws IOException 输入输出流异常
      */
-    private String telnetInvoke(String host, String port, String interfaceName, String requestData) throws IOException {
-        TelnetUtil telnet = new TelnetUtil(host, port, getEncode());
+    private String telnetInvoke(String dubboHost, String dubboPort, String interfaceName, String requestData)
+            throws IOException {
+        TelnetUtil telnet = new TelnetUtil(dubboHost, dubboPort, getEncode());
         String response = telnet.invokeDubbo(interfaceName, requestData);
         telnet.disconnect();
         return response;
@@ -260,27 +258,43 @@ public class DubboTelnetByFile extends AbstractSampler {
     /**
      * 先ssh连接跳板机后再telnet服务器
      *
-     * @param host          地址
-     * @param port          端口号
+     * @param dubboHost     地址
+     * @param dubboPort     端口号
      * @param interfaceName 接口名称
      * @param requestData   请求数据
      * @return 响应报文
      * @throws IOException   输入输出流异常
      * @throws JSchException ssh连接异常
      */
-    private String sshTelnetInvoke(String host, String port, String interfaceName, String requestData)
+    private String sshTelnetInvoke(String dubboHost, String dubboPort, String interfaceName, String requestData)
             throws IOException, JSchException {
         // 分割地址，格式为host:port
         String[] sshAddressArray = getSSHAddress().split(":");
         String sshHost = sshAddressArray[0];
         String sshPort = sshAddressArray.length == 1 ? "22" : sshAddressArray[1];
 
-        SSHTelnetClient telnet = new SSHTelnetClient(sshHost, Integer.valueOf(sshPort),
-                getSSHUserName(), getSSHPassword(), getEncode(), defaultTimeout);
-        telnet.telnetDubbo(host, port);
+        SSHTelnetClient telnet = initSSHTelnetClient(sshHost, sshPort);
+        telnet.telnetDubbo(dubboHost, dubboPort);
         String response = telnet.invokeDubbo(interfaceName, requestData);
         telnet.disconnect();
         return response;
+    }
+
+    private SSHTelnetClient initSSHTelnetClient(String sshHost, String sshPort) throws IOException, JSchException {
+        SSHTelnetClient telnetClient;
+        String sshSecretKey = getSSHSecretKey();
+        System.out.println("sshSecretKey=" + sshSecretKey);
+        if (StringUtil.isBlank(sshSecretKey)) {
+            System.out.println("no google");
+            telnetClient = new SSHTelnetClient(sshHost, Integer.valueOf(sshPort),
+                    getSSHUserName(), getSSHPassword(), getEncode(), defaultTimeout);
+        } else {
+            System.out.println("google");
+            telnetClient = new SSHTelnetClient(sshHost, Integer.valueOf(sshPort),
+                    getSSHUserName(), getSSHPassword(), getSSHSecretKey(),
+                    getEncode(), defaultTimeout);
+        }
+        return telnetClient;
     }
 
     /**
@@ -289,14 +303,14 @@ public class DubboTelnetByFile extends AbstractSampler {
      * 否则预期结果判断逻辑为responseData响应报文中是否包含expection预期结果的值，包含为true，不包含为false。
      *
      * @param responseData 响应报文
-     * @param expection    预期结果
+     * @param expectation  预期结果
      * @return ture | false
      */
-    private boolean getSuccessful(String responseData, String expection) {
-        if (GroovyUtil.isExpression(expection)) {
-            if (GroovyUtil.verifyExpression(expection) && GroovyUtil.verifyBrackets(expection)) {
+    private boolean getSuccessful(String responseData, String expectation) {
+        if (GroovyUtil.isExpression(expectation)) {
+            if (GroovyUtil.verifyExpression(expectation) && GroovyUtil.verifyBrackets(expectation)) {
                 try {
-                    String expression = GroovyUtil.transformExpression(expection);
+                    String expression = GroovyUtil.transformExpression(expectation);
                     Binding binding = new Binding();
                     binding.setVariable("response", responseData);
                     return (boolean) GroovyUtil.eval(binding, expression);
@@ -309,7 +323,7 @@ public class DubboTelnetByFile extends AbstractSampler {
                 return false;
             }
         }
-        return responseData.contains(expection);
+        return responseData.contains(expectation);
     }
 
     /**
@@ -369,6 +383,10 @@ public class DubboTelnetByFile extends AbstractSampler {
 
     private String getSSHPassword() {
         return JMeterUtils.getProperty("sshPassword");
+    }
+
+    private String getSSHSecretKey() {
+        return JMeterUtils.getPropDefault("sshSecretKey", "");
     }
 
     private boolean isSSHTelnet() {

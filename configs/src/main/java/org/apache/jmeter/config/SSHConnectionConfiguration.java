@@ -17,8 +17,8 @@ public class SSHConnectionConfiguration extends ConfigTestElement implements Tes
     public static final String SSH_ADDRESS = "SSHConnectionConfiguration.Address";
     public static final String SSH_USER_NAME = "SSHConnectionConfiguration.UserName";
     public static final String SSH_PASSWORD = "SSHConnectionConfiguration.Password";
+    public static final String SSH_SECRET_KEY = "SSHConnectionConfiguration.SecretKey";
     public static final String IS_SSH_CONNECT = "SSHConnectionConfiguration.IsSSHConnect";
-
 
     @Override
     public void testStarted() {
@@ -31,11 +31,13 @@ public class SSHConnectionConfiguration extends ConfigTestElement implements Tes
     @Override
     public void testStarted(String s) {
         boolean isSSHConnect = isSSHConnect();
-        JMeterUtils.setProperty("isSSHConnect",String.valueOf(isSSHConnect));
+        JMeterUtils.setProperty("isSSHConnect", String.valueOf(isSSHConnect));
         if (isSSHConnect) {
             JMeterUtils.setProperty("sshAddress", getSSHAddress());
             JMeterUtils.setProperty("sshUserName", getSSHUserName());
             JMeterUtils.setProperty("sshPassword", getSSHPassword());
+            System.out.println("getSSHSecretKey()=" + getSSHSecretKey());
+            JMeterUtils.setProperty("sshSecretKey", getSSHSecretKey());
         }
     }
 
@@ -59,6 +61,10 @@ public class SSHConnectionConfiguration extends ConfigTestElement implements Tes
 
     private String getSSHPassword() {
         return getPropertyAsString(SSH_PASSWORD);
+    }
+
+    private String getSSHSecretKey() {
+        return getPropertyAsString(SSH_SECRET_KEY, "");
     }
 
     public boolean isSSHConnect() {

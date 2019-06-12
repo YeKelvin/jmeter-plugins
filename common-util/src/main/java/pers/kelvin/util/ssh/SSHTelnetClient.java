@@ -3,6 +3,7 @@ package pers.kelvin.util.ssh;
 import com.jcraft.jsch.*;
 import org.slf4j.Logger;
 import pers.kelvin.util.StringUtil;
+import pers.kelvin.util.exception.ExceptionUtil;
 import pers.kelvin.util.exception.ServiceException;
 import pers.kelvin.util.log.LogUtil;
 
@@ -22,6 +23,18 @@ public class SSHTelnetClient {
     private String charsetName;
     private int timeout;
 
+    /**
+     * ssh连接
+     *
+     * @param host        地址
+     * @param port        端口
+     * @param userName    用户名称
+     * @param password    密码
+     * @param charsetName 编码名称
+     * @param timeout     超时等待时间
+     * @throws JSchException
+     * @throws IOException
+     */
     public SSHTelnetClient(String host, int port,
                            String userName, String password,
                            String charsetName, int timeout) throws JSchException, IOException {
@@ -39,20 +52,34 @@ public class SSHTelnetClient {
 
     }
 
+    /**
+     * google二次认证 ssh连接
+     *
+     * @param host        地址
+     * @param port        端口
+     * @param userName    用户名称
+     * @param password    密码
+     * @param secretKey   google动态码秘钥
+     * @param charsetName 编码名称
+     * @param timeout     超时等待时间
+     * @throws JSchException
+     * @throws IOException
+     */
     public SSHTelnetClient(String host, int port,
-                           String userName, String password,
-                           String charsetName, int timeout,
-                           String gCode) throws JSchException, IOException {
+                           String userName, String password, String secretKey,
+                           String charsetName, int timeout) throws JSchException, IOException {
         this.charsetName = charsetName;
         this.timeout = timeout;
         JSch jsch = new JSch();
-        SSHUserInfo ui = new SSHUserInfo();
+        GoogleAuthUserInfo ui = new GoogleAuthUserInfo();
+        ui.setPassword(password);
+        ui.setGoogleSecretKey(secretKey);
         session = jsch.getSession(userName, host, port);
         session.setTimeout(timeout);
-//        session.setPassword(gCode);
         session.setConfig("StrictHostKeyChecking", "no");
         session.setConfig("PreferredAuthentications", "keyboard-interactive,password,publickey");
         session.setConfig("ForwardAgent", "yes");
+        session.setConfig("PubkeyAuthentication", "no");
         session.setUserInfo(ui);
         session.connect();
         openChannelByShell();
@@ -60,14 +87,11 @@ public class SSHTelnetClient {
 
     private void openChannelByShell() throws JSchException, IOException {
         channelShell = (ChannelShell) session.openChannel("shell");
-        //从远端到达的数据  从这个流读取
         in = new InputStreamReader(channelShell.getInputStream(), Charset.forName(charsetName));
-//        in = channelShell.getInputStream();
         channelShell.setPty(true);
         channelShell.connect();
-        //写入数据流，都将发送到远端使用PrintStream 是为了使用println 这个方法，不需要每次手动给命令加\n
         out = new PrintStream(channelShell.getOutputStream(), true, charsetName);
-        // 读取一次，减少输入流的消息
+        // 及时读取消息
         String connectMsg = readUntil("]$");
         logger.debug("connectMsg=" + connectMsg);
     }
@@ -75,11 +99,11 @@ public class SSHTelnetClient {
     /**
      * telnet连接
      *
-     * @param host 服务器地址
-     * @param port 端口号
+     * @param dubboHost 服务器地址
+     * @param dubboPort 端口号
      */
-    public void telnetDubbo(String host, String port) throws IOException {
-        write("telnet " + host + " " + port);
+    public void telnetDubbo(String dubboHost, String dubboPort) throws IOException {
+        write("telnet " + dubboHost + " " + dubboPort);
         String telnetResult = readUntil("Escape character is '^]'.", "]$");
         logger.debug(telnetResult);
         if (!telnetResult.contains("Escape character is '^]'.")) {
@@ -97,10 +121,10 @@ public class SSHTelnetClient {
      */
     public String invokeDubbo(String interfaceName, String requestData) throws IOException {
         write("invoke " + interfaceName + "(" + requestData + ")");
-        // 读取invoke的命令消息，降低后续消息的解析难度
+        // 读取invoke的命令消息
         String invokeCommand = readUntil("\n");
         logger.debug("invokeCommand=" + invokeCommand);
-        // 读取空行，减少无效数据
+        // 读取空行
         readUntil("\n");
         String result = readUntil(DUBBO_FLAG);
         logger.debug(result);
@@ -217,7 +241,7 @@ public class SSHTelnetClient {
                 in.close();
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.error(ExceptionUtil.getStackTrace(e));
         }
         if (channelShell != null) {
             channelShell.disconnect();
