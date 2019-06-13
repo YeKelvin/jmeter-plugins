@@ -37,7 +37,10 @@ public class SSHPortForwarding extends ConfigTestElement implements TestStateLis
      */
     @Override
     public void testStarted(String s) {
-        if (isSSHPortForwarding()) {
+        boolean isSSHPortForwarding = isSSHPortForwarding();
+        logger.debug("isSSHPortForwarding=" + isSSHPortForwarding);
+
+        if (isSSHPortForwarding) {
             String username = getSSHUserName();
             String password = getSSHPassword();
             int localForwardingPort = getLocalForwardingPort();
@@ -125,6 +128,12 @@ public class SSHPortForwarding extends ConfigTestElement implements TestStateLis
 
     public boolean isSSHPortForwarding() {
         return JMeterUtils.getPropDefault(
-                "isSSHPortForwarding", getPropertyAsBoolean(IS_SSH_PORT_FORWARDING, true));
+                "isSSHPortForwarding", getThreadVariablesAsBooleanDefault(IS_SSH_PORT_FORWARDING, true));
     }
+
+    private boolean getThreadVariablesAsBooleanDefault(String keyName, boolean DefaultVar) {
+        String var = getThreadContext().getVariables().get(keyName);
+        return var != null ? Boolean.valueOf(var) : DefaultVar;
+    }
+
 }

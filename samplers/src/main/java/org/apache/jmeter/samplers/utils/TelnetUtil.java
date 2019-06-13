@@ -26,16 +26,23 @@ public class TelnetUtil {
     private TelnetClient telnet = new TelnetClient(WINDOWS);
     private InputStreamReader in;
     private PrintStream out;
+    // shell响应等待时间
+    private int timeout;
 
     public TelnetUtil(String host, String port) throws IOException {
-        initTelnet(host, port, "UTF-8");
+        initTelnet(host, port, "UTF-8", 5000);
     }
 
     public TelnetUtil(String host, String port, String charset) throws IOException {
-        initTelnet(host, port, charset);
+        initTelnet(host, port, charset, 5000);
     }
 
-    private void initTelnet(String host, String port, String charset) throws IOException {
+    public TelnetUtil(String host, String port, String charset, int timeout) throws IOException {
+        initTelnet(host, port, charset, timeout);
+    }
+
+    private void initTelnet(String host, String port, String charset, int timeout) throws IOException {
+        this.timeout = timeout;
         // 设置连接超时时间ms
         telnet.setConnectTimeout(2000);
         telnet.connect(host, Integer.parseInt(port));
@@ -50,18 +57,16 @@ public class TelnetUtil {
      * @param request       请求报文
      * @return 响应报文
      */
-    public String invokeDubbo(String interfaceName, String request) {
-        return sendCommand("invoke " + interfaceName + "(" + request + ")");
+    public String invokeDubbo(String interfaceName, String request) throws IOException {
+        String result = sendCommand("invoke " + interfaceName + "(" + request + ")");
+        logger.debug("invoke result=" + result);
+        return result;
     }
 
     /**
      * 关闭连接
      */
     public void disconnect() {
-        if (out != null) {
-            out.close();
-        }
-
         try {
             if (in != null) {
                 in.close();
@@ -85,7 +90,7 @@ public class TelnetUtil {
      * @param command 命令值
      * @return 响应
      */
-    private String sendCommand(String command) {
+    private String sendCommand(String command) throws IOException {
         write(command);
         return readUntil(">");
     }
@@ -103,12 +108,12 @@ public class TelnetUtil {
     }
 
     /**
-     * 读取分析结果
+     * 读消息，直到读到指定字符串中的其中一个才返回，超时则直接返回
      *
      * @param pattern 匹配到该字符串时返回结果
      * @return 返回筛选后的结果
      */
-    private String readUntil(String pattern) {
+    private String readUntil(String pattern) throws IOException {
         StringBuffer sb = new StringBuffer();
         boolean flag = pattern != null && pattern.length() > 0;
         char lastChar = (char) -1;
@@ -116,23 +121,27 @@ public class TelnetUtil {
             lastChar = pattern.charAt(pattern.length() - 1);
         }
         int charCode = -1;
-        try {
-            while ((charCode = in.read()) != -1) {
-                char ch = (char) charCode;
-                sb.append(ch);
-                if (flag) {
-                    if (ch == lastChar && sb.toString().endsWith(pattern)) {
-                        return sb.substring(0, sb.length() - 7);
-                    }
-                } else {
-                    //如果没指定结束标识,匹配到默认结束标识字符时返回结果
-                    if (ch == '>') {
-                        return sb.toString();
-                    }
+        long startTime = System.currentTimeMillis();
+        // read()返回-1时表示input stream已无数据
+        while ((charCode = in.read()) != -1) {
+            // 超时判断
+            long currentTime = System.currentTimeMillis();
+            if (currentTime - startTime > timeout) {
+                logger.debug("readUntil 等待超时");
+                break;
+            }
+            char ch = (char) charCode;
+            sb.append(ch);
+            if (flag) {
+                if (ch == lastChar && sb.toString().endsWith(pattern)) {
+                    return sb.substring(0, sb.length() - 7);
+                }
+            } else {
+                //如果没指定结束标识,匹配到默认结束标识字符时返回结果
+                if (ch == '>') {
+                    return sb.toString();
                 }
             }
-        } catch (Exception e) {
-            e.printStackTrace();
         }
         return sb.toString();
     }

@@ -64,11 +64,12 @@ public class DubboTelnetByFile extends AbstractSampler {
         try {
             // 入参数据验证
             verifyData();
+            String interfaceName = getInterfaceName();
             String requestData = getRequestData(getParams(), getUseTemplate());
-            result.setSamplerData(getInterfaceName() + "(" + requestData + ")");
+            result.setSamplerData(interfaceName + "(" + requestData + ")");
             result.sampleStart();
-            responseData = invokeDubbo(getAddress(), getInterfaceName(), requestData);
-            isSuccess = getSuccessful(responseData, getExpection());
+            responseData = invokeDubbo(getAddress(), interfaceName, requestData);
+            isSuccess = getSuccessful(responseData, getExpectation());
         } catch (Exception e) {
             // 异常后，判断是否已开始统计sample时间，没有则开始统计
             if (result.isStampedAtStart()) {
@@ -229,8 +230,10 @@ public class DubboTelnetByFile extends AbstractSampler {
         String dubboHost = address[0];
         String dubboPort = address.length == 1 ? "0000" : address[1];
 
-        System.out.println("isSSHTelnet()=" + isSSHTelnet());
-        if (isSSHTelnet()) {
+        boolean isSSHTelnet = isSSHTelnet();
+        logger.debug("isSSHTelnet=" + isSSHTelnet);
+
+        if (isSSHTelnet) {
             return sshTelnetInvoke(dubboHost, dubboPort, interfaceName, requestData);
         } else {
             return telnetInvoke(dubboHost, dubboPort, interfaceName, requestData);
@@ -249,7 +252,7 @@ public class DubboTelnetByFile extends AbstractSampler {
      */
     private String telnetInvoke(String dubboHost, String dubboPort, String interfaceName, String requestData)
             throws IOException {
-        TelnetUtil telnet = new TelnetUtil(dubboHost, dubboPort, getEncode());
+        TelnetUtil telnet = new TelnetUtil(dubboHost, dubboPort, getEncode(), defaultTimeout);
         String response = telnet.invokeDubbo(interfaceName, requestData);
         telnet.disconnect();
         return response;
@@ -271,30 +274,14 @@ public class DubboTelnetByFile extends AbstractSampler {
         // 分割地址，格式为host:port
         String[] sshAddressArray = getSSHAddress().split(":");
         String sshHost = sshAddressArray[0];
-        String sshPort = sshAddressArray.length == 1 ? "22" : sshAddressArray[1];
+        int sshPort = Integer.valueOf(sshAddressArray.length == 1 ? "22" : sshAddressArray[1]);
 
-        SSHTelnetClient telnet = initSSHTelnetClient(sshHost, sshPort);
+        SSHTelnetClient telnet = new SSHTelnetClient(sshHost, sshPort, getSSHUserName(), getSSHPassword(),
+                getEncode(), defaultTimeout);
         telnet.telnetDubbo(dubboHost, dubboPort);
         String response = telnet.invokeDubbo(interfaceName, requestData);
         telnet.disconnect();
         return response;
-    }
-
-    private SSHTelnetClient initSSHTelnetClient(String sshHost, String sshPort) throws IOException, JSchException {
-        SSHTelnetClient telnetClient;
-        String sshSecretKey = getSSHSecretKey();
-        System.out.println("sshSecretKey=" + sshSecretKey);
-        if (StringUtil.isBlank(sshSecretKey)) {
-            System.out.println("no google");
-            telnetClient = new SSHTelnetClient(sshHost, Integer.valueOf(sshPort),
-                    getSSHUserName(), getSSHPassword(), getEncode(), defaultTimeout);
-        } else {
-            System.out.println("google");
-            telnetClient = new SSHTelnetClient(sshHost, Integer.valueOf(sshPort),
-                    getSSHUserName(), getSSHPassword(), getSSHSecretKey(),
-                    getEncode(), defaultTimeout);
-        }
-        return telnetClient;
     }
 
     /**
@@ -357,7 +344,7 @@ public class DubboTelnetByFile extends AbstractSampler {
         return getPropertyAsString(JSON_PATHS);
     }
 
-    private String getExpection() {
+    private String getExpectation() {
         return getPropertyAsString(EXPECTATION);
     }
 
@@ -374,22 +361,23 @@ public class DubboTelnetByFile extends AbstractSampler {
     }
 
     private String getSSHAddress() {
-        return JMeterUtils.getProperty("sshAddress");
+        return getThreadVariablesDefault("sshAddress", "");
     }
 
     private String getSSHUserName() {
-        return JMeterUtils.getProperty("sshUserName");
+        return getThreadVariablesDefault("sshUserName", "");
     }
 
     private String getSSHPassword() {
-        return JMeterUtils.getProperty("sshPassword");
-    }
-
-    private String getSSHSecretKey() {
-        return JMeterUtils.getPropDefault("sshSecretKey", "");
+        return getThreadVariablesDefault("sshPassword", "");
     }
 
     private boolean isSSHTelnet() {
-        return Boolean.valueOf(JMeterUtils.getPropDefault("isSSHConnect", "false"));
+        return Boolean.valueOf(getThreadVariablesDefault("isSSHConnect", "false"));
+    }
+
+    private String getThreadVariablesDefault(String keyName, String DefaultVar) {
+        String var = getThreadContext().getVariables().get(keyName);
+        return var != null ? var : DefaultVar;
     }
 }

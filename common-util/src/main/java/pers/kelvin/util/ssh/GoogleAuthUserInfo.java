@@ -62,13 +62,11 @@ public class GoogleAuthUserInfo implements UserInfo, UIKeyboardInteractive {
                                               String instruction,
                                               String[] prompt,
                                               boolean[] echo) {
-        System.out.println("destination=" + destination);
-        System.out.println("name=" + name);
-        System.out.println("instruction=" + instruction);
-        System.out.println("prompt=" + Arrays.toString(prompt));
-        System.out.println("echo=" + Arrays.toString(echo));
-        System.out.println("GoogleCode=" + getGoogleCode());
-        System.out.println("getPassword=" + getPassword());
+        logger.debug("destination=" + destination);
+        logger.debug("name=" + name);
+        logger.debug("instruction=" + instruction);
+        logger.debug("prompt=" + Arrays.toString(prompt));
+        logger.debug("echo=" + Arrays.toString(echo));
 
         String[] response = new String[prompt.length];
         if (prompt[0].contains("Verification code:")) {
@@ -76,7 +74,7 @@ public class GoogleAuthUserInfo implements UserInfo, UIKeyboardInteractive {
         } else if (prompt[0].contains("Password:")) {
             response[0] = getPassword();
         } else {
-            logger.error("超出预期的密码错误");
+            logger.error("超出预期的密码校验");
             response[0] = "";
         }
         return response;

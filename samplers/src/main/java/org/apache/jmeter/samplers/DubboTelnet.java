@@ -7,7 +7,6 @@ import org.apache.jmeter.protocol.java.sampler.JavaSamplerContext;
 import org.apache.jmeter.samplers.utils.GroovyUtil;
 import org.apache.jmeter.samplers.utils.TelnetUtil;
 import org.slf4j.Logger;
-import pers.kelvin.util.StringUtil;
 import pers.kelvin.util.exception.ExceptionUtil;
 import pers.kelvin.util.log.LogUtil;
 
@@ -19,8 +18,11 @@ import java.io.IOException;
 public class DubboTelnet extends AbstractJavaSamplerClient {
     private static final Logger logger = LogUtil.getLogger(DubboTelnet.class);
 
-    private String inf;
-    private TelnetUtil telnet;
+    private String dubboHost;
+    private String dubboPort;
+    private String interfaceName;
+    private String encode;
+    private static final int defaultTimeout = 5000;
     private String errorMsg;
 
     /**
@@ -34,9 +36,6 @@ public class DubboTelnet extends AbstractJavaSamplerClient {
         params.addArgument("params", "");
         params.addArgument("expectation", "");
         params.addArgument("encode", "");
-//        params.addArgument("sshAddress", "");
-//        params.addArgument("sshUserName", "");
-//        params.addArgument("sshPassword", "");
         return params;
     }
 
@@ -46,12 +45,10 @@ public class DubboTelnet extends AbstractJavaSamplerClient {
     @Override
     public void setupTest(JavaSamplerContext ctx) {
         String[] address = ctx.getParameter("address").split(":");
-        String host = address[0];
-        String port = address.length == 1 ? "0" : address[1];
-
-        inf = ctx.getParameter("interface", "");
-        String encode = ctx.getParameter("encode", "UTF-8");
-        initTelnet(host, port, encode);
+        dubboHost = address[0];
+        dubboPort = address.length == 1 ? "0" : address[1];
+        interfaceName = ctx.getParameter("interface", "");
+        encode = ctx.getParameter("encode", "UTF-8");
     }
 
     /**
@@ -60,34 +57,29 @@ public class DubboTelnet extends AbstractJavaSamplerClient {
     @Override
     public SampleResult runTest(JavaSamplerContext ctx) {
         String params = ctx.getParameter("params", "");
-        String expection = ctx.getParameter("expectation", "");
-        String dubboResponse = "";
-        boolean isSuccess = false;
+        String expectation = ctx.getParameter("expectation", "");
 
         SampleResult result = new SampleResult();
         result.setEncodingAndType("UTF-8");
-        result.setSamplerData(params);
-
-        // 记录sample开始时间
-        result.sampleStart();
-        if (telnet != null) {
-            // telnet连接成功则invoke报文
-            dubboResponse = telnet.invokeDubbo(inf, params);
-            // 预期结果判断
-            if (StringUtil.isNotBlank(expection)) {
-                isSuccess = getSuccessful(dubboResponse, expection);
-            } else {
-                isSuccess = true;
+        boolean isSuccess = false;
+        String responseData = "";
+        try {
+            result.setSamplerData(interfaceName + "(" + params + ")");
+            result.sampleStart();
+            responseData = invokeDubbo(interfaceName, params);
+            isSuccess = getSuccessful(responseData, expectation);
+        } catch (Exception e) {
+            // 异常后，判断是否已开始统计sample时间，没有则开始统计
+            if (result.isStampedAtStart()) {
+                result.sampleStart();
             }
-        } else {
-            // telnet连接失败输出报错信息
-            dubboResponse = errorMsg;
+            responseData = ExceptionUtil.getStackTrace(e);
+        } finally {
+            result.sampleEnd();
+            result.setSuccessful(isSuccess);
+            result.setResponseData(responseData, "UTF-8");
         }
 
-        // 记录sample结束时间
-        result.sampleEnd();
-        result.setSuccessful(isSuccess);
-        result.setResponseData(dubboResponse, "UTF-8");
         return result;
     }
 
@@ -96,9 +88,13 @@ public class DubboTelnet extends AbstractJavaSamplerClient {
      */
     @Override
     public void teardownTest(JavaSamplerContext ctx) {
-        if (telnet != null) {
-            telnet.disconnect();
-        }
+    }
+
+    private String invokeDubbo(String interfaceName, String requestData) throws IOException {
+        TelnetUtil telnet = new TelnetUtil(dubboHost, dubboPort, encode, defaultTimeout);
+        String response = telnet.invokeDubbo(interfaceName, requestData);
+        telnet.disconnect();
+        return response;
     }
 
     private boolean getSuccessful(String responseData, String expection) {
@@ -119,14 +115,6 @@ public class DubboTelnet extends AbstractJavaSamplerClient {
             }
         }
         return responseData.contains(expection);
-    }
-
-    private void initTelnet(String ip, String port, String charset) {
-        try {
-            telnet = new TelnetUtil(ip, port, charset);
-        } catch (IOException e) {
-            errorMsg = ExceptionUtil.getStackTrace(e);
-        }
     }
 
 }

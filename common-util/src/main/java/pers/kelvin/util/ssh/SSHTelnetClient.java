@@ -132,9 +132,6 @@ public class SSHTelnetClient {
             logger.debug("再读一次dubbo响应");
             result = readUntil(DUBBO_FLAG);
             logger.debug(result);
-        } else {
-            // 如果第一次就读取到响应，则还剩下一个dubbo>标识符在输入流里
-            readUntil(DUBBO_FLAG);
         }
         return extractResponse(result);
     }
@@ -157,10 +154,10 @@ public class SSHTelnetClient {
         }
         responseData = responseData.substring(startIndex, endIndex);
 
-        if (responseData.contains("elapsed:")) {
-            String[] responseDatas = responseData.split("\n");
-            responseData = responseDatas[0];
-        }
+//        if (responseData.contains("elapsed:")) {
+//            String[] responseDatas = responseData.split("\n");
+//            responseData = responseDatas[0];
+//        }
         return responseData;
     }
 
@@ -183,6 +180,13 @@ public class SSHTelnetClient {
         write("exit");
     }
 
+    /**
+     * 发送logout命令
+     */
+    public void logout() {
+        write("logout");
+    }
+
 
     /**
      * 读消息，直到读到指定字符串中的其中一个才返回，超时则直接返回
@@ -203,7 +207,10 @@ public class SSHTelnetClient {
         while ((charCode = in.read()) != -1) {
             // 超时判断
             long currentTime = System.currentTimeMillis();
-            if (currentTime - startTime > timeout) break;
+            if (currentTime - startTime > timeout) {
+                logger.debug("readUntil 等待超时");
+                break;
+            }
             char ch = (char) charCode;
             sb.append(ch);
             if (flag) {

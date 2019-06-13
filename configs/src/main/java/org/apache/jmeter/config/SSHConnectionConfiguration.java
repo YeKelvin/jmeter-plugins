@@ -17,7 +17,6 @@ public class SSHConnectionConfiguration extends ConfigTestElement implements Tes
     public static final String SSH_ADDRESS = "SSHConnectionConfiguration.Address";
     public static final String SSH_USER_NAME = "SSHConnectionConfiguration.UserName";
     public static final String SSH_PASSWORD = "SSHConnectionConfiguration.Password";
-    public static final String SSH_SECRET_KEY = "SSHConnectionConfiguration.SecretKey";
     public static final String IS_SSH_CONNECT = "SSHConnectionConfiguration.IsSSHConnect";
 
     @Override
@@ -31,13 +30,11 @@ public class SSHConnectionConfiguration extends ConfigTestElement implements Tes
     @Override
     public void testStarted(String s) {
         boolean isSSHConnect = isSSHConnect();
-        JMeterUtils.setProperty("isSSHConnect", String.valueOf(isSSHConnect));
+        getThreadContext().getVariables().put("isSSHConnect", String.valueOf(isSSHConnect));
         if (isSSHConnect) {
-            JMeterUtils.setProperty("sshAddress", getSSHAddress());
-            JMeterUtils.setProperty("sshUserName", getSSHUserName());
-            JMeterUtils.setProperty("sshPassword", getSSHPassword());
-            System.out.println("getSSHSecretKey()=" + getSSHSecretKey());
-            JMeterUtils.setProperty("sshSecretKey", getSSHSecretKey());
+            getThreadContext().getVariables().put("sshAddress", getSSHAddress());
+            getThreadContext().getVariables().put("sshUserName", getSSHUserName());
+            getThreadContext().getVariables().put("sshPassword", getSSHPassword());
         }
     }
 
@@ -63,12 +60,13 @@ public class SSHConnectionConfiguration extends ConfigTestElement implements Tes
         return getPropertyAsString(SSH_PASSWORD);
     }
 
-    private String getSSHSecretKey() {
-        return getPropertyAsString(SSH_SECRET_KEY, "");
-    }
-
     public boolean isSSHConnect() {
         return JMeterUtils.getPropDefault(
-                "isSSHConnect", getPropertyAsBoolean(IS_SSH_CONNECT, true));
+                "isSSHConnect", getThreadVariablesAsBooleanDefault(IS_SSH_CONNECT, true));
+    }
+
+    private boolean getThreadVariablesAsBooleanDefault(String keyName, boolean DefaultVar) {
+        String var = getThreadContext().getVariables().get(keyName);
+        return var != null ? Boolean.valueOf(var) : DefaultVar;
     }
 }
