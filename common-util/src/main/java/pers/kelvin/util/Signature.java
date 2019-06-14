@@ -2,6 +2,8 @@ package pers.kelvin.util;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.collections.CollectionUtils;
+import org.slf4j.Logger;
+import pers.kelvin.util.log.LogUtil;
 
 import java.io.IOException;
 import java.security.MessageDigest;
@@ -13,6 +15,8 @@ import java.util.*;
  * @author Kelvin.Ye
  */
 public class Signature {
+    private static final Logger logger = LogUtil.getLogger(Signature.class);
+
     // 登录前，使用A-Z排序工具类
     public static String signBeforLogin(Map<Object, Object> map, String Key) {
         Map<Object, Object> resultMap = sortMapByKey(map);
@@ -121,11 +125,11 @@ public class Signature {
         try {
             MessageDigest md = MessageDigest.getInstance("MD5");
             md.update(str.getBytes());
-            byte b[] = md.digest();
+            byte[] b = md.digest();
 
             int i;
 
-            StringBuffer buf = new StringBuffer("");
+            StringBuffer buf = new StringBuffer();
             for (int offset = 0; offset < b.length; offset++) {
                 i = b[offset];
                 if (i < 0)

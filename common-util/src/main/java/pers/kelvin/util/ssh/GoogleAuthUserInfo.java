@@ -16,6 +16,7 @@ import java.util.Arrays;
 
 public class GoogleAuthUserInfo implements UserInfo, UIKeyboardInteractive {
     private static final Logger logger = LogUtil.getLogger(GoogleAuthUserInfo.class);
+
     private String password;
     private String googleSecretKey;
 
