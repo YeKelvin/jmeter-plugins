@@ -1,7 +1,5 @@
 package pers.kelvin.util.random;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.Random;
 
 /**
@@ -50,11 +48,48 @@ public class Randoms {
         return str1 + getNumber(length) + str2;
     }
 
+
     /**
-     * 获取日志ID
+     * 获取随机字符串
      */
-    public static String getTraceLogId() {
-        return "traceLogId" + new SimpleDateFormat("yyyyMMddHHmmss").format(new Date()) + getNumber(6);
+    public static String getString(int length) {
+        String stringModel = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        StringBuffer sb = new StringBuffer();
+        Random random = new Random();
+        for (int i = 0; i < length; i++) {
+            int index = random.nextInt(stringModel.length());
+            char ch = stringModel.charAt(index);
+            sb.append(ch);
+        }
+        return sb.toString();
+    }
+
+    /**
+     * 获取字符串 + 随机字符串的组合
+     */
+    public static String getString(String str, int length) {
+        return str + getString(length);
+    }
+
+    /**
+     * 获取随机字符串 + 字符串的组合
+     */
+    public static String getString(int length, String str) {
+        return getString(length) + str;
+    }
+
+    /**
+     * 获取字符串 + 随机字符串 + 字符串的组合
+     */
+    public static String getString(int length1, String str, int length2) {
+        return getString(length1) + str + getString(length2);
+    }
+
+    /**
+     * 获取字符串 + 随机字符串 + 字符串的组合
+     */
+    public static String getString(String str1, int length, String str2) {
+        return str1 + getString(length) + str2;
     }
 
     /**
