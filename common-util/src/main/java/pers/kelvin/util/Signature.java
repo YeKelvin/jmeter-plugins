@@ -3,6 +3,7 @@ package pers.kelvin.util;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
+import pers.kelvin.util.exception.ExceptionUtil;
 import pers.kelvin.util.log.LogUtil;
 
 import java.io.IOException;
@@ -17,24 +18,12 @@ import java.util.*;
 public class Signature {
     private static final Logger logger = LogUtil.getLogger(Signature.class);
 
-    // 登录前，使用A-Z排序工具类
-    public static String signBeforLogin(Map<Object, Object> map, String Key) {
-        Map<Object, Object> resultMap = sortMapByKey(map);
-        StringBuilder sb = new StringBuilder();
-        String sign = null;
-        if (!map.isEmpty()) {
-            resultMap.forEach((key, value) -> {
-                sorted(sb, key, value);
-            });
-            sign = sb.substring(0, sb.length() - 1);
-            System.out.println("signBeforLogin:" + Key + "&" + sign);
-        }
-        sign = md5(Key + "&" + sign);
-        return sign;
-    }
+    private static final ObjectMapper objectMapper = new ObjectMapper();
 
-    // 登录后，使用A-Z排序工具类
-    public static String signAfterLogin(Map<Object, Object> map, Object mobileToken) {
+    /**
+     * A-Z排序工具类
+     */
+    public static String sign(Map<Object, Object> map, Object prefix) {
         Map<Object, Object> resultMap = sortMapByKey(map);
         StringBuilder sb = new StringBuilder();
         String sign = null;
@@ -43,10 +32,10 @@ public class Signature {
                 sorted(sb, key, value);
             });
             sign = sb.substring(0, sb.length() - 1);
-            System.out.println("signAfterLogin" + mobileToken + "&" + sign);
+            logger.debug("sign after md5=" + prefix + "&" + sign);
         }
-        if (sign != null && mobileToken != null && mobileToken != "") {
-            sign = md5(mobileToken + "&" + sign);
+        if (sign != null && prefix != null && prefix != "") {
+            sign = md5(prefix + "&" + sign);
         }
         return sign;
     }
@@ -72,7 +61,6 @@ public class Signature {
         return sb.substring(0, sb.length() - 1) + "}";
     }
 
-
     private static String sortedArray(List<Object> list) {
         StringBuilder sb = new StringBuilder();
         if (CollectionUtils.isEmpty(list)) {
@@ -93,19 +81,14 @@ public class Signature {
         return sb.substring(0, sb.length() - 2) + "]";
     }
 
-    private static final ObjectMapper objectMapper = new ObjectMapper();
-
-    public static Map<Object, Object> toMap(String body) throws IOException {
+    public static Map<Object, Object> toMap(String json) throws IOException {
         ObjectMapper objectMapper2 = new ObjectMapper();
-        Map<Object, Object> mapTypes = objectMapper2.readValue(body, HashMap.class);
+        Map<Object, Object> mapTypes = objectMapper2.readValue(json, HashMap.class);
         return mapTypes;
     }
 
     /**
-     * 使用Map 按key 进行排序
-     *
-     * @param map
-     * @return
+     * Map 根据keyName 排序
      */
     public static Map<Object, Object> sortMapByKey(Map<Object, Object> map) {
         if (map == null || map.isEmpty()) {
@@ -129,19 +112,18 @@ public class Signature {
 
             int i;
 
-            StringBuffer buf = new StringBuffer();
+            StringBuffer sb = new StringBuffer();
             for (int offset = 0; offset < b.length; offset++) {
                 i = b[offset];
                 if (i < 0)
                     i += 256;
                 if (i < 16)
-                    buf.append("0");
-                buf.append(Integer.toHexString(i));
+                    sb.append("0");
+                sb.append(Integer.toHexString(i));
             }
-            str = buf.toString();
+            str = sb.toString();
         } catch (Exception e) {
-            e.printStackTrace();
-
+            logger.error(ExceptionUtil.getStackTrace(e));
         }
         return str;
     }
@@ -157,7 +139,7 @@ public class Signature {
      *     reqMap.values()) {}
      *     System.out.println(body);
      *     Map mapTypes = Signature.toMap(body);
-     *     String sign = Signature.signAfterLogin(mapTypes, prefix);
+     *     String sign = Signature.sign(mapTypes, prefix);
      *     return sign;
      * }
      */
