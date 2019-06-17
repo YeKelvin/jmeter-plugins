@@ -1,12 +1,14 @@
 package pers.kelvin.util;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
 import pers.kelvin.util.exception.ExceptionUtil;
+import pers.kelvin.util.json.JsonUtil;
 import pers.kelvin.util.log.LogUtil;
 
-import java.io.IOException;
+import java.lang.reflect.Type;
 import java.security.MessageDigest;
 import java.util.*;
 
@@ -18,7 +20,7 @@ import java.util.*;
 public class Signature {
     private static final Logger logger = LogUtil.getLogger(Signature.class);
 
-    private static final ObjectMapper objectMapper = new ObjectMapper();
+    private static Gson gson = JsonUtil.getGsonInstance();
 
     /**
      * A-Z排序工具类
@@ -81,10 +83,10 @@ public class Signature {
         return sb.substring(0, sb.length() - 2) + "]";
     }
 
-    public static Map<Object, Object> toMap(String json) throws IOException {
-        ObjectMapper objectMapper2 = new ObjectMapper();
-        Map<Object, Object> mapTypes = objectMapper2.readValue(json, HashMap.class);
-        return mapTypes;
+    public static Map<Object, Object> toMap(String json) {
+        Type hashMapType = new TypeToken<HashMap<Object, Object>>() {
+        }.getType();
+        return gson.fromJson(json, hashMapType);
     }
 
     /**
@@ -94,7 +96,7 @@ public class Signature {
         if (map == null || map.isEmpty()) {
             return null;
         }
-        Map<Object, Object> sortMap = new TreeMap<Object, Object>(new Comparator<Object>() {
+        Map<Object, Object> sortMap = new TreeMap<>(new Comparator<Object>() {
             public int compare(Object obj1, Object obj2) {
                 // 降序排序
                 return obj1.toString().compareTo(obj2.toString());
@@ -138,8 +140,8 @@ public class Signature {
      *     for (body:
      *     reqMap.values()) {}
      *     System.out.println(body);
-     *     Map mapTypes = Signature.toMap(body);
-     *     String sign = Signature.sign(mapTypes, prefix);
+     *     Map mapTypes = Signature2.toMap(body);
+     *     String sign = Signature2.sign(mapTypes, prefix);
      *     return sign;
      * }
      */
