@@ -9,6 +9,11 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
+/**
+ * 报文加签
+ *
+ * @author KelvinYe
+ */
 public class Sign extends AbstractFunction {
     /**
      * 自定义function的描述

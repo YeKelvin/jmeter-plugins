@@ -100,12 +100,6 @@ public class Signature {
         return sb.substring(0, sb.length() - 2) + "]";
     }
 
-//    public static Map<Object, Object> toMap(String json) {
-//        Type hashMapType = new TypeToken<HashMap<Object, Object>>() {
-//        }.getType();
-//        return gson.fromJson(json, hashMapType);
-//    }
-
     /**
      * Map 根据keyName 排序
      */
@@ -123,6 +117,9 @@ public class Signature {
         return sortMap;
     }
 
+    /**
+     * md5加密
+     */
     public static String md5(String str) {
         try {
             MessageDigest md = MessageDigest.getInstance("MD5");
