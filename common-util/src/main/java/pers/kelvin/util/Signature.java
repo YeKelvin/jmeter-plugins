@@ -22,8 +22,11 @@ public class Signature {
 
     private static Gson gson = JsonUtil.getGsonInstance();
 
+    private static Type hashMapType = new TypeToken<HashMap<Object, Object>>() {
+    }.getType();
+
     /**
-     * A-Z排序工具类
+     * 报文加签
      *
      * @param json   json报文
      * @param prefix 加签前缀
@@ -33,16 +36,14 @@ public class Signature {
         if (StringUtil.isBlank(json)) {
             return "";
         }
-        Type hashMapType = new TypeToken<HashMap<Object, Object>>() {
-        }.getType();
-        Map<Object, Object> map = gson.fromJson(json, hashMapType);
-        Map<Object, Object> resultMap = sortMapByKey(map);
+
+        Map<Object, Object> resultMap = sortMapByKey(gson.fromJson(json, hashMapType));
         StringBuffer sb = new StringBuffer();
-        String sign = null;
-        resultMap.forEach((key, value) -> {
-            sorted(sb, key, value);
-        });
-        sign = sb.substring(0, sb.length() - 1);
+        if (resultMap != null) {
+            resultMap.forEach((key, value) -> sorted(sb, key, value));
+        }
+
+        String sign = sb.substring(0, sb.length() - 1);
         logger.debug("sign after md5=" + prefix + "&" + sign);
 
         // md5加密
@@ -53,33 +54,45 @@ public class Signature {
     }
 
     /**
-     * 排序后字段拼接
+     * 报文排序后拼接各字段
      *
-     * @param sb
-     * @param key
-     * @param value
+     * @param sb    StringBuffer对象
+     * @param key   key对象
+     * @param value value对象
      */
     private static void sorted(StringBuffer sb, Object key, Object value) {
         if (value instanceof Map) {
-            sb.append(key).append("=").append(sortedMap((Map) value)).append("&");
+            sb.append(key).append("=").append(sortedMap(new HashMap<Object, Object>((Map) value))).append("&");
         } else if (value instanceof List) {
-            sb.append(key).append("=").append(sortedArray((List) value)).append("&");
+            sb.append(key).append("=").append(sortedArray(new ArrayList<Object>((List) value))).append("&");
         } else {
             sb.append(key).append("=").append(value).append("&");
         }
     }
 
+    /**
+     * 排序Map对象后拼接各字段
+     *
+     * @param map Map对象
+     * @return str
+     */
     private static String sortedMap(Map<Object, Object> map) {
         Map<Object, Object> resultMap = sortMapByKey(map);
         StringBuffer sb = new StringBuffer();
         if (map == null || map.size() <= 0) {
-            sb.append("{}");
+            return sb.append("{}").toString();
         }
         sb.append("{");
         resultMap.forEach((key, value) -> sorted(sb, key, value));
         return sb.substring(0, sb.length() - 1) + "}";
     }
 
+    /**
+     * 排序List对象后拼接各字段
+     *
+     * @param list List对象
+     * @return str
+     */
     private static String sortedArray(List<Object> list) {
         StringBuffer sb = new StringBuffer();
         if (CollectionUtils.isEmpty(list)) {
@@ -88,9 +101,9 @@ public class Signature {
         sb.append("[");
         list.forEach(item -> {
             if (item instanceof Map) {
-                sb.append(sortedMap((Map) item));
+                sb.append(sortedMap(new HashMap<Object, Object>((Map) item)));
             } else if (item instanceof List) {
-                sb.append(sortedArray((List) item));
+                sb.append(sortedArray(new ArrayList<Object>((List) item)));
             } else {
                 sb.append(item);
             }
@@ -107,12 +120,8 @@ public class Signature {
         if (map == null || map.isEmpty()) {
             return null;
         }
-        Map<Object, Object> sortMap = new TreeMap<>(new Comparator<Object>() {
-            public int compare(Object obj1, Object obj2) {
-                // 降序排序
-                return obj1.toString().compareTo(obj2.toString());
-            }
-        });
+        // 降序排序
+        Map<Object, Object> sortMap = new TreeMap<>(Comparator.comparing(Object::toString));
         sortMap.putAll(map);
         return sortMap;
     }
