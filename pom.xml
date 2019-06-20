@@ -66,6 +66,11 @@
                 <version>${jmeter.version}</version>
             </dependency>
             <dependency>
+                <groupId>org.apache.jmeter</groupId>
+                <artifactId>ApacheJMeter_http</artifactId>
+                <version>${jmeter.version}</version>
+            </dependency>
+            <dependency>
                 <groupId>redis.clients</groupId>
                 <artifactId>jedis</artifactId>
                 <version>${jedis.version}</version>
@@ -227,10 +232,6 @@
                 <groupId>org.projectlombok</groupId>
                 <artifactId>lombok</artifactId>
                 <version>${lombok.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.fusesource.jansi</groupId>
-                <artifactId>jansi</artifactId>
             </dependency>
             <dependency>
                 <groupId>org.apache.commons</groupId>

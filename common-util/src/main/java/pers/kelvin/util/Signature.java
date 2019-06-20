@@ -160,8 +160,7 @@ public class Signature {
      *     Arguments args = sampler.getArguments();
      *     Map reqMap = args.getArgumentsAsMap();
      *     String body = null;
-     *     for (body:
-     *     reqMap.values()) {}
+     *     for (body:reqMap.values()) {}
      *     System.out.println(body);
      *     Map mapTypes = Signature.toMap(body);
      *     String sign = Signature.sign(mapTypes, prefix);
