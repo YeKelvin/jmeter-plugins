@@ -128,19 +128,8 @@ public class Signature2 {
         return str;
     }
 
-    /**
-     * main
-     *
-     * String sign(String prefix) {
-     *     Arguments args = sampler.getArguments();
-     *     Map reqMap = args.getArgumentsAsMap();
-     *     String body = null;
-     *     for (body:
-     *     reqMap.values()) {}
-     *     System.out.println(body);
-     *     Map mapTypes = Signature2.toMap(body);
-     *     String sign = Signature2.sign(mapTypes, prefix);
-     *     return sign;
-     * }
-     */
+    public static void main(String[] args) throws IOException {
+        String testJson = "{\"aa\":\"vaa\",\"bb\":22,\"cc\":true,\"dd\":null,\"ee\":[\"ee1\",\"ee2\"],\"ff\":{\"ff1\":\"vff1\",\"ff2\":\"vff2\"},\"gg\":[{\"gg1\":\"vgg1\",\"gg2\":\"vgg2\"},{\"gg3\":\"vgg3\",\"gg4\":\"vgg4\"}]}";
+        System.out.println(Signature2.sign(Signature2.toMap(testJson), ""));
+    }
 }

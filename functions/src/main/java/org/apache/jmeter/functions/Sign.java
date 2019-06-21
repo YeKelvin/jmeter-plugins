@@ -5,19 +5,13 @@ import org.apache.jmeter.engine.util.CompoundVariable;
 import org.apache.jmeter.protocol.http.sampler.HTTPSampler;
 import org.apache.jmeter.samplers.SampleResult;
 import org.apache.jmeter.samplers.Sampler;
-import org.apache.jmeter.util.JMeterUtils;
 import org.slf4j.Logger;
-import pers.kelvin.util.GoogleAuthenticator;
 import pers.kelvin.util.Signature;
-import pers.kelvin.util.exception.ExceptionUtil;
 import pers.kelvin.util.log.LogUtil;
 
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
 /**
  * 报文加签

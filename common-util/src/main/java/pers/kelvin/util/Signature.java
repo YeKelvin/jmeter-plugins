@@ -1,11 +1,11 @@
 package pers.kelvin.util;
 
-import com.google.gson.Gson;
+import com.google.gson.*;
 import com.google.gson.reflect.TypeToken;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.MapUtils;
 import org.slf4j.Logger;
 import pers.kelvin.util.exception.ExceptionUtil;
-import pers.kelvin.util.json.JsonUtil;
 import pers.kelvin.util.log.LogUtil;
 
 import java.lang.reflect.Type;
@@ -20,7 +20,7 @@ import java.util.*;
 public class Signature {
     private static final Logger logger = LogUtil.getLogger(Signature.class);
 
-    private static Gson gson = JsonUtil.getGsonInstance();
+    private static final Gson gson = getGson();
 
     private static Type hashMapType = new TypeToken<HashMap<Object, Object>>() {
     }.getType();
@@ -44,11 +44,15 @@ public class Signature {
         }
 
         String sign = sb.substring(0, sb.length() - 1);
-        logger.debug("sign after md5=" + prefix + "&" + sign);
+        logger.debug("sign before md5= " + prefix + "&" + sign);
+
+        if (StringUtil.isNotBlank(prefix)) {
+            sign = prefix + "&" + sign;
+        }
 
         // md5加密
-        if (StringUtil.isNotBlank(sign) && StringUtil.isNotBlank(prefix)) {
-            sign = md5(prefix + "&" + sign);
+        if (StringUtil.isNotBlank(sign)) {
+            sign = md5(sign);
         }
         return sign;
     }
@@ -77,11 +81,11 @@ public class Signature {
      * @return str
      */
     private static String sortedMap(Map<Object, Object> map) {
-        Map<Object, Object> resultMap = sortMapByKey(map);
         StringBuffer sb = new StringBuffer();
-        if (map == null || map.size() <= 0) {
+        if (MapUtils.isEmpty(map)) {
             return sb.append("{}").toString();
         }
+        Map<Object, Object> resultMap = sortMapByKey(map);
         sb.append("{");
         resultMap.forEach((key, value) -> sorted(sb, key, value));
         return sb.substring(0, sb.length() - 1) + "}";
@@ -107,7 +111,7 @@ public class Signature {
             } else {
                 sb.append(item);
             }
-            sb.append(", ");
+            sb.append(",");
         });
 
         return sb.substring(0, sb.length() - 2) + "]";
@@ -153,18 +157,14 @@ public class Signature {
         return str;
     }
 
-    /**
-     * main
-     *
-     * String sign(String prefix) {
-     *     Arguments args = sampler.getArguments();
-     *     Map reqMap = args.getArgumentsAsMap();
-     *     String body = null;
-     *     for (body:reqMap.values()) {}
-     *     System.out.println(body);
-     *     Map mapTypes = Signature.toMap(body);
-     *     String sign = Signature.sign(mapTypes, prefix);
-     *     return sign;
-     * }
-     */
+    private static Gson getGson() {
+        return new GsonBuilder().serializeNulls().registerTypeAdapter(Double.class, new JsonSerializer<Double>() {
+            @Override
+            public JsonElement serialize(Double src, Type typeOfSrc, JsonSerializationContext context) {
+                if (src == src.longValue())
+                    return new JsonPrimitive(src.longValue());
+                return new JsonPrimitive(src);
+            }
+        }).create();
+    }
 }
