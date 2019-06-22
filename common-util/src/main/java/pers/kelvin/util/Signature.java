@@ -1,14 +1,13 @@
 package pers.kelvin.util;
 
-import com.google.gson.*;
-import com.google.gson.reflect.TypeToken;
+import com.google.gson.Gson;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.slf4j.Logger;
 import pers.kelvin.util.exception.ExceptionUtil;
+import pers.kelvin.util.json.JsonUtil;
 import pers.kelvin.util.log.LogUtil;
 
-import java.lang.reflect.Type;
 import java.security.MessageDigest;
 import java.util.*;
 
@@ -20,10 +19,7 @@ import java.util.*;
 public class Signature {
     private static final Logger logger = LogUtil.getLogger(Signature.class);
 
-    private static final Gson gson = getGson();
-
-    private static Type hashMapType = new TypeToken<HashMap<Object, Object>>() {
-    }.getType();
+    private static Gson gson = JsonUtil.getGsonInstance();
 
     /**
      * 报文加签
@@ -37,19 +33,18 @@ public class Signature {
             return "";
         }
 
-        Map<Object, Object> resultMap = sortMapByKey(gson.fromJson(json, hashMapType));
+        Map<Object, Object> resultMap = sortMapByKey(gson.fromJson(json, JsonUtil.mapType));
         StringBuffer sb = new StringBuffer();
         if (resultMap != null) {
             resultMap.forEach((key, value) -> sorted(sb, key, value));
         }
 
         String sign = sb.substring(0, sb.length() - 1);
-        logger.debug("sign before md5= " + prefix + "&" + sign);
 
         if (StringUtil.isNotBlank(prefix)) {
             sign = prefix + "&" + sign;
         }
-
+        logger.debug("sign before md5= " + sign);
         // md5加密
         if (StringUtil.isNotBlank(sign)) {
             sign = md5(sign);
@@ -157,14 +152,4 @@ public class Signature {
         return str;
     }
 
-    private static Gson getGson() {
-        return new GsonBuilder().serializeNulls().registerTypeAdapter(Double.class, new JsonSerializer<Double>() {
-            @Override
-            public JsonElement serialize(Double src, Type typeOfSrc, JsonSerializationContext context) {
-                if (src == src.longValue())
-                    return new JsonPrimitive(src.longValue());
-                return new JsonPrimitive(src);
-            }
-        }).create();
-    }
 }

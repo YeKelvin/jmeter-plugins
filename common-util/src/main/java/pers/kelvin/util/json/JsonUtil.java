@@ -2,15 +2,28 @@ package pers.kelvin.util.json;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.reflect.TypeToken;
 import com.jayway.jsonpath.JsonPath;
 
+import java.lang.reflect.Type;
+import java.util.Map;
 import java.util.regex.Pattern;
 
 /**
  * @author KelvinYe
  */
 public class JsonUtil {
-    private static Gson gson = new GsonBuilder().serializeNulls().create();
+    public static Type mapType = new TypeToken<Map<Object, Object>>() {
+    }.getType();
+
+    private static Gson gson = getGson();
+
+    private static Gson getGson() {
+        return new GsonBuilder().serializeNulls()
+                .registerTypeAdapter(mapType, new MapTypeAdapter())
+                .registerTypeAdapter(Double.class, new DoubleTypeAdapter())
+                .create();
+    }
 
     /**
      * 获取Gson实例
