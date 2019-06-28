@@ -75,11 +75,23 @@ public class JsonUtil {
      *
      * @param json   json报文
      * @param tClass 类
-     * @param <T>    泛型
+     * @param <T>    类型
      * @return 类对象
      */
     public static <T> T fromJson(String json, Class<T> tClass) {
         return gson.fromJson(json, tClass);
+    }
+
+    /**
+     * 根据报文和类型转换为类对象
+     *
+     * @param json json报文
+     * @param type 类型
+     * @param <T>  类型
+     * @return 类对象
+     */
+    public static <T> T fromJson(String json, Type type) {
+        return gson.fromJson(json, type);
     }
 
     /**
