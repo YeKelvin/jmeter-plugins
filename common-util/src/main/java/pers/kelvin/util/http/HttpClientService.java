@@ -33,6 +33,7 @@ public class HttpClientService {
     // 请求获取响应的超时时间(即响应时间)，单位毫秒
     private static final int SOCKET_TIMEOUT = 5000;
 
+    // 请求头keep-alive配置
     private static final ConnectionKeepAliveStrategy KEEP_ALIVE_STRATEGY = new DefaultConnectionKeepAliveStrategy() {
         @Override
         public long getKeepAliveDuration(HttpResponse response, HttpContext context) {
@@ -55,6 +56,9 @@ public class HttpClientService {
             .setCookieSpec(CookieSpecs.DEFAULT)
             .build();
 
+    //响应处理器
+    private static ResponseHandler<String> responseHandler;
+
     // 默认请求地址
     private String basicUrl;
 
@@ -62,10 +66,6 @@ public class HttpClientService {
     private CookieStore cookieStore;
 
     private CloseableHttpClient httpClients;
-
-
-    //响应处理器
-    private static ResponseHandler<String> responseHandler;
 
     public HttpClientService() {
         cookieStore = new BasicCookieStore();
