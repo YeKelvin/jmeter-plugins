@@ -5,8 +5,6 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.util.Map;
 
-import static org.apache.commons.lang3.StringUtils.EMPTY;
-
 /**
  * User: KelvinYe
  * Date: 2018-03-27
