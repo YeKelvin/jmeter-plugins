@@ -153,9 +153,9 @@ public class HttpClientService {
     /**
      * http post 上传文件
      *
-     * @param url         请求地址
-     * @param headers     请求头
-     * @param requestData 请求参数
+     * @param url             请求地址
+     * @param headers         请求头
+     * @param requestFileData 请求参数
      */
     public String sendPostFile(String url, HttpHeader headers, HttpRequestFileData requestFileData) throws IOException {
         // 创建httpPost请求对象

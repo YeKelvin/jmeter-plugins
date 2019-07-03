@@ -199,7 +199,7 @@ public class DubboTelnetByFile extends AbstractSampler {
     }
 
     /**
-     * 控制TestElement的runningVersion，替换为${}占位符真值
+     * 控制TestElement的runningVersion，替换${}占位符为真值
      */
     private String replaceValue(String value) {
         setProperty(REPLACE_VALUE, value);
