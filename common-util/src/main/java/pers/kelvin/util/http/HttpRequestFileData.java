@@ -8,6 +8,7 @@ import org.apache.http.entity.mime.MultipartEntityBuilder;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 
 public class HttpRequestFileData {
 
@@ -37,5 +38,15 @@ public class HttpRequestFileData {
 
     public HttpEntity build() {
         return entityBuilder.build();
+    }
+
+    public String toString() {
+        String requestData = "";
+        try {
+            requestData = String.valueOf(entityBuilder.build().getContent());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return requestData;
     }
 }

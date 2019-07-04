@@ -57,6 +57,12 @@
                 <groupId>org.apache.jmeter</groupId>
                 <artifactId>ApacheJMeter_core</artifactId>
                 <version>${jmeter.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>org.apache.commons</groupId>
+                        <artifactId>commons-text</artifactId>
+                    </exclusion>
+                </exclusions>
             </dependency>
             <dependency>
                 <groupId>org.apache.jmeter</groupId>
