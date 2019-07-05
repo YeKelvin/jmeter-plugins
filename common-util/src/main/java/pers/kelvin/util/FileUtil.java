@@ -94,18 +94,18 @@ public class FileUtil {
      * @return 文件内容
      */
     public static String readFile(String outputFilePath) {
-        String content = "";
+        StringBuffer content = new StringBuffer();
         try {
             BufferedReader reader = new BufferedReader(
                     new InputStreamReader(new FileInputStream(new File(outputFilePath)), StandardCharsets.UTF_8));
             String line;
             while ((line = reader.readLine()) != null) {
-                content += line;
+                content.append(line);
             }
             reader.close();
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return content;
+        return content.toString();
     }
 }
