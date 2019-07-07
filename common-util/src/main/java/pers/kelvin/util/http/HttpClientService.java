@@ -17,6 +17,7 @@ import org.apache.http.impl.client.*;
 import org.apache.http.protocol.HttpContext;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
 
@@ -25,7 +26,7 @@ import java.util.Map;
  */
 public class HttpClientService {
     // 编码格式
-    private static final String DEFAULT_ENCODE = "UTF-8";
+    private static final String DEFAULT_ENCODE = StandardCharsets.UTF_8.name();
 
     // 设置连接超时时间，单位毫秒
     private static final int CONNECT_TIMEOUT = 5000;
@@ -122,8 +123,6 @@ public class HttpClientService {
         // 设置请求头
         setHeader(httpGet, headers.toMap());
 
-//         CloseableHttpResponse httpResponse = null;
-
         return httpClients.execute(httpGet, responseHandler);
     }
 
@@ -145,7 +144,7 @@ public class HttpClientService {
         setHeader(httpPost, headers.toMap());
 
         // 设置请求参数
-        httpPost.setEntity(new StringEntity(requestData.toString(), DEFAULT_ENCODE));
+        httpPost.setEntity(requestData.createStringEntity(DEFAULT_ENCODE));
 
         return httpClients.execute(httpPost, responseHandler);
     }

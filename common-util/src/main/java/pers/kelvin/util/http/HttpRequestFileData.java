@@ -19,20 +19,20 @@ public class HttpRequestFileData {
         entityBuilder.setMode(HttpMultipartMode.BROWSER_COMPATIBLE);
     }
 
-    public HttpRequestFileData addBinaryBody(String filePath) {
-        entityBuilder.addBinaryBody("upfile", new File(filePath), ContentType.DEFAULT_BINARY, filePath);
+    public HttpRequestFileData addBinaryBody(String keyName, String filePath) {
+        entityBuilder.addBinaryBody(keyName, new File(filePath), ContentType.DEFAULT_BINARY, filePath);
         return this;
     }
 
-    public HttpRequestFileData addZipBinaryBody(String zipFilePath) throws FileNotFoundException {
+    public HttpRequestFileData addZipBinaryBody(String keyName, String zipFilePath) throws FileNotFoundException {
         entityBuilder.addBinaryBody(
-                "upstream", new FileInputStream(zipFilePath), ContentType.create("application/zip"), zipFilePath);
+                keyName, new FileInputStream(zipFilePath), ContentType.create("application/zip"), zipFilePath);
         return this;
     }
 
 
-    public HttpRequestFileData addTextBody(String value) {
-        entityBuilder.addTextBody("text", value, ContentType.DEFAULT_BINARY);
+    public HttpRequestFileData addTextBody(String keyName, String value) {
+        entityBuilder.addTextBody(keyName, value, ContentType.DEFAULT_BINARY);
         return this;
     }
 
@@ -40,6 +40,7 @@ public class HttpRequestFileData {
         return entityBuilder.build();
     }
 
+    @Override
     public String toString() {
         String requestData = "";
         try {
