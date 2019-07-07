@@ -18,6 +18,10 @@
             <artifactId>ApacheJMeter_core</artifactId>
         </dependency>
         <dependency>
+            <groupId>org.apache.jmeter</groupId>
+            <artifactId>ApacheJMeter_http</artifactId>
+        </dependency>
+        <dependency>
             <groupId>com.google.code.gson</groupId>
             <artifactId>gson</artifactId>
         </dependency>
