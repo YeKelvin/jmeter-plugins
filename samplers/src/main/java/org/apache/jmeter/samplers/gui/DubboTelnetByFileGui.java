@@ -65,13 +65,9 @@ public class DubboTelnetByFileGui extends AbstractSamplerGui {
         templatePanel.add(getInterfaceSystemPanel());
         templatePanel.add(getTemplateContentPanel());
 
-        VerticalPanel sshPanel = new VerticalPanel();
-        sshPanel.setBorder(GuiUtil.createTitledBorder("Configure the SSH"));
-
         VerticalPanel mainPanel = new VerticalPanel();
         mainPanel.add(interfacePanel);
         mainPanel.add(templatePanel);
-        mainPanel.add(sshPanel);
 
         add(mainPanel, BorderLayout.CENTER);
     }

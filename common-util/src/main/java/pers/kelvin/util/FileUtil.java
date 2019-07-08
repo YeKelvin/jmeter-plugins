@@ -54,11 +54,21 @@ public class FileUtil {
      * @param content        写入内容
      */
     public static void outputFile(String outputFilePath, String content) {
+        File file = new File(outputFilePath);
+        outputFile(file, content);
+    }
+
+    /**
+     * 写文件
+     *
+     * @param outputFile 文件对象
+     * @param content    写入内容
+     */
+    public static void outputFile(File outputFile, String content) {
         try {
-            File file = new File(outputFilePath);
-            FileUtil.createParentDir(file);
+            FileUtil.createParentDir(outputFile);
             BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(
-                    new FileOutputStream(file, false), StandardCharsets.UTF_8));
+                    new FileOutputStream(outputFile, false), StandardCharsets.UTF_8));
             writer.write(content);
             writer.flush();
             writer.close();
@@ -74,11 +84,21 @@ public class FileUtil {
      * @param newLine        追加内容
      */
     public static void appendFile(String outputFilePath, String newLine) {
+        File file = new File(outputFilePath);
+        appendFile(file, newLine);
+    }
+
+    /**
+     * 追加写文件
+     *
+     * @param outputFile 文件对象
+     * @param newLine    追加内容
+     */
+    public static void appendFile(File outputFile, String newLine) {
         try {
-            File file = new File(outputFilePath);
-            FileUtil.createParentDir(file);
+            FileUtil.createParentDir(outputFile);
             BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(
-                    new FileOutputStream(file, true), StandardCharsets.UTF_8));
+                    new FileOutputStream(outputFile, true), StandardCharsets.UTF_8));
             writer.write(newLine);
             writer.flush();
             writer.close();
