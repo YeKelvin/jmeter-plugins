@@ -28,7 +28,7 @@ public class GAuth extends AbstractFunction {
     private static final List<String> DESC = new LinkedList<>();
 
     static {
-        DESC.add("根据secretKey获取google动态认证码");
+        DESC.add("google secret key");
     }
 
     /**
@@ -74,8 +74,10 @@ public class GAuth extends AbstractFunction {
     public String execute(SampleResult sampleResult, Sampler sampler) {
         String googleAuthCode = "";
         String secret = secretKey.execute().trim();
+        logger.debug("Google Secret Key=" + secret);
         try {
             googleAuthCode = GoogleAuthenticator.getCode(secret);
+            logger.debug("Google Auth Code=" + googleAuthCode);
         } catch (NoSuchAlgorithmException | InvalidKeyException e) {
             logger.error(ExceptionUtil.getStackTrace(e));
         }

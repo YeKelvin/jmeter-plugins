@@ -11,7 +11,8 @@ import java.security.MessageDigest;
 import java.util.*;
 
 /**
- * 报文加签工具类，json格式报文按照keyName首字母排序后用MD5加密
+ * 报文加签工具类，jackson
+ * json格式报文按照keyName首字母排序后用MD5加密。
  *
  * @author Kelvin.Ye
  */
@@ -82,8 +83,7 @@ public class Signature2 {
     }
 
     public static Map<Object, Object> toMap(String json) throws IOException {
-        ObjectMapper objectMapper2 = new ObjectMapper();
-        Map<Object, Object> mapTypes = objectMapper2.readValue(json, HashMap.class);
+        Map<Object, Object> mapTypes = objectMapper.readValue(json, HashMap.class);
         return mapTypes;
     }
 
@@ -128,8 +128,4 @@ public class Signature2 {
         return str;
     }
 
-    public static void main(String[] args) throws IOException {
-        String testJson = "{\"aa\":\"vaa\",\"bb\":22,\"cc\":true,\"dd\":null,\"ee\":[\"ee1\",\"ee2\"],\"ff\":{\"ff1\":\"vff1\",\"ff2\":\"vff2\"},\"gg\":[{\"gg1\":\"vgg1\",\"gg2\":\"vgg2\"},{\"gg3\":\"vgg3\",\"gg4\":\"vgg4\"}]}";
-        System.out.println(Signature2.sign(Signature2.toMap(testJson), ""));
-    }
 }

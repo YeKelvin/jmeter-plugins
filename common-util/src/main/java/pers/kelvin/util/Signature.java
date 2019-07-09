@@ -12,7 +12,8 @@ import java.security.MessageDigest;
 import java.util.*;
 
 /**
- * 报文加签工具类，json格式报文按照keyName首字母排序后用MD5加密
+ * 报文加签工具类，Gson
+ * json格式报文按照keyName首字母排序后用MD5加密。
  *
  * @author Kelvin.Ye
  */

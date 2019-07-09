@@ -4,6 +4,9 @@ import org.apache.http.HttpEntity;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.mime.HttpMultipartMode;
 import org.apache.http.entity.mime.MultipartEntityBuilder;
+import org.slf4j.Logger;
+import pers.kelvin.util.exception.ExceptionUtil;
+import pers.kelvin.util.log.LogUtil;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -11,6 +14,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 
 public class HttpRequestFileData {
+    private static final Logger logger = LogUtil.getLogger(HttpRequestFileData.class);
 
     private MultipartEntityBuilder entityBuilder;
 
@@ -46,7 +50,7 @@ public class HttpRequestFileData {
         try {
             requestData = String.valueOf(entityBuilder.build().getContent());
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.error(ExceptionUtil.getStackTrace(e));
         }
         return requestData;
     }

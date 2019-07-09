@@ -27,9 +27,8 @@ public class Sign extends AbstractFunction {
     private static final List<String> DESC = new LinkedList<>();
 
     static {
-        DESC.add("HTTP请求报文加签");
-        DESC.add("Json报文按照keyName排序后进行md5加密");
-        DESC.add("目前仅支持在HTTP Sampler下的配置元件、前后置处理器中使用");
+        DESC.add("报文签名前缀");
+
     }
 
     /**
@@ -74,8 +73,10 @@ public class Sign extends AbstractFunction {
     @Override
     public String execute(SampleResult sampleResult, Sampler sampler) {
         String signStr = "";
+        logger.debug("sampler class=" + sampler.getClass().getName());
         if (sampler instanceof HTTPSampler) {
             String prefixStr = prefix.execute().trim();
+            logger.debug("sign prefix=" + prefix);
             HTTPSampler httpSampler = (HTTPSampler) sampler;
             // 获取HTTP Sampler post body中的内容
             Arguments args = httpSampler.getArguments();
