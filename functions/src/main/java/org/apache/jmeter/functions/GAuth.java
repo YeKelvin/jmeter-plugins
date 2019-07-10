@@ -28,7 +28,7 @@ public class GAuth extends AbstractFunction {
     private static final List<String> DESC = new LinkedList<>();
 
     static {
-        DESC.add("google secret key");
+        DESC.add("Google Secret Key:");
     }
 
     /**
@@ -71,7 +71,7 @@ public class GAuth extends AbstractFunction {
      * function的执行主体
      */
     @Override
-    public String execute(SampleResult sampleResult, Sampler sampler) {
+    public synchronized String execute(SampleResult sampleResult, Sampler sampler) {
         String googleAuthCode = "";
         String secret = secretKey.execute().trim();
         logger.debug("Google Secret Key=" + secret);

@@ -1,9 +1,11 @@
 package org.apache.jmeter.functions;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.jmeter.engine.util.CompoundVariable;
 import org.apache.jmeter.samplers.SampleResult;
 import org.apache.jmeter.samplers.Sampler;
 import org.apache.jmeter.services.FileServer;
+import pers.kelvin.util.PathUtil;
 
 import java.io.File;
 import java.util.Collection;
@@ -25,7 +27,6 @@ public class ScriptBaseDir extends AbstractFunction {
 
     static {
         DESC.add("获取jmx脚本所在目录路径");
-        DESC.add("如有入參则把参数值拼接到jmx脚本所在目录路径后");
     }
 
     /**
@@ -36,7 +37,7 @@ public class ScriptBaseDir extends AbstractFunction {
     /**
      * function传入的参数的值
      */
-    private Object[] values = null;
+    private Collection<CompoundVariable> parameters = null;
 
     /**
      * function引用关键字
@@ -59,8 +60,7 @@ public class ScriptBaseDir extends AbstractFunction {
      */
     @Override
     public void setParameters(Collection<CompoundVariable> parameters) {
-        //将入參的实际值存入values中
-        values = parameters.toArray();
+        this.parameters = parameters;
     }
 
     /**
@@ -70,10 +70,10 @@ public class ScriptBaseDir extends AbstractFunction {
     public String execute(SampleResult sampleResult, Sampler sampler) throws InvalidVariableException {
         try {
             String scriptBasePath = FileServer.getFileServer().getBaseDir();
-            if (values.length != 0) {
-                for (Object value : values) {
-                    String childPath = ((CompoundVariable) value).execute().trim();
-                    scriptBasePath = pathJoin(scriptBasePath, childPath);
+            if (CollectionUtils.isNotEmpty(parameters)) {
+                for (CompoundVariable parameter : parameters) {
+                    String childPath = parameter.execute().trim();
+                    scriptBasePath = PathUtil.pathJoin(scriptBasePath, childPath);
                 }
             }
             return scriptBasePath.replace("\\", "/");
@@ -82,19 +82,6 @@ public class ScriptBaseDir extends AbstractFunction {
         }
     }
 
-    private String pathJoin(String parentPath, String childPath) {
-        String winSep = "\\";
-        String unixSep = "/";
-        if (parentPath.endsWith(winSep) || parentPath.endsWith(unixSep)) {
-            parentPath = parentPath.substring(0, parentPath.length() - 1);
-        }
-        if (childPath.startsWith(winSep) || childPath.startsWith(unixSep)) {
-            childPath = childPath.substring(1);
-        }
-        if (childPath.endsWith(winSep) || childPath.endsWith(unixSep)) {
-            childPath = childPath.substring(0, childPath.length() - 1);
-        }
-        return parentPath + File.separator + childPath;
-    }
+
 
 }

@@ -1,10 +1,6 @@
 package org.apache.jmeter.samplers;
 
-import org.apache.jmeter.samplers.utils.ReflectUtil;
 import pers.kelvin.util.json.JsonUtil;
-
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 
 /**
  * Description: 响应相关
