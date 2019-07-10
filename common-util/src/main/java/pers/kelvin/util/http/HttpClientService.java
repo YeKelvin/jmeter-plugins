@@ -12,9 +12,10 @@ import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.conn.ConnectionKeepAliveStrategy;
 import org.apache.http.cookie.Cookie;
-import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.*;
 import org.apache.http.protocol.HttpContext;
+import org.slf4j.Logger;
+import pers.kelvin.util.log.LogUtil;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -25,6 +26,9 @@ import java.util.Map;
  * @author KelvinYe
  */
 public class HttpClientService {
+
+    private static final Logger logger = LogUtil.getLogger(HttpClientService.class);
+
     // 编码格式
     private static final String DEFAULT_ENCODE = StandardCharsets.UTF_8.name();
 
@@ -182,6 +186,11 @@ public class HttpClientService {
             }
         }
         return cookieValue;
+    }
+
+    public void printAllCookie() {
+        List<Cookie> cookies = cookieStore.getCookies();
+        cookies.forEach(cookie -> logger.info("cookie key=" + cookie.getName() + ",value=" + cookie.getValue()));
     }
 
     /**

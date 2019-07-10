@@ -7,7 +7,6 @@ import org.apache.jmeter.samplers.Sampler;
 import org.apache.jmeter.services.FileServer;
 import pers.kelvin.util.PathUtil;
 
-import java.io.File;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;

@@ -20,6 +20,7 @@ import java.util.List;
  * @author KelvinYe
  */
 public class GAuth extends AbstractFunction {
+
     private static final Logger logger = LogUtil.getLogger(GAuth.class);
 
     /**

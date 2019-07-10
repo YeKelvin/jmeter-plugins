@@ -14,6 +14,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 
 public class HttpRequestFileData {
+
     private static final Logger logger = LogUtil.getLogger(HttpRequestFileData.class);
 
     private MultipartEntityBuilder entityBuilder;
@@ -23,20 +24,13 @@ public class HttpRequestFileData {
         entityBuilder.setMode(HttpMultipartMode.BROWSER_COMPATIBLE);
     }
 
-    public HttpRequestFileData addBinaryBody(String keyName, String filePath) {
-        entityBuilder.addBinaryBody(keyName, new File(filePath), ContentType.DEFAULT_BINARY, filePath);
+    public HttpRequestFileData addBinaryBody(String keyName, String filePath, String contentType) {
+        entityBuilder.addBinaryBody(keyName, new File(filePath), ContentType.create(contentType), filePath);
         return this;
     }
-
-    public HttpRequestFileData addZipBinaryBody(String keyName, String zipFilePath) throws FileNotFoundException {
-        entityBuilder.addBinaryBody(
-                keyName, new FileInputStream(zipFilePath), ContentType.create("application/zip"), zipFilePath);
-        return this;
-    }
-
 
     public HttpRequestFileData addTextBody(String keyName, String value) {
-        entityBuilder.addTextBody(keyName, value, ContentType.DEFAULT_BINARY);
+        entityBuilder.addTextBody(keyName, value, ContentType.DEFAULT_TEXT);
         return this;
     }
 

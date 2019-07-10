@@ -43,7 +43,7 @@ public class HttpRequestData {
     }
 
     public HttpEntity createStringEntity(String charset) {
-        return new StringEntity(dataMap.toString(), charset);
+        return new StringEntity(toString(), charset);
     }
 
     @Override

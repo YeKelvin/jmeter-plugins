@@ -19,6 +19,7 @@ import java.util.List;
  * @author KelvinYe
  */
 public class Sign extends AbstractFunction {
+
     private static final Logger logger = LogUtil.getLogger(Sign.class);
 
     /**
