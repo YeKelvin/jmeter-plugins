@@ -12,6 +12,7 @@ import pers.kelvin.util.log.LogUtil;
  * @author Kelvin.Ye
  */
 public class SSHConnectionConfiguration extends ConfigTestElement implements TestStateListener {
+
     private static final Logger logger = LogUtil.getLogger(SSHConnectionConfiguration.class);
 
     public static final String SSH_ADDRESS = "SSHConnectionConfiguration.Address";

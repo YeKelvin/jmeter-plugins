@@ -1,11 +1,17 @@
 package pers.kelvin.util;
 
+import org.apache.jmeter.JMeter;
 import org.apache.jmeter.config.Arguments;
 import org.apache.jmeter.config.gui.ArgumentsPanel;
 import org.apache.jmeter.control.LoopController;
 import org.apache.jmeter.control.gui.LoopControlPanel;
 import org.apache.jmeter.control.gui.TestPlanGui;
+import org.apache.jmeter.engine.JMeterEngine;
+import org.apache.jmeter.engine.JMeterEngineException;
 import org.apache.jmeter.engine.StandardJMeterEngine;
+import org.apache.jmeter.exceptions.IllegalUserActionException;
+import org.apache.jmeter.gui.tree.JMeterTreeModel;
+import org.apache.jmeter.gui.tree.JMeterTreeNode;
 import org.apache.jmeter.protocol.http.control.gui.HttpTestSampleGui;
 import org.apache.jmeter.protocol.http.sampler.HTTPSamplerProxy;
 import org.apache.jmeter.reporters.ResultCollector;
@@ -17,22 +23,21 @@ import org.apache.jmeter.threads.ThreadGroup;
 import org.apache.jmeter.threads.gui.ThreadGroupGui;
 import org.apache.jmeter.util.JMeterUtils;
 import org.apache.jorphan.collections.HashTree;
+import org.testng.annotations.Test;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
-/**
- * Description:
- *
- * @author: KelvinYe
- * Date: 2019-07-07
- * Time: 16:49
- */
-public class RunJMeter {
-    public static void main(String[] args) throws IOException {
+import static org.testng.Assert.*;
+
+public class RunJMeterTest {
+
+    @Test
+    public void testSaveAndRunScript() throws IOException {
         // 设置jmeterHome路径
-        String localJmeterHome = "/Users/xxx/IT/Jmeter/apache-jmeter-5.1.1";
+//        String localJmeterHome = "/Users/xxx/IT/Jmeter/apache-jmeter-5.1.1";
+        String localJmeterHome = "E:\\JMeter\\apache-jmeter-5.1.1";
         File jmeterHome = new File(localJmeterHome);
         String slash = System.getProperty("file.separator");
 
@@ -45,7 +50,6 @@ public class RunJMeter {
                 //JMeter initialization (properties, log levels, locale, etc)
                 JMeterUtils.setJMeterHome(jmeterHome.getPath());
                 JMeterUtils.loadJMeterProperties(jmeterProperties.getPath());
-                JMeterUtils.initLogging();// you can comment this line out to see extra log messages of i.e. DEBUG level
                 JMeterUtils.initLocale();
 
 
@@ -139,5 +143,30 @@ public class RunJMeter {
 
         System.err.println("jmeter.home property is not set or pointing to incorrect location");
         System.exit(1);
+    }
+
+    @Test
+    public void testLoadAndRunScript() throws IOException, IllegalUserActionException, JMeterEngineException {
+        String localJmeterHome = "E:\\JMeter\\apache-jmeter-5.1.1";
+        File jmeterHome = new File(localJmeterHome);
+        String slash = System.getProperty("file.separator");
+        File jmeterProperties = new File(jmeterHome.getPath() + slash + "bin" + slash + "jmeter.properties");
+        JMeterUtils.setJMeterHome(jmeterHome.getPath());
+        JMeterUtils.loadJMeterProperties(jmeterProperties.getPath());
+        JMeterUtils.initLocale();
+        SaveService.loadProperties();
+
+        File file = new File("C:\\Users\\xxx\\Desktop\\example.jmx");
+        HashTree tree = SaveService.loadTree(file);
+
+        JMeterTreeModel treeModel = new JMeterTreeModel(new TestPlan());
+        JMeterTreeNode root = (JMeterTreeNode) treeModel.getRoot();
+        treeModel.addSubTree(tree, root);
+
+        HashTree clonedTree = JMeter.convertSubTree(tree, true);
+
+        JMeterEngine engine = new StandardJMeterEngine();
+        engine.configure(clonedTree);
+        engine.runTest();
     }
 }

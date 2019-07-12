@@ -8,6 +8,10 @@ import pers.kelvin.util.GuiUtil;
 import javax.swing.*;
 import java.awt.*;
 
+
+/**
+ * @author KelvinYe
+ */
 public class FailureResultSaverGui extends AbstractConfigGui {
     private static final int H_GAP = 5;
     private static final int V_GAP = 10;
