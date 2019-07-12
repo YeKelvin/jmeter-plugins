@@ -2,14 +2,13 @@ package org.apache.jmeter.samplers;
 
 
 import org.apache.jmeter.JMeter;
-import org.apache.jmeter.engine.JMeterEngine;
-import org.apache.jmeter.engine.JMeterEngineException;
 import org.apache.jmeter.engine.StandardJMeterEngine;
 import org.apache.jmeter.exceptions.IllegalUserActionException;
 import org.apache.jmeter.gui.tree.JMeterTreeModel;
 import org.apache.jmeter.gui.tree.JMeterTreeNode;
 import org.apache.jmeter.save.SaveService;
 import org.apache.jmeter.testelement.TestPlan;
+import org.apache.jmeter.util.JMeterUtils;
 import org.apache.jorphan.collections.HashTree;
 import org.slf4j.Logger;
 import pers.kelvin.util.PathUtil;
@@ -70,8 +69,7 @@ public class ExecuteExternalScript extends AbstractSampler {
         return path.replace("\\", "/");
     }
 
-    private String runExternalScript(String scriptAbsPath)
-            throws IllegalUserActionException, JMeterEngineException, IOException {
+    private String runExternalScript(String scriptAbsPath) throws IllegalUserActionException, IOException {
         File file = new File(scriptAbsPath);
         HashTree tree = SaveService.loadTree(file);
 
@@ -81,11 +79,11 @@ public class ExecuteExternalScript extends AbstractSampler {
 
         HashTree clonedTree = JMeter.convertSubTree(tree, true);
 
-        JMeterEngine engine = new StandardJMeterEngine();
+        StandardJMeterEngine engine = new StandardJMeterEngine();
+        engine.setProperties(JMeterUtils.getJMeterProperties());
         engine.configure(clonedTree);
-        engine.runTest();
+        engine.run();
+
         return "success";
     }
-
-
 }
