@@ -8,6 +8,7 @@ import pers.kelvin.util.FileUtil;
 import pers.kelvin.util.exception.ExceptionUtil;
 
 import java.io.File;
+import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -56,7 +57,7 @@ public class DubboZK extends AbstractJavaSamplerClient {
         // 如Service类初始化失败则sample结束并置为失败
         if (serviceInitErrorMessage != null) {
             result.setSuccessful(false);
-            result.setResponseData(serviceInitErrorMessage, "UTF-8");
+            result.setResponseData(serviceInitErrorMessage, StandardCharsets.UTF_8.name());
             // 因jmeter同一线程会循环执行，需重置该属性
             serviceInitErrorMessage = null;
             System.out.println(false);
@@ -79,7 +80,7 @@ public class DubboZK extends AbstractJavaSamplerClient {
             result.setSuccessful(isSuccess);
             result.setSamplerData(params);
             if (responseData != null) {
-                result.setResponseData(responseData, "UTF-8");
+                result.setResponseData(responseData, StandardCharsets.UTF_8.name());
             }
             if (!isSuccess) {
                 // 失败时才写日志

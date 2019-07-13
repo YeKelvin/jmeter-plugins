@@ -21,6 +21,7 @@ public class ExecuteExternalScriptGui extends AbstractSamplerGui {
     private JTextField externalScriptPathField;
     private JTextField scriptNameField;
     private JTextField propsNameSuffixField;
+    private JComboBox<String> isPrintToConsoleComboBox;
 
     public ExecuteExternalScriptGui() {
         init();
@@ -35,6 +36,7 @@ public class ExecuteExternalScriptGui extends AbstractSamplerGui {
         mainPanel.add(getExternalScriptPathPanel());
         mainPanel.add(getScriptNamePanel());
         mainPanel.add(getPropsNameSuffixPanel());
+        mainPanel.add(getIsPrintToConsolePanel());
 
         add(mainPanel, BorderLayout.CENTER);
     }
@@ -67,6 +69,7 @@ public class ExecuteExternalScriptGui extends AbstractSamplerGui {
         el.setProperty(ExecuteExternalScript.EXTERNAL_SCRIPT_PATH, externalScriptPathField.getText());
         el.setProperty(ExecuteExternalScript.SCRIPT_NAME, scriptNameField.getText());
         el.setProperty(ExecuteExternalScript.PROPS_NAME_SUFFIX, propsNameSuffixField.getText());
+        el.setProperty(ExecuteExternalScript.IS_PRINT_TO_CONSOLE, (String) isPrintToConsoleComboBox.getSelectedItem());
     }
 
     /**
@@ -78,6 +81,7 @@ public class ExecuteExternalScriptGui extends AbstractSamplerGui {
         externalScriptPathField.setText(el.getPropertyAsString(ExecuteExternalScript.EXTERNAL_SCRIPT_PATH));
         scriptNameField.setText(el.getPropertyAsString(ExecuteExternalScript.SCRIPT_NAME));
         propsNameSuffixField.setText(el.getPropertyAsString(ExecuteExternalScript.PROPS_NAME_SUFFIX));
+        isPrintToConsoleComboBox.setSelectedItem(el.getPropertyAsString(ExecuteExternalScript.IS_PRINT_TO_CONSOLE));
     }
 
     @Override
@@ -86,6 +90,7 @@ public class ExecuteExternalScriptGui extends AbstractSamplerGui {
         externalScriptPathField.setText("");
         scriptNameField.setText("");
         propsNameSuffixField.setText("");
+        isPrintToConsoleComboBox.setSelectedItem("");
     }
 
     private JPanel getExternalScriptPathPanel() {
@@ -121,6 +126,21 @@ public class ExecuteExternalScriptGui extends AbstractSamplerGui {
         JPanel panel = new JPanel(new BorderLayout(H_GAP, V_GAP));
         panel.add(label, BorderLayout.WEST);
         panel.add(propsNameSuffixField, BorderLayout.CENTER);
+        return panel;
+    }
+
+    private JPanel getIsPrintToConsolePanel() {
+        isPrintToConsoleComboBox = new JComboBox<>();
+        isPrintToConsoleComboBox.setName(ExecuteExternalScript.IS_PRINT_TO_CONSOLE);
+        isPrintToConsoleComboBox.addItem("false");
+        isPrintToConsoleComboBox.addItem("true");
+
+        JLabel label = GuiUtil.createTextFieldLabel(
+                "是否打印SamplerResult到控制台：", isPrintToConsoleComboBox, LABEL_WIDTH, LABEL_HEIGHT);
+
+        JPanel panel = new JPanel(new BorderLayout(H_GAP, V_GAP));
+        panel.add(label, BorderLayout.WEST);
+        panel.add(isPrintToConsoleComboBox, BorderLayout.CENTER);
         return panel;
     }
 }

@@ -8,6 +8,7 @@ import java.io.FileNotFoundException;
 import java.io.InputStreamReader;
 import java.lang.reflect.Type;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 
 /**
@@ -20,7 +21,7 @@ public class Config {
      * @return HashMap
      */
     public static HashMap<String, String> get(String configFilePath) throws FileNotFoundException {
-        InputStreamReader reader = new InputStreamReader(new FileInputStream(configFilePath), Charset.forName("UTF-8"));
+        InputStreamReader reader = new InputStreamReader(new FileInputStream(configFilePath), StandardCharsets.UTF_8);
         Type hashMap = new TypeToken<HashMap<String, String>>() {
         }.getType();
         return new Gson().fromJson(reader, hashMap);

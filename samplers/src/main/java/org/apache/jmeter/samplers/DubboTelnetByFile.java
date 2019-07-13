@@ -25,6 +25,7 @@ import pers.kelvin.util.ssh.SSHTelnetClient;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Type;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -58,7 +59,7 @@ public class DubboTelnetByFile extends AbstractSampler {
     public SampleResult sample(Entry entry) {
         SampleResult result = new SampleResult();
         result.setSampleLabel(getName());
-        result.setEncodingAndType("UTF-8");
+        result.setEncodingAndType(StandardCharsets.UTF_8.name());
         boolean isSuccess = false;
         String responseData = "";
         try {
@@ -79,7 +80,7 @@ public class DubboTelnetByFile extends AbstractSampler {
         } finally {
             result.sampleEnd();
             result.setSuccessful(isSuccess);
-            result.setResponseData(responseData, "UTF-8");
+            result.setResponseData(responseData, StandardCharsets.UTF_8.name());
         }
 
         return result;
@@ -349,7 +350,8 @@ public class DubboTelnetByFile extends AbstractSampler {
     }
 
     private String getEncode() {
-        return StringUtil.isBlank(getPropertyAsString(ENCODE)) ? "UTF-8" : getPropertyAsString(ENCODE);
+        return StringUtil.isBlank(
+                getPropertyAsString(ENCODE)) ? StandardCharsets.UTF_8.name() : getPropertyAsString(ENCODE);
     }
 
     private boolean getUseTemplate() {

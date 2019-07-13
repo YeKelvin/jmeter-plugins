@@ -1,10 +1,9 @@
 package org.apache.jmeter.samplers;
 
 
-import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.jmeter.JMeter;
+import org.apache.jmeter.config.ExternalScriptDataTransfer;
 import org.apache.jmeter.engine.StandardJMeterEngine;
 import org.apache.jmeter.exceptions.IllegalUserActionException;
 import org.apache.jmeter.gui.tree.JMeterTreeModel;
@@ -21,7 +20,11 @@ import pers.kelvin.util.log.LogUtil;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.*;
+import java.nio.charset.StandardCharsets;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Properties;
 
 /**
  * @author KelvinYe
@@ -30,19 +33,19 @@ public class ExecuteExternalScript extends AbstractSampler {
 
     private static final Logger logger = LogUtil.getLogger(ExecuteExternalScript.class);
 
-    private static final String JMETER_PROPS_PATH = JMeterUtils.getJMeterBinDir() + File.separator + "jmeter.properties";
-
     public static final String EXTERNAL_SCRIPT_PATH = "ExecuteExternalScript.ExternalScriptPath";
 
     public static final String SCRIPT_NAME = "ExecuteExternalScript.ScriptName";
 
     public static final String PROPS_NAME_SUFFIX = "ExecuteExternalScript.PropsNameSuffix";
 
+    public static final String IS_PRINT_TO_CONSOLE = "ExecuteExternalScript.PrintSampleResultToConsole";
+
     @Override
     public SampleResult sample(Entry entry) {
         SampleResult result = new SampleResult();
         result.setSampleLabel(getName());
-        result.setEncodingAndType("UTF-8");
+        result.setEncodingAndType(StandardCharsets.UTF_8.name());
         boolean isSuccess = true;
         String responseData = "";
         try {
@@ -60,7 +63,7 @@ public class ExecuteExternalScript extends AbstractSampler {
         } finally {
             result.sampleEnd();
             result.setSuccessful(isSuccess);
-            result.setResponseData(responseData, "UTF-8");
+            result.setResponseData(responseData, StandardCharsets.UTF_8.name());
         }
         return result;
     }
@@ -75,6 +78,10 @@ public class ExecuteExternalScript extends AbstractSampler {
 
     private String getPropsNameSuffix() {
         return "_" + getPropertyAsString(PROPS_NAME_SUFFIX);
+    }
+
+    private String getIsPrintToConsole() {
+        return getPropertyAsString(IS_PRINT_TO_CONSOLE);
     }
 
     private String getScriptPath() {
@@ -101,9 +108,13 @@ public class ExecuteExternalScript extends AbstractSampler {
         treeModel.addSubTree(tree, root);
         HashTree clonedTree = JMeter.convertSubTree(tree, true);
 
-        // 获取JMeter属性对象
+        // 对外部脚本添加组件，用于数据传递
+        clonedTree.add(clonedTree.getArray()[0], new ExternalScriptDataTransfer());
+
+        // 设置JMeter属性，用于传递给外部脚本使用
         Properties props = JMeterUtils.getJMeterProperties();
         props.put("propsNameSuffix", getPropsNameSuffix());
+        props.put("printSampleResultToConsole", getIsPrintToConsole());
         props.put("configName", JMeterVarsUtil.getDefault("ENVDataSet.ConfigName"));
 
         // 保存执行外部脚本前的JMeter属性的副本
@@ -133,6 +144,14 @@ public class ExecuteExternalScript extends AbstractSampler {
         result.deleteCharAt(result.length() - 1);
         result.append("}");
         return result.toString();
+    }
+
+    private void setErrorSampleResult(SampleResult currentResult) {
+        SampleResult errorResult = (SampleResult) JMeterUtils.getJMeterProperties().get("errorSampleResult");
+        currentResult.setRequestHeaders(errorResult.getRequestHeaders());
+        currentResult.setSamplerData(
+                currentResult.getSamplerData() + "\n外部脚本中，以下Sample执行失败\n" + errorResult.getSamplerData());
+        currentResult.setResponseHeaders(errorResult.getRequestHeaders());
     }
 
 }

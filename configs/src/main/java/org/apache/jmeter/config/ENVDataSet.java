@@ -14,10 +14,11 @@ import java.io.FileInputStream;
 import java.io.InputStreamReader;
 import java.lang.reflect.Type;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 
 /**
- * User: KelvinYe
+ * @author: KelvinYe
  * Date: 2018-04-08
  * Time: 17:11
  */
@@ -58,7 +59,7 @@ public class ENVDataSet extends ConfigTestElement implements TestStateListener {
         if (isEnvFile(filePath)) {
             try (
                     FileInputStream input = new FileInputStream(filePath);
-                    InputStreamReader reader = new InputStreamReader(input, Charset.forName("UTF-8"))
+                    InputStreamReader reader = new InputStreamReader(input, StandardCharsets.UTF_8.name())
             ) {
                 envMap = JsonUtil.getGsonInstance().fromJson(reader, hashMap);
             } catch (Exception e) {

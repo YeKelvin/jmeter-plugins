@@ -13,6 +13,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.lang.reflect.Type;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 /**
@@ -100,7 +101,7 @@ public class RedisCluster {
      * e.g. ["ip:port","ip:port"]
      */
     private static ArrayList<String> readNodesAddress(String filePath) throws FileNotFoundException {
-        InputStreamReader reader = new InputStreamReader(new FileInputStream(filePath), Charset.forName("UTF-8"));
+        InputStreamReader reader = new InputStreamReader(new FileInputStream(filePath), StandardCharsets.UTF_8);
         Type arrayList = new TypeToken<ArrayList<String>>() {
         }.getType();
         return new Gson().fromJson(reader, arrayList);

@@ -15,7 +15,9 @@ import java.io.File;
  * @author KelvinYe
  */
 public class FailureResultSaver extends ConfigTestElement implements SampleListener {
+
     private static final Logger logger = LogUtil.getLogger(FailureResultSaver.class);
+
     private static final String LINE_SEP = FileUtil.LINE_SEPARATOR;
 
     public static final String LOG_PATH = "FailureResultSaver.logPath";

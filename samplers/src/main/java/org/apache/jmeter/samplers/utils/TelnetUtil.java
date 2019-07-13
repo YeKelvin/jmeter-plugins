@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 
 
 /**
@@ -30,7 +31,7 @@ public class TelnetUtil {
     private int timeout;
 
     public TelnetUtil(String host, String port) throws IOException {
-        initTelnet(host, port, "UTF-8", 5000);
+        initTelnet(host, port, StandardCharsets.UTF_8.name(), 5000);
     }
 
     public TelnetUtil(String host, String port, String charset) throws IOException {

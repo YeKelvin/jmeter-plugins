@@ -8,6 +8,7 @@ import pers.kelvin.util.log.LogUtil;
 
 import java.io.*;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 
 /**
@@ -93,7 +94,7 @@ public class JsonFileUtil {
         StringBuilder content = new StringBuilder();
         File file = new File(filePath);
         if (file.exists()) {
-            InputStreamReader reader = new InputStreamReader(new FileInputStream(file), Charset.forName("UTF-8"));
+            InputStreamReader reader = new InputStreamReader(new FileInputStream(file), StandardCharsets.UTF_8);
             BufferedReader bufferedReader = new BufferedReader(reader);
             String lineTxt;
             while ((lineTxt = bufferedReader.readLine()) != null) {

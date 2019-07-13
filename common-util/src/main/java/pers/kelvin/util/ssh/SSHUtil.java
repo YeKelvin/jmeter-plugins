@@ -10,6 +10,7 @@ import org.apache.commons.io.IOUtils;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 
 /**
  * @author KelvinYe
@@ -45,7 +46,7 @@ public class SSHUtil {
      * @throws JSchException
      */
     public static String executeCommand(Session session, String command) throws IOException, JSchException {
-        return executeCommand(session, command, "UTF-8");
+        return executeCommand(session, command, StandardCharsets.UTF_8.name());
     }
 
     /**

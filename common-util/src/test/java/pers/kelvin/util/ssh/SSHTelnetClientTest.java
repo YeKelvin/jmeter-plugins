@@ -4,6 +4,7 @@ import com.jcraft.jsch.JSchException;
 import org.testng.annotations.Test;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 
 public class SSHTelnetClientTest {
 
@@ -16,7 +17,7 @@ public class SSHTelnetClientTest {
         String remoteHost = "";
         String remotePort = "";
         SSHTelnetClient telnetClient = new SSHTelnetClient(host, port, userName, password,
-                "UTF-8", 3000);
+                StandardCharsets.UTF_8.name(), 3000);
         telnetClient.telnetDubbo(remoteHost, remotePort);
         System.out.println(
                 telnetClient.invokeDubbo("", ""));
@@ -33,7 +34,7 @@ public class SSHTelnetClientTest {
         String remoteHost = "";
         String remotePort = "";
         SSHTelnetClient telnetClient = new SSHTelnetClient(host, port, userName, password, secretKey,
-                "UTF-8", 3000);
+                StandardCharsets.UTF_8.name(), 3000);
         telnetClient.telnetDubbo(remoteHost, remotePort);
         System.out.println(
                 telnetClient.invokeDubbo("", ""));

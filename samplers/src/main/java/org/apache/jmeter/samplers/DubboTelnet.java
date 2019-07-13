@@ -11,6 +11,7 @@ import pers.kelvin.util.exception.ExceptionUtil;
 import pers.kelvin.util.log.LogUtil;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 
 /**
  * @author KelvinYe
@@ -48,7 +49,7 @@ public class DubboTelnet extends AbstractJavaSamplerClient {
         dubboHost = address[0];
         dubboPort = address.length == 1 ? "0" : address[1];
         interfaceName = ctx.getParameter("interface", "");
-        encode = ctx.getParameter("encode", "UTF-8");
+        encode = ctx.getParameter("encode", StandardCharsets.UTF_8.name());
     }
 
     /**
@@ -60,7 +61,7 @@ public class DubboTelnet extends AbstractJavaSamplerClient {
         String expectation = ctx.getParameter("expectation", "");
 
         SampleResult result = new SampleResult();
-        result.setEncodingAndType("UTF-8");
+        result.setEncodingAndType(StandardCharsets.UTF_8.name());
         boolean isSuccess = false;
         String responseData = "";
         try {
@@ -77,7 +78,7 @@ public class DubboTelnet extends AbstractJavaSamplerClient {
         } finally {
             result.sampleEnd();
             result.setSuccessful(isSuccess);
-            result.setResponseData(responseData, "UTF-8");
+            result.setResponseData(responseData, StandardCharsets.UTF_8.name());
         }
 
         return result;
