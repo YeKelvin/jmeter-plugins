@@ -41,6 +41,7 @@ public class SSHPortForwardingGui extends AbstractConfigGui {
         mainPanel.add(getSSHPasswordPanel());
         mainPanel.add(getLocalForwardingPortPanel());
         mainPanel.add(getRemoteAddressPanel());
+        mainPanel.add(getNotePanel());
 
         add(mainPanel, BorderLayout.CENTER);
     }
@@ -157,6 +158,18 @@ public class SSHPortForwardingGui extends AbstractConfigGui {
         JPanel panel = new JPanel(new BorderLayout(H_GAP, V_GAP));
         panel.add(label, BorderLayout.WEST);
         panel.add(remoteAddressTextField, BorderLayout.CENTER);
+        return panel;
+    }
+
+    private JPanel getNotePanel() {
+        String note = "\n注意：请把此组件放在JDBC组件后面，不然连接关闭时会报IOException。";
+        JTextArea textArea = new JTextArea(note);
+        textArea.setLineWrap(true);
+        textArea.setEditable(false);
+        textArea.setBackground(this.getBackground());
+
+        JPanel panel = new JPanel(new BorderLayout(H_GAP, V_GAP));
+        panel.add(textArea, BorderLayout.CENTER);
         return panel;
     }
 }

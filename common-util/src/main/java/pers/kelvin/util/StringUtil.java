@@ -26,4 +26,12 @@ public class StringUtil {
         }
         return source;
     }
+
+    public static boolean isEmpty(final CharSequence cs) {
+        return StringUtils.isEmpty(cs);
+    }
+
+    public static boolean isNotEmpty(final CharSequence cs) {
+        return StringUtils.isNotEmpty(cs);
+    }
 }

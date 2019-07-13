@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 
 public class ReflectUtil {
+
     private static final Logger logger = LogUtil.getLogger(ReflectUtil.class);
 
     /**
@@ -43,17 +44,25 @@ public class ReflectUtil {
         return list;
     }
 
+    /**
+     * 获取方法
+     *
+     * @param className  类名
+     * @param methodName 方法名
+     * @return Method对象
+     * @throws ClassNotFoundException 异常
+     */
     public static Method getMethod(String className, String methodName) throws ClassNotFoundException {
-        Method method = null;
-        Class<?> tclass = Class.forName(className);
-        for (Method m : tclass.getDeclaredMethods()) {
-            if (methodName.equals(m.getName())) {
-                method = m;
-            }
-        }
-        return method;
+        return getMethod(Class.forName(className), methodName);
     }
 
+    /**
+     * 获取方法
+     *
+     * @param tclass     类对象
+     * @param methodName 方法名
+     * @return Method对象
+     */
     public static Method getMethod(Class<?> tclass, String methodName) {
         Method method = null;
         for (Method m : tclass.getDeclaredMethods()) {

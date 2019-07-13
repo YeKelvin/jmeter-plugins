@@ -1,5 +1,6 @@
 package pers.kelvin.util;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.jmeter.JMeter;
 import org.apache.jmeter.config.Arguments;
 import org.apache.jmeter.config.gui.ArgumentsPanel;
@@ -28,6 +29,7 @@ import org.testng.annotations.Test;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.*;
 
 import static org.testng.Assert.*;
 
@@ -169,4 +171,19 @@ public class RunJMeterTest {
         engine.configure(clonedTree);
         engine.runTest();
     }
+
+    @Test
+    public void mmm() {
+        JMeterUtils.loadJMeterProperties("E:\\JMeter\\apache-jmeter-5.1.1\\bin\\jmeter.properties");
+        Properties props = JMeterUtils.getJMeterProperties();
+        Properties clonedProps = new Properties();
+        props.forEach(clonedProps::put);
+        props.put("aak", "aav");
+
+
+        Collection<Map.Entry> subtract = CollectionUtils.subtract(
+                clonedProps.entrySet(), JMeterUtils.getJMeterProperties().entrySet());
+        subtract.forEach(e -> System.out.println("" + e.getKey() + "=" + e.getValue()));
+    }
+
 }

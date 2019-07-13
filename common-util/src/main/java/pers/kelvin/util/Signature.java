@@ -18,6 +18,7 @@ import java.util.*;
  * @author Kelvin.Ye
  */
 public class Signature {
+
     private static final Logger logger = LogUtil.getLogger(Signature.class);
 
     private static Gson gson = JsonUtil.getGsonInstance();

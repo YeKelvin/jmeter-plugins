@@ -1,5 +1,10 @@
 package pers.kelvin.util;
 
+import org.slf4j.Logger;
+import pers.kelvin.util.exception.ExceptionUtil;
+import pers.kelvin.util.exception.ServiceException;
+import pers.kelvin.util.log.LogUtil;
+
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 
@@ -11,6 +16,9 @@ import java.nio.charset.StandardCharsets;
  * Time     14:53
  */
 public class FileUtil {
+
+    private static final Logger logger = LogUtil.getLogger(FileUtil.class);
+
     /**
      * 获取当前系统换行符
      */
@@ -23,7 +31,9 @@ public class FileUtil {
      */
     public static void createParentDir(File file) {
         if (file.getParentFile() != null && !file.getParentFile().exists()) {
-            file.getParentFile().mkdirs();
+            if (!file.getParentFile().mkdirs()) {
+                throw new ServiceException("创建文件 " + file.getParentFile().getAbsolutePath() + "的父目录失败");
+            }
         }
     }
 
@@ -32,10 +42,14 @@ public class FileUtil {
      *
      * @param filePath 文件路径
      */
-    public static void deleteFile(String filePath) {
+    public static void deleteFile(String filePath) throws FileNotFoundException {
         File file = new File(filePath);
         if (file.exists() && file.isFile()) {
-            file.delete();
+            if (!file.delete()) {
+                throw new ServiceException("删除文件 " + filePath + "失败");
+            }
+        } else {
+            throw new FileNotFoundException("删除文件失败，文件 " + filePath + "不存在");
         }
     }
 
@@ -73,7 +87,7 @@ public class FileUtil {
             writer.flush();
             writer.close();
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.error(ExceptionUtil.getStackTrace(e));
         }
     }
 
@@ -103,7 +117,7 @@ public class FileUtil {
             writer.flush();
             writer.close();
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.error(ExceptionUtil.getStackTrace(e));
         }
     }
 
@@ -115,16 +129,16 @@ public class FileUtil {
      */
     public static String readFile(String outputFilePath) {
         StringBuffer content = new StringBuffer();
-        try {
-            BufferedReader reader = new BufferedReader(
-                    new InputStreamReader(new FileInputStream(new File(outputFilePath)), StandardCharsets.UTF_8));
+        try (
+                BufferedReader reader = new BufferedReader(
+                        new InputStreamReader(new FileInputStream(new File(outputFilePath)), StandardCharsets.UTF_8))
+        ) {
             String line;
             while ((line = reader.readLine()) != null) {
                 content.append(line);
             }
-            reader.close();
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.error(ExceptionUtil.getStackTrace(e));
         }
         return content.toString();
     }

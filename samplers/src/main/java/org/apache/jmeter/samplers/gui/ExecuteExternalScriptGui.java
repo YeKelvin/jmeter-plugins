@@ -20,6 +20,7 @@ public class ExecuteExternalScriptGui extends AbstractSamplerGui {
 
     private JTextField externalScriptPathField;
     private JTextField scriptNameField;
+    private JTextField propsNameSuffixField;
 
     public ExecuteExternalScriptGui() {
         init();
@@ -33,6 +34,7 @@ public class ExecuteExternalScriptGui extends AbstractSamplerGui {
         VerticalPanel mainPanel = new VerticalPanel();
         mainPanel.add(getExternalScriptPathPanel());
         mainPanel.add(getScriptNamePanel());
+        mainPanel.add(getPropsNameSuffixPanel());
 
         add(mainPanel, BorderLayout.CENTER);
     }
@@ -64,6 +66,7 @@ public class ExecuteExternalScriptGui extends AbstractSamplerGui {
         super.configureTestElement(el);
         el.setProperty(ExecuteExternalScript.EXTERNAL_SCRIPT_PATH, externalScriptPathField.getText());
         el.setProperty(ExecuteExternalScript.SCRIPT_NAME, scriptNameField.getText());
+        el.setProperty(ExecuteExternalScript.PROPS_NAME_SUFFIX, propsNameSuffixField.getText());
     }
 
     /**
@@ -74,6 +77,7 @@ public class ExecuteExternalScriptGui extends AbstractSamplerGui {
         super.configure(el);
         externalScriptPathField.setText(el.getPropertyAsString(ExecuteExternalScript.EXTERNAL_SCRIPT_PATH));
         scriptNameField.setText(el.getPropertyAsString(ExecuteExternalScript.SCRIPT_NAME));
+        propsNameSuffixField.setText(el.getPropertyAsString(ExecuteExternalScript.PROPS_NAME_SUFFIX));
     }
 
     @Override
@@ -81,6 +85,7 @@ public class ExecuteExternalScriptGui extends AbstractSamplerGui {
         super.clearGui();
         externalScriptPathField.setText("");
         scriptNameField.setText("");
+        propsNameSuffixField.setText("");
     }
 
     private JPanel getExternalScriptPathPanel() {
@@ -104,6 +109,18 @@ public class ExecuteExternalScriptGui extends AbstractSamplerGui {
         JPanel panel = new JPanel(new BorderLayout(H_GAP, V_GAP));
         panel.add(label, BorderLayout.WEST);
         panel.add(scriptNameField, BorderLayout.CENTER);
+        return panel;
+    }
+
+    private JPanel getPropsNameSuffixPanel() {
+        propsNameSuffixField = new JTextField(10);
+        propsNameSuffixField.setName(ExecuteExternalScript.PROPS_NAME_SUFFIX);
+
+        JLabel label = GuiUtil.createTextFieldLabel("JMeter属性名称后缀：", propsNameSuffixField, LABEL_WIDTH, LABEL_HEIGHT);
+
+        JPanel panel = new JPanel(new BorderLayout(H_GAP, V_GAP));
+        panel.add(label, BorderLayout.WEST);
+        panel.add(propsNameSuffixField, BorderLayout.CENTER);
         return panel;
     }
 }

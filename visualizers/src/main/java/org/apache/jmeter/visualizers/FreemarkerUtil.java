@@ -4,7 +4,10 @@ package org.apache.jmeter.visualizers;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
+import org.slf4j.Logger;
 import pers.kelvin.util.FileUtil;
+import pers.kelvin.util.exception.ExceptionUtil;
+import pers.kelvin.util.log.LogUtil;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
@@ -18,6 +21,8 @@ import java.util.Map;
  * Time     14:47
  */
 public class FreemarkerUtil {
+
+    private static final Logger logger = LogUtil.getLogger(FreemarkerUtil.class);
 
     private static final String TEMPLATE_LOCATION = "template";
 
@@ -52,7 +57,7 @@ public class FreemarkerUtil {
             bw.flush();
             bw.close();
         } catch (IOException | TemplateException e) {
-            e.printStackTrace();
+            logger.error(ExceptionUtil.getStackTrace(e));
         }
     }
 

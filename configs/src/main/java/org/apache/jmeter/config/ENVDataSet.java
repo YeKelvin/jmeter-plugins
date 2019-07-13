@@ -11,12 +11,10 @@ import pers.kelvin.util.log.LogUtil;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.IOException;
 import java.io.InputStreamReader;
 import java.lang.reflect.Type;
 import java.nio.charset.Charset;
 import java.util.HashMap;
-import java.util.Map;
 
 /**
  * User: KelvinYe
@@ -24,7 +22,12 @@ import java.util.Map;
  * Time: 17:11
  */
 public class ENVDataSet extends ConfigTestElement implements TestStateListener {
+
     private static final Logger logger = LogUtil.getLogger(ENVDataSet.class);
+
+    private static final Type hashMap = new TypeToken<HashMap<String, String>>() {
+    }.getType();
+
     public static final String CONFIG_NAME = "ENVDataSet.ConfigName";
 
     public ENVDataSet() {
@@ -35,7 +38,7 @@ public class ENVDataSet extends ConfigTestElement implements TestStateListener {
      * 获取环境变量配置文件名称
      */
     public String getFileName() {
-        return JMeterUtils.getPropDefault("configName", getPropertyAsString(ENVDataSet.CONFIG_NAME));
+        return JMeterUtils.getPropDefault("configName", getPropertyAsString(CONFIG_NAME));
     }
 
     /**
@@ -45,7 +48,6 @@ public class ENVDataSet extends ConfigTestElement implements TestStateListener {
         return JMeterUtils.getJMeterHome() + File.separator + "config" + File.separator + getFileName();
     }
 
-
     /**
      * 读取json文件转换为HashMap
      *
@@ -53,36 +55,17 @@ public class ENVDataSet extends ConfigTestElement implements TestStateListener {
      */
     public HashMap<String, String> getEnvMap(String filePath) {
         HashMap<String, String> envMap = new HashMap<>();
-        FileInputStream input = null;
-        InputStreamReader reader = null;
-        try {
-            if (isEnvFile(filePath)) {
-                input = new FileInputStream(filePath);
-                reader = new InputStreamReader(input, Charset.forName("UTF-8"));
-                Type hashMap = new TypeToken<HashMap<String, String>>() {
-                }.getType();
+        if (isEnvFile(filePath)) {
+            try (
+                    FileInputStream input = new FileInputStream(filePath);
+                    InputStreamReader reader = new InputStreamReader(input, Charset.forName("UTF-8"))
+            ) {
                 envMap = JsonUtil.getGsonInstance().fromJson(reader, hashMap);
-            } else {
-                logger.error("{}非\".env\"后缀配置文件", filePath);
-            }
-        } catch (Exception e) {
-            logger.error(ExceptionUtil.getStackTrace(e));
-        } finally {
-            // 关闭流
-            try {
-                if (reader != null) {
-                    reader.close();
-                }
-            } catch (IOException e) {
+            } catch (Exception e) {
                 logger.error(ExceptionUtil.getStackTrace(e));
             }
-            try {
-                if (input != null) {
-                    input.close();
-                }
-            } catch (IOException e) {
-                logger.error(ExceptionUtil.getStackTrace(e));
-            }
+        } else {
+            logger.error("{}非 .env文件", filePath);
         }
         return envMap;
     }
@@ -99,27 +82,25 @@ public class ENVDataSet extends ConfigTestElement implements TestStateListener {
 
     @Override
     public void testStarted() {
-        testStarted("local");
+        testStarted("localhost");
     }
 
     @Override
     public void testStarted(String s) {
-        // 把测试环境配置文件名添加到jmeter线程变量中
+        // 把测试环境配置文件名添加到jmeter变量中
         JMeterContextService.getContext().getVariables().put(CONFIG_NAME, getFileName());
-        // 将配置文件中的所有属性逐一添加到jmeter线程变量中
+        // 将配置文件中的所有属性逐一添加到jmeter变量中
         HashMap<String, String> envMap = getEnvMap(getFilePath());
-        for (Map.Entry<String, String> entry : envMap.entrySet()) {
-            JMeterContextService.getContext().getVariables().put(entry.getKey(), entry.getValue());
-        }
+        envMap.forEach((key, value) -> getThreadContext().getVariables().put(key, value));
     }
 
     @Override
     public void testEnded() {
-        testEnded("local");
+        testEnded("localhost");
     }
 
     @Override
     public void testEnded(String s) {
-
     }
+
 }
