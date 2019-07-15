@@ -86,6 +86,11 @@
                 <version>${jmeter.version}</version>
             </dependency>
             <dependency>
+                <groupId>org.apache.jmeter</groupId>
+                <artifactId>ApacheJMeter_jdbc</artifactId>
+                <version>${jmeter.version}</version>
+            </dependency>
+            <dependency>
                 <groupId>redis.clients</groupId>
                 <artifactId>jedis</artifactId>
                 <version>${jedis.version}</version>

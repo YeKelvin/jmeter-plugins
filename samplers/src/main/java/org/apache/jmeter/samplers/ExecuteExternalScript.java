@@ -4,6 +4,7 @@ package org.apache.jmeter.samplers;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.jmeter.JMeter;
 import org.apache.jmeter.config.ExternalScriptDataTransfer;
+import org.apache.jmeter.config.ExternalScriptResultDTO;
 import org.apache.jmeter.config.SSHPortForwarding;
 import org.apache.jmeter.engine.StandardJMeterEngine;
 import org.apache.jmeter.exceptions.IllegalUserActionException;
@@ -21,6 +22,7 @@ import pers.kelvin.util.FileUtil;
 import pers.kelvin.util.JMeterVarsUtil;
 import pers.kelvin.util.PathUtil;
 import pers.kelvin.util.exception.ExceptionUtil;
+import pers.kelvin.util.json.JsonUtil;
 import pers.kelvin.util.log.LogUtil;
 
 import java.io.File;
@@ -69,6 +71,8 @@ public class ExecuteExternalScript extends AbstractSampler {
             result.setResponseData(ExceptionUtil.getStackTrace(e), StandardCharsets.UTF_8.name());
         } finally {
             result.sampleEnd();
+            // 重置外部脚本中设置的 isExecuteSuccess和 errorSampleResult属性
+            clearExternalScriptProps();
         }
         return result;
     }
@@ -161,6 +165,8 @@ public class ExecuteExternalScript extends AbstractSampler {
      * @return json
      */
     private String getExecuteResult(HashMap<String, String> afterProps, HashMap<String, String> beforeProps) {
+        Properties props = JMeterUtils.getJMeterProperties();
+
         // 获取执行外部脚本前后的JMeter属性的差集
         Collection<Map.Entry> subtract = CollectionUtils.subtract(afterProps.entrySet(), beforeProps.entrySet());
         if (subtract.isEmpty()) {
@@ -168,12 +174,21 @@ public class ExecuteExternalScript extends AbstractSampler {
         }
 
         // 序列化 JMeterProps的差集作为结果返回
-        StringBuffer result = new StringBuffer();
-        result.append("{");
-        subtract.forEach(e -> result.append("\"").append(e.getKey()).append("\":\"").append(e.getValue()).append("\","));
-        result.deleteCharAt(result.length() - 1);
-        result.append("}");
-        return result.toString();
+        HashMap<String, Object> externalScriptData = new HashMap<>();
+        subtract.forEach(e -> externalScriptData.put(e.getKey().toString(), e.getValue()));
+        externalScriptData.remove("isExecuteSuccess");
+        ExternalScriptResultDTO res = new ExternalScriptResultDTO();
+        res.setExecuteSuccess((boolean) props.get("isExecuteSuccess"));
+        res.setExternalScriptData(externalScriptData);
+
+        return fixJson(JsonUtil.toJson(res));
+    }
+
+    private String fixJson(String json) {
+        return json.replace("\"[", "[")
+                .replace("]\"", "]")
+                .replace("\\\"", "\"");
+
     }
 
     /**
@@ -234,6 +249,12 @@ public class ExecuteExternalScript extends AbstractSampler {
                 threadGroupTree.remove(resultCollector);
             }
         }
+    }
+
+    private void clearExternalScriptProps() {
+        Properties props = JMeterUtils.getJMeterProperties();
+        props.remove("isExecuteSuccess");
+        props.remove("errorSampleResult");
     }
 
 }

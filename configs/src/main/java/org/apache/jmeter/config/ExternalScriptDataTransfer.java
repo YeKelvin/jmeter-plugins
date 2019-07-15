@@ -1,6 +1,7 @@
 package org.apache.jmeter.config;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.jmeter.protocol.jdbc.sampler.JDBCSampler;
 import org.apache.jmeter.samplers.SampleEvent;
 import org.apache.jmeter.samplers.SampleListener;
 import org.apache.jmeter.samplers.SampleResult;
@@ -13,10 +14,7 @@ import org.slf4j.Logger;
 import pers.kelvin.util.FileUtil;
 import pers.kelvin.util.log.LogUtil;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Properties;
+import java.util.*;
 
 /**
  * Description:
@@ -64,7 +62,7 @@ public class ExternalScriptDataTransfer extends ConfigTestElement implements Thr
         }
 
         if (!result.isSuccessful()) {
-            props.put("isExecuteSuccess", "false");
+            props.put("isExecuteSuccess", false);
             props.put("errorSampleResult", result);
         }
 
@@ -86,6 +84,8 @@ public class ExternalScriptDataTransfer extends ConfigTestElement implements Thr
                 sentToPropsMap.remove("JMeterThread.pack");
                 sentToPropsMap.remove("JMeterThread.last_sample_ok");
                 sentToPropsMap.remove("__jm__" + getThreadContext().getThreadGroup().getName() + "__idx");
+                sentToPropsMap.remove("__jmeter.U_T__");
+                getKeyNameInJDBCRequest(getThreadContext().getThread().getTestTree()).forEach(sentToPropsMap::remove);
 
                 // 将增量的 JMeterVars写入 JMeterProps中
                 sentToPropsMap.forEach(props::put);
@@ -103,7 +103,7 @@ public class ExternalScriptDataTransfer extends ConfigTestElement implements Thr
 
     @Override
     public void threadStarted() {
-        props.put("isExecuteSuccess", "true");
+        props.put("isExecuteSuccess", true);
 
         // 获取当前线程组下的 sample数量
         threadGroupSampleCount = getSampleCount(getThreadContext().getThread().getTestTree());
@@ -128,5 +128,18 @@ public class ExternalScriptDataTransfer extends ConfigTestElement implements Thr
         SearchByClass<Sampler> searcher = new SearchByClass<>(Sampler.class);
         testTree.traverse(searcher);
         return searcher.getSearchResults().size();
+    }
+
+    /**
+     * 获取JDBC Request中的 resultVariable变量名称，用于删除该变量
+     */
+    private ArrayList<String> getKeyNameInJDBCRequest(ListedHashTree testTree) {
+        ArrayList<String> jdbcKeyNameList = new ArrayList<>();
+        SearchByClass<JDBCSampler> searcher = new SearchByClass<>(JDBCSampler.class);
+        testTree.traverse(searcher);
+        for (JDBCSampler jdbcSampler : searcher.getSearchResults()) {
+            jdbcKeyNameList.add(jdbcSampler.getResultVariable());
+        }
+        return jdbcKeyNameList;
     }
 }
