@@ -21,6 +21,7 @@ import org.slf4j.Logger;
 import pers.kelvin.util.FileUtil;
 import pers.kelvin.util.JMeterVarsUtil;
 import pers.kelvin.util.PathUtil;
+import pers.kelvin.util.StringUtil;
 import pers.kelvin.util.exception.ExceptionUtil;
 import pers.kelvin.util.json.JsonUtil;
 import pers.kelvin.util.log.LogUtil;
@@ -71,7 +72,7 @@ public class ExecuteExternalScript extends AbstractSampler {
             result.setResponseData(ExceptionUtil.getStackTrace(e), StandardCharsets.UTF_8.name());
         } finally {
             result.sampleEnd();
-            // 重置外部脚本中设置的 isExecuteSuccess和 errorSampleResult属性
+            // 重置外部脚本中设置的 isExecuteSuccess属性和 errorSampleResult属性
             clearExternalScriptProps();
         }
         return result;
@@ -86,7 +87,7 @@ public class ExecuteExternalScript extends AbstractSampler {
     }
 
     private String getPropsNameSuffix() {
-        return "_" + getPropertyAsString(PROPS_NAME_SUFFIX);
+        return getPropertyAsString(PROPS_NAME_SUFFIX);
     }
 
     private String getIsPrintToConsole() {
@@ -116,7 +117,6 @@ public class ExecuteExternalScript extends AbstractSampler {
 
         // 设置JMeter属性，用于传递给外部脚本使用
         Properties props = JMeterUtils.getJMeterProperties();
-        props.put("propsNameSuffix", getPropsNameSuffix());
         props.put("printSampleResultToConsole", getIsPrintToConsole());
         props.put("configName", JMeterVarsUtil.getDefault("ENVDataSet.ConfigName"));
 
@@ -132,7 +132,14 @@ public class ExecuteExternalScript extends AbstractSampler {
 
         // 保存执行外部脚本后的JMeter属性的副本
         HashMap<String, String> currentProps = new HashMap<>();
-        props.forEach((key, value) -> currentProps.put(key.toString(), value.toString()));
+
+        // 如果设置了 JMeterProps属性名称后缀，则把外部脚本中获取的变量名都加上后缀
+        String propsNameSuffix = getPropsNameSuffix();
+        if (StringUtil.isBlank(propsNameSuffix)) {
+            props.forEach((key, value) -> currentProps.put(key.toString(), value.toString()));
+        } else {
+            props.forEach((key, value) -> currentProps.put(key.toString() + "_" + propsNameSuffix, value.toString()));
+        }
 
         // Json化JMeter属性的差集作为结果返回
         return getExecuteResult(currentProps, clonedProps);
@@ -177,6 +184,7 @@ public class ExecuteExternalScript extends AbstractSampler {
         HashMap<String, Object> externalScriptData = new HashMap<>();
         subtract.forEach(e -> externalScriptData.put(e.getKey().toString(), e.getValue()));
         externalScriptData.remove("isExecuteSuccess");
+        externalScriptData.remove("errorSampleResult");
         ExternalScriptResultDTO res = new ExternalScriptResultDTO();
         res.setExecuteSuccess((boolean) props.get("isExecuteSuccess"));
         res.setExternalScriptData(externalScriptData);
@@ -184,11 +192,13 @@ public class ExecuteExternalScript extends AbstractSampler {
         return fixJson(JsonUtil.toJson(res));
     }
 
+    /**
+     * 修正数据
+     */
     private String fixJson(String json) {
         return json.replace("\"[", "[")
                 .replace("]\"", "]")
                 .replace("\\\"", "\"");
-
     }
 
     /**
@@ -251,9 +261,13 @@ public class ExecuteExternalScript extends AbstractSampler {
         }
     }
 
+    /**
+     * 清空外部脚本的执行结果
+     */
     private void clearExternalScriptProps() {
         Properties props = JMeterUtils.getJMeterProperties();
         props.remove("isExecuteSuccess");
+        props.remove("printSampleResultToConsole");
         props.remove("errorSampleResult");
     }
 

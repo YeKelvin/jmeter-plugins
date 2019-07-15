@@ -11,12 +11,12 @@ import java.util.Map;
  * Time: 10:30
  */
 public class StringUtil {
-    public static boolean isBlank(final String str) {
-        return str == null || str.isEmpty();
+    public static boolean isBlank(final CharSequence cs) {
+        return StringUtils.isBlank(cs);
     }
 
-    public static boolean isNotBlank(final String str) {
-        return !isBlank(str);
+    public static boolean isNotBlank(final CharSequence cs) {
+        return !isBlank(cs);
     }
 
     public static <T> String replace(String source, Map<String, T> valuesMap) {
