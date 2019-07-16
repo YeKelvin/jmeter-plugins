@@ -24,6 +24,7 @@ import java.io.IOException;
  * Time     11:47
  */
 public class DubboTelnetByFileGui extends AbstractSamplerGui {
+
     private static final Logger logger = LogUtil.getLogger(DubboTelnetByFileGui.class);
 
     private static final int H_GAP = 5;
@@ -51,7 +52,7 @@ public class DubboTelnetByFileGui extends AbstractSamplerGui {
         add(makeTitlePanel(), BorderLayout.NORTH);
 
         VerticalPanel interfacePanel = new VerticalPanel();
-        interfacePanel.setBorder(GuiUtil.createTitledBorder("Configure the Interface Data Source"));
+        interfacePanel.setBorder(GuiUtil.createTitledBorder("Configure the Interface Info"));
         interfacePanel.add(getAddressPanel());
         interfacePanel.add(getInterfaceNamePanel());
         interfacePanel.add(getParamsPanel());
@@ -60,16 +61,19 @@ public class DubboTelnetByFileGui extends AbstractSamplerGui {
         interfacePanel.add(getEncodePanel());
 
         VerticalPanel templatePanel = new VerticalPanel();
-        templatePanel.setBorder(GuiUtil.createTitledBorder("Configure the Template"));
+        templatePanel.setBorder(GuiUtil.createTitledBorder("Configure the Template Info"));
         templatePanel.add(getUseTemplatePanel());
         templatePanel.add(getInterfaceSystemPanel());
         templatePanel.add(getTemplateContentPanel());
 
-        VerticalPanel mainPanel = new VerticalPanel();
-        mainPanel.add(interfacePanel);
-        mainPanel.add(templatePanel);
+        JTabbedPane tabbedPane = new JTabbedPane();
+        tabbedPane.add("Interface", interfacePanel);
+        tabbedPane.add("Template", templatePanel);
 
-        add(mainPanel, BorderLayout.CENTER);
+//        VerticalPanel mainPanel = new VerticalPanel();
+//        mainPanel.add(tabbedPane);
+
+        add(tabbedPane, BorderLayout.CENTER);
     }
 
     @Override
@@ -159,7 +163,7 @@ public class DubboTelnetByFileGui extends AbstractSamplerGui {
     }
 
     private JPanel getParamsPanel() {
-        paramsTextArea = JSyntaxTextArea.getInstance(5, 10);
+        paramsTextArea = JSyntaxTextArea.getInstance(10, 10);
         paramsTextArea.setName(DubboTelnetByFile.PARAMS);
 
         JLabel label = GuiUtil.createTextAreaLabel("Params:", paramsTextArea, LABEL_WIDTH, LABEL_HEIGHT);

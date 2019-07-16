@@ -33,6 +33,7 @@ public class ExecuteExternalScriptGui extends AbstractSamplerGui {
         add(makeTitlePanel(), BorderLayout.NORTH);
 
         VerticalPanel mainPanel = new VerticalPanel();
+        mainPanel.setBorder(GuiUtil.createTitledBorder("Configure the Script Info"));
         mainPanel.add(getExternalScriptPathPanel());
         mainPanel.add(getScriptNamePanel());
         mainPanel.add(getPropsNameSuffixPanel());

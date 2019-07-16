@@ -34,6 +34,7 @@ public class SSHConnectionConfigurationGui extends AbstractConfigGui {
         add(makeTitlePanel(), BorderLayout.NORTH);
 
         VerticalPanel mainPanel = new VerticalPanel();
+        mainPanel.setBorder(GuiUtil.createTitledBorder("Configure the SSH Info"));
         mainPanel.add(getSSHAddressPanel());
         mainPanel.add(getSSHUserNamePanel());
         mainPanel.add(getSSHPasswordPanel());

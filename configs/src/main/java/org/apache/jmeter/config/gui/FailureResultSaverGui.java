@@ -30,6 +30,7 @@ public class FailureResultSaverGui extends AbstractConfigGui {
         add(makeTitlePanel(), BorderLayout.NORTH);
 
         VerticalPanel mainPanel = new VerticalPanel();
+        mainPanel.setBorder(GuiUtil.createTitledBorder("Please Configure"));
         mainPanel.add(getLogPathPanel());
 
         add(mainPanel, BorderLayout.CENTER);

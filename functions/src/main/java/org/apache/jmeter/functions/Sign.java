@@ -77,6 +77,7 @@ public class Sign extends AbstractFunction {
         if (currentSampler instanceof HTTPSamplerProxy) {
             String prefixStr = prefix.execute().trim();
             logger.debug("sign prefix=" + prefixStr);
+
             // 获取HTTP Sampler post body中的内容
             HTTPSamplerProxy httpSamplerProxy = (HTTPSamplerProxy) currentSampler;
             Arguments args = httpSamplerProxy.getArguments();

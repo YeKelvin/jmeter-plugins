@@ -36,6 +36,7 @@ public class SSHPortForwardingGui extends AbstractConfigGui {
         add(makeTitlePanel(), BorderLayout.NORTH);
 
         VerticalPanel mainPanel = new VerticalPanel();
+        mainPanel.setBorder(GuiUtil.createTitledBorder("Configure the SSH Data Source"));
         mainPanel.add(getSSHAddressPanel());
         mainPanel.add(getSSHUserNamePanel());
         mainPanel.add(getSSHPasswordPanel());
