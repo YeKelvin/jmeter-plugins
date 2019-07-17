@@ -51,8 +51,32 @@ public class DubboTelnetByFileGui extends AbstractSamplerGui {
         setBorder(makeBorder());
         add(makeTitlePanel(), BorderLayout.NORTH);
 
+//        JPanel interfaceBodyPanel = new JPanel(new GridBagLayout());
+//        interfaceBodyPanel.setBorder(GuiUtil.createTitledBorder("配置接口信息"));
+//        interfaceBodyPanel.add(getAddressLabel(), GuiUtil.GridBag.labelConstraints);
+//        interfaceBodyPanel.add(getAddressField(), GuiUtil.GridBag.editorConstraints);
+//        interfaceBodyPanel.add(getInterfaceNameLabel(), GuiUtil.GridBag.labelConstraints);
+//        interfaceBodyPanel.add(getInterfaceNameField(), GuiUtil.GridBag.editorConstraints);
+//        interfaceBodyPanel.add(getJsonPathLabel(), GuiUtil.GridBag.labelConstraints);
+//        interfaceBodyPanel.add(getJsonPathTextArea(), GuiUtil.GridBag.editorConstraints);
+//        interfaceBodyPanel.add(getExpectationLabel(), GuiUtil.GridBag.labelConstraints);
+//        interfaceBodyPanel.add(getExpectationField(), GuiUtil.GridBag.editorConstraints);
+//        interfaceBodyPanel.add(getEncodeLabel(), GuiUtil.GridBag.labelConstraints);
+//        interfaceBodyPanel.add(getEncodeField(), GuiUtil.GridBag.editorConstraints);
+//        interfaceBodyPanel.add(getParamsLabel(), GuiUtil.GridBag.labelConstraints);
+//        interfaceBodyPanel.add(getParamsTextArea(), GuiUtil.GridBag.editorConstraints);
+//
+//        JPanel templateBodyPanel = new JPanel(new GridBagLayout());
+//        templateBodyPanel.setBorder(GuiUtil.createTitledBorder("配置模板信息"));
+//        templateBodyPanel.add(getUseTemplateLabel(), GuiUtil.GridBag.labelConstraints);
+//        templateBodyPanel.add(getUseTemplateComboBox(), GuiUtil.GridBag.editorConstraints);
+//        templateBodyPanel.add(getInterfaceSystemLabel(), GuiUtil.GridBag.labelConstraints);
+//        templateBodyPanel.add(getInterfaceSystemField(), GuiUtil.GridBag.editorConstraints);
+//        templateBodyPanel.add(getTemplateContentLabel(), GuiUtil.GridBag.labelConstraints);
+//        templateBodyPanel.add(getTemplateContentTextArea(), GuiUtil.GridBag.editorConstraints);
+
         VerticalPanel interfacePanel = new VerticalPanel();
-        interfacePanel.setBorder(GuiUtil.createTitledBorder("Configure the Interface Info"));
+        interfacePanel.setBorder(GuiUtil.createTitledBorder("配置接口信息"));
         interfacePanel.add(getAddressPanel());
         interfacePanel.add(getInterfaceNamePanel());
         interfacePanel.add(getParamsPanel());
@@ -61,7 +85,7 @@ public class DubboTelnetByFileGui extends AbstractSamplerGui {
         interfacePanel.add(getEncodePanel());
 
         VerticalPanel templatePanel = new VerticalPanel();
-        templatePanel.setBorder(GuiUtil.createTitledBorder("Configure the Template Info"));
+        templatePanel.setBorder(GuiUtil.createTitledBorder("配置模板信息"));
         templatePanel.add(getUseTemplatePanel());
         templatePanel.add(getInterfaceSystemPanel());
         templatePanel.add(getTemplateContentPanel());
@@ -71,9 +95,11 @@ public class DubboTelnetByFileGui extends AbstractSamplerGui {
         tabbedPane.add("Template", templatePanel);
 
 //        VerticalPanel mainPanel = new VerticalPanel();
+//        mainPanel.add(makeTitlePanel());
 //        mainPanel.add(tabbedPane);
 
         add(tabbedPane, BorderLayout.CENTER);
+//        add(mainPanel, BorderLayout.CENTER);
     }
 
     @Override
@@ -247,6 +273,122 @@ public class DubboTelnetByFileGui extends AbstractSamplerGui {
         panel.add(JTextScrollPane.getInstance(templateContentTextArea), BorderLayout.CENTER);
         return panel;
     }
+
+    ////////////////
+
+
+    private Component getAddressField() {
+        if (addressTextField == null) {
+            addressTextField = new JTextField(10);
+            addressTextField.setName(DubboTelnetByFile.ADDRESS);
+        }
+        return addressTextField;
+    }
+
+    private Component getAddressLabel() {
+        return GuiUtil.createTextFieldLabel("服务器地址：", getAddressField());
+    }
+
+    private Component getInterfaceNameField() {
+        if (interfaceNameTextField == null) {
+            interfaceNameTextField = new JTextField(10);
+            interfaceNameTextField.setName(DubboTelnetByFile.INTERFACE_NAME);
+        }
+        return interfaceNameTextField;
+    }
+
+    private Component getInterfaceNameLabel() {
+        return GuiUtil.createTextFieldLabel("接口名称：", getInterfaceNameField());
+    }
+
+    private Component getParamsTextArea() {
+        if (paramsTextArea == null) {
+            paramsTextArea = JSyntaxTextArea.getInstance(10, 10);
+            paramsTextArea.setName(DubboTelnetByFile.PARAMS);
+        }
+        return paramsTextArea;
+    }
+
+    private Component getParamsLabel() {
+        return GuiUtil.createTextAreaLabel("请求报文：", getParamsTextArea());
+    }
+
+    private Component getJsonPathTextArea() {
+        if (jsonPathsTextArea == null) {
+            jsonPathsTextArea = JSyntaxTextArea.getInstance(2, 10);
+            jsonPathsTextArea.setName(DubboTelnetByFile.JSON_PATHS);
+        }
+        return jsonPathsTextArea;
+    }
+
+    private Component getJsonPathLabel() {
+        return GuiUtil.createTextAreaLabel("JsonPaths:", getJsonPathTextArea());
+    }
+
+    private Component getExpectationField() {
+        if (expectionTextField == null) {
+            expectionTextField = new JTextField(10);
+            expectionTextField.setName(DubboTelnetByFile.EXPECTATION);
+        }
+        return expectionTextField;
+    }
+
+    private Component getExpectationLabel() {
+        return GuiUtil.createTextFieldLabel("预期结果：", getExpectationField());
+    }
+
+    private Component getEncodeField() {
+        if (encodeTextField == null) {
+            encodeTextField = new JTextField(10);
+            encodeTextField.setName(DubboTelnetByFile.EXPECTATION);
+        }
+        return encodeTextField;
+    }
+
+    private Component getEncodeLabel() {
+        return GuiUtil.createTextFieldLabel("字符编码：", encodeTextField, LABEL_WIDTH, LABEL_HEIGHT);
+    }
+
+    private Component getUseTemplateComboBox() {
+        if (useTemplateComboBox == null) {
+            useTemplateComboBox = new JComboBox<>();
+            useTemplateComboBox.setName(DubboTelnetByFile.USE_TEMPLATE);
+            useTemplateComboBox.addItem("false");
+            useTemplateComboBox.addItem("true");
+        }
+        return useTemplateComboBox;
+    }
+
+    private Component getUseTemplateLabel() {
+        return GuiUtil.createTextFieldLabel("是否使用模板：", getUseTemplateComboBox());
+    }
+
+    private Component getInterfaceSystemField() {
+        if (interfaceSystemTextField == null) {
+            interfaceSystemTextField = new JTextField(10);
+            interfaceSystemTextField.setName(DubboTelnetByFile.INTERFACE_SYSTEM);
+        }
+        return interfaceSystemTextField;
+    }
+
+    private Component getInterfaceSystemLabel() {
+        return GuiUtil.createTextFieldLabel("模板目录：", getInterfaceSystemField());
+    }
+
+    private Component getTemplateContentTextArea() {
+        if (templateContentTextArea == null) {
+            templateContentTextArea = JSyntaxTextArea.getInstance(8, 10);
+            templateContentTextArea.setName(DubboTelnetByFile.TEMPLATE_CONTENT);
+        }
+        return templateContentTextArea;
+    }
+
+    private Component getTemplateContentLabel() {
+        return GuiUtil.createTextAreaLabel("模板内容：", getTemplateContentTextArea());
+    }
+
+
+    ////////////////
 
     /**
      * 获取json模版内容

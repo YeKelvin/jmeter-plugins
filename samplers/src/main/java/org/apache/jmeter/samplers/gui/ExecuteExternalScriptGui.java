@@ -13,10 +13,6 @@ import java.awt.*;
  * @author KelvinYe
  */
 public class ExecuteExternalScriptGui extends AbstractSamplerGui {
-    private static final int H_GAP = 5;
-    private static final int V_GAP = 10;
-    private static final int LABEL_WIDTH = 100;
-    private static final int LABEL_HEIGHT = 10;
 
     private JTextField externalScriptPathField;
     private JTextField scriptNameField;
@@ -30,14 +26,21 @@ public class ExecuteExternalScriptGui extends AbstractSamplerGui {
     private void init() {
         setLayout(new BorderLayout());
         setBorder(makeBorder());
-        add(makeTitlePanel(), BorderLayout.NORTH);
+
+        JPanel bodyPanel = new JPanel(new GridBagLayout());
+        bodyPanel.setBorder(GuiUtil.createTitledBorder("配置外部脚本信息"));
+        bodyPanel.add(getExternalScriptPathLabel(), GuiUtil.GridBag.labelConstraints);
+        bodyPanel.add(getExternalScriptPathField(), GuiUtil.GridBag.editorConstraints);
+        bodyPanel.add(getScriptNameLabel(), GuiUtil.GridBag.labelConstraints);
+        bodyPanel.add(getScriptNameField(), GuiUtil.GridBag.editorConstraints);
+        bodyPanel.add(getPropsNameSuffixLabel(), GuiUtil.GridBag.labelConstraints);
+        bodyPanel.add(getPropsNameSuffixField(), GuiUtil.GridBag.editorConstraints);
+        bodyPanel.add(getIsPrintToConsoleLabel(), GuiUtil.GridBag.labelConstraints);
+        bodyPanel.add(getIsPrintToConsoleComboBox(), GuiUtil.GridBag.editorConstraints);
 
         VerticalPanel mainPanel = new VerticalPanel();
-        mainPanel.setBorder(GuiUtil.createTitledBorder("Configure the Script Info"));
-        mainPanel.add(getExternalScriptPathPanel());
-        mainPanel.add(getScriptNamePanel());
-        mainPanel.add(getPropsNameSuffixPanel());
-        mainPanel.add(getIsPrintToConsolePanel());
+        mainPanel.add(makeTitlePanel());
+        mainPanel.add(bodyPanel);
 
         add(mainPanel, BorderLayout.CENTER);
     }
@@ -94,54 +97,54 @@ public class ExecuteExternalScriptGui extends AbstractSamplerGui {
         isPrintToConsoleComboBox.setSelectedItem("");
     }
 
-    private JPanel getExternalScriptPathPanel() {
-        externalScriptPathField = new JTextField(10);
-        externalScriptPathField.setName(ExecuteExternalScript.EXTERNAL_SCRIPT_PATH);
-
-        JLabel label = GuiUtil.createTextFieldLabel("脚本目录路径：", externalScriptPathField, LABEL_WIDTH, LABEL_HEIGHT);
-
-        JPanel panel = new JPanel(new BorderLayout(H_GAP, V_GAP));
-        panel.add(label, BorderLayout.WEST);
-        panel.add(externalScriptPathField, BorderLayout.CENTER);
-        return panel;
+    private Component getExternalScriptPathField() {
+        if (externalScriptPathField == null) {
+            externalScriptPathField = new JTextField(10);
+            externalScriptPathField.setName(ExecuteExternalScript.EXTERNAL_SCRIPT_PATH);
+        }
+        return externalScriptPathField;
     }
 
-    private JPanel getScriptNamePanel() {
-        scriptNameField = new JTextField(10);
-        scriptNameField.setName(ExecuteExternalScript.SCRIPT_NAME);
-
-        JLabel label = GuiUtil.createTextFieldLabel("脚本名称：", scriptNameField, LABEL_WIDTH, LABEL_HEIGHT);
-
-        JPanel panel = new JPanel(new BorderLayout(H_GAP, V_GAP));
-        panel.add(label, BorderLayout.WEST);
-        panel.add(scriptNameField, BorderLayout.CENTER);
-        return panel;
+    private Component getExternalScriptPathLabel() {
+        return GuiUtil.createTextFieldLabel("脚本目录路径：", getExternalScriptPathField());
     }
 
-    private JPanel getPropsNameSuffixPanel() {
-        propsNameSuffixField = new JTextField(10);
-        propsNameSuffixField.setName(ExecuteExternalScript.PROPS_NAME_SUFFIX);
-
-        JLabel label = GuiUtil.createTextFieldLabel("JMeter属性名称后缀：", propsNameSuffixField, LABEL_WIDTH, LABEL_HEIGHT);
-
-        JPanel panel = new JPanel(new BorderLayout(H_GAP, V_GAP));
-        panel.add(label, BorderLayout.WEST);
-        panel.add(propsNameSuffixField, BorderLayout.CENTER);
-        return panel;
+    private Component getScriptNameField() {
+        if (scriptNameField == null) {
+            scriptNameField = new JTextField(10);
+            scriptNameField.setName(ExecuteExternalScript.SCRIPT_NAME);
+        }
+        return scriptNameField;
     }
 
-    private JPanel getIsPrintToConsolePanel() {
-        isPrintToConsoleComboBox = new JComboBox<>();
-        isPrintToConsoleComboBox.setName(ExecuteExternalScript.IS_PRINT_TO_CONSOLE);
-        isPrintToConsoleComboBox.addItem("false");
-        isPrintToConsoleComboBox.addItem("true");
+    private Component getScriptNameLabel() {
+        return GuiUtil.createTextFieldLabel("脚本名称：", getScriptNameField());
+    }
 
-        JLabel label = GuiUtil.createTextFieldLabel(
-                "是否打印SamplerResult到控制台：", isPrintToConsoleComboBox, LABEL_WIDTH, LABEL_HEIGHT);
+    private Component getPropsNameSuffixField() {
+        if (propsNameSuffixField == null) {
+            propsNameSuffixField = new JTextField(10);
+            propsNameSuffixField.setName(ExecuteExternalScript.PROPS_NAME_SUFFIX);
+        }
+        return propsNameSuffixField;
+    }
 
-        JPanel panel = new JPanel(new BorderLayout(H_GAP, V_GAP));
-        panel.add(label, BorderLayout.WEST);
-        panel.add(isPrintToConsoleComboBox, BorderLayout.CENTER);
-        return panel;
+    private Component getPropsNameSuffixLabel() {
+        return GuiUtil.createTextFieldLabel("JMeter属性名称后缀：", getPropsNameSuffixField());
+    }
+
+    private Component getIsPrintToConsoleComboBox() {
+        if (isPrintToConsoleComboBox == null) {
+            isPrintToConsoleComboBox = new JComboBox<>();
+            isPrintToConsoleComboBox.setName(ExecuteExternalScript.IS_PRINT_TO_CONSOLE);
+            isPrintToConsoleComboBox.addItem("false");
+            isPrintToConsoleComboBox.addItem("true");
+        }
+        return isPrintToConsoleComboBox;
+    }
+
+    private Component getIsPrintToConsoleLabel() {
+        return GuiUtil.createTextFieldLabel(
+                "是否打印 Result到控制台：", isPrintToConsoleComboBox);
     }
 }
