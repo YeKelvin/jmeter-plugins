@@ -42,6 +42,12 @@ public class DubboTelnetByFileGui extends AbstractSamplerGui {
     private JTextField interfaceSystemTextField;
     private JSyntaxTextArea templateContentTextArea;
 
+    public GridBagConstraints labelConstraints = GuiUtil.GridBag.createLabelConstraints();
+    public GridBagConstraints editorConstraints = GuiUtil.GridBag.createEditorConstraints();
+    public GridBagConstraints multiLineLabelConstraints = GuiUtil.GridBag.createMultiLineLabelConstraints();
+    public GridBagConstraints multiLineEditorConstraints = GuiUtil.GridBag.createMultiLineEditorConstraints();
+    private int y = 0;
+
     public DubboTelnetByFileGui() {
         init();
     }
@@ -49,46 +55,59 @@ public class DubboTelnetByFileGui extends AbstractSamplerGui {
     private void init() {
         setLayout(new BorderLayout(0, 10));
         setBorder(makeBorder());
-        add(makeTitlePanel(), BorderLayout.NORTH);
+//        add(makeTitlePanel(), BorderLayout.NORTH);
 
-//        JPanel interfaceBodyPanel = new JPanel(new GridBagLayout());
-//        interfaceBodyPanel.setBorder(GuiUtil.createTitledBorder("配置接口信息"));
-//        interfaceBodyPanel.add(getAddressLabel(), GuiUtil.GridBag.labelConstraints);
-//        interfaceBodyPanel.add(getAddressField(), GuiUtil.GridBag.editorConstraints);
-//        interfaceBodyPanel.add(getInterfaceNameLabel(), GuiUtil.GridBag.labelConstraints);
-//        interfaceBodyPanel.add(getInterfaceNameField(), GuiUtil.GridBag.editorConstraints);
-//        interfaceBodyPanel.add(getJsonPathLabel(), GuiUtil.GridBag.multiLineLabelConstraints);
-//        interfaceBodyPanel.add(getJsonPathTextArea(), GuiUtil.GridBag.multiLineEditorConstraints);
-//        interfaceBodyPanel.add(getExpectationLabel(), GuiUtil.GridBag.labelConstraints);
-//        interfaceBodyPanel.add(getExpectationField(), GuiUtil.GridBag.editorConstraints);
-//        interfaceBodyPanel.add(getEncodeLabel(), GuiUtil.GridBag.labelConstraints);
-//        interfaceBodyPanel.add(getEncodeField(), GuiUtil.GridBag.editorConstraints);
-//        interfaceBodyPanel.add(getParamsLabel(), GuiUtil.GridBag.multiLineLabelConstraints);
-//        interfaceBodyPanel.add(getParamsTextArea(), GuiUtil.GridBag.multiLineEditorConstraints);
-//
-//        JPanel templateBodyPanel = new JPanel(new GridBagLayout());
+        JPanel interfaceBodyPanel = new JPanel(new GridBagLayout());
+        interfaceBodyPanel.setBorder(GuiUtil.createTitledBorder("配置接口信息"));
+
+//        interfaceBodyPanel.add(getAddressLabel(), labelConstraints);
+//        interfaceBodyPanel.add(getAddressField(), editorConstraints);
+
+//        nextGridy();
+//        interfaceBodyPanel.add(getInterfaceNameLabel(), labelConstraints);
+//        interfaceBodyPanel.add(getInterfaceNameField(), editorConstraints);
+
+//        nextGridy();
+//        interfaceBodyPanel.add(getJsonPathLabel(), labelConstraints);
+//        nextGridy();
+        interfaceBodyPanel.add(getJsonPathTextArea());
+
+//        nextGridy();
+//        interfaceBodyPanel.add(getExpectationLabel(), labelConstraints);
+//        interfaceBodyPanel.add(getExpectationField(), editorConstraints);
+
+//        nextGridy();
+//        interfaceBodyPanel.add(getEncodeLabel(), labelConstraints);
+//        interfaceBodyPanel.add(getEncodeField(), editorConstraints);
+
+//        nextGridy();
+//        interfaceBodyPanel.add(getParamsLabel(), multiLineLabelConstraints);
+//        nextGridy();
+//        interfaceBodyPanel.add(getParamsTextArea(), multiLineEditorConstraints);
+
+        JPanel templateBodyPanel = new JPanel(new GridBagLayout());
 //        templateBodyPanel.setBorder(GuiUtil.createTitledBorder("配置模板信息"));
-//        templateBodyPanel.add(getUseTemplateLabel(), GuiUtil.GridBag.labelConstraints);
-//        templateBodyPanel.add(getUseTemplateComboBox(), GuiUtil.GridBag.editorConstraints);
-//        templateBodyPanel.add(getInterfaceSystemLabel(), GuiUtil.GridBag.labelConstraints);
-//        templateBodyPanel.add(getInterfaceSystemField(), GuiUtil.GridBag.editorConstraints);
-//        templateBodyPanel.add(getTemplateContentLabel(), GuiUtil.GridBag.multiLineLabelConstraints);
-//        templateBodyPanel.add(getTemplateContentTextArea(), GuiUtil.GridBag.multiLineEditorConstraints);
+//        templateBodyPanel.add(getUseTemplateLabel(), labelConstraints);
+//        templateBodyPanel.add(getUseTemplateComboBox(), editorConstraints);
+//        templateBodyPanel.add(getInterfaceSystemLabel(), labelConstraints);
+//        templateBodyPanel.add(getInterfaceSystemField(), editorConstraints);
+//        templateBodyPanel.add(getTemplateContentLabel(), multiLineLabelConstraints);
+//        templateBodyPanel.add(getTemplateContentTextArea(), multiLineEditorConstraints);
 
-        VerticalPanel interfacePanel = new VerticalPanel();
-        interfacePanel.setBorder(GuiUtil.createTitledBorder("配置接口信息"));
-        interfacePanel.add(getAddressPanel());
-        interfacePanel.add(getInterfaceNamePanel());
-        interfacePanel.add(getParamsPanel());
-        interfacePanel.add(getJsonPathPanel());
-        interfacePanel.add(getExpectationPanel());
-        interfacePanel.add(getEncodePanel());
-
-        VerticalPanel templatePanel = new VerticalPanel();
-        templatePanel.setBorder(GuiUtil.createTitledBorder("配置模板信息"));
-        templatePanel.add(getUseTemplatePanel());
-        templatePanel.add(getInterfaceSystemPanel());
-        templatePanel.add(getTemplateContentPanel());
+//        VerticalPanel interfacePanel = new VerticalPanel();
+//        interfacePanel.setBorder(GuiUtil.createTitledBorder("配置接口信息"));
+//        interfacePanel.add(getAddressPanel());
+//        interfacePanel.add(getInterfaceNamePanel());
+//        interfacePanel.add(getParamsPanel());
+//        interfacePanel.add(getJsonPathPanel());
+//        interfacePanel.add(getExpectationPanel());
+//        interfacePanel.add(getEncodePanel());
+//
+//        VerticalPanel templatePanel = new VerticalPanel();
+//        templatePanel.setBorder(GuiUtil.createTitledBorder("配置模板信息"));
+//        templatePanel.add(getUseTemplatePanel());
+//        templatePanel.add(getInterfaceSystemPanel());
+//        templatePanel.add(getTemplateContentPanel());
 
 //        VerticalPanel interfacePanel = new VerticalPanel();
 //        interfacePanel.add(interfaceBodyPanel);
@@ -96,16 +115,25 @@ public class DubboTelnetByFileGui extends AbstractSamplerGui {
 //        templatePanel.add(templateBodyPanel);
 
 
-        JTabbedPane tabbedPane = new JTabbedPane();
-        tabbedPane.add("Interface", interfacePanel);
-        tabbedPane.add("Template", templatePanel);
+//        JTabbedPane tabbedPane = new JTabbedPane();
+//        tabbedPane.add("Interface", interfacePanel);
+//        tabbedPane.add("Template", templatePanel);
 
 //        VerticalPanel mainPanel = new VerticalPanel();
 //        mainPanel.add(makeTitlePanel());
 //        mainPanel.add(tabbedPane);
 
-        add(tabbedPane, BorderLayout.CENTER);
+//        add(tabbedPane, BorderLayout.CENTER);
 //        add(mainPanel, BorderLayout.CENTER);
+        add(interfaceBodyPanel, BorderLayout.CENTER);
+    }
+
+    private void nextGridy() {
+        y++;
+        labelConstraints.gridy = y;
+        editorConstraints.gridy = y;
+        multiLineLabelConstraints.gridy = y;
+        multiLineEditorConstraints.gridy = y;
     }
 
     @Override
@@ -128,46 +156,46 @@ public class DubboTelnetByFileGui extends AbstractSamplerGui {
     @Override
     public void modifyTestElement(TestElement element) {
         super.configureTestElement(element);
-        element.setProperty(DubboTelnetByFile.ADDRESS, addressTextField.getText());
-        element.setProperty(DubboTelnetByFile.INTERFACE_NAME, interfaceNameTextField.getText());
-        element.setProperty(DubboTelnetByFile.PARAMS, paramsTextArea.getText());
-        element.setProperty(DubboTelnetByFile.JSON_PATHS, jsonPathsTextArea.getText());
-        element.setProperty(DubboTelnetByFile.EXPECTATION, expectionTextField.getText());
-        element.setProperty(DubboTelnetByFile.ENCODE, encodeTextField.getText());
-        element.setProperty(DubboTelnetByFile.USE_TEMPLATE, (String) useTemplateComboBox.getSelectedItem());
-        element.setProperty(DubboTelnetByFile.INTERFACE_SYSTEM, interfaceSystemTextField.getText());
+//        element.setProperty(DubboTelnetByFile.ADDRESS, addressTextField.getText());
+//        element.setProperty(DubboTelnetByFile.INTERFACE_NAME, interfaceNameTextField.getText());
+//        element.setProperty(DubboTelnetByFile.PARAMS, paramsTextArea.getText());
+//        element.setProperty(DubboTelnetByFile.JSON_PATHS, jsonPathsTextArea.getText());
+//        element.setProperty(DubboTelnetByFile.EXPECTATION, expectionTextField.getText());
+//        element.setProperty(DubboTelnetByFile.ENCODE, encodeTextField.getText());
+//        element.setProperty(DubboTelnetByFile.USE_TEMPLATE, (String) useTemplateComboBox.getSelectedItem());
+//        element.setProperty(DubboTelnetByFile.INTERFACE_SYSTEM, interfaceSystemTextField.getText());
     }
 
     @Override
     public void configure(TestElement el) {
         super.configure(el);
-        addressTextField.setText(el.getPropertyAsString(DubboTelnetByFile.ADDRESS));
-        interfaceNameTextField.setText(el.getPropertyAsString(DubboTelnetByFile.INTERFACE_NAME));
-        paramsTextArea.setInitialText(el.getPropertyAsString(DubboTelnetByFile.PARAMS));
-        paramsTextArea.setCaretPosition(0);
-        jsonPathsTextArea.setInitialText(el.getPropertyAsString(DubboTelnetByFile.JSON_PATHS));
-        jsonPathsTextArea.setCaretPosition(0);
-        expectionTextField.setText(el.getPropertyAsString(DubboTelnetByFile.EXPECTATION));
-        encodeTextField.setText(el.getPropertyAsString(DubboTelnetByFile.ENCODE));
-        useTemplateComboBox.setSelectedItem(el.getPropertyAsString(DubboTelnetByFile.USE_TEMPLATE));
-        interfaceSystemTextField.setText(el.getPropertyAsString(DubboTelnetByFile.INTERFACE_SYSTEM));
-        templateContentTextArea.setInitialText(getTemplateContent(
-                el.getPropertyAsBoolean(DubboTelnetByFile.USE_TEMPLATE, false),
-                el.getPropertyAsString(DubboTelnetByFile.INTERFACE_NAME)));
-        templateContentTextArea.setCaretPosition(0);
+//        addressTextField.setText(el.getPropertyAsString(DubboTelnetByFile.ADDRESS));
+//        interfaceNameTextField.setText(el.getPropertyAsString(DubboTelnetByFile.INTERFACE_NAME));
+//        paramsTextArea.setInitialText(el.getPropertyAsString(DubboTelnetByFile.PARAMS));
+//        paramsTextArea.setCaretPosition(0);
+//        jsonPathsTextArea.setInitialText(el.getPropertyAsString(DubboTelnetByFile.JSON_PATHS));
+//        jsonPathsTextArea.setCaretPosition(0);
+//        expectionTextField.setText(el.getPropertyAsString(DubboTelnetByFile.EXPECTATION));
+//        encodeTextField.setText(el.getPropertyAsString(DubboTelnetByFile.ENCODE));
+//        useTemplateComboBox.setSelectedItem(el.getPropertyAsString(DubboTelnetByFile.USE_TEMPLATE));
+//        interfaceSystemTextField.setText(el.getPropertyAsString(DubboTelnetByFile.INTERFACE_SYSTEM));
+//        templateContentTextArea.setInitialText(getTemplateContent(
+//                el.getPropertyAsBoolean(DubboTelnetByFile.USE_TEMPLATE, false),
+//                el.getPropertyAsString(DubboTelnetByFile.INTERFACE_NAME)));
+//        templateContentTextArea.setCaretPosition(0);
     }
 
     @Override
     public void clearGui() {
         super.clearGui();
-        addressTextField.setText("");
-        interfaceNameTextField.setText("");
-        paramsTextArea.setInitialText("");
-        jsonPathsTextArea.setInitialText("");
-        expectionTextField.setText("");
-        useTemplateComboBox.setSelectedItem("");
-        interfaceSystemTextField.setText("");
-        templateContentTextArea.setInitialText("");
+//        addressTextField.setText("");
+//        interfaceNameTextField.setText("");
+//        paramsTextArea.setInitialText("");
+//        jsonPathsTextArea.setInitialText("");
+//        expectionTextField.setText("");
+//        useTemplateComboBox.setSelectedItem("");
+//        interfaceSystemTextField.setText("");
+//        templateContentTextArea.setInitialText("");
     }
 
     private JPanel getAddressPanel() {
@@ -309,7 +337,7 @@ public class DubboTelnetByFileGui extends AbstractSamplerGui {
 
     private Component getParamsTextArea() {
         if (paramsTextArea == null) {
-            paramsTextArea = JSyntaxTextArea.getInstance(10, 10);
+            paramsTextArea = JSyntaxTextArea.getInstance(10, 1);
             paramsTextArea.setName(DubboTelnetByFile.PARAMS);
         }
         return paramsTextArea;
@@ -321,7 +349,7 @@ public class DubboTelnetByFileGui extends AbstractSamplerGui {
 
     private Component getJsonPathTextArea() {
         if (jsonPathsTextArea == null) {
-            jsonPathsTextArea = JSyntaxTextArea.getInstance(2, 10);
+            jsonPathsTextArea = JSyntaxTextArea.getInstance(5, 1);
             jsonPathsTextArea.setName(DubboTelnetByFile.JSON_PATHS);
         }
         return jsonPathsTextArea;
@@ -383,7 +411,7 @@ public class DubboTelnetByFileGui extends AbstractSamplerGui {
 
     private Component getTemplateContentTextArea() {
         if (templateContentTextArea == null) {
-            templateContentTextArea = JSyntaxTextArea.getInstance(8, 10);
+            templateContentTextArea = JSyntaxTextArea.getInstance(10, 1);
             templateContentTextArea.setName(DubboTelnetByFile.TEMPLATE_CONTENT);
         }
         return templateContentTextArea;

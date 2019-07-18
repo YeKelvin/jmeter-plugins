@@ -29,12 +29,16 @@ public class ExecuteExternalScriptGui extends AbstractSamplerGui {
 
         JPanel bodyPanel = new JPanel(new GridBagLayout());
         bodyPanel.setBorder(GuiUtil.createTitledBorder("配置外部脚本信息"));
+
         bodyPanel.add(getExternalScriptPathLabel(), GuiUtil.GridBag.labelConstraints);
         bodyPanel.add(getExternalScriptPathField(), GuiUtil.GridBag.editorConstraints);
+
         bodyPanel.add(getScriptNameLabel(), GuiUtil.GridBag.labelConstraints);
         bodyPanel.add(getScriptNameField(), GuiUtil.GridBag.editorConstraints);
+
         bodyPanel.add(getPropsNameSuffixLabel(), GuiUtil.GridBag.labelConstraints);
         bodyPanel.add(getPropsNameSuffixField(), GuiUtil.GridBag.editorConstraints);
+
         bodyPanel.add(getIsPrintToConsoleLabel(), GuiUtil.GridBag.labelConstraints);
         bodyPanel.add(getIsPrintToConsoleComboBox(), GuiUtil.GridBag.editorConstraints);
 
@@ -147,4 +151,5 @@ public class ExecuteExternalScriptGui extends AbstractSamplerGui {
         return GuiUtil.createTextFieldLabel(
                 "是否打印 Result到控制台：", isPrintToConsoleComboBox);
     }
+
 }

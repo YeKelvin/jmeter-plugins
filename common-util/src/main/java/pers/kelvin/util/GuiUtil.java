@@ -98,7 +98,7 @@ public class GuiUtil {
         /**
          * GridBagConstraints
          *
-         *        0   1   2   3   4   5
+         *        0   1   2   3   4   5       X
          *      ┏━━━┳━━━┳━━━┳━━━┳━━━┳━━━┳━━━━━━→
          *    0 ┃   │   │   │   │   │   │
          *      ┣───┼───┼───┼───┼───┼───┼──
@@ -111,15 +111,16 @@ public class GuiUtil {
          *    4 ┃   │   │   │   │   │   │
          *      ┣───┼───┼───┼───┼───┼───┼──
          *      ┃
+         *    Y ┃
          *      ↓
          *
-         * fill：组件尺寸小于其被指定的表格尺寸时，组件的拉伸模式
+         * fill：填充
          *      - NONE          不进行尺寸处理 默认居中
          *      - BOTH          水平和竖直均拉伸到充满
          *      - HORIZONTAL    水平方向拉伸充满
          *      - VERTICAL      竖直方向拉伸充满
          *
-         * anchor：组件尺寸小于其被指定的表格尺寸时，组件的布局位置
+         * anchor：代表在单元格中的绝对值对齐方式
          *      - CENTER        居中
          *      - NORTH         布局在上方
          *      - NORTHEAST     布局在右上方
@@ -130,21 +131,22 @@ public class GuiUtil {
          *      - WEST          布局在左方
          *      - NORTHWEST     布局在左上方
          *
-         * gridwidth与gridheight：组件的宽度与高度，特殊的值
+         * gridwidth与gridheight：确定组件在x轴（y轴）所占的单元格数
          *      - RELATIVE      占据其他组件布局后余下的尺寸
-         *      - REMAINDER     暂居此行或者此列的剩下全部，后置的组件另起一行或一列
+         *      - REMAINDER     占据此行或者此列的剩下全部，后置的组件另起一行或一列
          *
-         * gridx与gridy：设置组件布局左上角所在的单元格，单位为单元格，默认会排列在上一个单元格之后
+         * gridx与gridy：确定组件在当前坐标系的位置（x,y）
          *
-         * weightx与weighty：设置组件布局的水平权重和竖直权重
+         * weightx与weighty：权重（默认权重是把多的空间放在容器边框和单元格边框之间）；权重值越大，分到空间（组件到它所占网格的距离空间）越多
          *
-         * insets：设置组件边距
+         * ipadx与ipady：内边距
+         *
+         * insets：外边距
          */
         public static GridBagConstraints labelConstraints; // for labels
         public static GridBagConstraints editorConstraints; // for editors
-        public static GridBagConstraints multiLineLabelConstraints; // for labels
-        public static GridBagConstraints multiLineEditorConstraints;  // for multi line editors
-        public static GridBagConstraints panelConstraints = new GridBagConstraints(); // for panels
+//        public static GridBagConstraints multiLineLabelConstraints; // for labels
+//        public static GridBagConstraints multiLineEditorConstraints;  // for multi line editors
 
         static {
             labelConstraints = new GridBagConstraints();
@@ -155,29 +157,62 @@ public class GuiUtil {
             editorConstraints = new GridBagConstraints();
             editorConstraints.fill = GridBagConstraints.BOTH;
             editorConstraints.gridx = 1;
+            editorConstraints.gridy = GridBagConstraints.RELATIVE;
+            editorConstraints.gridwidth = 2;
             editorConstraints.weightx = 1.0;
             editorConstraints.insets = new Insets(1, 1, 1, 1);
 
-            multiLineLabelConstraints = new GridBagConstraints();
-            multiLineLabelConstraints.gridx = 0;
-            multiLineLabelConstraints.gridy = 0;
-            multiLineLabelConstraints.gridwidth = 2;
-            multiLineLabelConstraints.anchor = GridBagConstraints.CENTER;
-            labelConstraints.insets = new Insets(1, 1, 1, 1);
+//            multiLineLabelConstraints = new GridBagConstraints();
+//            multiLineLabelConstraints.gridx = 0;
+//            multiLineLabelConstraints.anchor = GridBagConstraints.CENTER;
+//            multiLineLabelConstraints.insets = new Insets(1, 1, 1, 1);
+//
+//            multiLineEditorConstraints = new GridBagConstraints();
+//            multiLineEditorConstraints.fill = GridBagConstraints.BOTH;
+//            multiLineEditorConstraints.gridx = 0;
+//            multiLineEditorConstraints.gridy = GridBagConstraints.RELATIVE;
+//            multiLineEditorConstraints.gridwidth = 2;
+//            multiLineEditorConstraints.weightx = 1.0;
+//            multiLineEditorConstraints.insets = new Insets(1, 1, 1, 1);
 
-            multiLineEditorConstraints = new GridBagConstraints();
-            multiLineEditorConstraints.gridx = 0;
-            multiLineEditorConstraints.gridy = 0;
-            multiLineEditorConstraints.gridwidth = 2;
-            multiLineEditorConstraints.weighty = 1.0;
-            multiLineEditorConstraints.insets = new Insets(1, 1, 1, 1);
-
-            panelConstraints.fill = GridBagConstraints.BOTH;
-            panelConstraints.gridx = 1;
-            panelConstraints.gridy = GridBagConstraints.RELATIVE;
-            panelConstraints.gridwidth = 2;
-            panelConstraints.weightx = 1.0;
         }
 
+        public static GridBagConstraints createLabelConstraints() {
+            GridBagConstraints labelConstraints = new GridBagConstraints();
+            labelConstraints.gridx = 0;
+            labelConstraints.anchor = GridBagConstraints.EAST;
+            labelConstraints.insets = new Insets(1, 1, 1, 1);
+            return labelConstraints;
+        }
+
+        public static GridBagConstraints createEditorConstraints() {
+            GridBagConstraints editorConstraints = new GridBagConstraints();
+            editorConstraints.fill = GridBagConstraints.BOTH;
+            editorConstraints.gridx = 1;
+            editorConstraints.gridy = GridBagConstraints.RELATIVE;
+            editorConstraints.gridwidth = 2;
+            editorConstraints.weightx = 1.0;
+            editorConstraints.insets = new Insets(1, 1, 1, 1);
+            return editorConstraints;
+        }
+
+        public static GridBagConstraints createMultiLineLabelConstraints() {
+            GridBagConstraints multiLineLabelConstraints = new GridBagConstraints();
+            multiLineLabelConstraints.gridx = 0;
+            multiLineLabelConstraints.anchor = GridBagConstraints.CENTER;
+            multiLineLabelConstraints.insets = new Insets(1, 1, 1, 1);
+            return multiLineLabelConstraints;
+        }
+
+        public static GridBagConstraints createMultiLineEditorConstraints() {
+            GridBagConstraints multiLineEditorConstraints = new GridBagConstraints();
+            multiLineEditorConstraints.fill = GridBagConstraints.BOTH;
+            multiLineEditorConstraints.gridx = 0;
+            multiLineEditorConstraints.gridy = GridBagConstraints.RELATIVE;
+            multiLineEditorConstraints.gridwidth = 2;
+            multiLineEditorConstraints.weightx = 1.0;
+            multiLineEditorConstraints.insets = new Insets(1, 1, 1, 1);
+            return multiLineEditorConstraints;
+        }
     }
 }
