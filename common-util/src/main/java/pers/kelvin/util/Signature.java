@@ -47,7 +47,7 @@ public class Signature {
             sign = prefix + "&" + sign;
         }
         logger.debug("sign before md5= " + sign);
-        System.out.println(sign);
+
         // md5加密
         if (StringUtil.isNotBlank(sign)) {
             sign = md5(sign);

@@ -7,8 +7,10 @@ import org.apache.jmeter.samplers.SampleResult;
 import org.apache.jmeter.samplers.Sampler;
 import org.slf4j.Logger;
 import pers.kelvin.util.Signature;
+import pers.kelvin.util.exception.ExceptionUtil;
 import pers.kelvin.util.log.LogUtil;
 
+import java.net.MalformedURLException;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
@@ -76,16 +78,29 @@ public class Sign extends AbstractFunction {
         String sign = "";
         if (currentSampler instanceof HTTPSamplerProxy) {
             String prefixStr = prefix.execute().trim();
-            logger.debug("sign prefix=" + prefixStr);
 
             // 获取HTTP Sampler post body中的内容
             HTTPSamplerProxy httpSamplerProxy = (HTTPSamplerProxy) currentSampler;
             Arguments args = httpSamplerProxy.getArguments();
+
+            logger.debug("current sign http url= " + getUrl(httpSamplerProxy));
+            logger.debug("sign prefix=" + prefixStr);
+
             // 报文加签
             sign = Signature.sign(args.getArgument(0).getValue(), prefixStr);
         } else {
             logger.error("函数 __Sign目前仅支持在 HTTP Sampler下及其子组件下使用");
         }
         return sign;
+    }
+
+    private String getUrl(HTTPSamplerProxy httpSamplerProxy) {
+        String url = "";
+        try {
+            url = httpSamplerProxy.getUrl().toString();
+        } catch (MalformedURLException e) {
+            logger.error(ExceptionUtil.getStackTrace(e));
+        }
+        return url;
     }
 }

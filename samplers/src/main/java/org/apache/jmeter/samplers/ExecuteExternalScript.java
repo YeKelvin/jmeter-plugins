@@ -38,6 +38,8 @@ public class ExecuteExternalScript extends AbstractSampler {
 
     private static final Logger logger = LogUtil.getLogger(ExecuteExternalScript.class);
 
+    private Properties props = JMeterUtils.getJMeterProperties();
+
     private static final String LINE_SEP = FileUtil.LINE_SEPARATOR;
 
     public static final String EXTERNAL_SCRIPT_PATH = "ExecuteExternalScript.ExternalScriptPath";
@@ -59,7 +61,7 @@ public class ExecuteExternalScript extends AbstractSampler {
             result.sampleStart();
             result.setResponseData(runExternalScript(scriptPath), StandardCharsets.UTF_8.name());
             result.setSuccessful(true);
-            if (JMeterUtils.getJMeterProperties().containsKey("errorSampleResult")) {
+            if (props.containsKey("errorSampleResult")) {
                 setErrorSampleResult(result);
                 result.setSuccessful(false);
             }
@@ -109,14 +111,7 @@ public class ExecuteExternalScript extends AbstractSampler {
         // 加载脚本
         HashTree clonedTree = loadScriptTree(scriptAbsPath);
 
-        // 对外部脚本添加组件，用于数据传递
-        clonedTree.add(clonedTree.getArray()[0], new ExternalScriptDataTransfer());
-
-        // 删除不必要的组件
-        removeUnwantedComponents(clonedTree);
-
-        // 设置JMeter属性，用于传递给外部脚本使用
-        Properties props = JMeterUtils.getJMeterProperties();
+        // 设置 JMeterProps，用于传递给外部脚本使用
         props.put("printSampleResultToConsole", getIsPrintToConsole());
         props.put("configName", JMeterVarsUtil.getDefault("ENVDataSet.ConfigName"));
 
@@ -134,12 +129,7 @@ public class ExecuteExternalScript extends AbstractSampler {
         HashMap<String, String> currentProps = new HashMap<>();
 
         // 如果设置了 JMeterProps属性名称后缀，则把外部脚本中获取的变量名都加上后缀
-        String propsNameSuffix = getPropsNameSuffix();
-        if (StringUtil.isBlank(propsNameSuffix)) {
-            props.forEach((key, value) -> currentProps.put(key.toString(), value.toString()));
-        } else {
-            props.forEach((key, value) -> currentProps.put(key.toString() + "_" + propsNameSuffix, value.toString()));
-        }
+        clonePropsWithSuffix(currentProps);
 
         // Json化JMeter属性的差集作为结果返回
         return getExecuteResult(currentProps, clonedProps);
@@ -160,8 +150,17 @@ public class ExecuteExternalScript extends AbstractSampler {
         JMeterTreeModel treeModel = new JMeterTreeModel(new TestPlan());
         JMeterTreeNode root = (JMeterTreeNode) treeModel.getRoot();
         treeModel.addSubTree(tree, root);
+
         // 删除已禁用的组件
-        return JMeter.convertSubTree(tree, true);
+        HashTree clonedTree = JMeter.convertSubTree(tree, true);
+
+        // 对外部脚本添加组件，用于数据传递
+        clonedTree.add(clonedTree.getArray()[0], new ExternalScriptDataTransfer());
+
+        // 删除不必要的组件
+        removeUnwantedComponents(clonedTree);
+
+        return clonedTree;
     }
 
     /**
@@ -172,8 +171,6 @@ public class ExecuteExternalScript extends AbstractSampler {
      * @return json
      */
     private String getExecuteResult(HashMap<String, String> afterProps, HashMap<String, String> beforeProps) {
-        Properties props = JMeterUtils.getJMeterProperties();
-
         // 获取执行外部脚本前后的JMeter属性的差集
         Collection<Map.Entry> subtract = CollectionUtils.subtract(afterProps.entrySet(), beforeProps.entrySet());
         if (subtract.isEmpty()) {
@@ -183,13 +180,16 @@ public class ExecuteExternalScript extends AbstractSampler {
         // 序列化 JMeterProps的差集作为结果返回
         HashMap<String, Object> externalScriptData = new HashMap<>();
         subtract.forEach(e -> externalScriptData.put(e.getKey().toString(), e.getValue()));
+
+        // 删除不需要的key
         externalScriptData.remove("isExecuteSuccess");
         externalScriptData.remove("errorSampleResult");
-        ExternalScriptResultDTO res = new ExternalScriptResultDTO();
-        res.setExecuteSuccess((boolean) props.get("isExecuteSuccess"));
-        res.setExternalScriptData(externalScriptData);
 
-        return fixJson(JsonUtil.toJson(res));
+        ExternalScriptResultDTO scriptResult = new ExternalScriptResultDTO();
+        scriptResult.setExecuteSuccess((boolean) props.get("isExecuteSuccess"));
+        scriptResult.setExternalScriptData(externalScriptData);
+
+        return fixJson(JsonUtil.toJson(scriptResult));
     }
 
     /**
@@ -265,10 +265,19 @@ public class ExecuteExternalScript extends AbstractSampler {
      * 清空外部脚本的执行结果
      */
     private void clearExternalScriptProps() {
-        Properties props = JMeterUtils.getJMeterProperties();
         props.remove("isExecuteSuccess");
         props.remove("printSampleResultToConsole");
         props.remove("errorSampleResult");
+    }
+
+    private void clonePropsWithSuffix(HashMap<String, String> givenMap) {
+        String propsNameSuffix = getPropsNameSuffix();
+        if (StringUtil.isBlank(propsNameSuffix)) {
+            props.forEach((key, value) -> givenMap.put(key.toString(), value.toString()));
+        } else {
+            props.forEach((key, value) -> givenMap.put(key.toString() + "_" + propsNameSuffix, value.toString()));
+        }
+
     }
 
 }

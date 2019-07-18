@@ -57,14 +57,14 @@ public class DubboTelnetByFileGui extends AbstractSamplerGui {
 //        interfaceBodyPanel.add(getAddressField(), GuiUtil.GridBag.editorConstraints);
 //        interfaceBodyPanel.add(getInterfaceNameLabel(), GuiUtil.GridBag.labelConstraints);
 //        interfaceBodyPanel.add(getInterfaceNameField(), GuiUtil.GridBag.editorConstraints);
-//        interfaceBodyPanel.add(getJsonPathLabel(), GuiUtil.GridBag.labelConstraints);
-//        interfaceBodyPanel.add(getJsonPathTextArea(), GuiUtil.GridBag.editorConstraints);
+//        interfaceBodyPanel.add(getJsonPathLabel(), GuiUtil.GridBag.multiLineLabelConstraints);
+//        interfaceBodyPanel.add(getJsonPathTextArea(), GuiUtil.GridBag.multiLineEditorConstraints);
 //        interfaceBodyPanel.add(getExpectationLabel(), GuiUtil.GridBag.labelConstraints);
 //        interfaceBodyPanel.add(getExpectationField(), GuiUtil.GridBag.editorConstraints);
 //        interfaceBodyPanel.add(getEncodeLabel(), GuiUtil.GridBag.labelConstraints);
 //        interfaceBodyPanel.add(getEncodeField(), GuiUtil.GridBag.editorConstraints);
-//        interfaceBodyPanel.add(getParamsLabel(), GuiUtil.GridBag.labelConstraints);
-//        interfaceBodyPanel.add(getParamsTextArea(), GuiUtil.GridBag.editorConstraints);
+//        interfaceBodyPanel.add(getParamsLabel(), GuiUtil.GridBag.multiLineLabelConstraints);
+//        interfaceBodyPanel.add(getParamsTextArea(), GuiUtil.GridBag.multiLineEditorConstraints);
 //
 //        JPanel templateBodyPanel = new JPanel(new GridBagLayout());
 //        templateBodyPanel.setBorder(GuiUtil.createTitledBorder("配置模板信息"));
@@ -72,8 +72,8 @@ public class DubboTelnetByFileGui extends AbstractSamplerGui {
 //        templateBodyPanel.add(getUseTemplateComboBox(), GuiUtil.GridBag.editorConstraints);
 //        templateBodyPanel.add(getInterfaceSystemLabel(), GuiUtil.GridBag.labelConstraints);
 //        templateBodyPanel.add(getInterfaceSystemField(), GuiUtil.GridBag.editorConstraints);
-//        templateBodyPanel.add(getTemplateContentLabel(), GuiUtil.GridBag.labelConstraints);
-//        templateBodyPanel.add(getTemplateContentTextArea(), GuiUtil.GridBag.editorConstraints);
+//        templateBodyPanel.add(getTemplateContentLabel(), GuiUtil.GridBag.multiLineLabelConstraints);
+//        templateBodyPanel.add(getTemplateContentTextArea(), GuiUtil.GridBag.multiLineEditorConstraints);
 
         VerticalPanel interfacePanel = new VerticalPanel();
         interfacePanel.setBorder(GuiUtil.createTitledBorder("配置接口信息"));
@@ -89,6 +89,12 @@ public class DubboTelnetByFileGui extends AbstractSamplerGui {
         templatePanel.add(getUseTemplatePanel());
         templatePanel.add(getInterfaceSystemPanel());
         templatePanel.add(getTemplateContentPanel());
+
+//        VerticalPanel interfacePanel = new VerticalPanel();
+//        interfacePanel.add(interfaceBodyPanel);
+//        VerticalPanel templatePanel = new VerticalPanel();
+//        templatePanel.add(templateBodyPanel);
+
 
         JTabbedPane tabbedPane = new JTabbedPane();
         tabbedPane.add("Interface", interfacePanel);

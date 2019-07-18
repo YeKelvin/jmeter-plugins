@@ -52,13 +52,7 @@ public class ExternalScriptDataTransfer extends ConfigTestElement implements Thr
 
         // 打印 sample数据到console，用于脚本调试
         if (isPrintSampleResultToConsole) {
-            String content = String.format("【Sample Name】: %s" + LINE_SEP +
-                            "【Request Data】:" + LINE_SEP +
-                            "%s" + LINE_SEP +
-                            "【Response Data】:" + LINE_SEP +
-                            "%s" + LINE_SEP + LINE_SEP,
-                    result.getSampleLabel(), result.getSamplerData(), result.getResponseDataAsString());
-            System.out.println(content);
+            printContentToConsole(result);
         }
 
         if (!result.isSuccessful()) {
@@ -73,19 +67,12 @@ public class ExternalScriptDataTransfer extends ConfigTestElement implements Thr
                     getThreadContext().getVariables().entrySet(), clonedVars.entrySet());
 
             if (!subtract.isEmpty()) {
+                // 把差集结果放入临时 map对象中
                 HashMap<String, Object> sentToPropsMap = new HashMap<>();
                 subtract.forEach(entry -> sentToPropsMap.put(entry.getKey(), entry.getValue()));
 
                 // 删除不必要的key
-                sentToPropsMap.remove("START.MS");
-                sentToPropsMap.remove("START.YMD");
-                sentToPropsMap.remove("START.HMS");
-                sentToPropsMap.remove("TESTSTART.MS");
-                sentToPropsMap.remove("JMeterThread.pack");
-                sentToPropsMap.remove("JMeterThread.last_sample_ok");
-                sentToPropsMap.remove("__jm__" + getThreadContext().getThreadGroup().getName() + "__idx");
-                sentToPropsMap.remove("__jmeter.U_T__");
-                getKeyNameInJDBCRequest(getThreadContext().getThread().getTestTree()).forEach(sentToPropsMap::remove);
+                removeUnwantedKey(sentToPropsMap);
 
                 // 将增量的 JMeterVars写入 JMeterProps中
                 sentToPropsMap.forEach(props::put);
@@ -141,5 +128,35 @@ public class ExternalScriptDataTransfer extends ConfigTestElement implements Thr
             jdbcKeyNameList.add(jdbcSampler.getResultVariable());
         }
         return jdbcKeyNameList;
+    }
+
+    /**
+     * 打印 sample数据到console
+     *
+     * @param result SampleResult对象
+     */
+    private void printContentToConsole(SampleResult result) {
+        String content = String.format("【Sample Name】: %s" + LINE_SEP +
+                        "【Request Data】:" + LINE_SEP +
+                        "%s" + LINE_SEP +
+                        "【Response Data】:" + LINE_SEP +
+                        "%s" + LINE_SEP + LINE_SEP,
+                result.getSampleLabel(), result.getSamplerData(), result.getResponseDataAsString());
+        System.out.println(content);
+    }
+
+    /**
+     * 删除不需要的key
+     */
+    private void removeUnwantedKey(HashMap<String, Object> givenMap) {
+        givenMap.remove("START.MS");
+        givenMap.remove("START.YMD");
+        givenMap.remove("START.HMS");
+        givenMap.remove("TESTSTART.MS");
+        givenMap.remove("JMeterThread.pack");
+        givenMap.remove("JMeterThread.last_sample_ok");
+        givenMap.remove("__jm__" + getThreadContext().getThreadGroup().getName() + "__idx");
+        givenMap.remove("__jmeter.U_T__");
+        getKeyNameInJDBCRequest(getThreadContext().getThread().getTestTree()).forEach(givenMap::remove);
     }
 }

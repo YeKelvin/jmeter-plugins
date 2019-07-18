@@ -98,6 +98,21 @@ public class GuiUtil {
         /**
          * GridBagConstraints
          *
+         *        0   1   2   3   4   5
+         *      ┏━━━┳━━━┳━━━┳━━━┳━━━┳━━━┳━━━━━━→
+         *    0 ┃   │   │   │   │   │   │
+         *      ┣───┼───┼───┼───┼───┼───┼──
+         *    1 ┃   │   │   │   │   │   │
+         *      ┣───┼───┼───┼───┼───┼───┼──
+         *    2 ┃   │   │   │   │   │   │
+         *      ┣───┼───┼───┼───┼───┼───┼──
+         *    3 ┃   │   │   │   │   │   │
+         *      ┣───┼───┼───┼───┼───┼───┼──
+         *    4 ┃   │   │   │   │   │   │
+         *      ┣───┼───┼───┼───┼───┼───┼──
+         *      ┃
+         *      ↓
+         *
          * fill：组件尺寸小于其被指定的表格尺寸时，组件的拉伸模式
          *      - NONE          不进行尺寸处理 默认居中
          *      - BOTH          水平和竖直均拉伸到充满
@@ -127,6 +142,8 @@ public class GuiUtil {
          */
         public static GridBagConstraints labelConstraints; // for labels
         public static GridBagConstraints editorConstraints; // for editors
+        public static GridBagConstraints multiLineLabelConstraints; // for labels
+        public static GridBagConstraints multiLineEditorConstraints;  // for multi line editors
         public static GridBagConstraints panelConstraints = new GridBagConstraints(); // for panels
 
         static {
@@ -140,6 +157,20 @@ public class GuiUtil {
             editorConstraints.gridx = 1;
             editorConstraints.weightx = 1.0;
             editorConstraints.insets = new Insets(1, 1, 1, 1);
+
+            multiLineLabelConstraints = new GridBagConstraints();
+            multiLineLabelConstraints.gridx = 0;
+            multiLineLabelConstraints.gridy = 0;
+            multiLineLabelConstraints.gridwidth = 2;
+            multiLineLabelConstraints.anchor = GridBagConstraints.CENTER;
+            labelConstraints.insets = new Insets(1, 1, 1, 1);
+
+            multiLineEditorConstraints = new GridBagConstraints();
+            multiLineEditorConstraints.gridx = 0;
+            multiLineEditorConstraints.gridy = 0;
+            multiLineEditorConstraints.gridwidth = 2;
+            multiLineEditorConstraints.weighty = 1.0;
+            multiLineEditorConstraints.insets = new Insets(1, 1, 1, 1);
 
             panelConstraints.fill = GridBagConstraints.BOTH;
             panelConstraints.gridx = 1;
