@@ -128,7 +128,7 @@ public class TraverseEmptyValueGui extends AbstractConfigGui {
         useTemplateComboBox.addItem("false");
         useTemplateComboBox.addItem("true");
 
-        JLabel label = GuiUtil.createTextFieldLabel("UseTemplate:", useTemplateComboBox, LABEL_WIDTH, LABEL_HEIGHT);
+        JLabel label = GuiUtil.createLabel("UseTemplate:", useTemplateComboBox, LABEL_WIDTH, LABEL_HEIGHT);
 
         JPanel jPanel = new JPanel(new BorderLayout(H_GAP, V_GAP));
         jPanel.add(label, BorderLayout.WEST);
@@ -140,7 +140,7 @@ public class TraverseEmptyValueGui extends AbstractConfigGui {
         interfaceSystemTextField = new JTextField(10);
         interfaceSystemTextField.setName(TraverseEmptyValue.INTERFACE_SYSTEM);
 
-        JLabel label = GuiUtil.createTextFieldLabel("InterfaceSystem:", interfaceSystemTextField, LABEL_WIDTH, LABEL_HEIGHT);
+        JLabel label = GuiUtil.createLabel("InterfaceSystem:", interfaceSystemTextField, LABEL_WIDTH, LABEL_HEIGHT);
 
         JPanel panel = new JPanel(new BorderLayout(H_GAP, V_GAP));
         panel.add(label, BorderLayout.WEST);
@@ -152,7 +152,7 @@ public class TraverseEmptyValueGui extends AbstractConfigGui {
         interfaceNameTextField = new JTextField(10);
         interfaceNameTextField.setName(TraverseEmptyValue.INTERFACE_NAME);
 
-        JLabel label = GuiUtil.createTextFieldLabel("InterfaceName:", interfaceNameTextField, LABEL_WIDTH, LABEL_HEIGHT);
+        JLabel label = GuiUtil.createLabel("InterfaceName:", interfaceNameTextField, LABEL_WIDTH, LABEL_HEIGHT);
 
         JPanel panel = new JPanel(new BorderLayout(H_GAP, V_GAP));
         panel.add(label, BorderLayout.WEST);

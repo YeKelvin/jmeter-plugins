@@ -95,7 +95,7 @@ public class SSHConnectionConfigurationGui extends AbstractConfigGui {
         sshAddressTextField = new JTextField(10);
         sshAddressTextField.setName(SSHConnectionConfiguration.SSH_ADDRESS);
 
-        JLabel label = GuiUtil.createTextFieldLabel("SSHAddress:", sshAddressTextField, LABEL_WIDTH, LABEL_HEIGHT);
+        JLabel label = GuiUtil.createLabel("SSHAddress:", sshAddressTextField, LABEL_WIDTH, LABEL_HEIGHT);
 
         JPanel panel = new JPanel(new BorderLayout(H_GAP, V_GAP));
         panel.add(label, BorderLayout.WEST);
@@ -107,7 +107,7 @@ public class SSHConnectionConfigurationGui extends AbstractConfigGui {
         sshUserNameTextField = new JTextField(10);
         sshUserNameTextField.setName(SSHConnectionConfiguration.SSH_USER_NAME);
 
-        JLabel label = GuiUtil.createTextFieldLabel("SSHUserName:", sshUserNameTextField, LABEL_WIDTH, LABEL_HEIGHT);
+        JLabel label = GuiUtil.createLabel("SSHUserName:", sshUserNameTextField, LABEL_WIDTH, LABEL_HEIGHT);
 
         JPanel panel = new JPanel(new BorderLayout(H_GAP, V_GAP));
         panel.add(label, BorderLayout.WEST);
@@ -119,7 +119,7 @@ public class SSHConnectionConfigurationGui extends AbstractConfigGui {
         sshPasswordTextField = new JTextField(10);
         sshPasswordTextField.setName(SSHConnectionConfiguration.SSH_PASSWORD);
 
-        JLabel label = GuiUtil.createTextFieldLabel("SSHPassword:", sshPasswordTextField, LABEL_WIDTH, LABEL_HEIGHT);
+        JLabel label = GuiUtil.createLabel("SSHPassword:", sshPasswordTextField, LABEL_WIDTH, LABEL_HEIGHT);
 
         JPanel panel = new JPanel(new BorderLayout(H_GAP, V_GAP));
         panel.add(label, BorderLayout.WEST);

@@ -96,7 +96,7 @@ public class CSVDataSetInScriptGui extends AbstractConfigGui {
         variableNamesTextField = new JTextField(10);
         variableNamesTextField.setName(CSVDataSetInScript.VARIABLE_NAMES);
 
-        JLabel label = GuiUtil.createTextFieldLabel("VariableNames:", variableNamesTextField,LABEL_WIDTH, LABEL_HEIGHT);
+        JLabel label = GuiUtil.createLabel("VariableNames:", variableNamesTextField, LABEL_WIDTH, LABEL_HEIGHT);
 
         JPanel panel = new JPanel(new BorderLayout(H_GAP, V_GAP));
         panel.add(label, BorderLayout.WEST);
@@ -130,6 +130,50 @@ public class CSVDataSetInScriptGui extends AbstractConfigGui {
         panel.add(textArea, BorderLayout.CENTER);
         return panel;
     }
+
+    /////////////////
+
+//    private Component getVariableNamesTextField() {
+//        if (variableNamesTextField == null) {
+//            variableNamesTextField = GuiUtil.createTextField(CSVDataSetInScript.VARIABLE_NAMES);
+//        }
+//        return variableNamesTextField;
+//    }
+//
+//    private Component getVariableNamesLabel() {
+//        return GuiUtil.createLabel("变量名称：", getVariableNamesTextField());
+//    }
+//
+//    private Component getDataTextArea() {
+//        if (dataTextArea == null) {
+//            dataTextArea = GuiUtil.createTextArea(CSVDataSetInScript.DATA,20);
+//        }
+//        return dataTextArea;
+//    }
+//
+//    private Component getDataTextArea() {
+//        return GuiUtil.createLabel("CSV数据：",getDataTextArea());
+//    }
+//
+//
+//    private Component getDataPanel() {
+//        return JTextScrollPane.getInstance((JSyntaxTextArea)getDataTextArea());
+//    }
+//
+//    private Component getNotePanel() {
+//        String note = "说明：\n" +
+//                "1. 以 “，” 逗号作为引用名和数据的分隔符；\n" +
+//                "2. 请将线程组设置为无限循环，数据遍历完毕时线程组将自动停止循环。";
+//        JTextArea textArea = new JTextArea(note);
+//        textArea.setLineWrap(true);
+//        textArea.setEditable(false);
+//        textArea.setBackground(this.getBackground());
+//
+//        JPanel panel = new JPanel(new BorderLayout());
+//        panel.add(textArea, BorderLayout.CENTER);
+//        return panel;
+//    }
+
 
 }
 

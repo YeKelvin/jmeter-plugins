@@ -106,7 +106,7 @@ public class SSHPortForwardingGui extends AbstractConfigGui {
         sshAddressTextField = new JTextField(10);
         sshAddressTextField.setName(SSHPortForwarding.SSH_ADDRESS);
 
-        JLabel label = GuiUtil.createTextFieldLabel("SSHAddress:", sshAddressTextField, LABEL_WIDTH, LABEL_HEIGHT);
+        JLabel label = GuiUtil.createLabel("SSHAddress:", sshAddressTextField, LABEL_WIDTH, LABEL_HEIGHT);
 
         JPanel panel = new JPanel(new BorderLayout(H_GAP, V_GAP));
         panel.add(label, BorderLayout.WEST);
@@ -118,7 +118,7 @@ public class SSHPortForwardingGui extends AbstractConfigGui {
         sshUserNameTextField = new JTextField(10);
         sshUserNameTextField.setName(SSHPortForwarding.SSH_USER_NAME);
 
-        JLabel label = GuiUtil.createTextFieldLabel("SSHUserName:", sshUserNameTextField, LABEL_WIDTH, LABEL_HEIGHT);
+        JLabel label = GuiUtil.createLabel("SSHUserName:", sshUserNameTextField, LABEL_WIDTH, LABEL_HEIGHT);
 
         JPanel panel = new JPanel(new BorderLayout(H_GAP, V_GAP));
         panel.add(label, BorderLayout.WEST);
@@ -130,7 +130,7 @@ public class SSHPortForwardingGui extends AbstractConfigGui {
         sshPasswordTextField = new JTextField(10);
         sshPasswordTextField.setName(SSHPortForwarding.SSH_PASSWORD);
 
-        JLabel label = GuiUtil.createTextFieldLabel("SSHPassword:", sshPasswordTextField, LABEL_WIDTH, LABEL_HEIGHT);
+        JLabel label = GuiUtil.createLabel("SSHPassword:", sshPasswordTextField, LABEL_WIDTH, LABEL_HEIGHT);
 
         JPanel panel = new JPanel(new BorderLayout(H_GAP, V_GAP));
         panel.add(label, BorderLayout.WEST);
@@ -142,7 +142,7 @@ public class SSHPortForwardingGui extends AbstractConfigGui {
         localForwardingPortTextField = new JTextField(10);
         localForwardingPortTextField.setName(SSHPortForwarding.LOCAL_FORWARDING_PORT);
 
-        JLabel label = GuiUtil.createTextFieldLabel("LocalForwardingPort:", localForwardingPortTextField, LABEL_WIDTH, LABEL_HEIGHT);
+        JLabel label = GuiUtil.createLabel("LocalForwardingPort:", localForwardingPortTextField, LABEL_WIDTH, LABEL_HEIGHT);
 
         JPanel panel = new JPanel(new BorderLayout(H_GAP, V_GAP));
         panel.add(label, BorderLayout.WEST);
@@ -154,7 +154,7 @@ public class SSHPortForwardingGui extends AbstractConfigGui {
         remoteAddressTextField = new JTextField(10);
         remoteAddressTextField.setName(SSHPortForwarding.REMOTE_ADDRESS);
 
-        JLabel label = GuiUtil.createTextFieldLabel("RemoteAddress:", remoteAddressTextField, LABEL_WIDTH, LABEL_HEIGHT);
+        JLabel label = GuiUtil.createLabel("RemoteAddress:", remoteAddressTextField, LABEL_WIDTH, LABEL_HEIGHT);
 
         JPanel panel = new JPanel(new BorderLayout(H_GAP, V_GAP));
         panel.add(label, BorderLayout.WEST);

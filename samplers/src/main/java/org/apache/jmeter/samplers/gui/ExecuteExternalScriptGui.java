@@ -31,13 +31,13 @@ public class ExecuteExternalScriptGui extends AbstractSamplerGui {
         bodyPanel.setBorder(GuiUtil.createTitledBorder("配置外部脚本信息"));
 
         bodyPanel.add(getExternalScriptPathLabel(), GuiUtil.GridBag.labelConstraints);
-        bodyPanel.add(getExternalScriptPathField(), GuiUtil.GridBag.editorConstraints);
+        bodyPanel.add(getExternalScriptPathTextField(), GuiUtil.GridBag.editorConstraints);
 
         bodyPanel.add(getScriptNameLabel(), GuiUtil.GridBag.labelConstraints);
-        bodyPanel.add(getScriptNameField(), GuiUtil.GridBag.editorConstraints);
+        bodyPanel.add(getScriptNameTextField(), GuiUtil.GridBag.editorConstraints);
 
         bodyPanel.add(getPropsNameSuffixLabel(), GuiUtil.GridBag.labelConstraints);
-        bodyPanel.add(getPropsNameSuffixField(), GuiUtil.GridBag.editorConstraints);
+        bodyPanel.add(getPropsNameSuffixTextField(), GuiUtil.GridBag.editorConstraints);
 
         bodyPanel.add(getIsPrintToConsoleLabel(), GuiUtil.GridBag.labelConstraints);
         bodyPanel.add(getIsPrintToConsoleComboBox(), GuiUtil.GridBag.editorConstraints);
@@ -101,46 +101,42 @@ public class ExecuteExternalScriptGui extends AbstractSamplerGui {
         isPrintToConsoleComboBox.setSelectedItem("");
     }
 
-    private Component getExternalScriptPathField() {
+    private Component getExternalScriptPathTextField() {
         if (externalScriptPathField == null) {
-            externalScriptPathField = new JTextField(10);
-            externalScriptPathField.setName(ExecuteExternalScript.EXTERNAL_SCRIPT_PATH);
+            externalScriptPathField = GuiUtil.createTextField(ExecuteExternalScript.EXTERNAL_SCRIPT_PATH);
         }
         return externalScriptPathField;
     }
 
     private Component getExternalScriptPathLabel() {
-        return GuiUtil.createTextFieldLabel("脚本目录路径：", getExternalScriptPathField());
+        return GuiUtil.createLabel("脚本目录路径：", getExternalScriptPathTextField());
     }
 
-    private Component getScriptNameField() {
+    private Component getScriptNameTextField() {
         if (scriptNameField == null) {
-            scriptNameField = new JTextField(10);
-            scriptNameField.setName(ExecuteExternalScript.SCRIPT_NAME);
+            scriptNameField = GuiUtil.createTextField(ExecuteExternalScript.SCRIPT_NAME);
         }
         return scriptNameField;
     }
 
     private Component getScriptNameLabel() {
-        return GuiUtil.createTextFieldLabel("脚本名称：", getScriptNameField());
+        return GuiUtil.createLabel("脚本名称：", getScriptNameTextField());
     }
 
-    private Component getPropsNameSuffixField() {
+    private Component getPropsNameSuffixTextField() {
         if (propsNameSuffixField == null) {
-            propsNameSuffixField = new JTextField(10);
-            propsNameSuffixField.setName(ExecuteExternalScript.PROPS_NAME_SUFFIX);
+            propsNameSuffixField = GuiUtil.createTextField(ExecuteExternalScript.PROPS_NAME_SUFFIX);
         }
         return propsNameSuffixField;
     }
 
     private Component getPropsNameSuffixLabel() {
-        return GuiUtil.createTextFieldLabel("JMeter属性名称后缀：", getPropsNameSuffixField());
+        return GuiUtil.createLabel("JMeter属性名称后缀：", getPropsNameSuffixTextField());
     }
 
     private Component getIsPrintToConsoleComboBox() {
         if (isPrintToConsoleComboBox == null) {
-            isPrintToConsoleComboBox = new JComboBox<>();
-            isPrintToConsoleComboBox.setName(ExecuteExternalScript.IS_PRINT_TO_CONSOLE);
+            isPrintToConsoleComboBox = GuiUtil.createComboBox(ExecuteExternalScript.IS_PRINT_TO_CONSOLE);
             isPrintToConsoleComboBox.addItem("false");
             isPrintToConsoleComboBox.addItem("true");
         }
@@ -148,7 +144,7 @@ public class ExecuteExternalScriptGui extends AbstractSamplerGui {
     }
 
     private Component getIsPrintToConsoleLabel() {
-        return GuiUtil.createTextFieldLabel(
+        return GuiUtil.createLabel(
                 "是否打印 Result到控制台：", isPrintToConsoleComboBox);
     }
 

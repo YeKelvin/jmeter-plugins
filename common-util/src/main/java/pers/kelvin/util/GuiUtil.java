@@ -1,5 +1,8 @@
 package pers.kelvin.util;
 
+import org.apache.jmeter.gui.util.JSyntaxTextArea;
+import org.apache.jmeter.gui.util.JTextScrollPane;
+
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
 import java.awt.*;
@@ -17,33 +20,11 @@ public class GuiUtil {
         return BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), title);
     }
 
-    public static JLabel createTextFieldLabel(String text, int width, int height) {
-        JLabel label = new JLabel(text);
-        label.setHorizontalAlignment(SwingConstants.RIGHT);
-        label.setVerticalAlignment(SwingConstants.CENTER);
-        label.setPreferredSize(new Dimension(width, height));
-        return label;
+    public static JPanel createBlankPanel() {
+        return new JPanel(new BorderLayout());
     }
 
-    public static JLabel createTextFieldLabel(String text, Component labelFor, int width, int height) {
-        JLabel label = new JLabel(text);
-        label.setLabelFor(labelFor);
-        label.setHorizontalAlignment(SwingConstants.RIGHT);
-        label.setVerticalAlignment(SwingConstants.CENTER);
-//        label.setPreferredSize(new Dimension(width, height));
-        return label;
-    }
-
-
-    public static JLabel createTextFieldLabel(String text) {
-        JLabel label = new JLabel(text);
-        label.setHorizontalAlignment(SwingConstants.RIGHT);
-        label.setVerticalAlignment(SwingConstants.CENTER);
-//        label.setHorizontalAlignment(SwingConstants.TRAILING);
-        return label;
-    }
-
-    public static JLabel createTextFieldLabel(String text, Component labelFor) {
+    public static JLabel createLabel(String text, Component labelFor, int width, int height) {
         JLabel label = new JLabel(text);
         label.setLabelFor(labelFor);
         label.setHorizontalAlignment(SwingConstants.RIGHT);
@@ -51,11 +32,11 @@ public class GuiUtil {
         return label;
     }
 
-    public static JLabel createTextAreaLabel(String text, int width, int height) {
+    public static JLabel createLabel(String text, Component labelFor) {
         JLabel label = new JLabel(text);
-        label.setHorizontalAlignment(SwingConstants.RIGHT);
-        label.setVerticalAlignment(SwingConstants.TOP);
-        label.setPreferredSize(new Dimension(width, height));
+        label.setLabelFor(labelFor);
+        label.setHorizontalAlignment(SwingConstants.CENTER);
+        label.setVerticalAlignment(SwingConstants.CENTER);
         return label;
     }
 
@@ -68,30 +49,31 @@ public class GuiUtil {
         return label;
     }
 
-    public static JLabel createTextAreaLabel(String text) {
-        JLabel label = new JLabel(text);
-        label.setHorizontalAlignment(SwingConstants.RIGHT);
-        label.setVerticalAlignment(SwingConstants.TOP);
-        return label;
+    public static JTextField createTextField(String name) {
+        JTextField textField = new JTextField(10);
+        textField.setName(name);
+        return textField;
     }
 
-    public static JLabel createTextAreaLabel(String text, Component labelFor) {
-        JLabel label = new JLabel(text);
-        label.setLabelFor(labelFor);
-        label.setHorizontalAlignment(SwingConstants.RIGHT);
-        label.setVerticalAlignment(SwingConstants.TOP);
-        return label;
+    public static JSyntaxTextArea createTextArea(String name, int rows) {
+        JSyntaxTextArea textArea = JSyntaxTextArea.getInstance(rows, 20);
+        textArea.setName(name);
+        textArea.setLineWrap(true);
+        return textArea;
     }
 
-    public static JPanel createNotePanel(String note, Color bg, int width, int height) {
+    public static JComboBox<String> createComboBox(String name) {
+        JComboBox<String> comboBox=new JComboBox<>();
+        comboBox.setName(name);
+        return comboBox;
+    }
+
+    public static JTextArea createNote(String note, Color bg) {
         JTextArea textArea = new JTextArea(note);
         textArea.setLineWrap(true);
         textArea.setEditable(false);
         textArea.setBackground(bg);
-
-        JPanel panel = new JPanel(new BorderLayout(width, height));
-        panel.add(textArea, BorderLayout.CENTER);
-        return panel;
+        return textArea;
     }
 
     public static class GridBag {
@@ -145,8 +127,8 @@ public class GuiUtil {
          */
         public static GridBagConstraints labelConstraints; // for labels
         public static GridBagConstraints editorConstraints; // for editors
-//        public static GridBagConstraints multiLineLabelConstraints; // for labels
-//        public static GridBagConstraints multiLineEditorConstraints;  // for multi line editors
+        public static GridBagConstraints multiLineEditorConstraints;  // for multi line editors
+        public static GridBagConstraints fillBottomConstraints;  // for fill the bottom editors
 
         static {
             labelConstraints = new GridBagConstraints();
@@ -162,57 +144,24 @@ public class GuiUtil {
             editorConstraints.weightx = 1.0;
             editorConstraints.insets = new Insets(1, 1, 1, 1);
 
-//            multiLineLabelConstraints = new GridBagConstraints();
-//            multiLineLabelConstraints.gridx = 0;
-//            multiLineLabelConstraints.anchor = GridBagConstraints.CENTER;
-//            multiLineLabelConstraints.insets = new Insets(1, 1, 1, 1);
-//
-//            multiLineEditorConstraints = new GridBagConstraints();
-//            multiLineEditorConstraints.fill = GridBagConstraints.BOTH;
-//            multiLineEditorConstraints.gridx = 0;
-//            multiLineEditorConstraints.gridy = GridBagConstraints.RELATIVE;
-//            multiLineEditorConstraints.gridwidth = 2;
-//            multiLineEditorConstraints.weightx = 1.0;
-//            multiLineEditorConstraints.insets = new Insets(1, 1, 1, 1);
-
-        }
-
-        public static GridBagConstraints createLabelConstraints() {
-            GridBagConstraints labelConstraints = new GridBagConstraints();
-            labelConstraints.gridx = 0;
-            labelConstraints.anchor = GridBagConstraints.EAST;
-            labelConstraints.insets = new Insets(1, 1, 1, 1);
-            return labelConstraints;
-        }
-
-        public static GridBagConstraints createEditorConstraints() {
-            GridBagConstraints editorConstraints = new GridBagConstraints();
-            editorConstraints.fill = GridBagConstraints.BOTH;
-            editorConstraints.gridx = 1;
-            editorConstraints.gridy = GridBagConstraints.RELATIVE;
-            editorConstraints.gridwidth = 2;
-            editorConstraints.weightx = 1.0;
-            editorConstraints.insets = new Insets(1, 1, 1, 1);
-            return editorConstraints;
-        }
-
-        public static GridBagConstraints createMultiLineLabelConstraints() {
-            GridBagConstraints multiLineLabelConstraints = new GridBagConstraints();
-            multiLineLabelConstraints.gridx = 0;
-            multiLineLabelConstraints.anchor = GridBagConstraints.CENTER;
-            multiLineLabelConstraints.insets = new Insets(1, 1, 1, 1);
-            return multiLineLabelConstraints;
-        }
-
-        public static GridBagConstraints createMultiLineEditorConstraints() {
-            GridBagConstraints multiLineEditorConstraints = new GridBagConstraints();
+            multiLineEditorConstraints = new GridBagConstraints();
             multiLineEditorConstraints.fill = GridBagConstraints.BOTH;
             multiLineEditorConstraints.gridx = 0;
             multiLineEditorConstraints.gridy = GridBagConstraints.RELATIVE;
-            multiLineEditorConstraints.gridwidth = 2;
+            multiLineEditorConstraints.gridwidth = 3;
             multiLineEditorConstraints.weightx = 1.0;
             multiLineEditorConstraints.insets = new Insets(1, 1, 1, 1);
-            return multiLineEditorConstraints;
+
+            fillBottomConstraints = new GridBagConstraints();
+            fillBottomConstraints.fill = GridBagConstraints.BOTH;
+            fillBottomConstraints.gridx = 0;
+            fillBottomConstraints.gridy = GridBagConstraints.RELATIVE;
+            fillBottomConstraints.gridwidth = 3;
+            fillBottomConstraints.gridheight = GridBagConstraints.RELATIVE;
+            fillBottomConstraints.weightx = 1.0;
+            fillBottomConstraints.weighty = 1.0;
+            fillBottomConstraints.insets = new Insets(1, 1, 1, 1);
+
         }
     }
 }
