@@ -26,6 +26,7 @@ public class ExecuteExternalScriptGui extends AbstractSamplerGui {
     private void init() {
         setLayout(new BorderLayout());
         setBorder(makeBorder());
+        add(makeTitlePanel(), BorderLayout.NORTH);
 
         JPanel bodyPanel = new JPanel(new GridBagLayout());
         bodyPanel.setBorder(GuiUtil.createTitledBorder("配置外部脚本信息"));
@@ -43,7 +44,6 @@ public class ExecuteExternalScriptGui extends AbstractSamplerGui {
         bodyPanel.add(getIsPrintToConsoleComboBox(), GuiUtil.GridBag.editorConstraints);
 
         VerticalPanel mainPanel = new VerticalPanel();
-        mainPanel.add(makeTitlePanel());
         mainPanel.add(bodyPanel);
 
         add(mainPanel, BorderLayout.CENTER);

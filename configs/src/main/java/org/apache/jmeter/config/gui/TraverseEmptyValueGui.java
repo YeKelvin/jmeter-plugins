@@ -20,16 +20,14 @@ import java.io.IOException;
  * Time: 11:10
  */
 public class TraverseEmptyValueGui extends AbstractConfigGui {
-    private static final int H_GAP = 5;
-    private static final int V_GAP = 10;
-    private static final int LABEL_WIDTH = 130;
-    private static final int LABEL_HEIGHT = 10;
+
+    private JComboBox<String> blankTypeComboBox;
+    private JSyntaxTextArea paramsTextArea;
+    private JSyntaxTextArea emptyCheckExpectationTextArea;
 
     private JComboBox<String> useTemplateComboBox;
-    private JTextField interfaceSystemTextField;
+    private JTextField interfacePathTextField;
     private JTextField interfaceNameTextField;
-    private JSyntaxTextArea patamsTextArea;
-    private JSyntaxTextArea emptyCheckExpectionTextArea;
 
     public TraverseEmptyValueGui() {
         init();
@@ -40,24 +38,34 @@ public class TraverseEmptyValueGui extends AbstractConfigGui {
         setBorder(makeBorder());
         add(makeTitlePanel(), BorderLayout.NORTH);
 
+        JPanel interfacePanel = new JPanel(new GridBagLayout());
+        interfacePanel.setBorder(GuiUtil.createTitledBorder("配置非空校验信息"));
+        interfacePanel.add(getBlankTypeLabel(), GuiUtil.GridBag.labelConstraints);
+        interfacePanel.add(getBlankTypeComboBox(), GuiUtil.GridBag.editorConstraints);
+        interfacePanel.add(getParamsLabel(), GuiUtil.GridBag.labelConstraints);
+        interfacePanel.add(GuiUtil.createBlankPanel(), GuiUtil.GridBag.editorConstraints);
+        interfacePanel.add(getParamsPanel(), GuiUtil.GridBag.multiLineEditorConstraints);
+        interfacePanel.add(getEmptyCheckExpectationLabel(), GuiUtil.GridBag.labelConstraints);
+        interfacePanel.add(GuiUtil.createBlankPanel(), GuiUtil.GridBag.editorConstraints);
+        interfacePanel.add(getEmptyCheckExpectationPanel(), GuiUtil.GridBag.multiLineEditorConstraints);
+
+        JPanel templateBodyPanel = new JPanel(new GridBagLayout());
+        templateBodyPanel.setBorder(GuiUtil.createTitledBorder("配置模板信息"));
+        templateBodyPanel.add(getUseTemplateLabel(), GuiUtil.GridBag.labelConstraints);
+        templateBodyPanel.add(getUseTemplateComboBox(), GuiUtil.GridBag.editorConstraints);
+        templateBodyPanel.add(getInterfacePathLabel(), GuiUtil.GridBag.labelConstraints);
+        templateBodyPanel.add(getInterfacePathTextField(), GuiUtil.GridBag.editorConstraints);
+        templateBodyPanel.add(getInterfaceNameLabel(), GuiUtil.GridBag.labelConstraints);
+        templateBodyPanel.add(getInterfaceNameTextField(), GuiUtil.GridBag.editorConstraints);
         VerticalPanel templatePanel = new VerticalPanel();
-        templatePanel.setBorder(BorderFactory.createTitledBorder(
-                BorderFactory.createEtchedBorder(), "Configure the Template"));
-        templatePanel.add(getUseTemplatePanel());
-        templatePanel.add(getInterfaceSystemPanel());
-        templatePanel.add(getInterfaceNamePanel());
+        templatePanel.add(templateBodyPanel);
 
-        VerticalPanel configPanel = new VerticalPanel();
-        configPanel.setBorder(GuiUtil.createTitledBorder("Configure the Data Source"));
-        configPanel.add(getPatamsPanel());
-        configPanel.add(getEmptyCheckExpectionPanel());
+        JTabbedPane tabbedPane = new JTabbedPane();
+        tabbedPane.add("非空校验配置", interfacePanel);
+        tabbedPane.add("模板配置", templatePanel);
+        tabbedPane.add("说明", getNotePanel());
 
-        VerticalPanel mainPanel = new VerticalPanel();
-        mainPanel.add(templatePanel);
-        mainPanel.add(configPanel);
-        mainPanel.add(getNotePanel());
-
-        add(mainPanel, BorderLayout.CENTER);
+        add(tabbedPane, BorderLayout.CENTER);
     }
 
     @Override
@@ -85,13 +93,14 @@ public class TraverseEmptyValueGui extends AbstractConfigGui {
     @Override
     public void modifyTestElement(TestElement el) {
         super.configureTestElement(el);
-        el.setProperty(TraverseEmptyValue.USE_TEMPLATE, (String) useTemplateComboBox.getSelectedItem());
-        el.setProperty(TraverseEmptyValue.INTERFACE_SYSTEM, interfaceSystemTextField.getText());
-        el.setProperty(TraverseEmptyValue.INTERFACE_NAME, interfaceNameTextField.getText());
+        el.setProperty(TraverseEmptyValue.BLANK_TYPE, (String) blankTypeComboBox.getSelectedItem());
         if (!el.getPropertyAsBoolean(TraverseEmptyValue.USE_TEMPLATE, false)) {
-            el.setProperty(TraverseEmptyValue.PATAMS, patamsTextArea.getText());
+            el.setProperty(TraverseEmptyValue.PATAMS, paramsTextArea.getText());
         }
-        el.setProperty(TraverseEmptyValue.EMPTY_CHECK_EXPECTATION, emptyCheckExpectionTextArea.getText());
+        el.setProperty(TraverseEmptyValue.EMPTY_CHECK_EXPECTATION, emptyCheckExpectationTextArea.getText());
+        el.setProperty(TraverseEmptyValue.USE_TEMPLATE, (String) useTemplateComboBox.getSelectedItem());
+        el.setProperty(TraverseEmptyValue.INTERFACE_PATH, interfacePathTextField.getText());
+        el.setProperty(TraverseEmptyValue.INTERFACE_NAME, interfaceNameTextField.getText());
     }
 
     /**
@@ -100,106 +109,116 @@ public class TraverseEmptyValueGui extends AbstractConfigGui {
     @Override
     public void configure(TestElement el) {
         super.configure(el);
-        useTemplateComboBox.setSelectedItem(el.getPropertyAsString(TraverseEmptyValue.USE_TEMPLATE));
-        interfaceSystemTextField.setText(el.getPropertyAsString(TraverseEmptyValue.INTERFACE_SYSTEM));
-        interfaceSystemTextField.setText(el.getPropertyAsString(TraverseEmptyValue.INTERFACE_NAME));
-        patamsTextArea.setInitialText(el.getPropertyAsString(TraverseEmptyValue.PATAMS));
-        patamsTextArea.setCaretPosition(0);
-        emptyCheckExpectionTextArea.setInitialText(el.getPropertyAsString(TraverseEmptyValue.EMPTY_CHECK_EXPECTATION));
-        emptyCheckExpectionTextArea.setInitialText(getTemplateContent(
+        blankTypeComboBox.setSelectedItem(el.getPropertyAsString(TraverseEmptyValue.BLANK_TYPE));
+        paramsTextArea.setInitialText(el.getPropertyAsString(TraverseEmptyValue.PATAMS));
+        paramsTextArea.setCaretPosition(0);
+        emptyCheckExpectationTextArea.setInitialText(el.getPropertyAsString(TraverseEmptyValue.EMPTY_CHECK_EXPECTATION));
+        emptyCheckExpectationTextArea.setInitialText(getTemplateContent(
                 el.getPropertyAsBoolean(TraverseEmptyValue.USE_TEMPLATE, false),
                 el.getPropertyAsString(TraverseEmptyValue.INTERFACE_NAME)));
-        emptyCheckExpectionTextArea.setCaretPosition(0);
+        emptyCheckExpectationTextArea.setCaretPosition(0);
+        useTemplateComboBox.setSelectedItem(el.getPropertyAsString(TraverseEmptyValue.USE_TEMPLATE));
+        interfacePathTextField.setText(el.getPropertyAsString(TraverseEmptyValue.INTERFACE_PATH));
+        interfacePathTextField.setText(el.getPropertyAsString(TraverseEmptyValue.INTERFACE_NAME));
     }
 
     @Override
     public void clearGui() {
         super.clearGui();
+        blankTypeComboBox.setSelectedItem("");
+        paramsTextArea.setInitialText("");
+        emptyCheckExpectationTextArea.setInitialText("");
         useTemplateComboBox.setSelectedItem("");
-        interfaceSystemTextField.setText("");
+        interfacePathTextField.setText("");
         interfaceNameTextField.setText("");
-        patamsTextArea.setInitialText("");
-        emptyCheckExpectionTextArea.setInitialText("");
     }
 
-    private JPanel getUseTemplatePanel() {
-        useTemplateComboBox = new JComboBox<>();
-        useTemplateComboBox.setName(TraverseEmptyValue.USE_TEMPLATE);
-        useTemplateComboBox.addItem("false");
-        useTemplateComboBox.addItem("true");
-
-        JLabel label = GuiUtil.createLabel("UseTemplate:", useTemplateComboBox, LABEL_WIDTH, LABEL_HEIGHT);
-
-        JPanel jPanel = new JPanel(new BorderLayout(H_GAP, V_GAP));
-        jPanel.add(label, BorderLayout.WEST);
-        jPanel.add(useTemplateComboBox, BorderLayout.CENTER);
-        return jPanel;
+    private Component getBlankTypeComboBox() {
+        if (blankTypeComboBox == null) {
+            blankTypeComboBox = GuiUtil.createComboBox(TraverseEmptyValue.BLANK_TYPE);
+            blankTypeComboBox.addItem("null");
+            blankTypeComboBox.addItem("\"\"");
+        }
+        return blankTypeComboBox;
     }
 
-    private JPanel getInterfaceSystemPanel() {
-        interfaceSystemTextField = new JTextField(10);
-        interfaceSystemTextField.setName(TraverseEmptyValue.INTERFACE_SYSTEM);
-
-        JLabel label = GuiUtil.createLabel("InterfaceSystem:", interfaceSystemTextField, LABEL_WIDTH, LABEL_HEIGHT);
-
-        JPanel panel = new JPanel(new BorderLayout(H_GAP, V_GAP));
-        panel.add(label, BorderLayout.WEST);
-        panel.add(interfaceSystemTextField, BorderLayout.CENTER);
-        return panel;
+    private Component getBlankTypeLabel() {
+        return GuiUtil.createLabel("空类型：", getBlankTypeComboBox());
     }
 
-    private JPanel getInterfaceNamePanel() {
-        interfaceNameTextField = new JTextField(10);
-        interfaceNameTextField.setName(TraverseEmptyValue.INTERFACE_NAME);
-
-        JLabel label = GuiUtil.createLabel("InterfaceName:", interfaceNameTextField, LABEL_WIDTH, LABEL_HEIGHT);
-
-        JPanel panel = new JPanel(new BorderLayout(H_GAP, V_GAP));
-        panel.add(label, BorderLayout.WEST);
-        panel.add(interfaceNameTextField, BorderLayout.CENTER);
-        return panel;
+    private Component getParamsTextArea() {
+        if (paramsTextArea == null) {
+            paramsTextArea = GuiUtil.createTextArea(TraverseEmptyValue.PATAMS, 20);
+        }
+        return paramsTextArea;
     }
 
-    private JPanel getPatamsPanel() {
-        patamsTextArea = JSyntaxTextArea.getInstance(8, 10);
-        patamsTextArea.setName(TraverseEmptyValue.PATAMS);
-
-        JLabel label = GuiUtil.createTextAreaLabel("Patams:", patamsTextArea, LABEL_WIDTH, LABEL_HEIGHT);
-
-        JPanel panel = new JPanel(new BorderLayout(H_GAP, V_GAP));
-        panel.add(label, BorderLayout.WEST);
-        panel.add(JTextScrollPane.getInstance(patamsTextArea), BorderLayout.CENTER);
-        return panel;
+    private Component getParamsLabel() {
+        return GuiUtil.createLabel("请求报文：", getParamsTextArea());
     }
 
-    private JPanel getEmptyCheckExpectionPanel() {
-        emptyCheckExpectionTextArea = JSyntaxTextArea.getInstance(8, 10);
-        emptyCheckExpectionTextArea.setName(TraverseEmptyValue.EMPTY_CHECK_EXPECTATION);
-
-        JLabel label = GuiUtil.createTextAreaLabel("EmptyCheckExpection:", emptyCheckExpectionTextArea, LABEL_WIDTH, LABEL_HEIGHT);
-
-        JPanel panel = new JPanel(new BorderLayout(H_GAP, V_GAP));
-        panel.add(label, BorderLayout.WEST);
-        panel.add(JTextScrollPane.getInstance(emptyCheckExpectionTextArea), BorderLayout.CENTER);
-        return panel;
+    private Component getParamsPanel() {
+        return JTextScrollPane.getInstance((JSyntaxTextArea) getParamsTextArea());
     }
 
-    private JPanel getNotePanel() {
-        String note = "说明：\n" +
-                "1. Params为原接口请求报文，例如： \"key1\":\"val1\",\"key2\":\"val2\"；\n" +
-                "2. EmptyCheckExpection为接口各字段非空校验预期结果，例如： \"key1\":true,\"key2\":false；\n" +
-                "3. 遍历的 key以 EmptyCheckExpection的内容为准；\n" +
-                "4. 请将线程组设置为无限循环，数据遍历完毕时线程组将自动停止循环；\n" +
-                "5. 请求报文变量名默认=params，预期结果变量名默认=expectation，当前 JsonPath变量名默认=jsonPath；\n" +
-                "6. 该插件中数据参数化不会替换具体的值，请在使用的位置利用 ${__eval(${params})} 函数替换。";
-        JTextArea textArea = new JTextArea(note);
-        textArea.setLineWrap(true);
-        textArea.setEditable(false);
-        textArea.setBackground(this.getBackground());
+    private Component getEmptyCheckExpectationTextArea() {
+        if (emptyCheckExpectationTextArea == null) {
+            emptyCheckExpectationTextArea = GuiUtil.createTextArea(TraverseEmptyValue.EMPTY_CHECK_EXPECTATION, 20);
+        }
+        return emptyCheckExpectationTextArea;
 
-        JPanel panel = new JPanel(new BorderLayout(H_GAP, V_GAP));
-        panel.add(textArea, BorderLayout.CENTER);
-        return panel;
+    }
+
+    private Component getEmptyCheckExpectationLabel() {
+        return GuiUtil.createLabel("预期结果：", getEmptyCheckExpectationTextArea());
+    }
+
+    private Component getEmptyCheckExpectationPanel() {
+        return JTextScrollPane.getInstance((JSyntaxTextArea) getEmptyCheckExpectationTextArea());
+    }
+
+    private Component getUseTemplateComboBox() {
+        if (useTemplateComboBox == null) {
+            useTemplateComboBox = GuiUtil.createComboBox(TraverseEmptyValue.USE_TEMPLATE);
+            useTemplateComboBox.addItem("false");
+            useTemplateComboBox.addItem("true");
+        }
+        return useTemplateComboBox;
+    }
+
+    private Component getUseTemplateLabel() {
+        return GuiUtil.createLabel("是否使用模板：", getUseTemplateComboBox());
+    }
+
+    private Component getInterfacePathTextField() {
+        if (interfacePathTextField == null) {
+            interfacePathTextField = GuiUtil.createTextField(TraverseEmptyValue.INTERFACE_PATH);
+        }
+        return interfacePathTextField;
+    }
+
+    private Component getInterfacePathLabel() {
+        return GuiUtil.createLabel("接口目录：", getInterfacePathTextField());
+    }
+
+    private Component getInterfaceNameTextField() {
+        if (interfaceNameTextField == null) {
+            interfaceNameTextField = GuiUtil.createTextField(TraverseEmptyValue.INTERFACE_NAME);
+        }
+        return interfaceNameTextField;
+    }
+
+    private Component getInterfaceNameLabel() {
+        return GuiUtil.createLabel("接口名称：", getInterfaceNameTextField());
+    }
+
+
+    private Component getNotePanel() {
+        String note = "\n" +
+                "1. 请将线程组设置为无限循环，数据遍历完毕时线程组将自动停止循环；\n" +
+                "2. 请求报文变量名= params，预期结果变量名= expectation，当前 JsonPath变量名= jsonPath；\n" +
+                "3. 该插件中数据引用变量或函数不会替换为具体的值，请在使用的位置利用 ${__eval(${params})} 函数替换。";
+        return GuiUtil.createNotePanel(note, this.getBackground());
     }
 
     /**
@@ -216,9 +235,14 @@ public class TraverseEmptyValueGui extends AbstractConfigGui {
         return "";
     }
 
+    /**
+     * 读取 Json文件的内容
+     *
+     * @param interfaceName 接口名称
+     */
     private String readJsonFile(String interfaceName) throws IOException, ServiceException {
-        if (StringUtil.isNotBlank(interfaceSystemTextField.getText())) {
-            return JsonFileUtil.readJsonFile(TraverseEmptyValue.CONFIG_FILE_PATH, interfaceSystemTextField.getText(), interfaceName);
+        if (StringUtil.isNotBlank(interfacePathTextField.getText())) {
+            return JsonFileUtil.readJsonFile(TraverseEmptyValue.CONFIG_FILE_PATH, interfacePathTextField.getText(), interfaceName);
         } else {
             return JsonFileUtil.readJsonFile(TraverseEmptyValue.CONFIG_FILE_PATH, interfaceName);
         }

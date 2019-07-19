@@ -13,12 +13,10 @@ import java.awt.*;
  * @author KelvinYe
  */
 public class FailureResultSaverGui extends AbstractConfigGui {
-    private static final int H_GAP = 5;
-    private static final int V_GAP = 10;
-    private static final int LABEL_WIDTH = 100;
-    private static final int LABEL_HEIGHT = 10;
 
     private JTextField logPathTextField;
+
+    private JComboBox<String> formatTypeComboBox;
 
     public FailureResultSaverGui() {
         init();
@@ -29,9 +27,15 @@ public class FailureResultSaverGui extends AbstractConfigGui {
         setBorder(makeBorder());
         add(makeTitlePanel(), BorderLayout.NORTH);
 
+        JPanel bodyPanel = new JPanel(new GridBagLayout());
+        bodyPanel.setBorder(GuiUtil.createTitledBorder("配置错误日志信息"));
+        bodyPanel.add(getLogPathLabel(), GuiUtil.GridBag.labelConstraints);
+        bodyPanel.add(getLogPathTextField(), GuiUtil.GridBag.editorConstraints);
+        bodyPanel.add(getFormatTypeLabel(), GuiUtil.GridBag.labelConstraints);
+        bodyPanel.add(getFormatTypeComboBox(), GuiUtil.GridBag.editorConstraints);
+
         VerticalPanel mainPanel = new VerticalPanel();
-        mainPanel.setBorder(GuiUtil.createTitledBorder("Please Configure"));
-        mainPanel.add(getLogPathPanel());
+        mainPanel.add(bodyPanel);
 
         add(mainPanel, BorderLayout.CENTER);
     }
@@ -62,6 +66,7 @@ public class FailureResultSaverGui extends AbstractConfigGui {
     public void modifyTestElement(TestElement el) {
         super.configureTestElement(el);
         el.setProperty(FailureResultSaver.LOG_PATH, logPathTextField.getText());
+        el.setProperty(FailureResultSaver.FORMAT_TYPE, (String) formatTypeComboBox.getSelectedItem());
     }
 
     /**
@@ -71,23 +76,38 @@ public class FailureResultSaverGui extends AbstractConfigGui {
     public void configure(TestElement el) {
         super.configure(el);
         logPathTextField.setText(el.getPropertyAsString(FailureResultSaver.LOG_PATH));
+        formatTypeComboBox.setSelectedItem(el.getPropertyAsString(FailureResultSaver.FORMAT_TYPE));
     }
 
     @Override
     public void clearGui() {
         super.clearGui();
         logPathTextField.setText("");
+        formatTypeComboBox.setSelectedItem("");
     }
 
-    private JPanel getLogPathPanel() {
-        logPathTextField = new JTextField(10);
-        logPathTextField.setName(FailureResultSaver.LOG_PATH);
-
-        JLabel label = GuiUtil.createLabel("LogPath:", logPathTextField, LABEL_WIDTH, LABEL_HEIGHT);
-
-        JPanel panel = new JPanel(new BorderLayout(H_GAP, V_GAP));
-        panel.add(label, BorderLayout.WEST);
-        panel.add(logPathTextField, BorderLayout.CENTER);
-        return panel;
+    private Component getLogPathTextField() {
+        if (logPathTextField == null) {
+            logPathTextField = GuiUtil.createTextField(FailureResultSaver.LOG_PATH);
+        }
+        return logPathTextField;
     }
+
+    private Component getLogPathLabel() {
+        return GuiUtil.createLabel("日志路径：", getLogPathTextField());
+    }
+
+    private Component getFormatTypeComboBox() {
+        if (formatTypeComboBox == null) {
+            formatTypeComboBox = GuiUtil.createComboBox(FailureResultSaver.LOG_PATH);
+            formatTypeComboBox.addItem("HTTP");
+            formatTypeComboBox.addItem("Dubbo");
+        }
+        return formatTypeComboBox;
+    }
+
+    private Component getFormatTypeLabel() {
+        return GuiUtil.createLabel("日志路径：", getFormatTypeComboBox());
+    }
+
 }

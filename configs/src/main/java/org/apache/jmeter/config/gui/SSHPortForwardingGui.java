@@ -15,10 +15,6 @@ import java.awt.*;
  * @author Kelvin.Ye
  */
 public class SSHPortForwardingGui extends AbstractConfigGui {
-    private static final int H_GAP = 5;
-    private static final int V_GAP = 10;
-    private static final int LABEL_WIDTH = 100;
-    private static final int LABEL_HEIGHT = 10;
 
     private JTextField sshAddressTextField;
     private JTextField sshUserNameTextField;
@@ -35,13 +31,26 @@ public class SSHPortForwardingGui extends AbstractConfigGui {
         setBorder(makeBorder());
         add(makeTitlePanel(), BorderLayout.NORTH);
 
+        JPanel bodyPanel = new JPanel(new GridBagLayout());
+        bodyPanel.setBorder(GuiUtil.createTitledBorder("配置SSH信息"));
+
+        bodyPanel.add(getSSHAddressLabel(), GuiUtil.GridBag.labelConstraints);
+        bodyPanel.add(getSSHAddressTextField(), GuiUtil.GridBag.editorConstraints);
+
+        bodyPanel.add(getSSHUserNameLabel(), GuiUtil.GridBag.labelConstraints);
+        bodyPanel.add(getSSHUserNameTextField(), GuiUtil.GridBag.editorConstraints);
+
+        bodyPanel.add(getSSHPasswordLabel(), GuiUtil.GridBag.labelConstraints);
+        bodyPanel.add(getSSHPasswordTextField(), GuiUtil.GridBag.editorConstraints);
+
+        bodyPanel.add(getLocalForwardingPortLabel(), GuiUtil.GridBag.labelConstraints);
+        bodyPanel.add(getLocalForwardingPortTextField(), GuiUtil.GridBag.editorConstraints);
+
+        bodyPanel.add(getRemoteAddressLabel(), GuiUtil.GridBag.labelConstraints);
+        bodyPanel.add(getRemoteAddressTextField(), GuiUtil.GridBag.editorConstraints);
+
         VerticalPanel mainPanel = new VerticalPanel();
-        mainPanel.setBorder(GuiUtil.createTitledBorder("Configure the SSH Data Source"));
-        mainPanel.add(getSSHAddressPanel());
-        mainPanel.add(getSSHUserNamePanel());
-        mainPanel.add(getSSHPasswordPanel());
-        mainPanel.add(getLocalForwardingPortPanel());
-        mainPanel.add(getRemoteAddressPanel());
+        mainPanel.add(bodyPanel);
         mainPanel.add(getNotePanel());
 
         add(mainPanel, BorderLayout.CENTER);
@@ -102,75 +111,63 @@ public class SSHPortForwardingGui extends AbstractConfigGui {
         remoteAddressTextField.setText("");
     }
 
-    private JPanel getSSHAddressPanel() {
-        sshAddressTextField = new JTextField(10);
-        sshAddressTextField.setName(SSHPortForwarding.SSH_ADDRESS);
-
-        JLabel label = GuiUtil.createLabel("SSHAddress:", sshAddressTextField, LABEL_WIDTH, LABEL_HEIGHT);
-
-        JPanel panel = new JPanel(new BorderLayout(H_GAP, V_GAP));
-        panel.add(label, BorderLayout.WEST);
-        panel.add(sshAddressTextField, BorderLayout.CENTER);
-        return panel;
+    private Component getSSHAddressTextField() {
+        if (sshAddressTextField == null) {
+            sshAddressTextField = GuiUtil.createTextField(SSHPortForwarding.SSH_ADDRESS);
+        }
+        return sshAddressTextField;
     }
 
-    private JPanel getSSHUserNamePanel() {
-        sshUserNameTextField = new JTextField(10);
-        sshUserNameTextField.setName(SSHPortForwarding.SSH_USER_NAME);
-
-        JLabel label = GuiUtil.createLabel("SSHUserName:", sshUserNameTextField, LABEL_WIDTH, LABEL_HEIGHT);
-
-        JPanel panel = new JPanel(new BorderLayout(H_GAP, V_GAP));
-        panel.add(label, BorderLayout.WEST);
-        panel.add(sshUserNameTextField, BorderLayout.CENTER);
-        return panel;
+    private Component getSSHAddressLabel() {
+        return GuiUtil.createLabel("SSH地址：", getSSHAddressTextField());
     }
 
-    private JPanel getSSHPasswordPanel() {
-        sshPasswordTextField = new JTextField(10);
-        sshPasswordTextField.setName(SSHPortForwarding.SSH_PASSWORD);
-
-        JLabel label = GuiUtil.createLabel("SSHPassword:", sshPasswordTextField, LABEL_WIDTH, LABEL_HEIGHT);
-
-        JPanel panel = new JPanel(new BorderLayout(H_GAP, V_GAP));
-        panel.add(label, BorderLayout.WEST);
-        panel.add(sshPasswordTextField, BorderLayout.CENTER);
-        return panel;
+    private Component getSSHUserNameTextField() {
+        if (sshUserNameTextField == null) {
+            sshUserNameTextField = GuiUtil.createTextField(SSHPortForwarding.SSH_USER_NAME);
+        }
+        return sshUserNameTextField;
     }
 
-    private JPanel getLocalForwardingPortPanel() {
-        localForwardingPortTextField = new JTextField(10);
-        localForwardingPortTextField.setName(SSHPortForwarding.LOCAL_FORWARDING_PORT);
-
-        JLabel label = GuiUtil.createLabel("LocalForwardingPort:", localForwardingPortTextField, LABEL_WIDTH, LABEL_HEIGHT);
-
-        JPanel panel = new JPanel(new BorderLayout(H_GAP, V_GAP));
-        panel.add(label, BorderLayout.WEST);
-        panel.add(localForwardingPortTextField, BorderLayout.CENTER);
-        return panel;
+    private Component getSSHUserNameLabel() {
+        return GuiUtil.createLabel("SSH用户名称：", getSSHAddressLabel());
     }
 
-    private JPanel getRemoteAddressPanel() {
-        remoteAddressTextField = new JTextField(10);
-        remoteAddressTextField.setName(SSHPortForwarding.REMOTE_ADDRESS);
-
-        JLabel label = GuiUtil.createLabel("RemoteAddress:", remoteAddressTextField, LABEL_WIDTH, LABEL_HEIGHT);
-
-        JPanel panel = new JPanel(new BorderLayout(H_GAP, V_GAP));
-        panel.add(label, BorderLayout.WEST);
-        panel.add(remoteAddressTextField, BorderLayout.CENTER);
-        return panel;
+    private Component getSSHPasswordTextField() {
+        if (sshPasswordTextField == null) {
+            sshPasswordTextField = GuiUtil.createTextField(SSHPortForwarding.SSH_PASSWORD);
+        }
+        return sshPasswordTextField;
     }
 
-    private JPanel getNotePanel() {
+    private Component getSSHPasswordLabel() {
+        return GuiUtil.createLabel("SSH密码：", getSSHPasswordTextField());
+    }
+
+    private Component getLocalForwardingPortTextField() {
+        if (localForwardingPortTextField == null) {
+            localForwardingPortTextField = GuiUtil.createTextField(SSHPortForwarding.LOCAL_FORWARDING_PORT);
+        }
+        return localForwardingPortTextField;
+    }
+
+    private Component getLocalForwardingPortLabel() {
+        return GuiUtil.createLabel("本地转发端口：", getLocalForwardingPortTextField());
+    }
+
+    private Component getRemoteAddressTextField() {
+        if (remoteAddressTextField == null) {
+            remoteAddressTextField = GuiUtil.createTextField(SSHPortForwarding.REMOTE_ADDRESS);
+        }
+        return remoteAddressTextField;
+    }
+
+    private Component getRemoteAddressLabel() {
+        return GuiUtil.createLabel("远程地址：", getRemoteAddressTextField());
+    }
+
+    private Component getNotePanel() {
         String note = "\n注意：请把此组件放在JDBC组件后面，不然连接关闭时会报IOException。";
-        JTextArea textArea = new JTextArea(note);
-        textArea.setLineWrap(true);
-        textArea.setEditable(false);
-        textArea.setBackground(this.getBackground());
-
-        JPanel panel = new JPanel(new BorderLayout(H_GAP, V_GAP));
-        panel.add(textArea, BorderLayout.CENTER);
-        return panel;
+        return GuiUtil.createNotePanel(note, this.getBackground());
     }
 }

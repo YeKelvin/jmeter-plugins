@@ -16,10 +16,6 @@ import java.awt.*;
  * Time: 11:10
  */
 public class CSVDataSetInScriptGui extends AbstractConfigGui {
-    private static final int H_GAP = 5;
-    private static final int V_GAP = 10;
-    private static final int LABEL_WIDTH = 100;
-    private static final int LABEL_HEIGHT = 10;
 
     private JTextField variableNamesTextField;
     private JSyntaxTextArea dataTextArea;
@@ -31,17 +27,19 @@ public class CSVDataSetInScriptGui extends AbstractConfigGui {
     private void init() {
         setLayout(new BorderLayout());
         setBorder(makeBorder());
+        add(makeTitlePanel(), BorderLayout.NORTH);
 
-        VerticalPanel configPanel = new VerticalPanel();
-        configPanel.setBorder(GuiUtil.createTitledBorder("Configure the Data Source"));
-        configPanel.add(getVariableNamesPanel());
+        JPanel bodyPanel = new JPanel(new GridBagLayout());
+        bodyPanel.setBorder(GuiUtil.createTitledBorder("配置CSV数据"));
 
-        VerticalPanel mainPanel = new VerticalPanel();
-        mainPanel.add(makeTitlePanel());
-        mainPanel.add(configPanel);
+        bodyPanel.add(getVariableNamesLabel(), GuiUtil.GridBag.labelConstraints);
+        bodyPanel.add(getVariableNamesTextField(), GuiUtil.GridBag.editorConstraints);
 
-        add(mainPanel, BorderLayout.NORTH);
-        add(getDataPanel(), BorderLayout.CENTER);
+        bodyPanel.add(getDataLabel(), GuiUtil.GridBag.labelConstraints);
+        bodyPanel.add(GuiUtil.createBlankPanel(), GuiUtil.GridBag.editorConstraints);
+        bodyPanel.add(getDataPanel(), GuiUtil.GridBag.fillBottomConstraints);
+
+        add(bodyPanel, BorderLayout.CENTER);
         add(getNotePanel(), BorderLayout.SOUTH);
     }
 
@@ -92,88 +90,39 @@ public class CSVDataSetInScriptGui extends AbstractConfigGui {
         dataTextArea.setInitialText("");
     }
 
-    private JPanel getVariableNamesPanel() {
-        variableNamesTextField = new JTextField(10);
-        variableNamesTextField.setName(CSVDataSetInScript.VARIABLE_NAMES);
-
-        JLabel label = GuiUtil.createLabel("VariableNames:", variableNamesTextField, LABEL_WIDTH, LABEL_HEIGHT);
-
-        JPanel panel = new JPanel(new BorderLayout(H_GAP, V_GAP));
-        panel.add(label, BorderLayout.WEST);
-        panel.add(variableNamesTextField, BorderLayout.CENTER);
-        return panel;
+    private Component getVariableNamesTextField() {
+        if (variableNamesTextField == null) {
+            variableNamesTextField = GuiUtil.createTextField(CSVDataSetInScript.VARIABLE_NAMES);
+        }
+        return variableNamesTextField;
     }
 
-    private JPanel getDataPanel() {
-        dataTextArea = JSyntaxTextArea.getInstance(20, 10);
-        dataTextArea.setName(CSVDataSetInScript.DATA);
-
-        JLabel label = new JLabel("CSV Data:");
-        label.setLabelFor(dataTextArea);
-
-        JPanel panel = new JPanel(new BorderLayout(H_GAP, V_GAP));
-        panel.add(label, BorderLayout.NORTH);
-        panel.add(JTextScrollPane.getInstance(dataTextArea), BorderLayout.CENTER);
-        return panel;
+    private Component getVariableNamesLabel() {
+        return GuiUtil.createLabel("变量名称：", getVariableNamesTextField());
     }
 
-    private JPanel getNotePanel() {
+    private Component getDataTextArea() {
+        if (dataTextArea == null) {
+            dataTextArea = GuiUtil.createTextArea(CSVDataSetInScript.DATA, 20);
+        }
+        return dataTextArea;
+    }
+
+    private Component getDataLabel() {
+        return GuiUtil.createLabel("CSV数据：", getDataTextArea());
+    }
+
+
+    private Component getDataPanel() {
+        return JTextScrollPane.getInstance((JSyntaxTextArea) getDataTextArea());
+    }
+
+    private Component getNotePanel() {
         String note = "说明：\n" +
                 "1. 以 “，” 逗号作为引用名和数据的分隔符；\n" +
                 "2. 请将线程组设置为无限循环，数据遍历完毕时线程组将自动停止循环。";
-        JTextArea textArea = new JTextArea(note);
-        textArea.setLineWrap(true);
-        textArea.setEditable(false);
-        textArea.setBackground(this.getBackground());
-
-        JPanel panel = new JPanel(new BorderLayout(H_GAP, V_GAP));
-        panel.add(textArea, BorderLayout.CENTER);
-        return panel;
+        return GuiUtil.createNotePanel(note, this.getBackground());
     }
-
-    /////////////////
-
-//    private Component getVariableNamesTextField() {
-//        if (variableNamesTextField == null) {
-//            variableNamesTextField = GuiUtil.createTextField(CSVDataSetInScript.VARIABLE_NAMES);
-//        }
-//        return variableNamesTextField;
-//    }
-//
-//    private Component getVariableNamesLabel() {
-//        return GuiUtil.createLabel("变量名称：", getVariableNamesTextField());
-//    }
-//
-//    private Component getDataTextArea() {
-//        if (dataTextArea == null) {
-//            dataTextArea = GuiUtil.createTextArea(CSVDataSetInScript.DATA,20);
-//        }
-//        return dataTextArea;
-//    }
-//
-//    private Component getDataTextArea() {
-//        return GuiUtil.createLabel("CSV数据：",getDataTextArea());
-//    }
-//
-//
-//    private Component getDataPanel() {
-//        return JTextScrollPane.getInstance((JSyntaxTextArea)getDataTextArea());
-//    }
-//
-//    private Component getNotePanel() {
-//        String note = "说明：\n" +
-//                "1. 以 “，” 逗号作为引用名和数据的分隔符；\n" +
-//                "2. 请将线程组设置为无限循环，数据遍历完毕时线程组将自动停止循环。";
-//        JTextArea textArea = new JTextArea(note);
-//        textArea.setLineWrap(true);
-//        textArea.setEditable(false);
-//        textArea.setBackground(this.getBackground());
-//
-//        JPanel panel = new JPanel(new BorderLayout());
-//        panel.add(textArea, BorderLayout.CENTER);
-//        return panel;
-//    }
-
 
 }
 

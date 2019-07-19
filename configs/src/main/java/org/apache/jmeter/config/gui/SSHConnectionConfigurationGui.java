@@ -15,10 +15,6 @@ import java.awt.*;
  * @author Kelvin.Ye
  */
 public class SSHConnectionConfigurationGui extends AbstractConfigGui {
-    private static final int H_GAP = 5;
-    private static final int V_GAP = 10;
-    private static final int LABEL_WIDTH = 100;
-    private static final int LABEL_HEIGHT = 10;
 
     private JTextField sshAddressTextField;
     private JTextField sshUserNameTextField;
@@ -33,11 +29,20 @@ public class SSHConnectionConfigurationGui extends AbstractConfigGui {
         setBorder(makeBorder());
         add(makeTitlePanel(), BorderLayout.NORTH);
 
+        JPanel bodyPanel = new JPanel(new GridBagLayout());
+        bodyPanel.setBorder(GuiUtil.createTitledBorder("配置SSH信息"));
+
+        bodyPanel.add(getSSHAddressLabel(), GuiUtil.GridBag.labelConstraints);
+        bodyPanel.add(getSSHAddressTextField(), GuiUtil.GridBag.editorConstraints);
+
+        bodyPanel.add(getSSHUserNameLabel(), GuiUtil.GridBag.labelConstraints);
+        bodyPanel.add(getSSHUserNameTextField(), GuiUtil.GridBag.editorConstraints);
+
+        bodyPanel.add(getSSHPasswordLabel(), GuiUtil.GridBag.labelConstraints);
+        bodyPanel.add(getSSHPasswordTextField(), GuiUtil.GridBag.editorConstraints);
+
         VerticalPanel mainPanel = new VerticalPanel();
-        mainPanel.setBorder(GuiUtil.createTitledBorder("Configure the SSH Info"));
-        mainPanel.add(getSSHAddressPanel());
-        mainPanel.add(getSSHUserNamePanel());
-        mainPanel.add(getSSHPasswordPanel());
+        mainPanel.add(bodyPanel);
 
         add(mainPanel, BorderLayout.CENTER);
     }
@@ -91,40 +96,37 @@ public class SSHConnectionConfigurationGui extends AbstractConfigGui {
         sshPasswordTextField.setText("");
     }
 
-    private JPanel getSSHAddressPanel() {
-        sshAddressTextField = new JTextField(10);
-        sshAddressTextField.setName(SSHConnectionConfiguration.SSH_ADDRESS);
-
-        JLabel label = GuiUtil.createLabel("SSHAddress:", sshAddressTextField, LABEL_WIDTH, LABEL_HEIGHT);
-
-        JPanel panel = new JPanel(new BorderLayout(H_GAP, V_GAP));
-        panel.add(label, BorderLayout.WEST);
-        panel.add(sshAddressTextField, BorderLayout.CENTER);
-        return panel;
+    private Component getSSHAddressTextField() {
+        if (sshAddressTextField == null) {
+            sshAddressTextField = GuiUtil.createTextField(SSHConnectionConfiguration.SSH_ADDRESS);
+        }
+        return sshAddressTextField;
     }
 
-    private JPanel getSSHUserNamePanel() {
-        sshUserNameTextField = new JTextField(10);
-        sshUserNameTextField.setName(SSHConnectionConfiguration.SSH_USER_NAME);
-
-        JLabel label = GuiUtil.createLabel("SSHUserName:", sshUserNameTextField, LABEL_WIDTH, LABEL_HEIGHT);
-
-        JPanel panel = new JPanel(new BorderLayout(H_GAP, V_GAP));
-        panel.add(label, BorderLayout.WEST);
-        panel.add(sshUserNameTextField, BorderLayout.CENTER);
-        return panel;
+    private Component getSSHAddressLabel() {
+        return GuiUtil.createLabel("SSH地址：", getSSHAddressTextField());
     }
 
-    private JPanel getSSHPasswordPanel() {
-        sshPasswordTextField = new JTextField(10);
-        sshPasswordTextField.setName(SSHConnectionConfiguration.SSH_PASSWORD);
+    private Component getSSHUserNameTextField() {
+        if (sshUserNameTextField == null) {
+            sshUserNameTextField = GuiUtil.createTextField(SSHConnectionConfiguration.SSH_USER_NAME);
+        }
+        return sshUserNameTextField;
+    }
 
-        JLabel label = GuiUtil.createLabel("SSHPassword:", sshPasswordTextField, LABEL_WIDTH, LABEL_HEIGHT);
+    private Component getSSHUserNameLabel() {
+        return GuiUtil.createLabel("SSH用户名称：", getSSHUserNameTextField());
+    }
 
-        JPanel panel = new JPanel(new BorderLayout(H_GAP, V_GAP));
-        panel.add(label, BorderLayout.WEST);
-        panel.add(sshPasswordTextField, BorderLayout.CENTER);
-        return panel;
+    private Component getSSHPasswordTextField() {
+        if (sshPasswordTextField == null) {
+            sshPasswordTextField = GuiUtil.createTextField(SSHConnectionConfiguration.SSH_PASSWORD);
+        }
+        return sshPasswordTextField;
+    }
+
+    private Component getSSHPasswordLabel() {
+        return GuiUtil.createLabel("SSH密码：", getSSHPasswordTextField());
     }
 
 }

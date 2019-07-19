@@ -48,7 +48,7 @@ public class DubboTelnetByFile extends AbstractSampler {
     public static final String EXPECTATION = "DubboTelnetByFile.Expectation";
     public static final String ENCODE = "DubboTelnetByFile.Encode";
     public static final String USE_TEMPLATE = "DubboTelnetByFile.UseTemplate";
-    public static final String INTERFACE_SYSTEM = "DubboTelnetByFile.InterfaceSystem";
+    public static final String INTERFACE_PATH = "DubboTelnetByFile.InterfacePath";
     public static final String TEMPLATE_CONTENT = "DubboTelnetByFile.TemplateContent";
     private static final String REPLACE_VALUE = "DubboTelnetByFile.ReplaceValue";
     public static final String CONFIG_FILE_PATH = JMeterUtils.getJMeterHome() + File.separator + "config" +
@@ -359,7 +359,7 @@ public class DubboTelnetByFile extends AbstractSampler {
     }
 
     private String getInterfaceSystem() {
-        return getPropertyAsString(INTERFACE_SYSTEM);
+        return getPropertyAsString(INTERFACE_PATH);
     }
 
     private String getSSHAddress() {

@@ -10,10 +10,6 @@ import javax.swing.*;
 import java.awt.*;
 
 public class LocalHtmlReportGui extends AbstractListenerGui {
-    private static final int H_GAP = 5;
-    private static final int V_GAP = 10;
-    private static final int LABEL_WIDTH = 100;
-    private static final int LABEL_HEIGHT = 10;
 
     private JTextField reportNameTextField;
     private JComboBox<String> isAppendComboBox;
@@ -27,17 +23,18 @@ public class LocalHtmlReportGui extends AbstractListenerGui {
         setBorder(makeBorder());
         add(makeTitlePanel(), BorderLayout.NORTH);
 
-        VerticalPanel htmlPanel = new VerticalPanel();
-        htmlPanel.setBorder(GuiUtil.createTitledBorder("Configure the Data Source"));
-        htmlPanel.add(getReportNamePanel());
-        htmlPanel.add(getIsAppendPanel());
+        JPanel bodyPanel = new JPanel(new GridBagLayout());
+        bodyPanel.setBorder(GuiUtil.createTitledBorder("配置HTML报告"));
 
-        VerticalPanel notePanel = new VerticalPanel();
-        notePanel.add(getNoteJPanel());
+        bodyPanel.add(getReportNameLabel(), GuiUtil.GridBag.labelConstraints);
+        bodyPanel.add(getReportNameTextField(), GuiUtil.GridBag.editorConstraints);
+
+        bodyPanel.add(getIsAppendLabel(), GuiUtil.GridBag.labelConstraints);
+        bodyPanel.add(getIsAppendComboBox(), GuiUtil.GridBag.editorConstraints);
 
         VerticalPanel mainPanel = new VerticalPanel();
-        mainPanel.add(htmlPanel);
-        mainPanel.add(notePanel);
+        mainPanel.add(bodyPanel);
+        mainPanel.add(getNoteJPanel());
 
         add(mainPanel, BorderLayout.CENTER);
     }
@@ -80,48 +77,38 @@ public class LocalHtmlReportGui extends AbstractListenerGui {
         isAppendComboBox.setSelectedItem("");
     }
 
-    private JPanel getReportNamePanel() {
-        reportNameTextField = new JTextField(10);
-        reportNameTextField.setName(ReportCollector.REPORT_NAME);
-
-        JLabel label = GuiUtil.createLabel("ReportName:", reportNameTextField, LABEL_WIDTH, LABEL_HEIGHT);
-
-        JPanel panel = new JPanel(new BorderLayout(H_GAP, V_GAP));
-        panel.add(label, BorderLayout.WEST);
-        panel.add(reportNameTextField, BorderLayout.CENTER);
-        return panel;
+    private Component getReportNameTextField() {
+        if (reportNameTextField == null) {
+            reportNameTextField = GuiUtil.createTextField(ReportCollector.REPORT_NAME);
+        }
+        return reportNameTextField;
     }
 
-    private JPanel getIsAppendPanel() {
-        isAppendComboBox = new JComboBox<>();
-        isAppendComboBox.setName(ReportCollector.IS_APPEND);
-        isAppendComboBox.addItem("false");
-        isAppendComboBox.addItem("true");
-
-        JLabel label = GuiUtil.createLabel("IsAppend:", isAppendComboBox, LABEL_WIDTH, LABEL_HEIGHT);
-
-        JPanel panel = new JPanel(new BorderLayout(H_GAP, V_GAP));
-        panel.add(label, BorderLayout.WEST);
-        panel.add(isAppendComboBox, BorderLayout.CENTER);
-        return panel;
+    private Component getReportNameLabel() {
+        return GuiUtil.createLabel("报告名称：", getReportNameTextField());
     }
 
-    private JPanel getNoteJPanel() {
+    private Component getIsAppendComboBox() {
+        if (isAppendComboBox == null) {
+            isAppendComboBox = GuiUtil.createComboBox(ReportCollector.IS_APPEND);
+            isAppendComboBox.addItem("false");
+            isAppendComboBox.addItem("true");
+        }
+        return isAppendComboBox;
+    }
+
+    private Component getIsAppendLabel() {
+        return GuiUtil.createLabel("是否追加写报告：", getIsAppendComboBox());
+    }
+
+    private Component getNoteJPanel() {
         String note = "\n说明：\n" +
-                "1. reportName为测试报告名称，输出路径为 jmeterHome/htmlreport/${reportName}.html；\n" +
-                "2. isAppend为是否追加模式写报告，枚举为 true|false；\n" +
-                "3. 执行前必须先在 jmeterHome 下创建 htmlreport 目录；\n" +
-                "4. Non-Gui模式命令解释：\n" +
-                "   a. 存在 -JreportName 参数时，优先读取 ${__P(reportName)} HTML报告名称；\n" +
-                "   b. 存在 -JisAppend 参数时，优先读取 ${__P(isAppend)} 追加模式；\n" +
-                "   c. 存在 -JdataFileName 参数时，优先读取 ${__P(dataFileName)} 数据文件名称。";
-        JTextArea textArea = new JTextArea(note);
-        textArea.setLineWrap(true);
-        textArea.setEditable(false);
-        textArea.setBackground(this.getBackground());
-
-        JPanel panel = new JPanel(new BorderLayout(H_GAP, V_GAP));
-        panel.add(textArea, BorderLayout.CENTER);
-        return panel;
+                "1. 测试报告的路径为 ${JMETER_HOME}/htmlreport/${reportName}.html；\n" +
+                "2. 执行前必须先在 ${JMETER_HOME} 下创建 htmlreport 目录；\n" +
+                "3. Non-Gui模式命令解释：\n" +
+                "       a. 存在 -JreportName 参数时，优先读取 ${__P(reportName)} HTML报告名称；\n" +
+                "       b. 存在 -JisAppend 参数时，优先读取 ${__P(isAppend)} 追加模式；\n" +
+                "       c. 存在 -JdataFileName 参数时，优先读取 ${__P(dataFileName)} 数据文件名称。";
+        return GuiUtil.createNotePanel(note, this.getBackground());
     }
 }

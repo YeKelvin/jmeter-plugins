@@ -27,11 +27,12 @@ import java.util.Iterator;
 public class TraverseEmptyValue extends ConfigTestElement implements LoopIterationListener {
     private static final Logger logger = LogUtil.getLogger(TraverseEmptyValue.class);
 
-    public static final String USE_TEMPLATE = "TraverseEmptyValue.UseTemplate";
-    public static final String INTERFACE_SYSTEM = "TraverseEmptyValue.InterfaceSystem";
-    public static final String INTERFACE_NAME = "TraverseEmptyValue.InterfaceName";
-    public static final String PATAMS = "TraverseEmptyValue.Patams";
-    public static final String EMPTY_CHECK_EXPECTATION = "TraverseEmptyValue.EmptyCheckExpectation";
+    public static final String BLANK_TYPE = "TraverseEmptyValue.blankType";
+    public static final String PATAMS = "TraverseEmptyValue.patams";
+    public static final String EMPTY_CHECK_EXPECTATION = "TraverseEmptyValue.emptyCheckExpectation";
+    public static final String USE_TEMPLATE = "TraverseEmptyValue.useTemplate";
+    public static final String INTERFACE_PATH = "TraverseEmptyValue.interfacePath";
+    public static final String INTERFACE_NAME = "TraverseEmptyValue.interfaceName";
     private Iterator jsonPathIterator = null;
     public static final String CONFIG_FILE_PATH = JMeterUtils.getJMeterHome() + File.separator + "config" +
             File.separator + "config.json";
@@ -123,7 +124,7 @@ public class TraverseEmptyValue extends ConfigTestElement implements LoopIterati
     }
 
     private String getInterfaceSystem() {
-        return getPropertyAsString(INTERFACE_SYSTEM);
+        return getPropertyAsString(INTERFACE_PATH);
     }
 
     private String readJsonFile() throws IOException {

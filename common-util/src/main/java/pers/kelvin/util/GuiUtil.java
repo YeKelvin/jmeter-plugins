@@ -1,7 +1,6 @@
 package pers.kelvin.util;
 
 import org.apache.jmeter.gui.util.JSyntaxTextArea;
-import org.apache.jmeter.gui.util.JTextScrollPane;
 
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
@@ -24,28 +23,11 @@ public class GuiUtil {
         return new JPanel(new BorderLayout());
     }
 
-    public static JLabel createLabel(String text, Component labelFor, int width, int height) {
-        JLabel label = new JLabel(text);
-        label.setLabelFor(labelFor);
-        label.setHorizontalAlignment(SwingConstants.RIGHT);
-        label.setVerticalAlignment(SwingConstants.CENTER);
-        return label;
-    }
-
     public static JLabel createLabel(String text, Component labelFor) {
         JLabel label = new JLabel(text);
         label.setLabelFor(labelFor);
         label.setHorizontalAlignment(SwingConstants.CENTER);
         label.setVerticalAlignment(SwingConstants.CENTER);
-        return label;
-    }
-
-    public static JLabel createTextAreaLabel(String text, Component labelFor, int width, int height) {
-        JLabel label = new JLabel(text);
-        label.setLabelFor(labelFor);
-        label.setHorizontalAlignment(SwingConstants.RIGHT);
-        label.setVerticalAlignment(SwingConstants.TOP);
-        label.setPreferredSize(new Dimension(width, height));
         return label;
     }
 
@@ -68,12 +50,15 @@ public class GuiUtil {
         return comboBox;
     }
 
-    public static JTextArea createNote(String note, Color bg) {
+    public static JPanel createNotePanel(String note, Color bg) {
         JTextArea textArea = new JTextArea(note);
         textArea.setLineWrap(true);
         textArea.setEditable(false);
         textArea.setBackground(bg);
-        return textArea;
+
+        JPanel panel = new JPanel(new BorderLayout(10, 10));
+        panel.add(textArea, BorderLayout.CENTER);
+        return panel;
     }
 
     public static class GridBag {
@@ -141,7 +126,7 @@ public class GuiUtil {
             editorConstraints.gridx = 1;
             editorConstraints.gridy = GridBagConstraints.RELATIVE;
             editorConstraints.gridwidth = 2;
-            editorConstraints.weightx = 1.0;
+            editorConstraints.weightx = 1;
             editorConstraints.insets = new Insets(1, 1, 1, 1);
 
             multiLineEditorConstraints = new GridBagConstraints();
@@ -149,7 +134,7 @@ public class GuiUtil {
             multiLineEditorConstraints.gridx = 0;
             multiLineEditorConstraints.gridy = GridBagConstraints.RELATIVE;
             multiLineEditorConstraints.gridwidth = 3;
-            multiLineEditorConstraints.weightx = 1.0;
+            multiLineEditorConstraints.weightx = 1;
             multiLineEditorConstraints.insets = new Insets(1, 1, 1, 1);
 
             fillBottomConstraints = new GridBagConstraints();
@@ -158,10 +143,9 @@ public class GuiUtil {
             fillBottomConstraints.gridy = GridBagConstraints.RELATIVE;
             fillBottomConstraints.gridwidth = 3;
             fillBottomConstraints.gridheight = GridBagConstraints.RELATIVE;
-            fillBottomConstraints.weightx = 1.0;
-            fillBottomConstraints.weighty = 1.0;
+            fillBottomConstraints.weightx = 1;
+            fillBottomConstraints.weighty = 1;
             fillBottomConstraints.insets = new Insets(1, 1, 1, 1);
-
         }
     }
 }

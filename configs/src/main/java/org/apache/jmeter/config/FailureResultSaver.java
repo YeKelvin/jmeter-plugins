@@ -22,6 +22,8 @@ public class FailureResultSaver extends ConfigTestElement implements SampleListe
 
     public static final String LOG_PATH = "FailureResultSaver.logPath";
 
+    public static final String FORMAT_TYPE = "FailureResultSaver.formatType";
+
     private File failureLog;
 
     private String getLogPath() {
