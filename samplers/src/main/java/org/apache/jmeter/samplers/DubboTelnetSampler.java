@@ -38,19 +38,19 @@ import java.util.Properties;
  * Date     2019-02-22
  * Time     11:47
  */
-public class DubboTelnetByFile extends AbstractSampler {
-    private static final Logger logger = LogUtil.getLogger(DubboTelnetByFile.class);
+public class DubboTelnetSampler extends AbstractSampler {
+    private static final Logger logger = LogUtil.getLogger(DubboTelnetSampler.class);
 
-    public static final String ADDRESS = "DubboTelnetByFile.Address";
-    public static final String INTERFACE_NAME = "DubboTelnetByFile.InterfaceName";
-    public static final String PARAMS = "DubboTelnetByFile.Params";
-    public static final String JSON_PATHS = "DubboTelnetByFile.JsonPaths";
-    public static final String EXPECTATION = "DubboTelnetByFile.Expectation";
-    public static final String ENCODE = "DubboTelnetByFile.Encode";
-    public static final String USE_TEMPLATE = "DubboTelnetByFile.UseTemplate";
-    public static final String INTERFACE_PATH = "DubboTelnetByFile.InterfacePath";
-    public static final String TEMPLATE_CONTENT = "DubboTelnetByFile.TemplateContent";
-    private static final String REPLACE_VALUE = "DubboTelnetByFile.ReplaceValue";
+    public static final String ADDRESS = "DubboTelnetSampler.address";
+    public static final String INTERFACE_NAME = "DubboTelnetSampler.interfaceName";
+    public static final String PARAMS = "DubboTelnetSampler.params";
+    public static final String JSON_PATHS = "DubboTelnetSampler.jsonPaths";
+    public static final String EXPECTATION = "DubboTelnetSampler.expectation";
+    public static final String ENCODE = "DubboTelnetSampler.encode";
+    public static final String USE_TEMPLATE = "DubboTelnetSampler.useTemplate";
+    public static final String INTERFACE_PATH = "DubboTelnetSampler.interfacePath";
+    public static final String TEMPLATE_CONTENT = "DubboTelnetSampler.templateContent";
+    private static final String REPLACE_VALUE = "DubboTelnetSampler.replaceValue";
     public static final String CONFIG_FILE_PATH = JMeterUtils.getJMeterHome() + File.separator + "config" +
             File.separator + "config.json";
     private static final int defaultTimeout = 5000;

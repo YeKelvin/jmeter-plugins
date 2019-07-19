@@ -2,7 +2,6 @@ package org.apache.jmeter.samplers.utils;
 
 
 import org.apache.commons.net.telnet.TelnetClient;
-import org.apache.jmeter.samplers.DubboTelnetByFile;
 import org.slf4j.Logger;
 import pers.kelvin.util.exception.ExceptionUtil;
 import pers.kelvin.util.log.LogUtil;
@@ -18,7 +17,8 @@ import java.nio.charset.StandardCharsets;
  * @author KelvinYe
  */
 public class TelnetUtil {
-    private static final Logger logger = LogUtil.getLogger(DubboTelnetByFile.class);
+
+    private static final Logger logger = LogUtil.getLogger(TelnetUtil.class);
 
     public static String WINDOWS = "VT220";
     public static String UNIX = "VT100";

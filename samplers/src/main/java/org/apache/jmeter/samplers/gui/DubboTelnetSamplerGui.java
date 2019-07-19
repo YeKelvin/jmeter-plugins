@@ -2,7 +2,7 @@ package org.apache.jmeter.samplers.gui;
 
 import org.apache.jmeter.gui.util.JSyntaxTextArea;
 import org.apache.jmeter.gui.util.JTextScrollPane;
-import org.apache.jmeter.samplers.DubboTelnetByFile;
+import org.apache.jmeter.samplers.DubboTelnetSampler;
 import org.apache.jmeter.testelement.TestElement;
 import org.slf4j.Logger;
 import pers.kelvin.util.GuiUtil;
@@ -22,9 +22,9 @@ import java.io.IOException;
  * Date     2019-02-22
  * Time     11:47
  */
-public class DubboTelnetByFileGui extends AbstractSamplerGui {
+public class DubboTelnetSamplerGui extends AbstractSamplerGui {
 
-    private static final Logger logger = LogUtil.getLogger(DubboTelnetByFileGui.class);
+    private static final Logger logger = LogUtil.getLogger(DubboTelnetSamplerGui.class);
 
     private JTextField addressTextField;
     private JTextField interfaceNameTextField;
@@ -37,7 +37,7 @@ public class DubboTelnetByFileGui extends AbstractSamplerGui {
     private JSyntaxTextArea jsonPathsTextArea;
     private JSyntaxTextArea templateContentTextArea;
 
-    public DubboTelnetByFileGui() {
+    public DubboTelnetSamplerGui() {
         init();
     }
 
@@ -92,7 +92,7 @@ public class DubboTelnetByFileGui extends AbstractSamplerGui {
 
     @Override
     public TestElement createTestElement() {
-        DubboTelnetByFile dubboTelnet = new DubboTelnetByFile();
+        DubboTelnetSampler dubboTelnet = new DubboTelnetSampler();
         modifyTestElement(dubboTelnet);
         return dubboTelnet;
     }
@@ -100,32 +100,32 @@ public class DubboTelnetByFileGui extends AbstractSamplerGui {
     @Override
     public void modifyTestElement(TestElement element) {
         super.configureTestElement(element);
-        element.setProperty(DubboTelnetByFile.ADDRESS, addressTextField.getText());
-        element.setProperty(DubboTelnetByFile.INTERFACE_NAME, interfaceNameTextField.getText());
-        element.setProperty(DubboTelnetByFile.PARAMS, paramsTextArea.getText());
-        element.setProperty(DubboTelnetByFile.JSON_PATHS, jsonPathsTextArea.getText());
-        element.setProperty(DubboTelnetByFile.EXPECTATION, expectationTextField.getText());
-        element.setProperty(DubboTelnetByFile.ENCODE, encodeTextField.getText());
-        element.setProperty(DubboTelnetByFile.USE_TEMPLATE, (String) useTemplateComboBox.getSelectedItem());
-        element.setProperty(DubboTelnetByFile.INTERFACE_PATH, interfacePathTextField.getText());
+        element.setProperty(DubboTelnetSampler.ADDRESS, addressTextField.getText());
+        element.setProperty(DubboTelnetSampler.INTERFACE_NAME, interfaceNameTextField.getText());
+        element.setProperty(DubboTelnetSampler.PARAMS, paramsTextArea.getText());
+        element.setProperty(DubboTelnetSampler.JSON_PATHS, jsonPathsTextArea.getText());
+        element.setProperty(DubboTelnetSampler.EXPECTATION, expectationTextField.getText());
+        element.setProperty(DubboTelnetSampler.ENCODE, encodeTextField.getText());
+        element.setProperty(DubboTelnetSampler.USE_TEMPLATE, (String) useTemplateComboBox.getSelectedItem());
+        element.setProperty(DubboTelnetSampler.INTERFACE_PATH, interfacePathTextField.getText());
     }
 
     @Override
     public void configure(TestElement el) {
         super.configure(el);
-        addressTextField.setText(el.getPropertyAsString(DubboTelnetByFile.ADDRESS));
-        interfaceNameTextField.setText(el.getPropertyAsString(DubboTelnetByFile.INTERFACE_NAME));
-        paramsTextArea.setInitialText(el.getPropertyAsString(DubboTelnetByFile.PARAMS));
+        addressTextField.setText(el.getPropertyAsString(DubboTelnetSampler.ADDRESS));
+        interfaceNameTextField.setText(el.getPropertyAsString(DubboTelnetSampler.INTERFACE_NAME));
+        paramsTextArea.setInitialText(el.getPropertyAsString(DubboTelnetSampler.PARAMS));
         paramsTextArea.setCaretPosition(0);
-        jsonPathsTextArea.setInitialText(el.getPropertyAsString(DubboTelnetByFile.JSON_PATHS));
+        jsonPathsTextArea.setInitialText(el.getPropertyAsString(DubboTelnetSampler.JSON_PATHS));
         jsonPathsTextArea.setCaretPosition(0);
-        expectationTextField.setText(el.getPropertyAsString(DubboTelnetByFile.EXPECTATION));
-        encodeTextField.setText(el.getPropertyAsString(DubboTelnetByFile.ENCODE));
-        useTemplateComboBox.setSelectedItem(el.getPropertyAsString(DubboTelnetByFile.USE_TEMPLATE));
-        interfacePathTextField.setText(el.getPropertyAsString(DubboTelnetByFile.INTERFACE_PATH));
+        expectationTextField.setText(el.getPropertyAsString(DubboTelnetSampler.EXPECTATION));
+        encodeTextField.setText(el.getPropertyAsString(DubboTelnetSampler.ENCODE));
+        useTemplateComboBox.setSelectedItem(el.getPropertyAsString(DubboTelnetSampler.USE_TEMPLATE));
+        interfacePathTextField.setText(el.getPropertyAsString(DubboTelnetSampler.INTERFACE_PATH));
         templateContentTextArea.setInitialText(getTemplateContent(
-                el.getPropertyAsBoolean(DubboTelnetByFile.USE_TEMPLATE, false),
-                el.getPropertyAsString(DubboTelnetByFile.INTERFACE_NAME)));
+                el.getPropertyAsBoolean(DubboTelnetSampler.USE_TEMPLATE, false),
+                el.getPropertyAsString(DubboTelnetSampler.INTERFACE_NAME)));
         templateContentTextArea.setCaretPosition(0);
     }
 
@@ -144,7 +144,7 @@ public class DubboTelnetByFileGui extends AbstractSamplerGui {
 
     private Component getAddressTextField() {
         if (addressTextField == null) {
-            addressTextField = GuiUtil.createTextField(DubboTelnetByFile.ADDRESS);
+            addressTextField = GuiUtil.createTextField(DubboTelnetSampler.ADDRESS);
         }
         return addressTextField;
     }
@@ -155,7 +155,7 @@ public class DubboTelnetByFileGui extends AbstractSamplerGui {
 
     private Component getInterfaceNameTextField() {
         if (interfaceNameTextField == null) {
-            interfaceNameTextField = GuiUtil.createTextField(DubboTelnetByFile.INTERFACE_NAME);
+            interfaceNameTextField = GuiUtil.createTextField(DubboTelnetSampler.INTERFACE_NAME);
         }
         return interfaceNameTextField;
     }
@@ -166,7 +166,7 @@ public class DubboTelnetByFileGui extends AbstractSamplerGui {
 
     private Component getExpectationTextField() {
         if (expectationTextField == null) {
-            expectationTextField = GuiUtil.createTextField(DubboTelnetByFile.EXPECTATION);
+            expectationTextField = GuiUtil.createTextField(DubboTelnetSampler.EXPECTATION);
         }
         return expectationTextField;
     }
@@ -177,14 +177,14 @@ public class DubboTelnetByFileGui extends AbstractSamplerGui {
 
     private Component getEncodeTextField() {
         if (encodeTextField == null) {
-            encodeTextField = GuiUtil.createTextField(DubboTelnetByFile.EXPECTATION);
+            encodeTextField = GuiUtil.createTextField(DubboTelnetSampler.EXPECTATION);
         }
         return encodeTextField;
     }
 
     private Component getParamsTextArea() {
         if (paramsTextArea == null) {
-            paramsTextArea = GuiUtil.createTextArea(DubboTelnetByFile.PARAMS, 20);
+            paramsTextArea = GuiUtil.createTextArea(DubboTelnetSampler.PARAMS, 20);
         }
         return paramsTextArea;
     }
@@ -203,7 +203,7 @@ public class DubboTelnetByFileGui extends AbstractSamplerGui {
 
     private Component getUseTemplateComboBox() {
         if (useTemplateComboBox == null) {
-            useTemplateComboBox = GuiUtil.createComboBox(DubboTelnetByFile.USE_TEMPLATE);
+            useTemplateComboBox = GuiUtil.createComboBox(DubboTelnetSampler.USE_TEMPLATE);
             useTemplateComboBox.addItem("false");
             useTemplateComboBox.addItem("true");
         }
@@ -216,7 +216,7 @@ public class DubboTelnetByFileGui extends AbstractSamplerGui {
 
     private Component getInterfacePathTextField() {
         if (interfacePathTextField == null) {
-            interfacePathTextField = GuiUtil.createTextField(DubboTelnetByFile.INTERFACE_PATH);
+            interfacePathTextField = GuiUtil.createTextField(DubboTelnetSampler.INTERFACE_PATH);
         }
         return interfacePathTextField;
     }
@@ -227,7 +227,7 @@ public class DubboTelnetByFileGui extends AbstractSamplerGui {
 
     private Component getJsonPathTextArea() {
         if (jsonPathsTextArea == null) {
-            jsonPathsTextArea = GuiUtil.createTextArea(DubboTelnetByFile.JSON_PATHS, 6);
+            jsonPathsTextArea = GuiUtil.createTextArea(DubboTelnetSampler.JSON_PATHS, 6);
         }
         return jsonPathsTextArea;
     }
@@ -242,7 +242,7 @@ public class DubboTelnetByFileGui extends AbstractSamplerGui {
 
     private Component getTemplateContentTextArea() {
         if (templateContentTextArea == null) {
-            templateContentTextArea = GuiUtil.createTextArea(DubboTelnetByFile.TEMPLATE_CONTENT, 20);
+            templateContentTextArea = GuiUtil.createTextArea(DubboTelnetSampler.TEMPLATE_CONTENT, 20);
         }
         return templateContentTextArea;
     }
@@ -276,9 +276,9 @@ public class DubboTelnetByFileGui extends AbstractSamplerGui {
      */
     private String readJsonFile(String interfaceName) throws IOException, ServiceException {
         if (StringUtil.isNotBlank(interfacePathTextField.getText())) {
-            return JsonFileUtil.readJsonFile(DubboTelnetByFile.CONFIG_FILE_PATH, interfacePathTextField.getText(), interfaceName);
+            return JsonFileUtil.readJsonFile(DubboTelnetSampler.CONFIG_FILE_PATH, interfacePathTextField.getText(), interfaceName);
         } else {
-            return JsonFileUtil.readJsonFile(DubboTelnetByFile.CONFIG_FILE_PATH, interfaceName);
+            return JsonFileUtil.readJsonFile(DubboTelnetSampler.CONFIG_FILE_PATH, interfaceName);
         }
     }
 
