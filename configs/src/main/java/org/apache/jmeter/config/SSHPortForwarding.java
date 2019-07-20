@@ -16,14 +16,15 @@ import pers.kelvin.util.log.LogUtil;
  * @author Kelvin.Ye
  */
 public class SSHPortForwarding extends ConfigTestElement implements TestStateListener {
+
     private static final Logger logger = LogUtil.getLogger(SSHPortForwarding.class);
 
-    public static final String SSH_ADDRESS = "SSHPortForwarding.Address";
-    public static final String SSH_USER_NAME = "SSHPortForwarding.UserName";
-    public static final String SSH_PASSWORD = "SSHPortForwarding.Password";
-    public static final String LOCAL_FORWARDING_PORT = "SSHPortForwarding.LocalForwardingPort";
-    public static final String REMOTE_ADDRESS = "SSHPortForwarding.RemoteAddress";
-    public static final String IS_SSH_PORT_FORWARDING = "SSHPortForwarding.IsSSHPortForwarding";
+    public static final String SSH_ADDRESS = "SSHPortForwarding.address";
+    public static final String SSH_USER_NAME = "SSHPortForwarding.userName";
+    public static final String SSH_PASSWORD = "SSHPortForwarding.password";
+    public static final String LOCAL_FORWARDING_PORT = "SSHPortForwarding.localForwardingPort";
+    public static final String REMOTE_ADDRESS = "SSHPortForwarding.remoteAddress";
+    public static final String IS_SSH_PORT_FORWARDING = "SSHPortForwarding.isSSHPortForwarding";
 
     private Session session;
 
@@ -82,7 +83,7 @@ public class SSHPortForwarding extends ConfigTestElement implements TestStateLis
 
     @Override
     public void testEnded() {
-        testEnded("local");
+        testEnded("localhost");
     }
 
     /**

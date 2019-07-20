@@ -39,20 +39,25 @@ import java.util.Properties;
  * Time     11:47
  */
 public class DubboTelnetSampler extends AbstractSampler {
+
     private static final Logger logger = LogUtil.getLogger(DubboTelnetSampler.class);
 
     public static final String ADDRESS = "DubboTelnetSampler.address";
     public static final String INTERFACE_NAME = "DubboTelnetSampler.interfaceName";
-    public static final String PARAMS = "DubboTelnetSampler.params";
-    public static final String JSON_PATHS = "DubboTelnetSampler.jsonPaths";
     public static final String EXPECTATION = "DubboTelnetSampler.expectation";
     public static final String ENCODE = "DubboTelnetSampler.encode";
+    public static final String PARAMS = "DubboTelnetSampler.params";
+
     public static final String USE_TEMPLATE = "DubboTelnetSampler.useTemplate";
     public static final String INTERFACE_PATH = "DubboTelnetSampler.interfacePath";
+    public static final String JSON_PATHS = "DubboTelnetSampler.jsonPaths";
     public static final String TEMPLATE_CONTENT = "DubboTelnetSampler.templateContent";
+
     private static final String REPLACE_VALUE = "DubboTelnetSampler.replaceValue";
+
     public static final String CONFIG_FILE_PATH = JMeterUtils.getJMeterHome() + File.separator + "config" +
             File.separator + "config.json";
+
     private static final int defaultTimeout = 5000;
 
     @Override

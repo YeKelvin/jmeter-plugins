@@ -15,14 +15,14 @@ public class SSHConnectionConfiguration extends ConfigTestElement implements Tes
 
     private static final Logger logger = LogUtil.getLogger(SSHConnectionConfiguration.class);
 
-    public static final String SSH_ADDRESS = "SSHConnectionConfiguration.Address";
-    public static final String SSH_USER_NAME = "SSHConnectionConfiguration.UserName";
-    public static final String SSH_PASSWORD = "SSHConnectionConfiguration.Password";
-    public static final String IS_SSH_CONNECT = "SSHConnectionConfiguration.IsSSHConnect";
+    public static final String SSH_ADDRESS = "SSHConnectionConfiguration.address";
+    public static final String SSH_USER_NAME = "SSHConnectionConfiguration.userName";
+    public static final String SSH_PASSWORD = "SSHConnectionConfiguration.password";
+    public static final String IS_SSH_CONNECT = "SSHConnectionConfiguration.isSSHConnect";
 
     @Override
     public void testStarted() {
-        testStarted("local");
+        testStarted("localhost");
     }
 
     /**
@@ -41,7 +41,7 @@ public class SSHConnectionConfiguration extends ConfigTestElement implements Tes
 
     @Override
     public void testEnded() {
-        testEnded("local");
+        testEnded("localhost");
     }
 
     @Override

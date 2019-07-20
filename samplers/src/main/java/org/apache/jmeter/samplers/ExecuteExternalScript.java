@@ -42,13 +42,10 @@ public class ExecuteExternalScript extends AbstractSampler {
 
     private static final String LINE_SEP = FileUtil.LINE_SEPARATOR;
 
-    public static final String EXTERNAL_SCRIPT_PATH = "ExecuteExternalScript.ExternalScriptPath";
-
-    public static final String SCRIPT_NAME = "ExecuteExternalScript.ScriptName";
-
-    public static final String PROPS_NAME_SUFFIX = "ExecuteExternalScript.PropsNameSuffix";
-
-    public static final String IS_PRINT_TO_CONSOLE = "ExecuteExternalScript.PrintSampleResultToConsole";
+    public static final String EXTERNAL_SCRIPT_PATH = "ExecuteExternalScript.externalScriptPath";
+    public static final String SCRIPT_NAME = "ExecuteExternalScript.scriptName";
+    public static final String PROPS_NAME_SUFFIX = "ExecuteExternalScript.propsNameSuffix";
+    public static final String IS_PRINT_TO_CONSOLE = "ExecuteExternalScript.printSampleResultToConsole";
 
     @Override
     public SampleResult sample(Entry entry) {
@@ -113,7 +110,7 @@ public class ExecuteExternalScript extends AbstractSampler {
 
         // 设置 JMeterProps，用于传递给外部脚本使用
         props.put("printSampleResultToConsole", getIsPrintToConsole());
-        props.put("configName", JMeterVarsUtil.getDefault("ENVDataSet.ConfigName"));
+        props.put("configName", JMeterVarsUtil.getDefault("ENVDataSet.configName"));
 
         // 保存执行外部脚本前的JMeter属性的副本
         HashMap<String, String> clonedProps = new HashMap<>();

@@ -25,6 +25,7 @@ import java.util.Iterator;
  * Time: 11:10
  */
 public class TraverseEmptyValue extends ConfigTestElement implements LoopIterationListener {
+
     private static final Logger logger = LogUtil.getLogger(TraverseEmptyValue.class);
 
     public static final String BLANK_TYPE = "TraverseEmptyValue.blankType";
@@ -33,9 +34,11 @@ public class TraverseEmptyValue extends ConfigTestElement implements LoopIterati
     public static final String USE_TEMPLATE = "TraverseEmptyValue.useTemplate";
     public static final String INTERFACE_PATH = "TraverseEmptyValue.interfacePath";
     public static final String INTERFACE_NAME = "TraverseEmptyValue.interfaceName";
-    private Iterator jsonPathIterator = null;
+
     public static final String CONFIG_FILE_PATH = JMeterUtils.getJMeterHome() + File.separator + "config" +
             File.separator + "config.json";
+
+    private Iterator jsonPathIterator = null;
 
 
     @Override

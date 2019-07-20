@@ -29,7 +29,7 @@ public class ENVDataSet extends ConfigTestElement implements TestStateListener {
     private static final Type hashMap = new TypeToken<HashMap<String, String>>() {
     }.getType();
 
-    public static final String CONFIG_NAME = "ENVDataSet.ConfigName";
+    public static final String CONFIG_NAME = "ENVDataSet.configName";
 
     public ENVDataSet() {
         super();

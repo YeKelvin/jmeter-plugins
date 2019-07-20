@@ -18,9 +18,9 @@ public class CSVDataSetInScript extends ConfigTestElement implements LoopIterati
 
     private static final Logger logger = LogUtil.getLogger(CSVDataSetInScript.class);
 
-    public static final String VARIABLE_NAMES = "CSVDataSetInScript.VariableNames";
+    public static final String VARIABLE_NAMES = "CSVDataSetInScript.variableNames";
 
-    public static final String DATA = "CSVDataSetInScript.Data";
+    public static final String DATA = "CSVDataSetInScript.data";
 
     private String[] varNames = null;
 
