@@ -2,8 +2,8 @@ package pers.kelvin.util.json;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonParser;
 import com.google.gson.reflect.TypeToken;
-import com.jayway.jsonpath.JsonPath;
 
 import java.lang.reflect.Type;
 import java.util.Map;
@@ -13,16 +13,35 @@ import java.util.regex.Pattern;
  * @author KelvinYe
  */
 public class JsonUtil {
+
     public static Type mapType = new TypeToken<Map<Object, Object>>() {
     }.getType();
 
     private static Gson gson = getGson();
+
+    private static Gson prettyGson;
+
+    private static JsonParser jsonParser;
 
     private static Gson getGson() {
         return new GsonBuilder().serializeNulls()
                 .registerTypeAdapter(mapType, new MapTypeAdapter())
                 .registerTypeAdapter(Double.class, new DoubleTypeAdapter())
                 .create();
+    }
+
+    private static Gson getPrettyGson() {
+        if (prettyGson == null) {
+            prettyGson = new GsonBuilder().setPrettyPrinting().create();
+        }
+        return prettyGson;
+    }
+
+    private static JsonParser getJsonParser() {
+        if (jsonParser == null) {
+            jsonParser = new JsonParser();
+        }
+        return jsonParser;
     }
 
     /**
@@ -102,5 +121,15 @@ public class JsonUtil {
      */
     public static String toJson(Object obj) {
         return gson.toJson(obj);
+    }
+
+    /**
+     * 格式化输出 json
+     *
+     * @param json jsonStr
+     * @return str
+     */
+    public static String prettyJson(String json) {
+        return getPrettyGson().toJson(getJsonParser().parse(json).getAsJsonObject());
     }
 }

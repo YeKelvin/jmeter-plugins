@@ -1,5 +1,7 @@
 package org.apache.jmeter.samplers.gui;
 
+import com.mongodb.util.JSON;
+import org.apache.jmeter.gui.util.HorizontalPanel;
 import org.apache.jmeter.gui.util.JSyntaxTextArea;
 import org.apache.jmeter.gui.util.JTextScrollPane;
 import org.apache.jmeter.samplers.DubboTelnetSampler;
@@ -13,6 +15,8 @@ import pers.kelvin.util.log.LogUtil;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.IOException;
 
 /**
@@ -22,9 +26,12 @@ import java.io.IOException;
  * Date     2019-02-22
  * Time     11:47
  */
-public class DubboTelnetSamplerGui extends AbstractSamplerGui {
+public class DubboTelnetSamplerGui extends AbstractSamplerGui implements ActionListener {
 
     private static final Logger logger = LogUtil.getLogger(DubboTelnetSamplerGui.class);
+
+    private static final String JSON_ACTION = "json";
+    private static final String TEXT_ACTION = "text";
 
     private JTextField addressTextField;
     private JTextField interfaceNameTextField;
@@ -36,6 +43,9 @@ public class DubboTelnetSamplerGui extends AbstractSamplerGui {
     private JTextField interfacePathTextField;
     private JSyntaxTextArea jsonPathsTextArea;
     private JSyntaxTextArea templateContentTextArea;
+
+    private JButton jsonButton;
+    private JButton textButton;
 
     public DubboTelnetSamplerGui() {
         init();
@@ -140,6 +150,16 @@ public class DubboTelnetSamplerGui extends AbstractSamplerGui {
         useTemplateComboBox.setSelectedItem("");
         interfacePathTextField.setText("");
         templateContentTextArea.setInitialText("");
+    }
+
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        String action = e.getActionCommand();
+        if (action.equals(JSON_ACTION)) {
+            //
+        } else if (action.equals(TEXT_ACTION)) {
+            //
+        }
     }
 
     private Component getAddressTextField() {
@@ -253,6 +273,20 @@ public class DubboTelnetSamplerGui extends AbstractSamplerGui {
 
     private Component getTemplateContentPanel() {
         return JTextScrollPane.getInstance((JSyntaxTextArea) getTemplateContentTextArea());
+    }
+
+    private Component getButtonPanel() {
+        jsonButton = new JButton(JSON_ACTION);
+        jsonButton.setActionCommand(JSON_ACTION);
+        jsonButton.addActionListener(this);
+        textButton = new JButton(TEXT_ACTION);
+        textButton.setActionCommand(TEXT_ACTION);
+        textButton.addActionListener(this);
+
+        JPanel panel = new HorizontalPanel();
+        panel.add(jsonButton);
+        panel.add(textButton);
+        return panel;
     }
 
     /**
