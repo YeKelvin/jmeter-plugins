@@ -4,6 +4,7 @@ import org.apache.commons.lang.text.StrSubstitutor;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.Map;
+import java.util.regex.Pattern;
 
 /**
  * User: KelvinYe
@@ -11,6 +12,9 @@ import java.util.Map;
  * Time: 10:30
  */
 public class StringUtil {
+
+    private static Pattern SpacesAndLineBreaksPattern = Pattern.compile("\\s*|\t|\r|\n");
+
     public static boolean isBlank(final CharSequence cs) {
         return StringUtils.isBlank(cs);
     }
@@ -33,5 +37,13 @@ public class StringUtil {
 
     public static boolean isNotEmpty(final CharSequence cs) {
         return StringUtils.isNotEmpty(cs);
+    }
+
+
+    public static String removeSpacesAndLineBreaks(String str) {
+        if (isBlank(str)) {
+            return str;
+        }
+        return SpacesAndLineBreaksPattern.matcher(str).replaceAll("");
     }
 }

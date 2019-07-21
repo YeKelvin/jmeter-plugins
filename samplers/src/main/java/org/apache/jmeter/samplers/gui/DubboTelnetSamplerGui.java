@@ -1,6 +1,5 @@
 package org.apache.jmeter.samplers.gui;
 
-import com.mongodb.util.JSON;
 import org.apache.jmeter.gui.util.HorizontalPanel;
 import org.apache.jmeter.gui.util.JSyntaxTextArea;
 import org.apache.jmeter.gui.util.JTextScrollPane;
@@ -11,6 +10,7 @@ import pers.kelvin.util.GuiUtil;
 import pers.kelvin.util.StringUtil;
 import pers.kelvin.util.exception.ServiceException;
 import pers.kelvin.util.json.JsonFileUtil;
+import pers.kelvin.util.json.JsonUtil;
 import pers.kelvin.util.log.LogUtil;
 
 import javax.swing.*;
@@ -44,8 +44,7 @@ public class DubboTelnetSamplerGui extends AbstractSamplerGui implements ActionL
     private JSyntaxTextArea jsonPathsTextArea;
     private JSyntaxTextArea templateContentTextArea;
 
-    private JButton jsonButton;
-    private JButton textButton;
+    private String currentParamsContentType = TEXT_ACTION;
 
     public DubboTelnetSamplerGui() {
         init();
@@ -67,7 +66,7 @@ public class DubboTelnetSamplerGui extends AbstractSamplerGui implements ActionL
         interfacePanel.add(getEncodeLabel(), GuiUtil.GridBag.labelConstraints);
         interfacePanel.add(getEncodeTextField(), GuiUtil.GridBag.editorConstraints);
         interfacePanel.add(getParamsLabel(), GuiUtil.GridBag.labelConstraints);
-        interfacePanel.add(GuiUtil.createBlankPanel(), GuiUtil.GridBag.editorConstraints);
+        interfacePanel.add(getButtonPanel(), GuiUtil.GridBag.editorConstraints);
         interfacePanel.add(getParamsPanel(), GuiUtil.GridBag.fillBottomConstraints);
 
         JPanel templatePanel = new JPanel(new GridBagLayout());
@@ -112,12 +111,12 @@ public class DubboTelnetSamplerGui extends AbstractSamplerGui implements ActionL
         super.configureTestElement(element);
         element.setProperty(DubboTelnetSampler.ADDRESS, addressTextField.getText());
         element.setProperty(DubboTelnetSampler.INTERFACE_NAME, interfaceNameTextField.getText());
-        element.setProperty(DubboTelnetSampler.PARAMS, paramsTextArea.getText());
-        element.setProperty(DubboTelnetSampler.JSON_PATHS, jsonPathsTextArea.getText());
         element.setProperty(DubboTelnetSampler.EXPECTATION, expectationTextField.getText());
         element.setProperty(DubboTelnetSampler.ENCODE, encodeTextField.getText());
+        element.setProperty(DubboTelnetSampler.PARAMS, getParamsText());
         element.setProperty(DubboTelnetSampler.USE_TEMPLATE, (String) useTemplateComboBox.getSelectedItem());
         element.setProperty(DubboTelnetSampler.INTERFACE_PATH, interfacePathTextField.getText());
+        element.setProperty(DubboTelnetSampler.JSON_PATHS, jsonPathsTextArea.getText());
     }
 
     @Override
@@ -125,14 +124,14 @@ public class DubboTelnetSamplerGui extends AbstractSamplerGui implements ActionL
         super.configure(el);
         addressTextField.setText(el.getPropertyAsString(DubboTelnetSampler.ADDRESS));
         interfaceNameTextField.setText(el.getPropertyAsString(DubboTelnetSampler.INTERFACE_NAME));
-        paramsTextArea.setInitialText(el.getPropertyAsString(DubboTelnetSampler.PARAMS));
-        paramsTextArea.setCaretPosition(0);
-        jsonPathsTextArea.setInitialText(el.getPropertyAsString(DubboTelnetSampler.JSON_PATHS));
-        jsonPathsTextArea.setCaretPosition(0);
         expectationTextField.setText(el.getPropertyAsString(DubboTelnetSampler.EXPECTATION));
         encodeTextField.setText(el.getPropertyAsString(DubboTelnetSampler.ENCODE));
+        paramsTextArea.setInitialText(getPrettyParams(el.getPropertyAsString(DubboTelnetSampler.PARAMS)));
+        paramsTextArea.setCaretPosition(0);
         useTemplateComboBox.setSelectedItem(el.getPropertyAsString(DubboTelnetSampler.USE_TEMPLATE));
         interfacePathTextField.setText(el.getPropertyAsString(DubboTelnetSampler.INTERFACE_PATH));
+        jsonPathsTextArea.setInitialText(el.getPropertyAsString(DubboTelnetSampler.JSON_PATHS));
+        jsonPathsTextArea.setCaretPosition(0);
         templateContentTextArea.setInitialText(getTemplateContent(
                 el.getPropertyAsBoolean(DubboTelnetSampler.USE_TEMPLATE, false),
                 el.getPropertyAsString(DubboTelnetSampler.INTERFACE_NAME)));
@@ -144,11 +143,12 @@ public class DubboTelnetSamplerGui extends AbstractSamplerGui implements ActionL
         super.clearGui();
         addressTextField.setText("");
         interfaceNameTextField.setText("");
-        paramsTextArea.setInitialText("");
-        jsonPathsTextArea.setInitialText("");
         expectationTextField.setText("");
+        encodeTextField.setText("");
+        paramsTextArea.setInitialText("");
         useTemplateComboBox.setSelectedItem("");
         interfacePathTextField.setText("");
+        jsonPathsTextArea.setInitialText("");
         templateContentTextArea.setInitialText("");
     }
 
@@ -156,9 +156,13 @@ public class DubboTelnetSamplerGui extends AbstractSamplerGui implements ActionL
     public void actionPerformed(ActionEvent e) {
         String action = e.getActionCommand();
         if (action.equals(JSON_ACTION)) {
-            //
+            currentParamsContentType = JSON_ACTION;
+            paramsTextArea.setInitialText(getPrettyParams(paramsTextArea.getText()));
+            paramsTextArea.setCaretPosition(0);
         } else if (action.equals(TEXT_ACTION)) {
-            //
+            currentParamsContentType = TEXT_ACTION;
+            paramsTextArea.setInitialText(getParamsText());
+            paramsTextArea.setCaretPosition(0);
         }
     }
 
@@ -276,10 +280,10 @@ public class DubboTelnetSamplerGui extends AbstractSamplerGui implements ActionL
     }
 
     private Component getButtonPanel() {
-        jsonButton = new JButton(JSON_ACTION);
+        JButton jsonButton = new JButton(JSON_ACTION);
         jsonButton.setActionCommand(JSON_ACTION);
         jsonButton.addActionListener(this);
-        textButton = new JButton(TEXT_ACTION);
+        JButton textButton = new JButton(TEXT_ACTION);
         textButton.setActionCommand(TEXT_ACTION);
         textButton.addActionListener(this);
 
@@ -314,6 +318,17 @@ public class DubboTelnetSamplerGui extends AbstractSamplerGui implements ActionL
         } else {
             return JsonFileUtil.readJsonFile(DubboTelnetSampler.CONFIG_FILE_PATH, interfaceName);
         }
+    }
+
+    private String getPrettyParams(String params) {
+        if (JSON_ACTION.equals(currentParamsContentType)) {
+            return JsonUtil.prettyJsonWithPlaceholder(StringUtil.removeSpacesAndLineBreaks(params));
+        }
+        return params;
+    }
+
+    private String getParamsText() {
+        return StringUtil.removeSpacesAndLineBreaks(paramsTextArea.getText());
     }
 
 }

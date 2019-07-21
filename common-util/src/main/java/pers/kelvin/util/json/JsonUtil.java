@@ -19,10 +19,6 @@ public class JsonUtil {
 
     private static Gson gson = getGson();
 
-    private static Gson prettyGson;
-
-    private static JsonParser jsonParser;
-
     private static Gson getGson() {
         return new GsonBuilder().serializeNulls()
                 .registerTypeAdapter(mapType, new MapTypeAdapter())
@@ -30,19 +26,7 @@ public class JsonUtil {
                 .create();
     }
 
-    private static Gson getPrettyGson() {
-        if (prettyGson == null) {
-            prettyGson = new GsonBuilder().setPrettyPrinting().create();
-        }
-        return prettyGson;
-    }
-
-    private static JsonParser getJsonParser() {
-        if (jsonParser == null) {
-            jsonParser = new JsonParser();
-        }
-        return jsonParser;
-    }
+    private static final String FORMAT_INDENT = "    ";
 
     /**
      * 获取Gson实例
@@ -129,7 +113,81 @@ public class JsonUtil {
      * @param json jsonStr
      * @return str
      */
-    public static String prettyJson(String json) {
-        return getPrettyGson().toJson(getJsonParser().parse(json).getAsJsonObject());
+    public static String prettyJsonWithPlaceholder(String json) {
+        StringBuilder indent = new StringBuilder();//缩进
+        StringBuilder sb = new StringBuilder();
+
+        char previous = '\u0000';
+        boolean notAllowLineBreaks = false;
+        for (char c : json.toCharArray()) {
+            switch (c) {
+                case '{':
+                    if (previous == '$') {
+                        sb.append("{");
+                        notAllowLineBreaks = true;
+                        break;
+                    }
+                    indent.append(FORMAT_INDENT);
+                    sb.append("{\n").append(indent);
+                    break;
+                case '}':
+                    if (notAllowLineBreaks) {
+                        sb.append("}");
+                        notAllowLineBreaks = false;
+                        break;
+                    }
+                    indent.delete(indent.length() - FORMAT_INDENT.length(), indent.length());
+                    sb.append("\n").append(indent).append("}");
+                    break;
+                case '[':
+                    indent.append(FORMAT_INDENT);
+                    sb.append("[\n").append(indent);
+                    break;
+                case ']':
+                    indent.delete(indent.length() - FORMAT_INDENT.length(), indent.length());
+                    sb.append("\n").append(indent).append("]");
+                    break;
+                case ',':
+                    sb.append(",\n").append(indent);
+                    break;
+                default:
+                    sb.append(c);
+            }
+            previous = c;
+        }
+        return sb.toString();
     }
+
+    public static String jsonFormat(String json) {
+        StringBuilder indent = new StringBuilder();//缩进
+        StringBuilder sb = new StringBuilder();
+
+        for (char c : json.toCharArray()) {
+            switch (c) {
+                case '{':
+                    indent.append(" ");
+                    sb.append("{\n").append(indent);
+                    break;
+                case '}':
+                    indent.deleteCharAt(indent.length() - 1);
+                    sb.append("\n").append(indent).append("}");
+                    break;
+                case '[':
+                    indent.append(" ");
+                    sb.append("[\n").append(indent);
+                    break;
+                case ']':
+                    indent.deleteCharAt(indent.length() - 1);
+                    sb.append("\n").append(indent).append("]");
+                    break;
+                case ',':
+                    sb.append(",\n").append(indent);
+                    break;
+                default:
+                    sb.append(c);
+            }
+        }
+        return sb.toString();
+    }
+
 }
