@@ -142,4 +142,40 @@ public class FileUtil {
         }
         return content.toString();
     }
+
+    public static String readEnvFile(String filePath) {
+        File file = new File(filePath);
+        return readEnvFile(file);
+    }
+
+    public static String readEnvFile(File file) {
+        StringBuffer content = new StringBuffer();
+        int charCode = -1;
+        char previous = '\u0000';
+        try (
+                BufferedReader reader = new BufferedReader(
+                        new InputStreamReader(new FileInputStream(file), StandardCharsets.UTF_8))
+        ) {
+            while ((charCode = reader.read()) != -1) {
+                char currentChar = (char) charCode;
+                if (currentChar == '/') {
+                    if (previous == '/') {
+                        reader.readLine();
+                        previous = '\u0000';
+                    } else {
+                        previous = currentChar;
+                    }
+                } else {
+                    if (previous == '/') {
+                        content.append(previous);
+                    }
+                    content.append(currentChar);
+                    previous = currentChar;
+                }
+            }
+        } catch (IOException e) {
+            logger.error(ExceptionUtil.getStackTrace(e));
+        }
+        return StringUtil.removeSpacesAndLineBreaks(content.toString());
+    }
 }
