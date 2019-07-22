@@ -151,14 +151,27 @@ public class FileUtil {
     public static String readEnvFile(File file) {
         StringBuffer content = new StringBuffer();
         int charCode = -1;
+        // 上一个字符
         char previous = '\u0000';
+        // 是否在双引号内
+        boolean isInsideQuotes = false;
         try (
                 BufferedReader reader = new BufferedReader(
                         new InputStreamReader(new FileInputStream(file), StandardCharsets.UTF_8))
         ) {
             while ((charCode = reader.read()) != -1) {
+                // 当前字符
                 char currentChar = (char) charCode;
-                if (currentChar == '/') {
+                // 遇到引号时，标记当前正在双引号中
+                if (currentChar == '\"') {
+                    // 非转义符引号才标记
+                    if (previous != '\\') {
+                        isInsideQuotes = !isInsideQuotes;
+                    }
+                }
+                // 在非双引号内且当前字符为 / 斜杠时
+                if (!isInsideQuotes && currentChar == '/') {
+                    // 遇到 //注释符号时丢弃该行的后续内容
                     if (previous == '/') {
                         reader.readLine();
                         previous = '\u0000';
@@ -166,7 +179,7 @@ public class FileUtil {
                         previous = currentChar;
                     }
                 } else {
-                    if (previous == '/') {
+                    if (!isInsideQuotes && previous == '/') {
                         content.append(previous);
                     }
                     content.append(currentChar);

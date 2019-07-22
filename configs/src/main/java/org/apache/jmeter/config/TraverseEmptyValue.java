@@ -70,12 +70,16 @@ public class TraverseEmptyValue extends ConfigTestElement implements LoopIterati
     }
 
     /**
-     * 根据JsonPath更新对应的值为null，然后将json字符串并放入变量名为params的jmeter变量中
+     * 根据JsonPath更新对应的值为 null或 ""，然后将json字符串并放入变量名为params的jmeter变量中
      */
     private void putParams(String jsonPath) {
         try {
             DocumentContext ctx = JsonPathUtil.jsonParse(JsonUtil.toArrayJson(getPatams()));
-            ctx.set(jsonPath, null);
+            if ("null".equals(getBlankType())) {
+                ctx.set(jsonPath, null);
+            } else {
+                ctx.set(jsonPath, "");
+            }
             String jsonStr = ctx.jsonString();
             getThreadContext().getVariables().put("params", jsonStr.substring(1, jsonStr.length() - 1));
         } catch (Exception e) {
@@ -128,6 +132,10 @@ public class TraverseEmptyValue extends ConfigTestElement implements LoopIterati
 
     private String getInterfaceSystem() {
         return getPropertyAsString(INTERFACE_PATH);
+    }
+
+    private String getBlankType() {
+        return getPropertyAsString(BLANK_TYPE);
     }
 
     private String readJsonFile() throws IOException {

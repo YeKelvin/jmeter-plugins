@@ -6,16 +6,11 @@ import org.apache.jmeter.threads.JMeterContextService;
 import org.apache.jmeter.util.JMeterUtils;
 import org.slf4j.Logger;
 import pers.kelvin.util.FileUtil;
-import pers.kelvin.util.exception.ExceptionUtil;
 import pers.kelvin.util.json.JsonUtil;
 import pers.kelvin.util.log.LogUtil;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.InputStreamReader;
 import java.lang.reflect.Type;
-import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 
 /**
@@ -58,16 +53,10 @@ public class ENVDataSet extends ConfigTestElement implements TestStateListener {
     public HashMap<String, String> getEnvMap(String filePath) {
         HashMap<String, String> envMap = new HashMap<>();
         if (isEnvFile(filePath)) {
-//            try (
-//                    FileInputStream input = new FileInputStream(filePath);
-//                    InputStreamReader reader = new InputStreamReader(input, StandardCharsets.UTF_8.name())
-//            ) {
-//                envMap = JsonUtil.getGsonInstance().fromJson(reader, hashMap);
-//            } catch (Exception e) {
-//                logger.error(ExceptionUtil.getStackTrace(e));
-//            }
-
-            envMap = JsonUtil.fromJson(FileUtil.readEnvFile(filePath),hashMap);
+            String envJson = FileUtil.readEnvFile(filePath);
+            logger.debug("filePath=" + filePath);
+            logger.debug("envJson=" + envJson);
+            envMap = JsonUtil.fromJson(envJson, hashMap);
         } else {
             logger.error("{}非 .env文件", filePath);
         }

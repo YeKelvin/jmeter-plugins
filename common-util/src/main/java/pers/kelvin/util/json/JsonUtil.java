@@ -2,10 +2,16 @@ package pers.kelvin.util.json;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.JsonParser;
 import com.google.gson.reflect.TypeToken;
+import org.slf4j.Logger;
+import pers.kelvin.util.exception.ExceptionUtil;
+import pers.kelvin.util.log.LogUtil;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStreamReader;
 import java.lang.reflect.Type;
+import java.nio.charset.StandardCharsets;
 import java.util.Map;
 import java.util.regex.Pattern;
 
@@ -13,6 +19,8 @@ import java.util.regex.Pattern;
  * @author KelvinYe
  */
 public class JsonUtil {
+
+    private static final Logger logger = LogUtil.getLogger(JsonUtil.class);
 
     public static Type mapType = new TypeToken<Map<Object, Object>>() {
     }.getType();
@@ -97,6 +105,18 @@ public class JsonUtil {
         return gson.fromJson(json, type);
     }
 
+    public static <T> T fromJson(File file, Type type) {
+        try (
+                FileInputStream input = new FileInputStream(file);
+                InputStreamReader reader = new InputStreamReader(input, StandardCharsets.UTF_8.name())
+        ) {
+            return gson.fromJson(reader, type);
+        } catch (Exception e) {
+            logger.error(ExceptionUtil.getStackTrace(e));
+            return null;
+        }
+    }
+
     /**
      * 根据对象转换为json报文
      *
@@ -117,8 +137,13 @@ public class JsonUtil {
         StringBuilder indent = new StringBuilder();//缩进
         StringBuilder sb = new StringBuilder();
 
+        // 上一个字符
         char previous = '\u0000';
+        // 不允许换行标识
         boolean notAllowLineBreaks = false;
+        // 是否在双引号内
+        boolean isInsideQuotes = false;
+
         for (char c : json.toCharArray()) {
             switch (c) {
                 case '{':
@@ -136,20 +161,41 @@ public class JsonUtil {
                         notAllowLineBreaks = false;
                         break;
                     }
+                    if (isInsideQuotes) {
+                        sb.append("}");
+                        break;
+                    }
                     indent.delete(indent.length() - FORMAT_INDENT.length(), indent.length());
                     sb.append("\n").append(indent).append("}");
                     break;
                 case '[':
+                    if (isInsideQuotes) {
+                        sb.append("[");
+                        break;
+                    }
                     indent.append(FORMAT_INDENT);
                     sb.append("[\n").append(indent);
                     break;
                 case ']':
+                    if (isInsideQuotes) {
+                        sb.append("]");
+                        break;
+                    }
                     indent.delete(indent.length() - FORMAT_INDENT.length(), indent.length());
                     sb.append("\n").append(indent).append("]");
                     break;
                 case ',':
+                    if (isInsideQuotes) {
+                        sb.append(",");
+                        break;
+                    }
                     sb.append(",\n").append(indent);
                     break;
+                case '\"':
+                    // 非转义符引号才标记
+                    if (previous != '\\') {
+                        isInsideQuotes = !isInsideQuotes;
+                    }
                 default:
                     sb.append(c);
             }
