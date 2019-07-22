@@ -4,7 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
-import java.util.HashMap;
+import java.util.Map;
 
 @Setter
 @Getter
@@ -13,6 +13,6 @@ public class ExternalScriptResultDTO {
 
     private boolean isExecuteSuccess;
 
-    private HashMap<String, Object> externalScriptData;
+    private Map<String, Object> externalScriptData;
 
 }

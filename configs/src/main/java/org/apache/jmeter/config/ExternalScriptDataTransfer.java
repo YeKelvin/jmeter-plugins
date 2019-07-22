@@ -1,12 +1,14 @@
 package org.apache.jmeter.config;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.jmeter.control.LoopController;
 import org.apache.jmeter.protocol.jdbc.sampler.JDBCSampler;
 import org.apache.jmeter.samplers.SampleEvent;
 import org.apache.jmeter.samplers.SampleListener;
 import org.apache.jmeter.samplers.SampleResult;
 import org.apache.jmeter.samplers.Sampler;
 import org.apache.jmeter.testelement.ThreadListener;
+import org.apache.jmeter.threads.JMeterContextService;
 import org.apache.jmeter.util.JMeterUtils;
 import org.apache.jorphan.collections.ListedHashTree;
 import org.apache.jorphan.collections.SearchByClass;
@@ -61,21 +63,24 @@ public class ExternalScriptDataTransfer extends ConfigTestElement implements Thr
         }
 
         // 当所有 sample执行完毕时，把增量的 JMeterVars写入 JMeterProps中，用于在线程组间传递数据
-        if (threadGroupSampleCount == completedSampleCount) {
+        if (threadGroupSampleCount == completedSampleCount || !result.isSuccessful()) {
             // 获取 ThreadGroup运行前后的 JMeterVars的差集
             Collection<Map.Entry<String, Object>> subtract = CollectionUtils.subtract(
                     getThreadContext().getVariables().entrySet(), clonedVars.entrySet());
 
             if (!subtract.isEmpty()) {
                 // 把差集结果放入临时 map对象中
-                HashMap<String, Object> sentToPropsMap = new HashMap<>();
+                Map<String, Object> sentToPropsMap = new HashMap<>();
                 subtract.forEach(entry -> sentToPropsMap.put(entry.getKey(), entry.getValue()));
 
                 // 删除不必要的key
                 removeUnwantedKey(sentToPropsMap);
 
-                // 将增量的 JMeterVars写入 JMeterProps中
-                sentToPropsMap.forEach(props::put);
+                // 将增量的 JMeterVars写入 ExternalScriptResultDTO中返回给调用者
+                ExternalScriptResultDTO scriptResult = new ExternalScriptResultDTO();
+                scriptResult.setExecuteSuccess((boolean)props.get("isExecuteSuccess"));
+                scriptResult.setExternalScriptData(sentToPropsMap);
+                props.put("externalScriptResult", scriptResult);
             }
         }
     }
@@ -92,7 +97,17 @@ public class ExternalScriptDataTransfer extends ConfigTestElement implements Thr
     public void threadStarted() {
         props.put("isExecuteSuccess", true);
 
-        // 获取当前线程组下的 sample数量
+        int numThreads = JMeterContextService.getContext().getThreadGroup().getNumThreads();
+        LoopController loopController = (LoopController) JMeterContextService.getContext().getThreadGroup().getSamplerController();
+        int loops = loopController.getLoops();
+        if (numThreads != 1 || loops != 1) {
+            props.put("isExecuteSuccess", false);
+            props.put("errorSampleResult", new SampleResult());
+            logger.error("外部脚本只支持单次执行，请将外部脚本的线程数和循环次数设置为1");
+            JMeterContextService.getContext().getThread().stop();
+        }
+
+        // 获取当前线程组下的 sample数量， sample总数 = 线程组 sample数 * 线程组循环数
         threadGroupSampleCount = getSampleCount(getThreadContext().getThread().getTestTree());
 
         // 保存 JMeterVars副本
@@ -148,7 +163,7 @@ public class ExternalScriptDataTransfer extends ConfigTestElement implements Thr
     /**
      * 删除不需要的key
      */
-    private void removeUnwantedKey(HashMap<String, Object> givenMap) {
+    private void removeUnwantedKey(Map<String, Object> givenMap) {
         givenMap.remove("START.MS");
         givenMap.remove("START.YMD");
         givenMap.remove("START.HMS");

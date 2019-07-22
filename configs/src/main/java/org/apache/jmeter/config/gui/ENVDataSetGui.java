@@ -12,10 +12,11 @@ import pers.kelvin.util.GuiUtil;
 import pers.kelvin.util.StringUtil;
 
 import javax.swing.*;
-import javax.swing.table.TableColumn;
+import javax.swing.table.TableRowSorter;
 import java.awt.*;
 import java.io.File;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Map;
 
 /**
  * @author KelvinYe
@@ -116,12 +117,18 @@ public class ENVDataSetGui extends AbstractConfigGui {
 
     private JPanel createTablePanel() {
         initializeTableModel();
+        // 列排序
+        TableRowSorter<ObjectTableModel> sorter = new TableRowSorter<>(tableModel);
+        // 设置只有第一列可以排序，其他均不可以
+        sorter.setSortable(0, true);
+        sorter.setSortable(1, false);
+
         table = new JTable(tableModel);
         table.getTableHeader().setDefaultRenderer(new HeaderAsPropertyRenderer());
         table.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
         table.revalidate();
+        table.setRowSorter(sorter);
         JMeterUtils.applyHiDPI(table);
-
 
         JPanel panel = new JPanel(new BorderLayout(10, 10));
         panel.add(makeScrollPane(table), BorderLayout.CENTER);

@@ -107,7 +107,7 @@ public class FailureResultSaverGui extends AbstractConfigGui {
     }
 
     private Component getFormatTypeLabel() {
-        return GuiUtil.createLabel("日志路径：", getFormatTypeComboBox());
+        return GuiUtil.createLabel("日志格式：", getFormatTypeComboBox());
     }
 
 }

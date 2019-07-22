@@ -1,7 +1,7 @@
 package org.apache.jmeter.samplers;
 
 
-import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.MapUtils;
 import org.apache.jmeter.JMeter;
 import org.apache.jmeter.config.ExternalScriptDataTransfer;
 import org.apache.jmeter.config.ExternalScriptResultDTO;
@@ -29,7 +29,8 @@ import pers.kelvin.util.log.LogUtil;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.util.*;
+import java.util.Iterator;
+import java.util.Properties;
 
 /**
  * @author KelvinYe
@@ -112,24 +113,19 @@ public class ExecuteExternalScript extends AbstractSampler {
         props.put("printSampleResultToConsole", getIsPrintToConsole());
         props.put("configName", JMeterVarsUtil.getDefault("ENVDataSet.configName"));
 
-        // 保存执行外部脚本前的JMeter属性的副本
-        HashMap<String, String> clonedProps = new HashMap<>();
-        props.forEach((key, value) -> clonedProps.put(key.toString(), value.toString()));
-
         // 开始执行外部脚本
         StandardJMeterEngine engine = new StandardJMeterEngine();
         engine.setProperties(props);
         engine.configure(clonedTree);
         engine.run();
 
-        // 保存执行外部脚本后的JMeter属性的副本
-        HashMap<String, String> currentProps = new HashMap<>();
+        ExternalScriptResultDTO scriptResult = (ExternalScriptResultDTO) props.get("externalScriptResult");
 
         // 如果设置了 JMeterProps属性名称后缀，则把外部脚本中获取的变量名都加上后缀
-        clonePropsWithSuffix(currentProps);
+        setPropsWithSuffix(scriptResult);
 
         // Json化JMeter属性的差集作为结果返回
-        return getExecuteResult(currentProps, clonedProps);
+        return getExecuteResult(scriptResult);
     }
 
     /**
@@ -163,29 +159,13 @@ public class ExecuteExternalScript extends AbstractSampler {
     /**
      * 序列化 JMeterProps的差集
      *
-     * @param afterProps  运行后的props的HashMap对象
-     * @param beforeProps 运行前的props的副本的HashMap对象
+     * @param scriptResult  ExternalScriptResultDTO对象
      * @return json
      */
-    private String getExecuteResult(HashMap<String, String> afterProps, HashMap<String, String> beforeProps) {
-        // 获取执行外部脚本前后的JMeter属性的差集
-        Collection<Map.Entry> subtract = CollectionUtils.subtract(afterProps.entrySet(), beforeProps.entrySet());
-        if (subtract.isEmpty()) {
-            return "外部脚本没有设置新的JMeterVars";
+    private String getExecuteResult(ExternalScriptResultDTO scriptResult) {
+        if (MapUtils.isEmpty(scriptResult.getExternalScriptData())) {
+            return "{\"isExecuteSuccess\":" + scriptResult.isExecuteSuccess() + ",\"msg\":\"外部脚本没有设置新的变量\"}";
         }
-
-        // 序列化 JMeterProps的差集作为结果返回
-        HashMap<String, Object> externalScriptData = new HashMap<>();
-        subtract.forEach(e -> externalScriptData.put(e.getKey().toString(), e.getValue()));
-
-        // 删除不需要的key
-        externalScriptData.remove("isExecuteSuccess");
-        externalScriptData.remove("errorSampleResult");
-
-        ExternalScriptResultDTO scriptResult = new ExternalScriptResultDTO();
-        scriptResult.setExecuteSuccess((boolean) props.get("isExecuteSuccess"));
-        scriptResult.setExternalScriptData(externalScriptData);
-
         return fixJson(JsonUtil.toJson(scriptResult));
     }
 
@@ -265,16 +245,16 @@ public class ExecuteExternalScript extends AbstractSampler {
         props.remove("isExecuteSuccess");
         props.remove("printSampleResultToConsole");
         props.remove("errorSampleResult");
+        props.remove("externalScriptResult");
     }
 
-    private void clonePropsWithSuffix(HashMap<String, String> givenMap) {
+    private void setPropsWithSuffix(ExternalScriptResultDTO scriptResult) {
         String propsNameSuffix = getPropsNameSuffix();
         if (StringUtil.isBlank(propsNameSuffix)) {
-            props.forEach((key, value) -> givenMap.put(key.toString(), value.toString()));
+            scriptResult.getExternalScriptData().forEach((key, value) -> props.put(key, value.toString()));
         } else {
-            props.forEach((key, value) -> givenMap.put(key.toString() + "_" + propsNameSuffix, value.toString()));
+            scriptResult.getExternalScriptData().forEach((key, value) -> props.put(key + "_" + propsNameSuffix, value.toString()));
         }
-
     }
 
 }

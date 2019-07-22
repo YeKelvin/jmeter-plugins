@@ -6,7 +6,6 @@ import org.apache.jmeter.engine.event.LoopIterationEvent;
 import org.apache.jmeter.samplers.SampleEvent;
 import org.apache.jmeter.samplers.SampleListener;
 import org.apache.jmeter.samplers.SampleResult;
-import org.apache.jmeter.samplers.Sampler;
 import org.apache.jmeter.services.FileServer;
 import org.apache.jmeter.testelement.AbstractTestElement;
 import org.apache.jmeter.testelement.TestIterationListener;
@@ -14,8 +13,6 @@ import org.apache.jmeter.testelement.TestStateListener;
 import org.apache.jmeter.testelement.ThreadListener;
 import org.apache.jmeter.threads.JMeterContextService;
 import org.apache.jmeter.util.JMeterUtils;
-import org.apache.jorphan.collections.ListedHashTree;
-import org.apache.jorphan.collections.SearchByClass;
 import pers.kelvin.util.FileUtil;
 import pers.kelvin.util.TimeUtil;
 import pers.kelvin.util.json.JsonPathUtil;
@@ -36,9 +33,6 @@ public class ReportCollector extends AbstractTestElement implements TestStateLis
     public static final String REPORT_NAME = "ReportCollector.reportName";
     public static final String IS_APPEND = "ReportCollector.isAppend";
     public static final String DATA_FILE_NAME = "ReportCollector.dataFileName";
-
-    private int threadGroupSampleCount;
-    private int completedSampleCount;
 
     public ReportCollector() {
         super();
@@ -107,16 +101,11 @@ public class ReportCollector extends AbstractTestElement implements TestStateLis
         testCaseData.setTitle(getThreadName());
         testCaseData.setStartTime(TimeUtil.currentTimeAsString(DATE_FORMAT_PATTERN));
         testSuiteData.putTestCase(testCaseData);
-
-        // 获取当前线程组下的 sample数量
-        threadGroupSampleCount = getSampleCount(getThreadContext().getThread().getTestTree());
     }
 
     @Override
     public void threadFinished() {
-        // 线程组执行结束时清理数据
-        threadGroupSampleCount = 0;
-        completedSampleCount = 0;
+        // pass
     }
 
     /**
@@ -144,15 +133,13 @@ public class ReportCollector extends AbstractTestElement implements TestStateLis
             testSuite.fail();
         }
 
+        // 每次sample执行完毕覆盖testCase的完成时间和耗时
+        testCase.setEndTime(TimeUtil.currentTimeAsString(DATE_FORMAT_PATTERN));
+        testCase.setElapsedTime(TimeUtil.formatElapsedTimeAsHMS(
+                testCase.getStartTime(), testCase.getEndTime(), DATE_FORMAT_PATTERN));
+
         // 把测试步骤数据添加至测试案例集中
         testCase.putTestCaseStep(testCaseStep);
-
-        // 当所有 sample执行完毕时，设置testCase的完成时间和耗时
-        if (threadGroupSampleCount == completedSampleCount) {
-            testCase.setEndTime(TimeUtil.currentTimeAsString(DATE_FORMAT_PATTERN));
-            testCase.setElapsedTime(TimeUtil.formatElapsedTimeAsHMS(
-                    testCase.getStartTime(), testCase.getEndTime(), DATE_FORMAT_PATTERN));
-        }
 
         // 另外把 sample 执行结果打印到控制台
         printStatusToConsole(result.isSuccessful(), getThreadName());
@@ -285,15 +272,6 @@ public class ReportCollector extends AbstractTestElement implements TestStateLis
         ctx.add("$", newList);
         content = ctx.jsonString();
         FileUtil.outputFile(filePath, content);
-    }
-
-    /**
-     * 获取 ListedHashTree中的 sample数量
-     */
-    private int getSampleCount(ListedHashTree testTree) {
-        SearchByClass<Sampler> searcher = new SearchByClass<>(Sampler.class);
-        testTree.traverse(searcher);
-        return searcher.getSearchResults().size();
     }
 
 }
