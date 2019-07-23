@@ -13,6 +13,7 @@ import org.apache.jmeter.threads.JMeterContextService;
 import org.apache.jmeter.threads.JMeterVariables;
 import org.apache.jmeter.util.JMeterUtils;
 import org.slf4j.Logger;
+import pers.kelvin.util.JMeterVarsUtil;
 import pers.kelvin.util.StringUtil;
 import pers.kelvin.util.exception.ExceptionUtil;
 import pers.kelvin.util.exception.ServiceException;
@@ -22,7 +23,6 @@ import pers.kelvin.util.json.JsonUtil;
 import pers.kelvin.util.log.LogUtil;
 import pers.kelvin.util.ssh.SSHTelnetClient;
 
-import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Type;
 import java.nio.charset.StandardCharsets;
@@ -54,9 +54,6 @@ public class DubboTelnetSampler extends AbstractSampler {
     public static final String TEMPLATE_CONTENT = "DubboTelnetSampler.templateContent";
 
     private static final String REPLACE_VALUE = "DubboTelnetSampler.replaceValue";
-
-    public static final String CONFIG_FILE_PATH = JMeterUtils.getJMeterHome() + File.separator + "config" +
-            File.separator + "config.json";
 
     private static final int defaultTimeout = 5000;
 
@@ -170,11 +167,19 @@ public class DubboTelnetSampler extends AbstractSampler {
     }
 
     private String readJsonFile() throws IOException {
-        if (StringUtil.isNotBlank(getInterfaceSystem())) {
-            return JsonFileUtil.readJsonFile(CONFIG_FILE_PATH, getInterfaceSystem(), getInterfaceName());
-        } else {
-            return JsonFileUtil.readJsonFile(CONFIG_FILE_PATH, getInterfaceName());
+        String interfaceDir = getInterfacePath();
+        String interfaceName = getInterfaceName();
+
+        if (StringUtil.isBlank(interfaceDir)) {
+            throw new ServiceException("接口路径不允许为空");
         }
+        // 根据入參 interfacePath递归搜索获取绝对路径
+        String path = JsonFileUtil.findInterfacePathByKeywords(interfaceDir, interfaceName);
+        if (path == null) {
+            throw new ServiceException(String.format("\"%s\" 接口模版不存在", interfaceName));
+        }
+        // 根据绝对路径获取json模版内容
+        return JsonFileUtil.readJsonFileToString(path);
     }
 
     /**
@@ -324,13 +329,13 @@ public class DubboTelnetSampler extends AbstractSampler {
      */
     private void verifyData() {
         if (StringUtil.isBlank(getAddress())) {
-            throw new ServiceException("address 服务器地址不能为空");
+            throw new ServiceException("服务器地址不能为空");
         }
         if (StringUtil.isBlank(getInterfaceName())) {
-            throw new ServiceException("interfaceName 接口名称不能为空");
+            throw new ServiceException("接口名称不能为空");
         }
         if (!getUseTemplate() && StringUtil.isBlank(getParams())) {
-            throw new ServiceException("不使用json模版时，params 请求参数不能为空");
+            throw new ServiceException("不使用json模版时，请求参数不能为空");
         }
     }
 
@@ -355,36 +360,30 @@ public class DubboTelnetSampler extends AbstractSampler {
     }
 
     private String getEncode() {
-        return StringUtil.isBlank(
-                getPropertyAsString(ENCODE)) ? StandardCharsets.UTF_8.name() : getPropertyAsString(ENCODE);
+        return JMeterVarsUtil.getDefault(ENCODE, StandardCharsets.UTF_8.name());
     }
 
     private boolean getUseTemplate() {
         return getPropertyAsBoolean(USE_TEMPLATE, false);
     }
 
-    private String getInterfaceSystem() {
-        return getPropertyAsString(INTERFACE_PATH);
+    private String getInterfacePath() {
+        return getPropertyAsString(INTERFACE_PATH, "");
     }
 
     private String getSSHAddress() {
-        return getThreadVariablesDefault("sshAddress", "");
+        return JMeterVarsUtil.getDefault("sshAddress", "");
     }
 
     private String getSSHUserName() {
-        return getThreadVariablesDefault("sshUserName", "");
+        return JMeterVarsUtil.getDefault("sshUserName", "");
     }
 
     private String getSSHPassword() {
-        return getThreadVariablesDefault("sshPassword", "");
+        return JMeterVarsUtil.getDefault("sshPassword", "");
     }
 
     private boolean isSSHTelnet() {
-        return Boolean.valueOf(getThreadVariablesDefault("isSSHConnect", "false"));
-    }
-
-    private String getThreadVariablesDefault(String keyName, String DefaultVar) {
-        String var = getThreadContext().getVariables().get(keyName);
-        return var != null ? var : DefaultVar;
+        return JMeterVarsUtil.getDefaultAsBoolean("isSSHConnect", false);
     }
 }

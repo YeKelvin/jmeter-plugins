@@ -241,11 +241,18 @@ public class TraverseEmptyValueGui extends AbstractConfigGui {
      * @param interfaceName 接口名称
      */
     private String readJsonFile(String interfaceName) throws IOException, ServiceException {
-        if (StringUtil.isNotBlank(interfacePathTextField.getText())) {
-            return JsonFileUtil.readJsonFile(TraverseEmptyValue.CONFIG_FILE_PATH, interfacePathTextField.getText(), interfaceName);
-        } else {
-            return JsonFileUtil.readJsonFile(TraverseEmptyValue.CONFIG_FILE_PATH, interfaceName);
+        String interfaceDir = interfacePathTextField.getText();
+
+        if (StringUtil.isBlank(interfaceDir)) {
+            throw new ServiceException("接口路径不允许为空");
         }
+        // 根据入參 interfacePath递归搜索获取绝对路径
+        String path = JsonFileUtil.findInterfacePathByKeywords(interfaceDir, interfaceName);
+        if (path == null) {
+            throw new ServiceException(String.format("\"%s\" 接口模版不存在", interfaceName));
+        }
+        // 根据绝对路径获取json模版内容
+        return JsonFileUtil.readJsonFileToString(path);
     }
 
 }

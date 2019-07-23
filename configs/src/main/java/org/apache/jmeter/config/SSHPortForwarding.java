@@ -7,6 +7,7 @@ import com.jcraft.jsch.Session;
 import org.apache.jmeter.testelement.TestStateListener;
 import org.apache.jmeter.util.JMeterUtils;
 import org.slf4j.Logger;
+import pers.kelvin.util.JMeterVarsUtil;
 import pers.kelvin.util.exception.ExceptionUtil;
 import pers.kelvin.util.log.LogUtil;
 
@@ -127,14 +128,8 @@ public class SSHPortForwarding extends ConfigTestElement implements TestStateLis
         return getPropertyAsString(REMOTE_ADDRESS);
     }
 
-    public boolean isSSHPortForwarding() {
+    private boolean isSSHPortForwarding() {
         return JMeterUtils.getPropDefault(
-                "isSSHPortForwarding", getThreadVariablesAsBooleanDefault(IS_SSH_PORT_FORWARDING, true));
+                "isSSHPortForwarding", JMeterVarsUtil.getDefaultAsBoolean(IS_SSH_PORT_FORWARDING, true));
     }
-
-    private boolean getThreadVariablesAsBooleanDefault(String keyName, boolean DefaultVar) {
-        String var = getThreadContext().getVariables().get(keyName);
-        return var != null ? Boolean.valueOf(var) : DefaultVar;
-    }
-
 }

@@ -7,7 +7,6 @@ import pers.kelvin.util.exception.ServiceException;
 import pers.kelvin.util.log.LogUtil;
 
 import java.io.*;
-import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 
@@ -76,7 +75,7 @@ public class JsonFileUtil {
 
 
     public static String findInterfacePathByKeywords(String rootDir, String interfaceName) {
-        logger.debug("templateJsonDir={}", rootDir);
+        logger.debug("接口搜索路径={}", rootDir);
         ArrayList<File> fileList = getJsonFileList(rootDir);
         for (File file : fileList) {
             if (file.getName().contains(interfaceName + ".json")) {
@@ -84,7 +83,7 @@ public class JsonFileUtil {
             }
         }
         logger.warn(String.format(
-                "%s%s...%s%s.json template file not found.", rootDir, File.separator, File.separator, interfaceName));
+                "%s%s...%s%s.json 接口模板不存在", rootDir, File.separator, File.separator, interfaceName));
         // 搜索不到路径时返回null
         return null;
     }

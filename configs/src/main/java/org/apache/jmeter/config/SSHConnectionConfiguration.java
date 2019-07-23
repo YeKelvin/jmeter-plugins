@@ -4,6 +4,7 @@ package org.apache.jmeter.config;
 import org.apache.jmeter.testelement.TestStateListener;
 import org.apache.jmeter.util.JMeterUtils;
 import org.slf4j.Logger;
+import pers.kelvin.util.JMeterVarsUtil;
 import pers.kelvin.util.log.LogUtil;
 
 /**
@@ -61,13 +62,8 @@ public class SSHConnectionConfiguration extends ConfigTestElement implements Tes
         return getPropertyAsString(SSH_PASSWORD);
     }
 
-    public boolean isSSHConnect() {
+    private boolean isSSHConnect() {
         return JMeterUtils.getPropDefault(
-                "isSSHConnect", getThreadVariablesAsBooleanDefault(IS_SSH_CONNECT, true));
-    }
-
-    private boolean getThreadVariablesAsBooleanDefault(String keyName, boolean DefaultVar) {
-        String var = getThreadContext().getVariables().get(keyName);
-        return var != null ? Boolean.valueOf(var) : DefaultVar;
+                "isSSHConnect", JMeterVarsUtil.getDefaultAsBoolean(IS_SSH_CONNECT, true));
     }
 }

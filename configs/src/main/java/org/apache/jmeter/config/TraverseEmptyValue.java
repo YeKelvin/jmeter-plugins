@@ -4,7 +4,6 @@ import com.jayway.jsonpath.DocumentContext;
 import com.jayway.jsonpath.JsonPath;
 import org.apache.jmeter.engine.event.LoopIterationEvent;
 import org.apache.jmeter.engine.event.LoopIterationListener;
-import org.apache.jmeter.util.JMeterUtils;
 import org.slf4j.Logger;
 import pers.kelvin.util.StringUtil;
 import pers.kelvin.util.exception.ExceptionUtil;
@@ -14,7 +13,6 @@ import pers.kelvin.util.json.JsonPathUtil;
 import pers.kelvin.util.json.JsonUtil;
 import pers.kelvin.util.log.LogUtil;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.Iterator;
 
@@ -34,9 +32,6 @@ public class TraverseEmptyValue extends ConfigTestElement implements LoopIterati
     public static final String USE_TEMPLATE = "TraverseEmptyValue.useTemplate";
     public static final String INTERFACE_PATH = "TraverseEmptyValue.interfacePath";
     public static final String INTERFACE_NAME = "TraverseEmptyValue.interfaceName";
-
-    public static final String CONFIG_FILE_PATH = JMeterUtils.getJMeterHome() + File.separator + "config" +
-            File.separator + "config.json";
 
     private Iterator jsonPathIterator = null;
 
@@ -130,7 +125,7 @@ public class TraverseEmptyValue extends ConfigTestElement implements LoopIterati
         return getPropertyAsString(INTERFACE_NAME);
     }
 
-    private String getInterfaceSystem() {
+    private String getInterfacePath() {
         return getPropertyAsString(INTERFACE_PATH);
     }
 
@@ -139,12 +134,18 @@ public class TraverseEmptyValue extends ConfigTestElement implements LoopIterati
     }
 
     private String readJsonFile() throws IOException {
-        if (StringUtil.isNotBlank(getInterfaceSystem())) {
-            return JsonFileUtil.readJsonFile(CONFIG_FILE_PATH, getInterfaceSystem(), getInterfaceName());
-        } else {
-            return JsonFileUtil.readJsonFile(CONFIG_FILE_PATH, getInterfaceName());
+        String interfaceDir = getInterfacePath();
+        String interfaceName = getInterfaceName();
+
+        if (StringUtil.isBlank(interfaceDir)) {
+            throw new ServiceException("接口路径不允许为空");
         }
+        // 根据入參 interfacePath递归搜索获取绝对路径
+        String path = JsonFileUtil.findInterfacePathByKeywords(interfaceDir, interfaceName);
+        if (path == null) {
+            throw new ServiceException(String.format("\"%s\" 接口模版不存在", interfaceName));
+        }
+        // 根据绝对路径获取json模版内容
+        return JsonFileUtil.readJsonFileToString(path);
     }
-
-
 }
