@@ -50,11 +50,13 @@ public class ExecuteExternalScript extends AbstractSampler {
 
     @Override
     public SampleResult sample(Entry entry) {
+        String scriptPath = getScriptPath();
+        logger.debug("开始执行外部脚本[" + scriptPath + "]");
+
         SampleResult result = new SampleResult();
         result.setSampleLabel(getName());
         result.setEncodingAndType(StandardCharsets.UTF_8.name());
         try {
-            String scriptPath = getScriptPath();
             result.setSamplerData("执行外部脚本：" + scriptPath);
             result.sampleStart();
             result.setResponseData(runExternalScript(scriptPath), StandardCharsets.UTF_8.name());
@@ -75,6 +77,7 @@ public class ExecuteExternalScript extends AbstractSampler {
             // 重置外部脚本中设置的 isExecuteSuccess属性和 errorSampleResult属性
             clearExternalScriptProps();
         }
+        logger.debug("执行外部脚本成功[" + scriptPath + "]");
         return result;
     }
 
@@ -105,7 +108,7 @@ public class ExecuteExternalScript extends AbstractSampler {
      * @param scriptAbsPath 脚本绝对路径
      * @return 执行结果
      */
-    private String runExternalScript(String scriptAbsPath) throws IllegalUserActionException, IOException {
+    private String runExternalScript(String scriptAbsPath) throws IllegalUserActionException, IOException, InterruptedException {
         // 加载脚本
         HashTree clonedTree = loadScriptTree(scriptAbsPath);
 
@@ -117,10 +120,16 @@ public class ExecuteExternalScript extends AbstractSampler {
         StandardJMeterEngine engine = new StandardJMeterEngine();
         engine.setProperties(props);
         engine.configure(clonedTree);
-        engine.run();
 
+        // 新建一个线程运行
+        Thread runningThread = new Thread(engine, "StandardJMeterEngine");
+        runningThread.start();
+        runningThread.join();
+
+        // 提取外部脚本执行结果
         ExternalScriptResultDTO scriptResult = (ExternalScriptResultDTO) props.get("externalScriptResult");
 
+        // 把外部脚本中新增的 JMeterVars变量加入 JMeterProps中
         // 如果设置了 JMeterProps属性名称后缀，则把外部脚本中获取的变量名都加上后缀
         setPropsWithSuffix(scriptResult);
 
@@ -159,7 +168,7 @@ public class ExecuteExternalScript extends AbstractSampler {
     /**
      * 序列化 JMeterProps的差集
      *
-     * @param scriptResult  ExternalScriptResultDTO对象
+     * @param scriptResult ExternalScriptResultDTO对象
      * @return json
      */
     private String getExecuteResult(ExternalScriptResultDTO scriptResult) {

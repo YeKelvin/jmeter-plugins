@@ -2,6 +2,7 @@ package org.apache.jmeter.config;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.jmeter.control.LoopController;
+import org.apache.jmeter.protocol.jdbc.config.DataSourceElement;
 import org.apache.jmeter.protocol.jdbc.sampler.JDBCSampler;
 import org.apache.jmeter.samplers.SampleEvent;
 import org.apache.jmeter.samplers.SampleListener;
@@ -14,6 +15,7 @@ import org.apache.jorphan.collections.ListedHashTree;
 import org.apache.jorphan.collections.SearchByClass;
 import org.slf4j.Logger;
 import pers.kelvin.util.FileUtil;
+import pers.kelvin.util.json.JsonUtil;
 import pers.kelvin.util.log.LogUtil;
 
 import java.util.*;
@@ -75,10 +77,11 @@ public class ExternalScriptDataTransfer extends ConfigTestElement implements Thr
 
                 // 删除不必要的key
                 removeUnwantedKey(sentToPropsMap);
+                logger.debug("sentToPropsMap after removeUnwantedKey=" + JsonUtil.toJson(sentToPropsMap));
 
                 // 将增量的 JMeterVars写入 ExternalScriptResultDTO中返回给调用者
                 ExternalScriptResultDTO scriptResult = new ExternalScriptResultDTO();
-                scriptResult.setExecuteSuccess((boolean)props.get("isExecuteSuccess"));
+                scriptResult.setExecuteSuccess((boolean) props.get("isExecuteSuccess"));
                 scriptResult.setExternalScriptData(sentToPropsMap);
                 props.put("externalScriptResult", scriptResult);
             }
@@ -146,6 +149,19 @@ public class ExternalScriptDataTransfer extends ConfigTestElement implements Thr
     }
 
     /**
+     * 获取JDBC DataSource中的 DataSource变量名称，用于删除该变量
+     */
+    private ArrayList<String> getKeyNameInJDBCDataSource(ListedHashTree testTree) {
+        ArrayList<String> jdbcDataSourceNameList = new ArrayList<>();
+        SearchByClass<DataSourceElement> searcher = new SearchByClass<>(DataSourceElement.class);
+        testTree.traverse(searcher);
+        for (DataSourceElement sourceElement : searcher.getSearchResults()) {
+            jdbcDataSourceNameList.add(sourceElement.getDataSource());
+        }
+        return jdbcDataSourceNameList;
+    }
+
+    /**
      * 打印 sample数据到console
      *
      * @param result SampleResult对象
@@ -173,5 +189,6 @@ public class ExternalScriptDataTransfer extends ConfigTestElement implements Thr
         givenMap.remove("__jm__" + getThreadContext().getThreadGroup().getName() + "__idx");
         givenMap.remove("__jmeter.U_T__");
         getKeyNameInJDBCRequest(getThreadContext().getThread().getTestTree()).forEach(givenMap::remove);
+        getKeyNameInJDBCDataSource(getThreadContext().getThread().getTestTree()).forEach(givenMap::remove);
     }
 }

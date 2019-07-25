@@ -107,6 +107,30 @@ public class GroovyUtil {
         return newExpression.toString();
     }
 
+    public static String transformExpression2(String expression) {
+        // 去除空格
+        expression = expression.replace(" ", "");
+        StringBuilder sb = new StringBuilder();
+
+        // 上一个字符
+        char previous = '\u0000';
+
+        for (char ch : expression.toCharArray()) {
+            switch (ch) {
+                case '|':
+                    break;
+                case '&':
+                    break;
+                case '!':
+                    break;
+                default:
+                    sb.append(ch);
+            }
+            previous = ch;
+        }
+        return sb.toString();
+    }
+
     /**
      * groovy脚本执行
      *
