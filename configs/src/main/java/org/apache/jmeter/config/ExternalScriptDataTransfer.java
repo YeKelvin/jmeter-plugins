@@ -1,7 +1,6 @@
 package org.apache.jmeter.config;
 
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.jmeter.control.LoopController;
 import org.apache.jmeter.protocol.jdbc.config.DataSourceElement;
 import org.apache.jmeter.protocol.jdbc.sampler.JDBCSampler;
 import org.apache.jmeter.samplers.SampleEvent;
@@ -9,7 +8,6 @@ import org.apache.jmeter.samplers.SampleListener;
 import org.apache.jmeter.samplers.SampleResult;
 import org.apache.jmeter.samplers.Sampler;
 import org.apache.jmeter.testelement.ThreadListener;
-import org.apache.jmeter.threads.JMeterContextService;
 import org.apache.jmeter.util.JMeterUtils;
 import org.apache.jorphan.collections.ListedHashTree;
 import org.apache.jorphan.collections.SearchByClass;
@@ -99,16 +97,6 @@ public class ExternalScriptDataTransfer extends ConfigTestElement implements Thr
     @Override
     public void threadStarted() {
         props.put("isExecuteSuccess", true);
-
-        int numThreads = JMeterContextService.getContext().getThreadGroup().getNumThreads();
-        LoopController loopController = (LoopController) JMeterContextService.getContext().getThreadGroup().getSamplerController();
-        int loops = loopController.getLoops();
-        if (numThreads != 1 || loops != 1) {
-            props.put("isExecuteSuccess", false);
-            props.put("errorSampleResult", new SampleResult());
-            logger.error("外部脚本只支持单次执行，请将外部脚本的线程数和循环次数设置为1");
-            JMeterContextService.getContext().getThread().stop();
-        }
 
         // 获取当前线程组下的 sample数量， sample总数 = 线程组 sample数 * 线程组循环数
         threadGroupSampleCount = getSampleCount(getThreadContext().getThread().getTestTree());

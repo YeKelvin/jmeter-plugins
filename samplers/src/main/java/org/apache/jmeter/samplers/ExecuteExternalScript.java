@@ -6,6 +6,7 @@ import org.apache.jmeter.JMeter;
 import org.apache.jmeter.config.ExternalScriptDataTransfer;
 import org.apache.jmeter.config.ExternalScriptResultDTO;
 import org.apache.jmeter.config.SSHPortForwarding;
+import org.apache.jmeter.control.LoopController;
 import org.apache.jmeter.engine.StandardJMeterEngine;
 import org.apache.jmeter.exceptions.IllegalUserActionException;
 import org.apache.jmeter.gui.tree.JMeterTreeModel;
@@ -23,6 +24,7 @@ import pers.kelvin.util.JMeterVarsUtil;
 import pers.kelvin.util.PathUtil;
 import pers.kelvin.util.StringUtil;
 import pers.kelvin.util.exception.ExceptionUtil;
+import pers.kelvin.util.exception.ServiceException;
 import pers.kelvin.util.json.JsonUtil;
 import pers.kelvin.util.log.LogUtil;
 
@@ -30,6 +32,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Properties;
 
 /**
@@ -67,7 +70,7 @@ public class ExecuteExternalScript extends AbstractSampler {
             }
         } catch (Exception e) {
             // 异常后，判断是否已开始统计sample时间，没有则开始统计
-            if (result.isStampedAtStart()) {
+            if (!result.isStampedAtStart()) {
                 result.sampleStart();
             }
             result.setSuccessful(false);
@@ -156,11 +159,14 @@ public class ExecuteExternalScript extends AbstractSampler {
         // 删除已禁用的组件
         HashTree clonedTree = JMeter.convertSubTree(tree, true);
 
-        // 对外部脚本添加组件，用于数据传递
-        clonedTree.add(clonedTree.getArray()[0], new ExternalScriptDataTransfer());
+        // 强制设置线程组的错误动作、线程数和循环次数
+        setThreadGroupParams(clonedTree);
 
         // 删除不必要的组件
         removeUnwantedComponents(clonedTree);
+
+        // 对外部脚本添加组件，用于数据传递
+        clonedTree.add(clonedTree.getArray()[0], new ExternalScriptDataTransfer());
 
         return clonedTree;
     }
@@ -190,18 +196,18 @@ public class ExecuteExternalScript extends AbstractSampler {
     /**
      * 设置失败 Sample的数据
      *
-     * @param currentResult SampleResult对象
+     * @param result SampleResult对象
      */
-    private void setErrorSampleResult(SampleResult currentResult) {
-        SampleResult errorResult = (SampleResult) JMeterUtils.getJMeterProperties().get("errorSampleResult");
-        currentResult.setRequestHeaders(errorResult.getRequestHeaders());
-        currentResult.setResponseHeaders(errorResult.getRequestHeaders());
-        currentResult.setSamplerData(currentResult.getSamplerData() + LINE_SEP + LINE_SEP +
+    private void setErrorSampleResult(SampleResult result) {
+        SampleResult errorResult = (SampleResult) props.get("errorSampleResult");
+        result.setRequestHeaders(errorResult.getRequestHeaders());
+        result.setResponseHeaders(errorResult.getRequestHeaders());
+        result.setSamplerData(result.getSamplerData() + LINE_SEP + LINE_SEP +
                 "外部脚本中，以下 Sample执行失败：" + LINE_SEP +
                 "【Error Sample Name】: " + errorResult.getSampleLabel() + LINE_SEP +
                 "【Error Request Data】:" + LINE_SEP +
                 errorResult.getSamplerData());
-        currentResult.setResponseData(currentResult.getResponseDataAsString() + LINE_SEP + LINE_SEP +
+        result.setResponseData(result.getResponseDataAsString() + LINE_SEP + LINE_SEP +
                         "【Error Response Data】:" + LINE_SEP +
                         errorResult.getResponseDataAsString(),
                 StandardCharsets.UTF_8.name());
@@ -248,6 +254,40 @@ public class ExecuteExternalScript extends AbstractSampler {
     }
 
     /**
+     * 设置线程组的 sample错误时的动作强制设为错误时启动下一进程循环，线程数强制设为1，循环次数强制设为1
+     *
+     * @param hashTree jmx脚本的 HashTree对象
+     */
+    private void setThreadGroupParams(HashTree hashTree) {
+        // 获取 TestPlan的HashTree对象
+        HashTree testPlanTree = hashTree.get(hashTree.getArray()[0]);
+
+        // 从 HashTree中搜索对应的组件对象
+        SearchByClass<AbstractThreadGroup> searcher = new SearchByClass<>(AbstractThreadGroup.class);
+        testPlanTree.traverse(searcher);
+
+        if (searcher.getSearchResults().size() != 1) {
+            throw new ServiceException("外部脚本中只支持存在一个线程组，请修改后重试");
+        }
+
+        for (AbstractThreadGroup threadGroup : searcher.getSearchResults()) {
+            if (!threadGroup.getOnErrorStartNextLoop()) {
+                logger.info("外部脚本中的线程组只支持错误时启动下一进程循环，已强制修改为错误时启动下一进程循环");
+                threadGroup.setProperty(AbstractThreadGroup.ON_SAMPLE_ERROR, AbstractThreadGroup.ON_SAMPLE_ERROR_START_NEXT_LOOP);
+            }
+            if (threadGroup.getNumThreads() != 1) {
+                logger.info("外部脚本的线程组只支持单次执行，已强制修改线程数为1");
+                threadGroup.setNumThreads(1);
+            }
+            LoopController loopController = (LoopController) threadGroup.getSamplerController();
+            if (loopController.getLoops() != 1) {
+                logger.info("外部脚本的线程组只支持单次执行，已强制修改次数为1");
+                loopController.setLoops(1);
+            }
+        }
+    }
+
+    /**
      * 清空外部脚本的执行结果
      */
     private void clearExternalScriptProps() {
@@ -258,6 +298,11 @@ public class ExecuteExternalScript extends AbstractSampler {
     }
 
     private void setPropsWithSuffix(ExternalScriptResultDTO scriptResult) {
+        Map<String, Object> scriptData = scriptResult.getExternalScriptData();
+        if (MapUtils.isEmpty(scriptData)) {
+            return;
+        }
+
         String propsNameSuffix = getPropsNameSuffix();
         if (StringUtil.isBlank(propsNameSuffix)) {
             scriptResult.getExternalScriptData().forEach((key, value) -> props.put(key, value.toString()));
