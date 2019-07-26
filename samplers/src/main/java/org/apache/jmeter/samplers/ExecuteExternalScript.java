@@ -42,9 +42,9 @@ public class ExecuteExternalScript extends AbstractSampler {
 
     private static final Logger logger = LogUtil.getLogger(ExecuteExternalScript.class);
 
-    private Properties props = JMeterUtils.getJMeterProperties();
-
     private static final String LINE_SEP = FileUtil.LINE_SEPARATOR;
+
+    private Properties props = JMeterUtils.getJMeterProperties();
 
     public static final String EXTERNAL_SCRIPT_PATH = "ExecuteExternalScript.externalScriptPath";
     public static final String SCRIPT_NAME = "ExecuteExternalScript.scriptName";
@@ -93,11 +93,11 @@ public class ExecuteExternalScript extends AbstractSampler {
     }
 
     private String getPropsNameSuffix() {
-        return getPropertyAsString(PROPS_NAME_SUFFIX);
+        return JMeterUtils.getPropDefault("propsNameSuffix", getPropertyAsString(PROPS_NAME_SUFFIX));
     }
 
     private String getIsPrintToConsole() {
-        return getPropertyAsString(IS_PRINT_TO_CONSOLE);
+        return JMeterUtils.getPropDefault("printSampleResultToConsole", getPropertyAsString(IS_PRINT_TO_CONSOLE));
     }
 
     private String getScriptPath() {
@@ -116,6 +116,7 @@ public class ExecuteExternalScript extends AbstractSampler {
         HashTree clonedTree = loadScriptTree(scriptAbsPath);
 
         // 设置 JMeterProps，用于传递给外部脚本使用
+        props.put("propsNameSuffix", getPropsNameSuffix());
         props.put("printSampleResultToConsole", getIsPrintToConsole());
         props.put("configName", JMeterVarsUtil.getDefault("ENVDataSet.configName"));
 
@@ -291,7 +292,8 @@ public class ExecuteExternalScript extends AbstractSampler {
      * 清空外部脚本的执行结果
      */
     private void clearExternalScriptProps() {
-        props.remove("isExecuteSuccess");
+        props.remove("configName");
+        props.remove("propsNameSuffix");
         props.remove("printSampleResultToConsole");
         props.remove("errorSampleResult");
         props.remove("externalScriptResult");
@@ -299,6 +301,7 @@ public class ExecuteExternalScript extends AbstractSampler {
 
     private void setPropsWithSuffix(ExternalScriptResultDTO scriptResult) {
         Map<String, Object> scriptData = scriptResult.getExternalScriptData();
+
         if (MapUtils.isEmpty(scriptData)) {
             return;
         }

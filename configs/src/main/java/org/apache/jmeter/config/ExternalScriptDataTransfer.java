@@ -39,6 +39,8 @@ public class ExternalScriptDataTransfer extends ConfigTestElement implements Thr
 
     private int completedSampleCount;
 
+    private boolean isExecuteSuccess = true;
+
     public ExternalScriptDataTransfer() {
         super();
         isPrintSampleResultToConsole = Boolean.valueOf(JMeterUtils.getProperty("printSampleResultToConsole"));
@@ -58,7 +60,7 @@ public class ExternalScriptDataTransfer extends ConfigTestElement implements Thr
         }
 
         if (!result.isSuccessful()) {
-            props.put("isExecuteSuccess", false);
+            isExecuteSuccess = false;
             props.put("errorSampleResult", result);
         }
 
@@ -68,21 +70,21 @@ public class ExternalScriptDataTransfer extends ConfigTestElement implements Thr
             Collection<Map.Entry<String, Object>> subtract = CollectionUtils.subtract(
                     getThreadContext().getVariables().entrySet(), clonedVars.entrySet());
 
+            Map<String, Object> sentToPropsMap = new HashMap<>();
             if (!subtract.isEmpty()) {
                 // 把差集结果放入临时 map对象中
-                Map<String, Object> sentToPropsMap = new HashMap<>();
                 subtract.forEach(entry -> sentToPropsMap.put(entry.getKey(), entry.getValue()));
 
                 // 删除不必要的key
                 removeUnwantedKey(sentToPropsMap);
                 logger.debug("sentToPropsMap after removeUnwantedKey=" + JsonUtil.toJson(sentToPropsMap));
-
-                // 将增量的 JMeterVars写入 ExternalScriptResultDTO中返回给调用者
-                ExternalScriptResultDTO scriptResult = new ExternalScriptResultDTO();
-                scriptResult.setExecuteSuccess((boolean) props.get("isExecuteSuccess"));
-                scriptResult.setExternalScriptData(sentToPropsMap);
-                props.put("externalScriptResult", scriptResult);
             }
+
+            // 将增量的 JMeterVars写入 ExternalScriptResultDTO中返回给调用者
+            ExternalScriptResultDTO scriptResult = new ExternalScriptResultDTO();
+            scriptResult.setExecuteSuccess(isExecuteSuccess);
+            scriptResult.setExternalScriptData(sentToPropsMap);
+            props.put("externalScriptResult", scriptResult);
         }
     }
 
@@ -96,8 +98,6 @@ public class ExternalScriptDataTransfer extends ConfigTestElement implements Thr
 
     @Override
     public void threadStarted() {
-        props.put("isExecuteSuccess", true);
-
         // 获取当前线程组下的 sample数量， sample总数 = 线程组 sample数 * 线程组循环数
         threadGroupSampleCount = getSampleCount(getThreadContext().getThread().getTestTree());
 
@@ -108,6 +108,7 @@ public class ExternalScriptDataTransfer extends ConfigTestElement implements Thr
     @Override
     public void threadFinished() {
         // 线程组执行结束时清理数据
+        isExecuteSuccess = true;
         isPrintSampleResultToConsole = false;
         threadGroupSampleCount = 0;
         completedSampleCount = 0;
