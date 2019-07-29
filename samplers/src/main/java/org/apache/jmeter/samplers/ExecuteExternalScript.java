@@ -55,7 +55,7 @@ public class ExecuteExternalScript extends AbstractSampler {
     @Override
     public SampleResult sample(Entry entry) {
         String scriptPath = getScriptPath();
-        logger.debug("开始执行外部脚本[" + scriptPath + "]");
+        logger.debug("开始执行外部脚本[{}]", scriptPath);
 
         SampleResult result = new SampleResult();
         result.setSampleLabel(getName());
@@ -85,7 +85,7 @@ public class ExecuteExternalScript extends AbstractSampler {
             // 清理外部脚本中设置的 JMeterProps
             clearExternalScriptProps();
         }
-        logger.debug("执行外部脚本成功[" + scriptPath + "]");
+        logger.debug("执行外部脚本成功[{}]", scriptPath);
         return result;
     }
 

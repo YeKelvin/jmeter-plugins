@@ -83,8 +83,8 @@ public class Sign extends AbstractFunction {
             HTTPSamplerProxy httpSamplerProxy = (HTTPSamplerProxy) currentSampler;
             Arguments args = httpSamplerProxy.getArguments();
 
-            logger.debug("current sign http url= " + getUrl(httpSamplerProxy));
-            logger.debug("sign prefix=" + prefixStr);
+            logger.debug("current sign http url={}", getUrl(httpSamplerProxy));
+            logger.debug("sign prefix={}", prefixStr);
 
             // 报文加签
             sign = Signature.sign(args.getArgument(0).getValue(), prefixStr);

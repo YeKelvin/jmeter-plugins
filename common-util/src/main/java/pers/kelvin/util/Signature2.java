@@ -6,7 +6,6 @@ import org.slf4j.Logger;
 import pers.kelvin.util.exception.ExceptionUtil;
 import pers.kelvin.util.log.LogUtil;
 
-import java.io.IOException;
 import java.security.MessageDigest;
 import java.util.*;
 
@@ -29,11 +28,9 @@ public class Signature2 {
         StringBuilder sb = new StringBuilder();
         String sign = null;
         if (!map.isEmpty()) {
-            resultMap.forEach((key, value) -> {
-                sorted(sb, key, value);
-            });
+            resultMap.forEach((key, value) -> sorted(sb, key, value));
             sign = sb.substring(0, sb.length() - 1);
-            logger.debug("sign after md5=" + prefix + "&" + sign);
+            logger.debug("sign after md5={}&{}", prefix, sign);
         }
         if (sign != null && prefix != null && prefix != "") {
             sign = md5(prefix + "&" + sign);
@@ -43,9 +40,9 @@ public class Signature2 {
 
     private static void sorted(StringBuilder sb, Object key, Object value) {
         if (value instanceof Map) {
-            sb.append(key).append("=").append(sortedMap((Map) value)).append("&");
+            sb.append(key).append("=").append(sortedMap(new HashMap<Object, Object>((Map) value))).append("&");
         } else if (value instanceof List) {
-            sb.append(key).append("=").append(sortedArray((List) value)).append("&");
+            sb.append(key).append("=").append(sortedArray(new ArrayList<Object>((List) value))).append("&");
         } else {
             sb.append(key).append("=").append(value).append("&");
         }
@@ -70,9 +67,9 @@ public class Signature2 {
         sb.append("[");
         list.forEach(item -> {
             if (item instanceof Map) {
-                sb.append(sortedMap((Map) item));
+                sb.append(sortedMap(new HashMap<Object, Object>((Map) item)));
             } else if (item instanceof List) {
-                sb.append(sortedArray((List) item));
+                sb.append(sortedArray(new ArrayList<Object>((List) item)));
             } else {
                 sb.append(item);
             }
@@ -82,11 +79,6 @@ public class Signature2 {
         return sb.substring(0, sb.length() - 2) + "]";
     }
 
-    public static Map<Object, Object> toMap(String json) throws IOException {
-        Map<Object, Object> mapTypes = objectMapper.readValue(json, HashMap.class);
-        return mapTypes;
-    }
-
     /**
      * Map 根据keyName 排序
      */
@@ -94,12 +86,7 @@ public class Signature2 {
         if (map == null || map.isEmpty()) {
             return null;
         }
-        Map<Object, Object> sortMap = new TreeMap<Object, Object>(new Comparator<Object>() {
-            public int compare(Object obj1, Object obj2) {
-                // 降序排序
-                return obj1.toString().compareTo(obj2.toString());
-            }
-        });
+        Map<Object, Object> sortMap = new TreeMap<>(Comparator.comparing(Object::toString));
         sortMap.putAll(map);
         return sortMap;
     }

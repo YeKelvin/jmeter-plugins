@@ -54,8 +54,8 @@ public class ENVDataSet extends ConfigTestElement implements TestStateListener {
         HashMap<String, String> envMap = new HashMap<>();
         if (isEnvFile(filePath)) {
             String envJson = FileUtil.readEnvFile(filePath);
-            logger.debug("filePath=" + filePath);
-            logger.debug("envJson=" + envJson);
+            logger.debug("filePath={}", filePath);
+            logger.debug("envJson={}", envJson);
             envMap = JsonUtil.fromJson(envJson, hashMap);
         } else {
             logger.error("{}非 .env文件", filePath);

@@ -60,7 +60,7 @@ public class TelnetUtil {
      */
     public String invokeDubbo(String interfaceName, String request) throws IOException {
         String result = sendCommand("invoke " + interfaceName + "(" + request + ")");
-        logger.debug("invoke result=" + result);
+        logger.debug("invoke result={}", result);
         return result;
     }
 

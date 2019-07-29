@@ -242,7 +242,7 @@ public class DubboTelnetSampler extends AbstractSampler {
         String dubboPort = address.length == 1 ? "0000" : address[1];
 
         boolean isSSHTelnet = isSSHTelnet();
-        logger.debug("isSSHTelnet=" + isSSHTelnet);
+        logger.debug("isSSHTelnet={}", isSSHTelnet);
 
         if (isSSHTelnet) {
             return sshTelnetInvoke(dubboHost, dubboPort, interfaceName, requestData);

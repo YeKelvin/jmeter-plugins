@@ -190,7 +190,7 @@ public class HttpClientService {
 
     public void printAllCookie() {
         List<Cookie> cookies = cookieStore.getCookies();
-        cookies.forEach(cookie -> logger.info("cookie key=" + cookie.getName() + ",value=" + cookie.getValue()));
+        cookies.forEach(cookie -> logger.info("cookie key={},value={}", cookie.getName(), cookie.getValue()));
     }
 
     /**

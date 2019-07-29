@@ -91,7 +91,7 @@ public class SSHTelnetClient {
         out = new PrintStream(channelShell.getOutputStream(), true, charsetName);
         // 及时读取消息
         String connectMsg = readUntil("]$");
-        logger.debug("connectMsg=" + connectMsg);
+        logger.debug("connectMsg={}", connectMsg);
     }
 
     /**
@@ -103,7 +103,7 @@ public class SSHTelnetClient {
     public void telnetDubbo(String dubboHost, String dubboPort) throws IOException {
         write("telnet " + dubboHost + " " + dubboPort);
         String telnetResult = readUntil("Escape character is '^]'.", "]$");
-        logger.debug(telnetResult);
+        logger.debug("telnetResult={}", telnetResult);
         if (!telnetResult.contains("Escape character is '^]'.")) {
             throw new ServiceException("telnetDubbo 连接失败\n" + telnetResult);
         }
@@ -121,17 +121,17 @@ public class SSHTelnetClient {
         write("invoke " + interfaceName + "(" + requestData + ")");
         // 读取invoke的命令消息
         String invokeCommand = readUntil("\n");
-        logger.debug("invokeCommand=" + invokeCommand);
+        logger.debug("invokeCommand={}", invokeCommand);
         // 读取空行
         readUntil("\n");
         String result = readUntil(DUBBO_FLAG);
-        logger.debug(result);
+        logger.debug("result={}", result);
         // 第一次invoke命令后会返回一个dubbo>标识符，接收响应后还会再返回一个dubbo>标识符
         // 判断第一次读取是否只读到一个dubbo>标识符，如果是则再读取一次
         if (result.equals("dubbo>")) {
             logger.debug("再读一次dubbo响应");
             result = readUntil(DUBBO_FLAG);
-            logger.debug(result);
+            logger.debug("result={}", result);
         }
         return extractResponse(result);
     }

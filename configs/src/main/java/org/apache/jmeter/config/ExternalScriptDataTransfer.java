@@ -79,7 +79,7 @@ public class ExternalScriptDataTransfer extends ConfigTestElement implements Thr
 
                 // 删除不必要的key
                 removeUnwantedKey(sentToPropsMap);
-                logger.debug("sentToPropsMap after removeUnwantedKey=" + JsonUtil.toJson(sentToPropsMap));
+                logger.debug("sentToPropsMap after removeUnwantedKey={}", JsonUtil.toJson(sentToPropsMap));
             }
 
             // 将增量的 JMeterVars写入 ExternalScriptResultDTO中返回给调用者

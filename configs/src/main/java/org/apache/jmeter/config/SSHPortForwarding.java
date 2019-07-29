@@ -40,7 +40,7 @@ public class SSHPortForwarding extends ConfigTestElement implements TestStateLis
     @Override
     public void testStarted(String s) {
         boolean isSSHPortForwarding = isSSHPortForwarding();
-        logger.debug("isSSHPortForwarding=" + isSSHPortForwarding);
+        logger.debug("isSSHPortForwarding={}", isSSHPortForwarding);
 
         if (isSSHPortForwarding) {
             String username = getSSHUserName();
@@ -56,13 +56,13 @@ public class SSHPortForwarding extends ConfigTestElement implements TestStateLis
             String remoteHost = remoteAddres[0];
             int remotePort = Integer.valueOf(remoteAddres.length == 1 ? "22" : remoteAddres[1]);
 
-            logger.debug("username=" + username);
-            logger.debug("password=" + password);
-            logger.debug("sshHost=" + sshHost);
-            logger.debug("sshPort=" + sshPort);
-            logger.debug("remoteHost=" + remoteHost);
-            logger.debug("remotePort=" + remotePort);
-            logger.debug("localForwardingPort=" + localForwardingPort);
+            logger.debug("username={}", username);
+            logger.debug("password={}", password);
+            logger.debug("sshHost={}", sshHost);
+            logger.debug("sshPort={}", sshPort);
+            logger.debug("remoteHost={}", remoteHost);
+            logger.debug("remotePort={}", remotePort);
+            logger.debug("localForwardingPort={}", localForwardingPort);
 
             try {
                 // ssh连接
@@ -73,7 +73,7 @@ public class SSHPortForwarding extends ConfigTestElement implements TestStateLis
                 // 本地端口转发
                 session.setPortForwardingL(localForwardingPort, remoteHost, remotePort);
                 session.connect();
-                logger.info("本地转发端口=" + localForwardingPort);
+                logger.info("本地转发端口={}", localForwardingPort);
             } catch (Exception e) {
                 logger.error(ExceptionUtil.getStackTrace(e));
             }
@@ -96,7 +96,7 @@ public class SSHPortForwarding extends ConfigTestElement implements TestStateLis
             try {
                 int localForwardingPort = getLocalForwardingPort();
                 session.delPortForwardingL(localForwardingPort);
-                logger.info("删除转发的端口=" + localForwardingPort);
+                logger.info("删除转发的端口={}", localForwardingPort);
             } catch (JSchException e) {
                 logger.error(ExceptionUtil.getStackTrace(e));
             } finally {

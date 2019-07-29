@@ -46,7 +46,7 @@ public class Signature {
         if (StringUtil.isNotBlank(prefix)) {
             sign = prefix + "&" + sign;
         }
-        logger.debug("sign before md5= " + sign);
+        logger.debug("sign before md5={}", sign);
 
         // md5加密
         if (StringUtil.isNotBlank(sign)) {
@@ -109,9 +109,9 @@ public class Signature {
             } else {
                 sb.append(item);
             }
-            sb.append(",");
+            sb.append(", ");
         });
-        return sb.substring(0, sb.length() - 1) + "]";
+        return sb.substring(0, sb.length() - 2) + "]";
     }
 
     /**

@@ -36,7 +36,7 @@ public class FailureResultSaver extends ConfigTestElement implements SampleListe
 
     private File getFailureLog() {
         String logPath = getLogPath();
-        logger.debug("LogPath=" + logPath);
+        logger.debug("LogPath={}", logPath);
         if (failureLog == null) {
             failureLog = new File(logPath);
         }

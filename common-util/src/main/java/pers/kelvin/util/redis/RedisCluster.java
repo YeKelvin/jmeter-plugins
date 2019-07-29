@@ -53,7 +53,7 @@ public class RedisCluster {
             setResult = redis.set(key, value);
             redis.close();
         } catch (IOException e) {
-            logger.error(String.format("%s\n%s", e.getMessage(), Arrays.toString(e.getStackTrace())));
+            logger.error("{}\n{}", e.getMessage(), Arrays.toString(e.getStackTrace()));
         }
         return setResult;
     }
@@ -65,7 +65,7 @@ public class RedisCluster {
             isExisted = redis.exists(key);
             redis.close();
         } catch (IOException e) {
-            logger.error(String.format("%s\n%s", e.getMessage(), Arrays.toString(e.getStackTrace())));
+            logger.error("{}\n{}", e.getMessage(), Arrays.toString(e.getStackTrace()));
         }
         return isExisted;
     }
@@ -77,7 +77,7 @@ public class RedisCluster {
             delResult = redis.del(key);
             redis.close();
         } catch (IOException e) {
-            logger.error(String.format("%s\n%s", e.getMessage(), Arrays.toString(e.getStackTrace())));
+            logger.error("{}\n{}", e.getMessage(), Arrays.toString(e.getStackTrace()));
         }
         return String.valueOf(delResult);
 
@@ -90,7 +90,7 @@ public class RedisCluster {
             redis.append(key, value);
             redis.close();
         } catch (IOException e) {
-            logger.error(String.format("%s\n%s", e.getMessage(), Arrays.toString(e.getStackTrace())));
+            logger.error("{}\n{}", e.getMessage(), Arrays.toString(e.getStackTrace()));
         }
         return String.valueOf(appendResult);
     }

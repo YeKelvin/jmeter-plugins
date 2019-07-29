@@ -63,11 +63,11 @@ public class GoogleAuthUserInfo implements UserInfo, UIKeyboardInteractive {
                                               String instruction,
                                               String[] prompt,
                                               boolean[] echo) {
-        logger.debug("destination=" + destination);
-        logger.debug("name=" + name);
-        logger.debug("instruction=" + instruction);
-        logger.debug("prompt=" + Arrays.toString(prompt));
-        logger.debug("echo=" + Arrays.toString(echo));
+        logger.debug("destination={}", destination);
+        logger.debug("name={}", name);
+        logger.debug("instruction={}", instruction);
+        logger.debug("prompt={}", Arrays.toString(prompt));
+        logger.debug("echo={}", Arrays.toString(echo));
 
         String[] response = new String[prompt.length];
         if (prompt[0].contains("Verification code:")) {

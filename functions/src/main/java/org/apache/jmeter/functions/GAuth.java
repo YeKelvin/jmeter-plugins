@@ -75,10 +75,10 @@ public class GAuth extends AbstractFunction {
     public synchronized String execute(SampleResult sampleResult, Sampler sampler) {
         String googleAuthCode = "";
         String secret = secretKey.execute().trim();
-        logger.debug("Google Secret Key=" + secret);
+        logger.debug("Google Secret Key={}", secret);
         try {
             googleAuthCode = GoogleAuthenticator.getCode(secret);
-            logger.debug("Google Auth Code=" + googleAuthCode);
+            logger.debug("Google Auth Code={}", googleAuthCode);
         } catch (NoSuchAlgorithmException | InvalidKeyException e) {
             logger.error(ExceptionUtil.getStackTrace(e));
         }
