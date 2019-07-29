@@ -65,14 +65,18 @@ public class CambodiaMobilePhone {
      * 随机生成柬埔寨手机号前缀
      */
     public static String getRandomPhoneCode() {
-        return PHONE_CODE.get(new Random().nextInt(PHONE_CODE.size() - 1));
+        return PHONE_CODE.get(new Random().nextInt(PHONE_CODE.size()));
     }
 
     /**
      * 随机生成柬埔寨手机号长度
      */
     public static int getRandomPhoneLength() {
-        return PHONE_LENGTH.get(new Random().nextInt(PHONE_CODE.size() - 1));
+        return PHONE_LENGTH.get(new Random().nextInt(PHONE_LENGTH.size()));
+    }
+
+    public static void main(String[] args) {
+        System.out.println(getRandomPhoneLength());
     }
 
 

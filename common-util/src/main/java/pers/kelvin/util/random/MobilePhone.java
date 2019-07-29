@@ -75,28 +75,28 @@ public class MobilePhone {
      * 随机生成 移动/联通/电信手机号码前缀三位数
      */
     public static String getRandomPhoneCode() {
-        return PHONE_CODE.get(new Random().nextInt(PHONE_CODE.size() - 1));
+        return PHONE_CODE.get(new Random().nextInt(PHONE_CODE.size()));
     }
 
     /**
      * 随机生成 移动手机号码前缀三位数
      */
     public static String getRandomCMCCCode() {
-        return CMCC_CODE.get(new Random().nextInt(CMCC_CODE.size() - 1));
+        return CMCC_CODE.get(new Random().nextInt(CMCC_CODE.size()));
     }
 
     /**
      * 随机生成 联通手机号码前缀三位数
      */
     public static String getRandomCUCCCode() {
-        return CUCC_CODE.get(new Random().nextInt(CUCC_CODE.size() - 1));
+        return CUCC_CODE.get(new Random().nextInt(CUCC_CODE.size()));
     }
 
     /**
      * 随机生成 电信手机号码前缀三位数
      */
     public static String getRandomTelecomCode() {
-        return TELECOM_CODE.get(new Random().nextInt(TELECOM_CODE.size() - 1));
+        return TELECOM_CODE.get(new Random().nextInt(TELECOM_CODE.size()));
     }
 
 }
