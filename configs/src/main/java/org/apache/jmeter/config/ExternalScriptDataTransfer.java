@@ -41,6 +41,8 @@ public class ExternalScriptDataTransfer extends ConfigTestElement implements Thr
 
     private boolean isExecuteSuccess = true;
 
+    private SampleResult errorSampleResult;
+
     public ExternalScriptDataTransfer() {
         super();
         isPrintSampleResultToConsole = Boolean.valueOf(JMeterUtils.getProperty("printSampleResultToConsole"));
@@ -61,7 +63,7 @@ public class ExternalScriptDataTransfer extends ConfigTestElement implements Thr
 
         if (!result.isSuccessful()) {
             isExecuteSuccess = false;
-            props.put("errorSampleResult", result);
+            errorSampleResult = result;
         }
 
         // 当所有 sample执行完毕时，把增量的 JMeterVars写入 JMeterProps中，用于在线程组间传递数据
@@ -84,6 +86,7 @@ public class ExternalScriptDataTransfer extends ConfigTestElement implements Thr
             ExternalScriptResultDTO scriptResult = new ExternalScriptResultDTO();
             scriptResult.setExecuteSuccess(isExecuteSuccess);
             scriptResult.setExternalScriptData(sentToPropsMap);
+            scriptResult.setErrorSampleResult(errorSampleResult);
             props.put("externalScriptResult", scriptResult);
         }
     }
@@ -109,6 +112,7 @@ public class ExternalScriptDataTransfer extends ConfigTestElement implements Thr
     public void threadFinished() {
         // 线程组执行结束时清理数据
         isExecuteSuccess = true;
+        errorSampleResult = null;
         isPrintSampleResultToConsole = false;
         threadGroupSampleCount = 0;
         completedSampleCount = 0;

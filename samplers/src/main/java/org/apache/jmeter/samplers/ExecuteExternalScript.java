@@ -3,6 +3,7 @@ package org.apache.jmeter.samplers;
 
 import org.apache.commons.collections4.MapUtils;
 import org.apache.jmeter.JMeter;
+import org.apache.jmeter.config.ENVDataSet;
 import org.apache.jmeter.config.ExternalScriptDataTransfer;
 import org.apache.jmeter.config.ExternalScriptResultDTO;
 import org.apache.jmeter.config.SSHPortForwarding;
@@ -62,10 +63,14 @@ public class ExecuteExternalScript extends AbstractSampler {
         try {
             result.setSamplerData("执行外部脚本：" + scriptPath);
             result.sampleStart();
-            result.setResponseData(runExternalScript(scriptPath), StandardCharsets.UTF_8.name());
+            // 运行外部脚本
+            ExternalScriptResultDTO externalScriptResult = runExternalScript(scriptPath);
+            result.setResponseData(getExecuteResult(externalScriptResult), StandardCharsets.UTF_8.name());
             result.setSuccessful(true);
-            if (props.containsKey("errorSampleResult")) {
-                setErrorSampleResult(result);
+            // 判断外部脚本的 sampler是否运行失败
+            SampleResult errorResult = externalScriptResult.getErrorSampleResult();
+            if (errorResult != null) {
+                setErrorSampleResult(result, errorResult);
                 result.setSuccessful(false);
             }
         } catch (Exception e) {
@@ -77,7 +82,7 @@ public class ExecuteExternalScript extends AbstractSampler {
             result.setResponseData(ExceptionUtil.getStackTrace(e), StandardCharsets.UTF_8.name());
         } finally {
             result.sampleEnd();
-            // 重置外部脚本中设置的 isExecuteSuccess属性和 errorSampleResult属性
+            // 清理外部脚本中设置的 JMeterProps
             clearExternalScriptProps();
         }
         logger.debug("执行外部脚本成功[" + scriptPath + "]");
@@ -111,14 +116,14 @@ public class ExecuteExternalScript extends AbstractSampler {
      * @param scriptAbsPath 脚本绝对路径
      * @return 执行结果
      */
-    private String runExternalScript(String scriptAbsPath) throws IllegalUserActionException, IOException, InterruptedException {
+    private ExternalScriptResultDTO runExternalScript(String scriptAbsPath) throws IllegalUserActionException, IOException, InterruptedException {
         // 加载脚本
         HashTree clonedTree = loadScriptTree(scriptAbsPath);
 
         // 设置 JMeterProps，用于传递给外部脚本使用
         props.put("propsNameSuffix", getPropsNameSuffix());
         props.put("printSampleResultToConsole", getIsPrintToConsole());
-        props.put("configName", JMeterVarsUtil.getDefault("ENVDataSet.configName"));
+        props.put("configName", JMeterVarsUtil.getDefault(ENVDataSet.CONFIG_NAME));
 
         // 开始执行外部脚本
         StandardJMeterEngine engine = new StandardJMeterEngine();
@@ -137,8 +142,7 @@ public class ExecuteExternalScript extends AbstractSampler {
         // 如果设置了 JMeterProps属性名称后缀，则把外部脚本中获取的变量名都加上后缀
         setPropsWithSuffix(scriptResult);
 
-        // Json化JMeter属性的差集作为结果返回
-        return getExecuteResult(scriptResult);
+        return scriptResult;
     }
 
     /**
@@ -199,8 +203,7 @@ public class ExecuteExternalScript extends AbstractSampler {
      *
      * @param result SampleResult对象
      */
-    private void setErrorSampleResult(SampleResult result) {
-        SampleResult errorResult = (SampleResult) props.get("errorSampleResult");
+    private void setErrorSampleResult(SampleResult result, SampleResult errorResult) {
         result.setRequestHeaders(errorResult.getRequestHeaders());
         result.setResponseHeaders(errorResult.getRequestHeaders());
         result.setSamplerData(result.getSamplerData() + LINE_SEP + LINE_SEP +
@@ -295,7 +298,6 @@ public class ExecuteExternalScript extends AbstractSampler {
         props.remove("configName");
         props.remove("propsNameSuffix");
         props.remove("printSampleResultToConsole");
-        props.remove("errorSampleResult");
         props.remove("externalScriptResult");
     }
 

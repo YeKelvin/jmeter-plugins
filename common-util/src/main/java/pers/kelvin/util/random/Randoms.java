@@ -168,11 +168,11 @@ public class Randoms {
     }
 
     /**
-     * 获取柬埔寨手机号
+     * 获取柬埔寨手机号码
      */
     public static String getCambodiaMobileNumber() {
-        String[] mobileNumberInfo = CambodiaMobilePhone.getRandomPhoneCode();
-        return getNumber("855" + mobileNumberInfo[0], Integer.valueOf(mobileNumberInfo[1]));
+        return getNumber("855" +
+                CambodiaMobilePhone.getRandomPhoneCode(), CambodiaMobilePhone.getRandomPhoneLength());
     }
 
 }

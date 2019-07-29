@@ -118,17 +118,44 @@ public class GroovyUtil {
         for (char ch : expression.toCharArray()) {
             switch (ch) {
                 case '|':
+                    if (previous == '|') {
+                        sb.append("')||response.contains('");
+                    } else if (previous == '\\') {
+                        sb.append(ch);
+                    } else {
+                        sb.append(previous).append(ch);
+                    }
                     break;
                 case '&':
+                    if (previous == '&') {
+                        sb.append("')&&response.contains('");
+                    } else if (previous == '\\') {
+                        sb.append(ch);
+                    } else {
+                        sb.append(previous).append(ch);
+                    }
                     break;
                 case '!':
+                    if (previous != '\\') {
+                        sb.append("')!response.contains('");
+                    } else {
+                        sb.append(ch);
+                    }
                     break;
                 default:
                     sb.append(ch);
             }
             previous = ch;
         }
-        return sb.toString();
+
+        String groovyExpression = sb.toString() + "')";
+        if (expression.startsWith("!")) {
+            groovyExpression = groovyExpression.substring(2);
+        } else {
+            groovyExpression = "response.contains('" + groovyExpression;
+        }
+
+        return groovyExpression;
     }
 
     /**
