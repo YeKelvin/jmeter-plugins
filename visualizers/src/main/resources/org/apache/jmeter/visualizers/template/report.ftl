@@ -131,6 +131,7 @@
         .break-word {
             word-wrap: break-word;
             word-break: break-all;
+            white-space: pre;
         }
 
         .unable-select {
