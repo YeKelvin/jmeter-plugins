@@ -8,6 +8,7 @@ import org.apache.jmeter.threads.JMeterContextService;
 import org.apache.jmeter.util.JMeterUtils;
 import org.slf4j.Logger;
 import pers.kelvin.util.FileUtil;
+import pers.kelvin.util.exception.ExceptionUtil;
 import pers.kelvin.util.json.JsonUtil;
 import pers.kelvin.util.log.LogUtil;
 
@@ -58,12 +59,17 @@ public class ENVDataSet extends ConfigTestElement implements TestStateListener, 
             String envJson = FileUtil.readEnvFile(filePath);
             logger.debug("filePath={}", filePath);
             logger.debug("envJson={}", envJson);
-            envMap = JsonUtil.fromJson(envJson, hashMap);
+            try {
+                envMap = JsonUtil.fromJson(envJson, hashMap);
+            } catch (Exception e) {
+                logger.error(ExceptionUtil.getStackTrace(e));
+            }
         } else {
             logger.error("{}非 .env文件", filePath);
         }
         return envMap;
     }
+
 
     /**
      * 判断文件后缀是否为env
