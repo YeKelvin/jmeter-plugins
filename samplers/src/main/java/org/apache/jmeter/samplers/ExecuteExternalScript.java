@@ -39,7 +39,7 @@ import java.util.Properties;
 /**
  * @author KelvinYe
  */
-public class ExecuteExternalScript extends AbstractSampler {
+public class ExecuteExternalScript extends AbstractSampler implements Interruptible {
 
     private static final Logger logger = LogUtil.getLogger(ExecuteExternalScript.class);
 
@@ -316,4 +316,9 @@ public class ExecuteExternalScript extends AbstractSampler {
         }
     }
 
+    @Override
+    public boolean interrupt() {
+        clearExternalScriptProps();
+        return true;
+    }
 }

@@ -4,6 +4,7 @@ package org.apache.jmeter.config;
 import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;
+import org.apache.jmeter.samplers.Interruptible;
 import org.apache.jmeter.testelement.TestStateListener;
 import org.apache.jmeter.util.JMeterUtils;
 import org.slf4j.Logger;
@@ -16,7 +17,7 @@ import pers.kelvin.util.log.LogUtil;
  *
  * @author Kelvin.Ye
  */
-public class SSHPortForwarding extends ConfigTestElement implements TestStateListener {
+public class SSHPortForwarding extends ConfigTestElement implements TestStateListener, Interruptible {
 
     private static final Logger logger = LogUtil.getLogger(SSHPortForwarding.class);
 
@@ -131,5 +132,11 @@ public class SSHPortForwarding extends ConfigTestElement implements TestStateLis
     private boolean isSSHPortForwarding() {
         return JMeterUtils.getPropDefault(
                 "isSSHPortForwarding", JMeterVarsUtil.getDefaultAsBoolean(IS_SSH_PORT_FORWARDING, true));
+    }
+
+    @Override
+    public boolean interrupt() {
+        testEnded();
+        return false;
     }
 }

@@ -1,6 +1,8 @@
 package org.apache.jmeter.config;
 
 import com.google.gson.reflect.TypeToken;
+import org.apache.jmeter.engine.util.NoConfigMerge;
+import org.apache.jmeter.engine.util.NoThreadClone;
 import org.apache.jmeter.testelement.TestStateListener;
 import org.apache.jmeter.threads.JMeterContextService;
 import org.apache.jmeter.util.JMeterUtils;
@@ -18,7 +20,7 @@ import java.util.HashMap;
  * Date: 2018-04-08
  * Time: 17:11
  */
-public class ENVDataSet extends ConfigTestElement implements TestStateListener {
+public class ENVDataSet extends ConfigTestElement implements TestStateListener, NoThreadClone, NoConfigMerge {
 
     private static final Logger logger = LogUtil.getLogger(ENVDataSet.class);
 
