@@ -1,4 +1,4 @@
-package org.apache.jmeter.visualizers;
+package org.apache.jmeter.visualizers.utils;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;

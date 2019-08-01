@@ -1,6 +1,10 @@
 package org.apache.jmeter.visualizers;
 
 import org.apache.jmeter.util.JMeterUtils;
+import org.apache.jmeter.visualizers.data.*;
+import org.apache.jmeter.visualizers.utils.FreemarkerUtil;
+import org.apache.jmeter.visualizers.utils.JavaScriptUtil;
+import org.apache.jmeter.visualizers.utils.JsoupUtil;
 import org.jsoup.nodes.DataNode;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -26,11 +30,10 @@ public class ReportManager {
 
     private static ReportDataSet reportDataSet;
 
-    public static void createReportDataSet() {
-        reportDataSet = new ReportDataSet();
-    }
-
     public static ReportDataSet getReport() {
+        if (reportDataSet == null) {
+            reportDataSet = new ReportDataSet();
+        }
         return reportDataSet;
     }
 
@@ -52,7 +55,7 @@ public class ReportManager {
     /**
      * 获取报告创建时间、最后更新时间和jmeter版本信息
      */
-    private static ReportInfo getReportInfo() {
+    private static ReportInfo createReportInfo() {
         ReportInfo reportInfo = new ReportInfo();
         String currentTime = TimeUtil.currentTimeAsString(DATE_FORMAT_PATTERN);
         reportInfo.setCreateTime(currentTime);
@@ -61,13 +64,33 @@ public class ReportManager {
         return reportInfo;
     }
 
+    private static OverviewInfo createOverviewInfo() {
+        OverviewInfo overviewInfo = new OverviewInfo();
+        overviewInfo.testSuiteAddOne();
+        TestSuiteData testSuite = reportDataSet.getTestSuiteList().get(0);
+        for (TestCaseData testCase : testSuite.getTestCaseList()) {
+            overviewInfo.testCaseAddOne();
+            if (!testCase.isStatus()) {
+                overviewInfo.errorTestCaseAddOne();
+            }
+            for (TestCaseStepData testCaseStep : testCase.getTestCaseStepList()) {
+                overviewInfo.testCaseStepAddOne();
+                if (!testCaseStep.isStatus()) {
+                    overviewInfo.errorTestCaseStepAddOne();
+                }
+            }
+        }
+        return overviewInfo;
+    }
+
     /**
      * 组装并返回 freemarker引擎所需变量
      */
     private static Map<String, Object> getTemplateRootData() {
         Map<String, Object> root = new HashMap<>(1);
         traverseReportData();
-        root.put("reportInfo", JsonUtil.toJson(getReportInfo()));
+        root.put("reportInfo", JsonUtil.toJson(createReportInfo()));
+        root.put("overviewInfo", JsonUtil.toJson(createOverviewInfo()));
         root.put("testSuiteList", JsonUtil.toJson(reportDataSet.getTestSuiteList()));
         return root;
     }
@@ -100,9 +123,8 @@ public class ReportManager {
             String testSuiteListValue = JavaScriptUtil.extractTestSuiteList(jsContent);
             // 提取 js中 reportInfo的值
             String reportInfoValue = JavaScriptUtil.extractReportInfo(jsContent);
-            // 更新 lastUpdateTime
-            reportInfoValue = JavaScriptUtil.updateLastUpdateTime(reportInfoValue,
-                    TimeUtil.currentTimeAsString(DATE_FORMAT_PATTERN));
+            // 提取 js中 overviewInfo的值
+            String overviewInfoValue = JavaScriptUtil.extractOverviewInfo(jsContent);
             // 按顺序整理测试报告数据
             traverseReportData();
             // 循环向数组添加新数据
@@ -110,7 +132,8 @@ public class ReportManager {
                 testSuiteListValue = JavaScriptUtil.appendTestSuiteList(testSuiteListValue, testSuite);
             }
             // 更新js脚本内容
-            jsContent = JavaScriptUtil.updateReportInfo(jsContent, reportInfoValue);
+            jsContent = JavaScriptUtil.updateOverviewInfo(jsContent, overviewInfoValue, createOverviewInfo());
+            jsContent = JavaScriptUtil.updateReportInfo(jsContent, reportInfoValue, TimeUtil.currentTimeAsString(DATE_FORMAT_PATTERN));
             jsContent = JavaScriptUtil.updateTestSuiteList(jsContent, testSuiteListValue);
             // 将更新后的js写入doc
             ((DataNode) vueAppJs.childNode(0)).setWholeData(jsContent);

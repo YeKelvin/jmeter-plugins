@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration status="INFO"><!--TRACE, DEBUG, INFO, WARN, ERROR, FATAL-->
+    <appenders>
+        <Console name="Console" target="SYSTEM_OUT">
+            <PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n"/>
+        </Console>
+    </appenders>
+    <loggers>
+        <logger name="com.jayway.jsonpath" level="WARN"/>
+        <root level="ALL">
+            <appender-ref ref="Console"/>
+        </root>
+    </loggers>
+</configuration>

@@ -14,6 +14,9 @@ import org.apache.jmeter.testelement.TestStateListener;
 import org.apache.jmeter.testelement.ThreadListener;
 import org.apache.jmeter.threads.JMeterContextService;
 import org.apache.jmeter.util.JMeterUtils;
+import org.apache.jmeter.visualizers.data.TestCaseData;
+import org.apache.jmeter.visualizers.data.TestCaseStepData;
+import org.apache.jmeter.visualizers.data.TestSuiteData;
 import pers.kelvin.util.FileUtil;
 import pers.kelvin.util.TimeUtil;
 import pers.kelvin.util.json.JsonPathUtil;
@@ -54,7 +57,6 @@ public class ReportCollector extends AbstractTestElement implements TestStateLis
      */
     @Override
     public void testStarted(String host) {
-        ReportManager.createReportDataSet();
         TestSuiteData testSuiteData = new TestSuiteData();
         testSuiteData.setTitle(getScriptName());
         testSuiteData.setStartTime(TimeUtil.currentTimeAsString(DATE_FORMAT_PATTERN));

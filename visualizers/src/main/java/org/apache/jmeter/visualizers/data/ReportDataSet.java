@@ -1,4 +1,4 @@
-package org.apache.jmeter.visualizers;
+package org.apache.jmeter.visualizers.data;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -15,7 +15,7 @@ import java.util.HashMap;
  * Time     16:38
  */
 @Setter
-@Getter()
+@Getter
 @ToString(exclude = "testSuiteMap")
 public class ReportDataSet {
 
@@ -46,9 +46,7 @@ public class ReportDataSet {
      */
     public void testSuiteMapConvertToList() {
         testSuiteList = new ArrayList<>();
-        for (String key : testSuiteMap.keySet()) {
-            testSuiteList.add(testSuiteMap.get(key));
-        }
+        testSuiteMap.keySet().forEach(key->testSuiteList.add(testSuiteMap.get(key)));
     }
 
 }

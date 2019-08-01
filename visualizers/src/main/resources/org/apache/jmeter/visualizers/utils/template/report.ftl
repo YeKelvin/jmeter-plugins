@@ -129,9 +129,9 @@
         }
 
         .break-word {
+            white-space: pre-wrap;
             word-wrap: break-word;
             word-break: break-all;
-            white-space: pre;
         }
 
         .unable-select {
@@ -516,6 +516,7 @@
           testSuiteFilterValue: null,
           testCaseFilterValue: null,
           reportInfo: ${reportInfo},
+          overviewInfo: ${overviewInfo},
           testSuiteList: ${testSuiteList}
         },
         methods: {

@@ -109,21 +109,33 @@ public class GroovyUtil {
 
     public static String transformExpression2(String expression) {
         // 去除空格
-        expression = expression.replace(" ", "");
         StringBuilder sb = new StringBuilder();
 
         // 上一个字符
         char previous = '\u0000';
+        // 是否在双引号内
+        boolean isInsideQuotes = false;
 
         for (char ch : expression.toCharArray()) {
             switch (ch) {
+                case '\"':
+                    // 非转义符引号才标记
+                    if (previous != '\\') {
+                        isInsideQuotes = !isInsideQuotes;
+                    }
+                    sb.append(ch);
+                    break;
+                case ' ':
+                    // 双引号内保留空格
+                    if (isInsideQuotes) {
+                        sb.append(ch);
+                    }
+                    break;
                 case '|':
                     if (previous == '|') {
                         sb.append("')||response.contains('");
                     } else if (previous == '\\') {
                         sb.append(ch);
-                    } else {
-                        sb.append(previous).append(ch);
                     }
                     break;
                 case '&':
@@ -131,8 +143,6 @@ public class GroovyUtil {
                         sb.append("')&&response.contains('");
                     } else if (previous == '\\') {
                         sb.append(ch);
-                    } else {
-                        sb.append(previous).append(ch);
                     }
                     break;
                 case '!':
@@ -142,8 +152,14 @@ public class GroovyUtil {
                         sb.append(ch);
                     }
                     break;
+                case '\\':
+                    if (previous != '\\') {
+                        sb.append(ch);
+                    }
+                    break;
                 default:
                     sb.append(ch);
+                    break;
             }
             previous = ch;
         }
