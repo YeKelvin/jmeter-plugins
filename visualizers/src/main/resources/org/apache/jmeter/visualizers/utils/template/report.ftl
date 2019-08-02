@@ -6,6 +6,7 @@
     <title>HTML Report</title>
     <script src="https://cdn.jsdelivr.net/npm/vue@2.5.22/dist/vue.min.js"></script>
     <script src="https://unpkg.com/element-ui@2.4.11/lib/index.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/echarts/4.2.1/echarts.min.js"></script>
     <script>
       !function(a){var e,c='<svg><symbol id="icon-close" viewBox="0 0 1024 1024"><path d="M806.4 172.8l-633.6 633.6c-12.8 12.8-12.8 32 0 44.8 12.8 12.8 32 12.8 44.8 0l633.6-633.6c12.8-12.8 12.8-32 0-44.8-12.8-12.8-32-12.8-44.8 0z" fill="#333333" ></path><path d="M172.8 172.8c-12.8 12.8-12.8 32 0 44.8l633.6 633.6c12.8 12.8 32 12.8 44.8 0 12.8-12.8 12.8-32 0-44.8L217.6 172.8c-12.8-12.8-32-12.8-44.8 0z" fill="#333333" ></path></symbol><symbol id="icon-pass" viewBox="0 0 1024 1024"><path d="M512 512m-477.86666667 0a477.86666667 477.86666667 0 1 0 955.73333334 0 477.86666667 477.86666667 0 1 0-955.73333334 0Z" fill="#029E4A" ></path><path d="M830.61333333 364.69333333l-406.4 406.4c-13.22666667 13.22666667-34.98666667 13.22666667-48.32 0-13.22666667-13.22666667-13.22666667-34.98666667 0-48.32l406.4-406.4c13.22666667-13.22666667 34.98666667-13.22666667 48.32 0 13.22666667 13.33333333 13.22666667 34.98666667 0 48.32z" fill="#FFFFFF" ></path><path d="M240.64 541.86666667l181.86666667 181.86666666c13.22666667 13.22666667 13.22666667 34.98666667 0 48.32l-5.86666667 5.86666667c-10.02666667 10.02666667-26.56 10.02666667-36.58666667 0l-187.73333333-187.73333333c-13.22666667-13.22666667-13.22666667-34.98666667 0-48.32 13.33333333-13.22666667 34.98666667-13.22666667 48.32 0z" fill="#FFFFFF" ></path></symbol><symbol id="icon-failure" viewBox="0 0 1024 1024"><path d="M512 32C246.875 32 32 246.875 32 512s214.875 480 480 480 480-214.875 480-480S777.125 32 512 32z" fill="#E4393C" ></path><path d="M554.28125 520.53125L700.4375 666.59375c10.40625 10.40625 10.40625 27.28125 0 37.6875l-9.375 9.46875c-10.40625 10.40625-27.28125 10.40625-37.6875 0l-146.25-146.0625L361.0625 713.75c-10.40625 10.40625-27.28125 10.40625-37.6875 0l-9.46875-9.46875c-10.40625-10.40625-10.40625-27.28125 0-37.6875L460.0625 520.4375 313.90625 374.375c-10.40625-10.40625-10.40625-27.28125 0-37.6875l9.46875-9.46875c10.40625-10.40625 27.28125-10.40625 37.6875 0l146.15625 146.15625 146.15625-146.15625c10.40625-10.40625 27.28125-10.40625 37.6875 0l9.375 9.46875c10.40625 10.40625 10.40625 27.28125 0 37.6875L554.28125 520.53125z" fill="#FFFFFF" ></path></symbol></svg>',t=(e=document.getElementsByTagName("script"))[e.length-1].getAttribute("data-injectcss");if(t&&!a.__iconfont__svg__cssinject__){a.__iconfont__svg__cssinject__=!0;try{document.write("<style>.svgfont {display: inline-block;width: 1em;height: 1em;fill: currentColor;vertical-align: -0.1em;font-size:16px;}</style>")}catch(e){console&&console.log(e)}}!function(e){if(document.addEventListener)if(~["complete","loaded","interactive"].indexOf(document.readyState))setTimeout(e,0);else{var t=function(){document.removeEventListener("DOMContentLoaded",t,!1),e()};document.addEventListener("DOMContentLoaded",t,!1)}else document.attachEvent&&(n=e,l=a.document,i=!1,o=function(){i||(i=!0,n())},(c=function(){try{l.documentElement.doScroll("left")}catch(e){return void setTimeout(c,50)}o()})(),l.onreadystatechange=function(){"complete"==l.readyState&&(l.onreadystatechange=null,o())});var n,l,i,o,c}(function(){var e,t,n,l,i,o;(e=document.createElement("div")).innerHTML=c,c=null,(t=e.getElementsByTagName("svg")[0])&&(t.setAttribute("aria-hidden","true"),t.style.position="absolute",t.style.width=0,t.style.height=0,t.style.overflow="hidden",n=t,(l=document.body).firstChild?(i=n,(o=l.firstChild).parentNode.insertBefore(i,o)):l.appendChild(n))})}(window);
     </script>
@@ -409,6 +410,7 @@
                                 </svg>
                             </div>
                         </div>
+                        <div class="overview" @click="isShowOverview = true">报告分析</div>
                         <ul class="test-suite_list">
                             <li v-for="(testSuite, index) in filterTestSuiteList">
                                 <div class="test-suite__title" @click="showThisTestSuiteDetail(index)">
@@ -427,7 +429,8 @@
                 </div>
 
                 <div class="container vertical main max-size">
-                    <div class="test-case max-size">
+                    <div id="overview-info" class="max-size" v-show="isShowOverview"></div>
+                    <div class="test-case max-size"  v-show="!isShowOverview">
                         <div class="container vertical test-case__header">
                             <div class="break-word"><b>{{ filterTestSuiteList[currentTestSuiteIndex]['title'] }}</b></div>
                             <div class="container test-case__time_and_filter">
@@ -510,17 +513,87 @@
       var app = new Vue({
         el: '#app',
         data: {
+          isShowOverview: true,
           currentTestSuiteIndex: 0,
           testCaseActiveName: '',
           testCaseStepActiveName: '',
           testSuiteFilterValue: null,
           testCaseFilterValue: null,
+          pieChartOption: {
+            backgroundColor: '#2c343c',
+            title: {
+              text: 'Customized Pie',
+              left: 'center',
+              top: 20,
+              textStyle: {
+                  color: '#ccc'
+              }
+            },
+            tooltip: {
+              trigger: 'item',
+              formatter: "{a} <br/>{b} : {c} ({d}%)"
+            },
+            visualMap: {
+              show: false,
+              min: 80,
+              max: 600,
+              inRange: {
+                colorLightness: [0, 1]
+              }
+            },
+            series: [
+              {
+                name:'访问来源',
+                type:'pie',
+                radius : '55%',
+                center: ['50%', '50%'],
+                data:[
+                  {value:335, name:'直接访问'},
+                  {value:310, name:'邮件营销'},
+                  {value:274, name:'联盟广告'},
+                  {value:235, name:'视频广告'},
+                  {value:400, name:'搜索引擎'}
+                ].sort(function (a, b) { return a.value - b.value; }),
+                roseType: 'radius',
+                label: {
+                  normal: {
+                    textStyle: {
+                      color: 'rgba(255, 255, 255, 0.3)'
+                    }
+                  }
+                },
+                labelLine: {
+                  normal: {
+                    lineStyle: {
+                      color: 'rgba(255, 255, 255, 0.3)'
+                    },
+                    smooth: 0.2,
+                    length: 10,
+                    length2: 20
+                  }
+                },
+                itemStyle: {
+                  normal: {
+                    color: '#c23531',
+                    shadowBlur: 200,
+                    shadowColor: 'rgba(0, 0, 0, 0.5)'
+                  }
+                },
+                animationType: 'scale',
+                animationEasing: 'elasticOut',
+                animationDelay: function (idx) {
+                  return Math.random() * 200;
+                }
+              }
+            ]
+          },
           reportInfo: ${reportInfo},
           overviewInfo: ${overviewInfo},
           testSuiteList: ${testSuiteList}
         },
         methods: {
           showThisTestSuiteDetail: function(index) {
+            this.isShowOverview = false
             this.currentTestSuiteIndex = index
             this.testCaseActiveName = ''
             this.testCaseStepActiveName = ''
@@ -563,6 +636,10 @@
           filterCurrentTestCaseList: function() {
             return this.listFilter(this.filterTestSuiteList[this.currentTestSuiteIndex]['testCaseList'], this.testCaseFilterValue)
           }
+        },
+        mounted: function () {
+          let echartsInstance = echarts.init(document.getElementById('overview-info'))
+          echartsInstance.setOption(this.pieChartOption)
         }
       })
     </script>
