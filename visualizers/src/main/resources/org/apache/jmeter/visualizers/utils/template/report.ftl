@@ -172,6 +172,15 @@
             cursor: pointer;
         }
 
+        .overview {
+            cursor: pointer;
+            border-top: 1px solid #ebeef5;
+        }
+
+        .overview:hover {
+            background: #EBEEF5;
+        }
+
         .test-suite_list {
             list-style-type: none;
             text-align: left;
@@ -410,7 +419,9 @@
                                 </svg>
                             </div>
                         </div>
-                        <div class="overview" @click="isShowOverview = true">报告分析</div>
+                        <div class="container overview" @click="isShowOverview=true">
+                            <span style="margin:10px">报告分析</span>
+                        </div>
                         <ul class="test-suite_list">
                             <li v-for="(testSuite, index) in filterTestSuiteList">
                                 <div class="test-suite__title" @click="showThisTestSuiteDetail(index)">
@@ -429,7 +440,21 @@
                 </div>
 
                 <div class="container vertical main max-size">
-                    <div id="overview-info" class="max-size" v-show="isShowOverview"></div>
+                    <div class="container vertical max-size overview-info" v-show="isShowOverview">
+                        <div class="overview_table max-size">
+                            <el-table :data="overviewTableData" stripe style="width:100%">
+                                <el-table-column prop="total" label="统计"></el-table-column>
+                                <el-table-column prop="scriptTotal" label="脚本"></el-table-column>
+                                <el-table-column prop="threadTotal" label="线程组"></el-table-column>
+                                <el-table-column prop="samplerTotal" label="样本"></el-table-column>
+                            </el-table>
+                        </div>
+                        <div class="container max-size pie-chart">
+                            <div id="overview_script_pie_chart" class="max-size"></div>
+                            <div id="overview_thread_pie_chart" class="max-size"></div>
+                            <div id="overview_sampler_pie_chart" class="max-size"></div>
+                        </div>
+                    </div>
                     <div class="test-case max-size"  v-show="!isShowOverview">
                         <div class="container vertical test-case__header">
                             <div class="break-word"><b>{{ filterTestSuiteList[currentTestSuiteIndex]['title'] }}</b></div>
@@ -520,9 +545,8 @@
           testSuiteFilterValue: null,
           testCaseFilterValue: null,
           pieChartOption: {
-            backgroundColor: '#2c343c',
             title: {
-              text: 'Customized Pie',
+              text: '饼图分析',
               left: 'center',
               top: 20,
               textStyle: {
@@ -543,8 +567,8 @@
             },
             series: [
               {
-                name:'访问来源',
-                type:'pie',
+                name: '访问来源',
+                type: 'pie',
                 radius : '55%',
                 center: ['50%', '50%'],
                 data:[
@@ -553,7 +577,7 @@
                   {value:274, name:'联盟广告'},
                   {value:235, name:'视频广告'},
                   {value:400, name:'搜索引擎'}
-                ].sort(function (a, b) { return a.value - b.value; }),
+                ].sort(function(a, b) { return a.value - b.value; }),
                 roseType: 'radius',
                 label: {
                   normal: {
@@ -581,7 +605,7 @@
                 },
                 animationType: 'scale',
                 animationEasing: 'elasticOut',
-                animationDelay: function (idx) {
+                animationDelay: function(idx) {
                   return Math.random() * 200;
                 }
               }
@@ -630,16 +654,51 @@
           }
         },
         computed: {
-          filterTestSuiteList: function(){
+          filterTestSuiteList: function() {
             return this.listFilter(this.testSuiteList, this.testSuiteFilterValue)
           },
           filterCurrentTestCaseList: function() {
             return this.listFilter(this.filterTestSuiteList[this.currentTestSuiteIndex]['testCaseList'], this.testCaseFilterValue)
+          },
+          overviewTableData: function() {
+            return [
+              {
+                total:'总数',
+                scriptTotal:this.overviewInfo.testSuiteTotal,
+                threadTotal:this.overviewInfo.testCaseTotal,
+                samplerTotal:this.overviewInfo.testCaseStepTotal
+              },
+              {
+                total:'成功总数',
+                scriptTotal:this.overviewInfo.testSuiteTotal - this.overviewInfo.testSuiteTotal,
+                threadTotal:this.overviewInfo.testCaseTotal - this.overviewInfo.errorTestCaseTotal,
+                samplerTotal:this.overviewInfo.testCaseStepTotal - this.overviewInfo.errorTestCaseStepTotal
+              },
+              {
+                total:'失败总数',
+                scriptTotal:this.overviewInfo.errorTestSuiteTotal,
+                threadTotal:this.overviewInfo.errorTestCaseTotal,
+                samplerTotal:this.overviewInfo.errorTestCaseStepTotal
+              },
+              {
+                total:'成功率',
+                scriptTotal:this.overviewInfo.testSuiteTotal,
+                threadTotal:((this.overviewInfo.testCaseTotal - this.overviewInfo.errorTestCaseTotal) / this.overviewInfo.testCaseTotal).toFixed(4) * 100 + '%',
+                samplerTotal:((this.overviewInfo.testCaseStepTotal - this.overviewInfo.errorTestCaseStepTotal) / this.overviewInfo.testCaseStepTotal).toFixed(4) * 100 + '%'
+              },
+              {
+                total:'平均耗时',
+                scriptTotal:this.overviewInfo.testSuiteTotal,
+                threadTotal:this.overviewInfo.testCaseTotal,
+                samplerTotal:this.overviewInfo.testCaseStepTotal
+              }
+            ]
           }
         },
-        mounted: function () {
-          let echartsInstance = echarts.init(document.getElementById('overview-info'))
-          echartsInstance.setOption(this.pieChartOption)
+        mounted: function() {
+          echarts.init(document.getElementById('overview_script_pie_chart')).setOption(this.pieChartOption)
+          echarts.init(document.getElementById('overview_thread_pie_chart')).setOption(this.pieChartOption)
+          echarts.init(document.getElementById('overview_sampler_pie_chart')).setOption(this.pieChartOption)
         }
       })
     </script>

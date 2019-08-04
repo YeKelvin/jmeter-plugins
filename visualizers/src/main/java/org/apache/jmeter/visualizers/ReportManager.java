@@ -64,10 +64,16 @@ public class ReportManager {
         return reportInfo;
     }
 
+    /**
+     * 获取报告分析的基础数据，包括总数、成功数、失败数和平均耗时
+     */
     private static OverviewInfo createOverviewInfo() {
         OverviewInfo overviewInfo = new OverviewInfo();
         overviewInfo.testSuiteAddOne();
         TestSuiteData testSuite = reportDataSet.getTestSuiteList().get(0);
+        if (!testSuite.isStatus()) {
+            overviewInfo.errorTestSuiteAddOne();
+        }
         for (TestCaseData testCase : testSuite.getTestCaseList()) {
             overviewInfo.testCaseAddOne();
             if (!testCase.isStatus()) {
