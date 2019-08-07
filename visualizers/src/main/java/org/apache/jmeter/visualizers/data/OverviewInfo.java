@@ -1,7 +1,6 @@
 package org.apache.jmeter.visualizers.data;
 
 import lombok.Getter;
-import lombok.Setter;
 import lombok.ToString;
 
 @Getter
@@ -20,19 +19,11 @@ public class OverviewInfo {
 
     private int errorTestCaseStepTotal;
 
-    @Setter
-    private String testSuiteElapsedTime;
-
-    @Setter
-    private String testCaseElapsedTime;
-
-    @Setter
-    private String testCaseStepElapsedTime;
-
     public void add(OverviewInfo overviewInfo) {
         testSuiteTotal += overviewInfo.getTestSuiteTotal();
         testCaseTotal += overviewInfo.getTestCaseTotal();
         testCaseStepTotal += overviewInfo.getTestCaseStepTotal();
+        errorTestSuiteTotal += overviewInfo.getErrorTestSuiteTotal();
         errorTestCaseTotal += overviewInfo.getErrorTestCaseTotal();
         errorTestCaseStepTotal += overviewInfo.getErrorTestCaseStepTotal();
     }

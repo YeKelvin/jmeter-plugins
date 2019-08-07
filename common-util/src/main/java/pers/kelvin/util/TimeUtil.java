@@ -129,6 +129,20 @@ public class TimeUtil {
         return formatElapsedTimeAsHMS(elapsedTime);
     }
 
+    public static long formatedTimeToMs(String time) {
+        time = time.replace(" ", "");
+        String[] timsArray = time.split("\\+");
+        String[] hms = timsArray[0].split(":");
+        long h = Long.valueOf(hms[0].substring(0, 2)) * 60 * 60 * 1000;
+        long m = Long.valueOf(hms[1].substring(0, 2)) * 60 * 1000;
+        long s = Long.valueOf(hms[2].substring(0, 2)) * 1000;
+        long ms = 0;
+        if (timsArray.length == 2) {
+            ms = Long.valueOf(timsArray[1].substring(0, timsArray[1].length() - 1));
+        }
+        return h + m + s + ms;
+    }
+
     public static void main(String[] args) {
         System.out.println(timeStampToString(currentTimestamp(), "yyyy.MM.dd HH:mm:ss"));
     }

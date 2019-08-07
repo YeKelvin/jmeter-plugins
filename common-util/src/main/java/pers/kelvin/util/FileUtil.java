@@ -143,11 +143,23 @@ public class FileUtil {
         return content.toString();
     }
 
+    /**
+     * 读取env文件内容（Json）
+     *
+     * @param filePath 文件路径
+     * @return jsonStr
+     */
     public static String readEnvFile(String filePath) {
         File file = new File(filePath);
         return readEnvFile(file);
     }
 
+    /**
+     * 读取env文件内容（Json）
+     *
+     * @param file env文件对象
+     * @return jsonStr
+     */
     public static String readEnvFile(File file) {
         StringBuffer content = new StringBuffer();
         int charCode = -1;
@@ -162,33 +174,82 @@ public class FileUtil {
             while ((charCode = reader.read()) != -1) {
                 // 当前字符
                 char currentChar = (char) charCode;
-                // 遇到引号时，标记当前正在双引号中
-                if (currentChar == '\"') {
-                    // 非转义符引号才标记
-                    if (previous != '\\') {
-                        isInsideQuotes = !isInsideQuotes;
-                    }
-                }
-                // 在非双引号内且当前字符为 / 斜杠时
-                if (!isInsideQuotes && currentChar == '/') {
-                    // 遇到 //注释符号时丢弃该行的后续内容
-                    if (previous == '/') {
-                        reader.readLine();
-                        previous = '\u0000';
-                    } else {
+                switch (currentChar) {
+                    case '\"':
+                        // 遇到引号时，标记当前正在双引号中
+                        // 非转义符引号才标记
+                        if (previous != '\\') {
+                            isInsideQuotes = !isInsideQuotes;
+                        }
+                        content.append(currentChar);
                         previous = currentChar;
-                    }
-                } else {
-                    if (!isInsideQuotes && previous == '/') {
-                        content.append(previous);
-                    }
-                    content.append(currentChar);
-                    previous = currentChar;
+                        break;
+                    case '/':
+                        if (!isInsideQuotes) {
+                            // 非双引号内
+                            // 遇到 //注释符号时丢弃该行的后续内容
+                            if (previous == '/') {
+                                reader.readLine();
+                                content.deleteCharAt(content.length() - 1);
+                                previous = '\u0000';
+                            } else {
+                                content.append(currentChar);
+                                previous = currentChar;
+                            }
+                        } else {
+                            // 双引号内
+                            content.append(currentChar);
+                            previous = currentChar;
+                        }
+                        break;
+                    case '\\':
+                        // 转义符
+                        if (!isInsideQuotes) {
+                            // 非双引号内
+                            if (previous == '\\') {
+                                content.append(currentChar);
+                                previous = '\u0000';
+                            } else {
+                                previous = currentChar;
+                            }
+                        } else {
+                            // 双引号内
+                            content.append(currentChar);
+                            previous = currentChar;
+                        }
+                        break;
+                    case ' ':
+                        // 过滤空格
+                        if (!isInsideQuotes) {
+                            // 非双引号内
+                            previous = currentChar;
+                        } else {
+                            // 双引号内
+                            content.append(currentChar);
+                            previous = currentChar;
+                        }
+                        break;
+                    case '\t':
+                        // 过滤制表符
+                        if (!isInsideQuotes) {
+                            // 非双引号内
+                            previous = currentChar;
+                        } else {
+                            // 双引号内
+                            content.append(currentChar);
+                            previous = currentChar;
+                        }
+                        break;
+                    default:
+                        content.append(currentChar);
+                        previous = currentChar;
+                        break;
                 }
             }
         } catch (IOException e) {
             logger.error(ExceptionUtil.getStackTrace(e));
         }
-        return StringUtil.removeSpacesAndLineBreaks(content.toString());
+        // 去除换行符
+        return StringUtil.removeLineBreaks(content.toString());
     }
 }

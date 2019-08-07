@@ -13,7 +13,9 @@ import java.util.regex.Pattern;
  */
 public class StringUtil {
 
-    private static Pattern SpacesAndLineBreaksPattern = Pattern.compile("\\s*|\t|\r|\n");
+    private static Pattern spacesAndLineBreaksPattern = Pattern.compile("\\s*|\t|\r|\n");
+
+    private static Pattern lineBreaksPattern = Pattern.compile("[\r\n]");
 
     public static boolean isBlank(final CharSequence cs) {
         return StringUtils.isBlank(cs);
@@ -40,10 +42,23 @@ public class StringUtil {
     }
 
 
+    /**
+     * 去除空格和换行符
+     */
     public static String removeSpacesAndLineBreaks(String str) {
         if (isBlank(str)) {
             return str;
         }
-        return SpacesAndLineBreaksPattern.matcher(str).replaceAll("");
+        return spacesAndLineBreaksPattern.matcher(str).replaceAll("");
+    }
+
+    /**
+     * 去除换行符
+     */
+    public static String removeLineBreaks(String str) {
+        if (isBlank(str)) {
+            return str;
+        }
+        return lineBreaksPattern.matcher(str).replaceAll("");
     }
 }

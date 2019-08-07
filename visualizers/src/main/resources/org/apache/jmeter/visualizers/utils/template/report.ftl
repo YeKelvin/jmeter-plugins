@@ -443,7 +443,7 @@
                     <div class="container vertical max-size overview-info" v-show="isShowOverview">
                         <div class="overview_table max-size">
                             <el-table :data="overviewTableData" stripe style="width:100%">
-                                <el-table-column prop="total" label="统计"></el-table-column>
+                                <el-table-column prop="totalType" label="统计"></el-table-column>
                                 <el-table-column prop="scriptTotal" label="脚本"></el-table-column>
                                 <el-table-column prop="threadTotal" label="线程组"></el-table-column>
                                 <el-table-column prop="samplerTotal" label="样本"></el-table-column>
@@ -651,6 +651,9 @@
             this.testCaseFilterValue = newValue
             this.testCaseActiveName = ''
             this.testCaseStepActiveName = ''
+          },
+          successRate: function(total, errorTotal){
+            return ((total - errorTotal) / total).toFixed(4) * 100 + '%'
           }
         },
         computed: {
@@ -663,34 +666,28 @@
           overviewTableData: function() {
             return [
               {
-                total:'总数',
+                totalType:'总数',
                 scriptTotal:this.overviewInfo.testSuiteTotal,
                 threadTotal:this.overviewInfo.testCaseTotal,
                 samplerTotal:this.overviewInfo.testCaseStepTotal
               },
               {
-                total:'成功总数',
+                totalType:'成功总数',
                 scriptTotal:this.overviewInfo.testSuiteTotal - this.overviewInfo.testSuiteTotal,
                 threadTotal:this.overviewInfo.testCaseTotal - this.overviewInfo.errorTestCaseTotal,
                 samplerTotal:this.overviewInfo.testCaseStepTotal - this.overviewInfo.errorTestCaseStepTotal
               },
               {
-                total:'失败总数',
+                totalType:'失败总数',
                 scriptTotal:this.overviewInfo.errorTestSuiteTotal,
                 threadTotal:this.overviewInfo.errorTestCaseTotal,
                 samplerTotal:this.overviewInfo.errorTestCaseStepTotal
               },
               {
-                total:'成功率',
-                scriptTotal:this.overviewInfo.testSuiteTotal,
-                threadTotal:((this.overviewInfo.testCaseTotal - this.overviewInfo.errorTestCaseTotal) / this.overviewInfo.testCaseTotal).toFixed(4) * 100 + '%',
-                samplerTotal:((this.overviewInfo.testCaseStepTotal - this.overviewInfo.errorTestCaseStepTotal) / this.overviewInfo.testCaseStepTotal).toFixed(4) * 100 + '%'
-              },
-              {
-                total:'平均耗时',
-                scriptTotal:this.overviewInfo.testSuiteTotal,
-                threadTotal:this.overviewInfo.testCaseTotal,
-                samplerTotal:this.overviewInfo.testCaseStepTotal
+                totalType:'成功率',
+                scriptTotal:this.successRate(this.overviewInfo.testSuiteTotal - this.overviewInfo.errorTestSuiteTotal),
+                threadTotal:this.successRate(this.overviewInfo.testCaseTotal - this.overviewInfo.errorTestCaseTotal),
+                samplerTotal:this.successRate(this.overviewInfo.testCaseStepTotal - this.overviewInfo.errorTestCaseStepTotal)
               }
             ]
           }

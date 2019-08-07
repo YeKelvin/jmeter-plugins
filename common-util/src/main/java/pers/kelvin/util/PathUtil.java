@@ -1,10 +1,13 @@
 package pers.kelvin.util;
 
 import java.io.File;
+import java.util.regex.Pattern;
 
 public class PathUtil {
     private static final String WIN_SEP = "\\";
     private static final String UNIX_SEP = "/";
+
+    private static Pattern separatorPattern = Pattern.compile("\\|/");
 
     /**
      * 目录路径拼接
@@ -24,5 +27,13 @@ public class PathUtil {
             childPath = childPath.substring(0, childPath.length() - 1);
         }
         return parentPath + File.separator + childPath;
+    }
+
+    // todo：有bug
+    public static String join(String path, String... names) {
+        for (String name : names) {
+            path += File.separator + name;
+        }
+        return separatorPattern.matcher(path).replaceAll(File.separator);
     }
 }
