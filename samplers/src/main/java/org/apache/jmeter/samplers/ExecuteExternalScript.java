@@ -212,6 +212,7 @@ public class ExecuteExternalScript extends AbstractSampler implements Interrupti
                 "【Error Request Data】:" + LINE_SEP +
                 errorResult.getSamplerData());
         result.setResponseData(result.getResponseDataAsString() + LINE_SEP + LINE_SEP +
+                        "【Error Sample Name】: " + errorResult.getSampleLabel() + LINE_SEP +
                         "【Error Response Data】:" + LINE_SEP +
                         errorResult.getResponseDataAsString(),
                 StandardCharsets.UTF_8.name());
