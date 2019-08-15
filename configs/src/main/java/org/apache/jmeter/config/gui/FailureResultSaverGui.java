@@ -143,7 +143,7 @@ public class FailureResultSaverGui extends AbstractConfigGui {
     }
 
     private Component getExcludeLabel() {
-        return GuiUtil.createLabel("排除指定错误：", getExcludeTextField());
+        return GuiUtil.createLabel("排除指定错误（逗号分隔）：", getExcludeTextField());
     }
 
 }

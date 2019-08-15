@@ -17,6 +17,7 @@ import org.apache.jmeter.save.SaveService;
 import org.apache.jmeter.testelement.TestPlan;
 import org.apache.jmeter.threads.AbstractThreadGroup;
 import org.apache.jmeter.util.JMeterUtils;
+import org.apache.jmeter.visualizers.ReportCollector;
 import org.apache.jorphan.collections.HashTree;
 import org.apache.jorphan.collections.SearchByClass;
 import org.slf4j.Logger;
@@ -230,12 +231,15 @@ public class ExecuteExternalScript extends AbstractSampler implements Interrupti
         // 从 HashTree中搜索对应的组件对象
         SearchByClass<AbstractThreadGroup> tgSearcher = new SearchByClass<>(AbstractThreadGroup.class);
         SearchByClass<SSHPortForwarding> sshSearcher = new SearchByClass<>(SSHPortForwarding.class);
+        SearchByClass<ReportCollector> reportSearcher = new SearchByClass<>(ReportCollector.class);
         SearchByClass<ResultCollector> rcSearcher = new SearchByClass<>(ResultCollector.class);
         testPlanTree.traverse(tgSearcher);
         testPlanTree.traverse(sshSearcher);
+        testPlanTree.traverse(reportSearcher);
         testPlanTree.traverse(rcSearcher);
         Iterator<AbstractThreadGroup> tgIter = tgSearcher.getSearchResults().iterator();
         Iterator<SSHPortForwarding> sshIter = sshSearcher.getSearchResults().iterator();
+        Iterator<ReportCollector> reportIter = reportSearcher.getSearchResults().iterator();
         Iterator<ResultCollector> rcIter = rcSearcher.getSearchResults().iterator();
 
         // 逐个删除以上搜索的对象
@@ -244,6 +248,12 @@ public class ExecuteExternalScript extends AbstractSampler implements Interrupti
             // 删除 ssh端口转发组件
             SSHPortForwarding sshPortForwarding = sshIter.next();
             testPlanTree.remove(sshPortForwarding);
+        }
+
+        while (reportIter.hasNext()) {
+            // 删除 Local Html Report组件
+            ReportCollector reportCollector = reportIter.next();
+            testPlanTree.remove(reportCollector);
         }
 
         // 删除 ThreadGroup下的组件

@@ -22,6 +22,10 @@
             <artifactId>jmeter-plugins-configs</artifactId>
         </dependency>
         <dependency>
+            <groupId>jmeter-plugins</groupId>
+            <artifactId>jmeter-plugins-visualizers</artifactId>
+        </dependency>
+        <dependency>
             <groupId>org.apache.jmeter</groupId>
             <artifactId>ApacheJMeter_core</artifactId>
         </dependency>
