@@ -129,6 +129,11 @@
             overflow: hidden;
         }
 
+        .break-word-title {
+            word-wrap: break-word;
+            word-break: break-all;
+        }
+
         .break-word {
             white-space: pre-wrap;
             word-wrap: break-word;
@@ -425,7 +430,7 @@
                         <ul class="test-suite_list">
                             <li v-for="(testSuite, index) in filterTestSuiteList">
                                 <div class="test-suite__title" @click="showThisTestSuiteDetail(index)">
-                                    <div class="break-word" :class="{failure : !testSuite['status']}">{{ testSuite['title'] }}</div>
+                                    <div class="break-word-title" :class="{failure : !testSuite['status']}">{{ testSuite['title'] }}</div>
                                     <div class="container test-suite__time_and_status">
                                         <span class="time">{{ testSuite['startTime'] }}</span>
                                         <svg class="icon" aria-hidden="true">
@@ -457,7 +462,7 @@
                     </div>
                     <div class="test-case max-size"  v-show="!isShowOverview">
                         <div class="container vertical test-case__header">
-                            <div class="break-word"><b>{{ filterTestSuiteList[currentTestSuiteIndex]['title'] }}</b></div>
+                            <div class="break-word-title"><b>{{ filterTestSuiteList[currentTestSuiteIndex]['title'] }}</b></div>
                             <div class="container test-case__time_and_filter">
                                 <div>
                                     <el-tag class="start-time-tag" size="mini">{{ filterTestSuiteList[currentTestSuiteIndex]['startTime'] }}</el-tag>
@@ -484,7 +489,7 @@
                                 <template slot="title">
                                     <div class="container vertical test-case__item">
                                         <div class="test-case__title">
-                                            <span class="break-word" :class="{failure : !testCase['status']}">{{ testCase['title'] }}</span>
+                                            <span class="break-word-title" :class="{failure : !testCase['status']}">{{ testCase['title'] }}</span>
                                         </div>
                                         <div class="test-case__time_and_status">
                                             <el-tag class="time-tag" size="mini">{{ testCase['startTime'] }}</el-tag>
