@@ -18,7 +18,6 @@ import org.apache.jmeter.visualizers.data.TestCaseData;
 import org.apache.jmeter.visualizers.data.TestCaseStepData;
 import org.apache.jmeter.visualizers.data.TestSuiteData;
 import pers.kelvin.util.FileUtil;
-import pers.kelvin.util.StringUtil;
 import pers.kelvin.util.TimeUtil;
 import pers.kelvin.util.json.JsonPathUtil;
 import pers.kelvin.util.json.JsonUtil;
@@ -169,7 +168,7 @@ public class ReportCollector extends AbstractTestElement implements TestStateLis
      */
     private String getScriptName() {
         String scriptName = FileServer.getFileServer().getScriptName();
-        return StringUtil.removeSpacesAndLineBreaks(scriptName.substring(0, scriptName.length() - 4).trim());
+        return scriptName.substring(0, scriptName.length() - 4).trim();
     }
 
     @Override

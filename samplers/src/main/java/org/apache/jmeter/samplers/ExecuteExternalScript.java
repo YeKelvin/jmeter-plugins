@@ -131,10 +131,22 @@ public class ExecuteExternalScript extends AbstractSampler implements Interrupti
         engine.setProperties(props);
         engine.configure(clonedTree);
 
+        // 判断是否命令行运行，如果是临时设置 JMETER_NON_GUI为false
+        boolean isNonGuiMode = false;
+        if (JMeter.isNonGUI()) {
+            isNonGuiMode = true;
+            setNonGuiProperty(false);
+        }
+
         // 新建一个线程运行
         Thread runningThread = new Thread(engine, "StandardJMeterEngine");
         runningThread.start();
         runningThread.join();
+
+        // 判断是否命令行运行，如果是把 JMETER_NON_GUI恢复为true
+        if (isNonGuiMode) {
+            setNonGuiProperty(true);
+        }
 
         // 提取外部脚本执行结果
         ExternalScriptResultDTO scriptResult = (ExternalScriptResultDTO) props.get("externalScriptResult");
@@ -325,6 +337,10 @@ public class ExecuteExternalScript extends AbstractSampler implements Interrupti
         } else {
             scriptResult.getExternalScriptData().forEach((key, value) -> props.put(key + "_" + propsNameSuffix, value.toString()));
         }
+    }
+
+    private void setNonGuiProperty(boolean isNonGui) {
+        System.setProperty(JMeter.JMETER_NON_GUI, String.valueOf(isNonGui));
     }
 
     @Override
