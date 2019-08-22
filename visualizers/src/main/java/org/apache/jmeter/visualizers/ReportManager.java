@@ -69,21 +69,27 @@ public class ReportManager {
      */
     private static OverviewInfo createOverviewInfo() {
         OverviewInfo overviewInfo = new OverviewInfo();
+        // 添加 TestPlan的数据
         overviewInfo.testSuiteAddOne();
         TestSuiteData testSuite = reportDataSet.getTestSuiteList().get(0);
+        overviewInfo.setTestSuiteAverageElapsedTime(testSuite.getElapsedTime());
         if (!testSuite.isStatus()) {
             overviewInfo.errorTestSuiteAddOne();
         }
+        // 遍历添加 ThreadGroup的数据
         for (TestCaseData testCase : testSuite.getTestCaseList()) {
             overviewInfo.testCaseAddOne();
             if (!testCase.isStatus()) {
                 overviewInfo.errorTestCaseAddOne();
             }
+            overviewInfo.setTestCaseAverageElapsedTime(testCase.getElapsedTime());
+            // 遍历添加 Sampler的数据
             for (TestCaseStepData testCaseStep : testCase.getTestCaseStepList()) {
                 overviewInfo.testCaseStepAddOne();
                 if (!testCaseStep.isStatus()) {
                     overviewInfo.errorTestCaseStepAddOne();
                 }
+                overviewInfo.setTestCaseStepAverageElapsedTime(testCaseStep.getElapsedTime());
             }
         }
         return overviewInfo;

@@ -138,7 +138,7 @@ public class ReportCollector extends AbstractTestElement implements TestStateLis
 
         // 每次sample执行完毕覆盖testCase的完成时间和耗时
         testCase.setEndTime(TimeUtil.currentTimeAsString(DATE_FORMAT_PATTERN));
-        testCase.setElapsedTime(TimeUtil.formatElapsedTimeAsHMS(
+        testCase.setElapsedTime(TimeUtil.formatElapsedTimeAsMS(
                 testCase.getStartTime(), testCase.getEndTime(), DATE_FORMAT_PATTERN));
 
         // 把测试步骤数据添加至测试案例集中

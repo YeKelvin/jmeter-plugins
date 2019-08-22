@@ -2,6 +2,7 @@ package org.apache.jmeter.visualizers.data;
 
 import lombok.Getter;
 import lombok.ToString;
+import pers.kelvin.util.TimeUtil;
 
 @Getter
 @ToString
@@ -19,6 +20,12 @@ public class OverviewInfo {
 
     private int errorTestCaseStepTotal;
 
+    private String testSuiteAverageElapsedTime;
+
+    private String testCaseAverageElapsedTime;
+
+    private String testCaseStepAverageElapsedTime;
+
     public void add(OverviewInfo overviewInfo) {
         testSuiteTotal += overviewInfo.getTestSuiteTotal();
         testCaseTotal += overviewInfo.getTestCaseTotal();
@@ -26,6 +33,9 @@ public class OverviewInfo {
         errorTestSuiteTotal += overviewInfo.getErrorTestSuiteTotal();
         errorTestCaseTotal += overviewInfo.getErrorTestCaseTotal();
         errorTestCaseStepTotal += overviewInfo.getErrorTestCaseStepTotal();
+        setTestSuiteAverageElapsedTime(overviewInfo.getTestSuiteAverageElapsedTime());
+        setTestCaseAverageElapsedTime(overviewInfo.getTestCaseAverageElapsedTime());
+        setTestCaseStepAverageElapsedTime(overviewInfo.getTestCaseStepAverageElapsedTime());
     }
 
     public void testSuiteAddOne() {
@@ -50,6 +60,55 @@ public class OverviewInfo {
 
     public void errorTestCaseStepAddOne() {
         errorTestCaseStepTotal++;
+    }
+
+    /**
+     * 设置 TestPlan的平均响应时间，如果已经设置则重新计算平均响应时间后再设置
+     *
+     * @param elapsedTime 当前 TestPlan的耗时
+     */
+    public void setTestSuiteAverageElapsedTime(String elapsedTime) {
+        if (testSuiteAverageElapsedTime == null) {
+            testSuiteAverageElapsedTime = elapsedTime;
+        } else {
+            long testSuiteAverageElapsedTimeAsLong = TimeUtil.elapsedTimeAsHMSToLong(testSuiteAverageElapsedTime);
+            long addedElapsedTimeAsLong = TimeUtil.elapsedTimeAsHMSToLong(elapsedTime);
+            long averageElapsedTime = (testSuiteAverageElapsedTimeAsLong + addedElapsedTimeAsLong) / 2;
+            testSuiteAverageElapsedTime = TimeUtil.formatElapsedTimeAsHMS(averageElapsedTime);
+        }
+    }
+
+    /**
+     * 设置 ThreadGroup的平均响应时间，如果已经设置则重新计算平均响应时间后再设置
+     *
+     * @param elapsedTime 当前 ThreadGroup的耗时
+     */
+    public void setTestCaseAverageElapsedTime(String elapsedTime) {
+        if (testCaseAverageElapsedTime == null) {
+            testCaseAverageElapsedTime = elapsedTime;
+        } else {
+            long testCaseAverageElapsedTimeAsLong = TimeUtil.elapsedTimeAsMSToLong(testCaseAverageElapsedTime);
+            long addedElapsedTimeAsLong = TimeUtil.elapsedTimeAsMSToLong(elapsedTime);
+            long averageElapsedTime = (testCaseAverageElapsedTimeAsLong + addedElapsedTimeAsLong) / 2;
+            testCaseAverageElapsedTime = TimeUtil.formatElapsedTimeAsMS(averageElapsedTime);
+        }
+    }
+
+    /**
+     * 设置 Sampler的平均响应时间，如果已经设置则重新计算平均响应时间后再设置
+     *
+     * @param elapsedTime 当前 sampler的耗时
+     */
+    public void setTestCaseStepAverageElapsedTime(String elapsedTime) {
+        if (testCaseStepAverageElapsedTime == null) {
+            testCaseStepAverageElapsedTime = elapsedTime;
+        } else {
+            long testCaseStepAverageElapsedTimeAsLong = Long.valueOf(
+                    testCaseStepAverageElapsedTime.substring(0, testCaseStepAverageElapsedTime.length() - 2));
+            long elapsedTimeAsLong = Long.valueOf(elapsedTime.substring(0, elapsedTime.length() - 2));
+            long averageElapsedTime = (testCaseStepAverageElapsedTimeAsLong + elapsedTimeAsLong) / 2;
+            testCaseStepAverageElapsedTime = averageElapsedTime + "ms";
+        }
     }
 
 }
