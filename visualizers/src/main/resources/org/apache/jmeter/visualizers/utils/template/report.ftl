@@ -607,7 +607,7 @@
             this.testCaseStepActiveName = ''
           },
           successRate: function(total, errorTotal){
-            return ((total - errorTotal) / total).toFixed(4) * 100 + '%'
+            return Math.round(((total - errorTotal) / total) * 10000) / 100 + '%'
           },
           getPieChartOption: function(title, total, errorTotal) {
             return {
@@ -629,7 +629,7 @@
               },
               series: [
                 {
-                  name: '脚本',
+                  name: title,
                   type: 'pie',
                   radius : '60%',
                   center: ['50%', '50%'],
