@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import org.slf4j.Logger;
+import pers.kelvin.util.StringUtil;
 import pers.kelvin.util.exception.ExceptionUtil;
 import pers.kelvin.util.log.LogUtil;
 
@@ -128,13 +129,14 @@ public class JsonUtil {
     }
 
     /**
-     * 格式化输出 json
+     * 格式化输出 json（忽略占位符）
      *
      * @param json jsonStr
      * @return str
      */
     public static String prettyJsonWithPlaceholder(String json) {
-        StringBuilder indent = new StringBuilder();//缩进
+        //缩进
+        StringBuilder indent = new StringBuilder();
         StringBuilder sb = new StringBuilder();
 
         // 上一个字符
@@ -196,6 +198,8 @@ public class JsonUtil {
                     if (previous != '\\') {
                         isInsideQuotes = !isInsideQuotes;
                     }
+                    sb.append(c);
+                    break;
                 default:
                     sb.append(c);
             }
@@ -205,7 +209,8 @@ public class JsonUtil {
     }
 
     public static String jsonFormat(String json) {
-        StringBuilder indent = new StringBuilder();//缩进
+        //缩进
+        StringBuilder indent = new StringBuilder();
         StringBuilder sb = new StringBuilder();
 
         for (char c : json.toCharArray()) {
@@ -234,6 +239,40 @@ public class JsonUtil {
             }
         }
         return sb.toString();
+    }
+
+    /**
+     * 去除json中的空格和换行符
+     *
+     * @param json json字符串
+     * @return
+     */
+    public static String removeSpacesAndLineBreaks(String json) {
+        StringBuilder sb = new StringBuilder();
+        // 上一个字符
+        char previous = '\u0000';
+        // 是否在双引号内
+        boolean isInsideQuotes = false;
+        for (char c : json.toCharArray()) {
+            switch (c) {
+                case ' ':
+                    if (isInsideQuotes) {
+                        sb.append(c);
+                    }
+                    break;
+                case '\"':
+                    // 非转义符双引号才标记
+                    if (previous != '\\') {
+                        isInsideQuotes = !isInsideQuotes;
+                    }
+                    sb.append(c);
+                    break;
+                default:
+                    sb.append(c);
+            }
+            previous = c;
+        }
+        return StringUtil.removeLineBreaks(sb.toString());
     }
 
 }

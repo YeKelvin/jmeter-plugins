@@ -126,7 +126,7 @@ public class DubboTelnetSamplerGui extends AbstractSamplerGui implements ActionL
         interfaceNameTextField.setText(el.getPropertyAsString(DubboTelnetSampler.INTERFACE_NAME));
         expectationTextField.setText(el.getPropertyAsString(DubboTelnetSampler.EXPECTATION));
         encodeTextField.setText(el.getPropertyAsString(DubboTelnetSampler.ENCODE));
-        paramsTextArea.setInitialText(getPrettyParams(el.getPropertyAsString(DubboTelnetSampler.PARAMS)));
+        paramsTextArea.setInitialText(prettyParams(el.getPropertyAsString(DubboTelnetSampler.PARAMS)));
         paramsTextArea.setCaretPosition(0);
         useTemplateComboBox.setSelectedItem(el.getPropertyAsString(DubboTelnetSampler.USE_TEMPLATE));
         interfacePathTextField.setText(el.getPropertyAsString(DubboTelnetSampler.INTERFACE_PATH));
@@ -157,7 +157,7 @@ public class DubboTelnetSamplerGui extends AbstractSamplerGui implements ActionL
         String action = e.getActionCommand();
         if (action.equals(JSON_ACTION)) {
             currentParamsContentType = JSON_ACTION;
-            paramsTextArea.setInitialText(getPrettyParams(paramsTextArea.getText()));
+            paramsTextArea.setInitialText(prettyParams(paramsTextArea.getText()));
             paramsTextArea.setCaretPosition(0);
         } else if (action.equals(TEXT_ACTION)) {
             currentParamsContentType = TEXT_ACTION;
@@ -327,7 +327,13 @@ public class DubboTelnetSamplerGui extends AbstractSamplerGui implements ActionL
         return JsonFileUtil.readJsonFileToString(path);
     }
 
-    private String getPrettyParams(String params) {
+    /**
+     * 格式化json
+     *
+     * @param params json字符串
+     * @return
+     */
+    private String prettyParams(String params) {
         if (JSON_ACTION.equals(currentParamsContentType)) {
             return JsonUtil.prettyJsonWithPlaceholder(StringUtil.removeSpacesAndLineBreaks(params));
         }
@@ -335,7 +341,7 @@ public class DubboTelnetSamplerGui extends AbstractSamplerGui implements ActionL
     }
 
     private String getParamsText() {
-        return StringUtil.removeSpacesAndLineBreaks(paramsTextArea.getText());
+        return JsonUtil.removeSpacesAndLineBreaks(paramsTextArea.getText());
     }
 
 }
