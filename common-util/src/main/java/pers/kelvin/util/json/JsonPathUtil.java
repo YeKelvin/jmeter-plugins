@@ -64,4 +64,16 @@ public class JsonPathUtil {
         return JsonPath.using(conf).parse(json).read("$..*");
     }
 
+    /**
+     * 获取json list的长度
+     *
+     * @param json     json字符串
+     * @param jsonPath e.g.: $..book.length()
+     * @return length
+     */
+    public static int getArrayLength(String json, String jsonPath) {
+        List<Integer> size = JsonPath.read(json, jsonPath);
+        return size.get(0);
+    }
+
 }
