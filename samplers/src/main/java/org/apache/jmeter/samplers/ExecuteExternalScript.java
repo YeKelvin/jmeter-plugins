@@ -51,7 +51,9 @@ public class ExecuteExternalScript extends AbstractSampler implements Interrupti
     public static final String EXTERNAL_SCRIPT_PATH = "ExecuteExternalScript.externalScriptPath";
     public static final String SCRIPT_NAME = "ExecuteExternalScript.scriptName";
     public static final String PROPS_NAME_SUFFIX = "ExecuteExternalScript.propsNameSuffix";
-    public static final String IS_PRINT_TO_CONSOLE = "ExecuteExternalScript.printSampleResultToConsole";
+    public static final String SYNC_TO_PROPS = "ExecuteExternalScript.syncToProps";
+    public static final String SYNC_TO_VARS = "ExecuteExternalScript.syncToVars";
+    public static final String PRINT_TO_CONSOLE = "ExecuteExternalScript.printSampleResultToConsole";
 
     @Override
     public SampleResult sample(Entry entry) {
@@ -102,8 +104,16 @@ public class ExecuteExternalScript extends AbstractSampler implements Interrupti
         return JMeterUtils.getPropDefault("propsNameSuffix", getPropertyAsString(PROPS_NAME_SUFFIX));
     }
 
-    private String getIsPrintToConsole() {
-        return JMeterUtils.getPropDefault("printSampleResultToConsole", getPropertyAsString(IS_PRINT_TO_CONSOLE));
+    private boolean isSyncToProps() {
+        return getPropertyAsBoolean(SYNC_TO_PROPS);
+    }
+
+    private boolean isSyncToVars() {
+        return getPropertyAsBoolean(SYNC_TO_VARS);
+    }
+
+    private String getPrintToConsole() {
+        return JMeterUtils.getPropDefault("printSampleResultToConsole", getPropertyAsString(PRINT_TO_CONSOLE));
     }
 
     private String getScriptPath() {
@@ -123,8 +133,12 @@ public class ExecuteExternalScript extends AbstractSampler implements Interrupti
 
         // 设置 JMeterProps，用于传递给外部脚本使用
         props.put("propsNameSuffix", getPropsNameSuffix());
-        props.put("printSampleResultToConsole", getIsPrintToConsole());
+        props.put("printSampleResultToConsole", getPrintToConsole());
         props.put("configName", JMeterVarsUtil.getDefault(ENVDataSet.CONFIG_NAME));
+        // 判断是否需要把当前线程的 vars同步至外部脚本
+        if (isSyncToVars()) {
+            props.put("callerVars", getThreadContext().getVariables());
+        }
 
         // 开始执行外部脚本
         StandardJMeterEngine engine = new StandardJMeterEngine();
@@ -196,8 +210,8 @@ public class ExecuteExternalScript extends AbstractSampler implements Interrupti
      * @return json
      */
     private String getExecuteResult(ExternalScriptResultDTO scriptResult) {
-        if (MapUtils.isEmpty(scriptResult.getExternalScriptData())) {
-            return "{\"isExecuteSuccess\":" + scriptResult.isExecuteSuccess() + ",\"msg\":\"外部脚本没有设置新的变量\"}";
+        if (MapUtils.isEmpty(scriptResult.getExternalData())) {
+            return "{\"success\":" + scriptResult.getSuccess() + ",\"msg\":\"外部脚本没有设置新的变量\"}";
         }
         return fixJson(JsonUtil.toJson(scriptResult));
     }
@@ -322,10 +336,14 @@ public class ExecuteExternalScript extends AbstractSampler implements Interrupti
         props.remove("propsNameSuffix");
         props.remove("printSampleResultToConsole");
         props.remove("externalScriptResult");
+        props.remove("callerVars");
     }
 
     private void setPropsWithSuffix(ExternalScriptResultDTO scriptResult) {
-        Map<String, Object> scriptData = scriptResult.getExternalScriptData();
+        if (!isSyncToProps()) {
+            return;
+        }
+        Map<String, Object> scriptData = scriptResult.getExternalData();
 
         if (MapUtils.isEmpty(scriptData)) {
             return;
@@ -333,9 +351,9 @@ public class ExecuteExternalScript extends AbstractSampler implements Interrupti
 
         String propsNameSuffix = getPropsNameSuffix();
         if (StringUtil.isBlank(propsNameSuffix)) {
-            scriptResult.getExternalScriptData().forEach((key, value) -> props.put(key, value.toString()));
+            scriptResult.getExternalData().forEach((key, value) -> props.put(key, value.toString()));
         } else {
-            scriptResult.getExternalScriptData().forEach((key, value) -> props.put(key + "_" + propsNameSuffix, value.toString()));
+            scriptResult.getExternalData().forEach((key, value) -> props.put(key + "_" + propsNameSuffix, value.toString()));
         }
     }
 

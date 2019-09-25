@@ -8,6 +8,7 @@ import org.apache.jmeter.samplers.SampleListener;
 import org.apache.jmeter.samplers.SampleResult;
 import org.apache.jmeter.samplers.Sampler;
 import org.apache.jmeter.testelement.ThreadListener;
+import org.apache.jmeter.threads.JMeterVariables;
 import org.apache.jmeter.util.JMeterUtils;
 import org.apache.jorphan.collections.ListedHashTree;
 import org.apache.jorphan.collections.SearchByClass;
@@ -39,7 +40,7 @@ public class ExternalScriptDataTransfer extends ConfigTestElement implements Thr
 
     private int completedSampleCount;
 
-    private boolean isExecuteSuccess = true;
+    private boolean isSuccess = true;
 
     private SampleResult errorSampleResult;
 
@@ -62,7 +63,7 @@ public class ExternalScriptDataTransfer extends ConfigTestElement implements Thr
         }
 
         if (!result.isSuccessful()) {
-            isExecuteSuccess = false;
+            isSuccess = false;
             errorSampleResult = result;
         }
 
@@ -84,8 +85,8 @@ public class ExternalScriptDataTransfer extends ConfigTestElement implements Thr
 
             // 将增量的 JMeterVars写入 ExternalScriptResultDTO中返回给调用者
             ExternalScriptResultDTO scriptResult = new ExternalScriptResultDTO();
-            scriptResult.setExecuteSuccess(isExecuteSuccess);
-            scriptResult.setExternalScriptData(sentToPropsMap);
+            scriptResult.setSuccess(isSuccess);
+            scriptResult.setExternalData(sentToPropsMap);
             scriptResult.setErrorSampleResult(errorSampleResult);
             props.put("externalScriptResult", scriptResult);
         }
@@ -104,6 +105,11 @@ public class ExternalScriptDataTransfer extends ConfigTestElement implements Thr
         // 获取当前线程组下的 sample数量， sample总数 = 线程组 sample数 * 线程组循环数
         threadGroupSampleCount = getSampleCount(getThreadContext().getThread().getTestTree());
 
+        if (props.containsKey("callerVars")) {
+            // 把调用者线程的 vars设置为当前线程的 vars
+            getThreadContext().setVariables((JMeterVariables) props.get("callerVars"));
+        }
+
         // 保存 JMeterVars副本
         getThreadContext().getVariables().entrySet().forEach(e -> clonedVars.put(e.getKey(), e.getValue()));
     }
@@ -111,7 +117,7 @@ public class ExternalScriptDataTransfer extends ConfigTestElement implements Thr
     @Override
     public void threadFinished() {
         // 线程组执行结束时清理数据
-        isExecuteSuccess = true;
+        isSuccess = true;
         errorSampleResult = null;
         isPrintSampleResultToConsole = false;
         threadGroupSampleCount = 0;

@@ -17,7 +17,9 @@ public class ExecuteExternalScriptGui extends AbstractSamplerGui {
     private JTextField externalScriptPathField;
     private JTextField scriptNameField;
     private JTextField propsNameSuffixField;
-    private JComboBox<String> isPrintToConsoleComboBox;
+    private JComboBox<String> syncToProps;
+    private JComboBox<String> syncToVars;
+    private JComboBox<String> printToConsoleComboBox;
 
     public ExecuteExternalScriptGui() {
         init();
@@ -40,8 +42,14 @@ public class ExecuteExternalScriptGui extends AbstractSamplerGui {
         bodyPanel.add(getPropsNameSuffixLabel(), GuiUtil.GridBag.labelConstraints);
         bodyPanel.add(getPropsNameSuffixTextField(), GuiUtil.GridBag.editorConstraints);
 
-        bodyPanel.add(getIsPrintToConsoleLabel(), GuiUtil.GridBag.labelConstraints);
-        bodyPanel.add(getIsPrintToConsoleComboBox(), GuiUtil.GridBag.editorConstraints);
+        bodyPanel.add(getSyncToPropsLabel(), GuiUtil.GridBag.labelConstraints);
+        bodyPanel.add(getSyncToPropsComboBox(), GuiUtil.GridBag.editorConstraints);
+
+        bodyPanel.add(getSyncToVarsLabel(), GuiUtil.GridBag.labelConstraints);
+        bodyPanel.add(getSyncToVarsComboBox(), GuiUtil.GridBag.editorConstraints);
+
+        bodyPanel.add(getPrintToConsoleLabel(), GuiUtil.GridBag.labelConstraints);
+        bodyPanel.add(getPrintToConsoleComboBox(), GuiUtil.GridBag.editorConstraints);
 
         VerticalPanel mainPanel = new VerticalPanel();
         mainPanel.add(bodyPanel);
@@ -77,7 +85,9 @@ public class ExecuteExternalScriptGui extends AbstractSamplerGui {
         el.setProperty(ExecuteExternalScript.EXTERNAL_SCRIPT_PATH, externalScriptPathField.getText());
         el.setProperty(ExecuteExternalScript.SCRIPT_NAME, scriptNameField.getText());
         el.setProperty(ExecuteExternalScript.PROPS_NAME_SUFFIX, propsNameSuffixField.getText());
-        el.setProperty(ExecuteExternalScript.IS_PRINT_TO_CONSOLE, (String) isPrintToConsoleComboBox.getSelectedItem());
+        el.setProperty(ExecuteExternalScript.SYNC_TO_PROPS, (String) syncToProps.getSelectedItem());
+        el.setProperty(ExecuteExternalScript.SYNC_TO_VARS, (String) syncToVars.getSelectedItem());
+        el.setProperty(ExecuteExternalScript.PRINT_TO_CONSOLE, (String) printToConsoleComboBox.getSelectedItem());
     }
 
     /**
@@ -89,7 +99,9 @@ public class ExecuteExternalScriptGui extends AbstractSamplerGui {
         externalScriptPathField.setText(el.getPropertyAsString(ExecuteExternalScript.EXTERNAL_SCRIPT_PATH));
         scriptNameField.setText(el.getPropertyAsString(ExecuteExternalScript.SCRIPT_NAME));
         propsNameSuffixField.setText(el.getPropertyAsString(ExecuteExternalScript.PROPS_NAME_SUFFIX));
-        isPrintToConsoleComboBox.setSelectedItem(el.getPropertyAsString(ExecuteExternalScript.IS_PRINT_TO_CONSOLE));
+        syncToProps.setSelectedItem(el.getPropertyAsString(ExecuteExternalScript.SYNC_TO_PROPS));
+        syncToVars.setSelectedItem(el.getPropertyAsString(ExecuteExternalScript.SYNC_TO_VARS));
+        printToConsoleComboBox.setSelectedItem(el.getPropertyAsString(ExecuteExternalScript.PRINT_TO_CONSOLE));
     }
 
     @Override
@@ -98,7 +110,9 @@ public class ExecuteExternalScriptGui extends AbstractSamplerGui {
         externalScriptPathField.setText("");
         scriptNameField.setText("");
         propsNameSuffixField.setText("");
-        isPrintToConsoleComboBox.setSelectedItem("");
+        syncToProps.setSelectedItem("true");
+        syncToVars.setSelectedItem("true");
+        printToConsoleComboBox.setSelectedItem("false");
     }
 
     private Component getExternalScriptPathTextField() {
@@ -131,21 +145,49 @@ public class ExecuteExternalScriptGui extends AbstractSamplerGui {
     }
 
     private Component getPropsNameSuffixLabel() {
-        return GuiUtil.createLabel("JMeter属性名称后缀：", getPropsNameSuffixTextField());
+        return GuiUtil.createLabel("增量属性名称后缀：", getPropsNameSuffixTextField());
     }
 
-    private Component getIsPrintToConsoleComboBox() {
-        if (isPrintToConsoleComboBox == null) {
-            isPrintToConsoleComboBox = GuiUtil.createComboBox(ExecuteExternalScript.IS_PRINT_TO_CONSOLE);
-            isPrintToConsoleComboBox.addItem("false");
-            isPrintToConsoleComboBox.addItem("true");
+    private Component getSyncToPropsComboBox() {
+        if (syncToProps == null) {
+            syncToProps = GuiUtil.createComboBox(ExecuteExternalScript.SYNC_TO_PROPS);
+            syncToProps.addItem("true");
+            syncToProps.addItem("false");
         }
-        return isPrintToConsoleComboBox;
+        return syncToProps;
     }
 
-    private Component getIsPrintToConsoleLabel() {
+    private Component getSyncToPropsLabel() {
         return GuiUtil.createLabel(
-                "是否打印 Result到控制台：", isPrintToConsoleComboBox);
+                "同步增量 vars至 props：", syncToProps);
+    }
+
+    private Component getSyncToVarsComboBox() {
+        if (syncToVars == null) {
+            syncToVars = GuiUtil.createComboBox(ExecuteExternalScript.SYNC_TO_VARS);
+            syncToVars.addItem("true");
+            syncToVars.addItem("false");
+        }
+        return syncToVars;
+    }
+
+    private Component getSyncToVarsLabel() {
+        return GuiUtil.createLabel(
+                "同步 vars：", syncToVars);
+    }
+
+    private Component getPrintToConsoleComboBox() {
+        if (printToConsoleComboBox == null) {
+            printToConsoleComboBox = GuiUtil.createComboBox(ExecuteExternalScript.PRINT_TO_CONSOLE);
+            printToConsoleComboBox.addItem("false");
+            printToConsoleComboBox.addItem("true");
+        }
+        return printToConsoleComboBox;
+    }
+
+    private Component getPrintToConsoleLabel() {
+        return GuiUtil.createLabel(
+                "打印 Result到控制台：", printToConsoleComboBox);
     }
 
 }
