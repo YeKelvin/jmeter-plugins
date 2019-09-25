@@ -131,7 +131,7 @@ public class ExecuteExternalScript extends AbstractSampler implements Interrupti
         engine.setProperties(props);
         engine.configure(clonedTree);
 
-        // 判断是否命令行运行，如果是临时设置 JMETER_NON_GUI为false
+        // 判断是否命令行运行，如果是命令行模式，则临时设置 JMETER_NON_GUI为false
         boolean isNonGuiMode = false;
         if (JMeter.isNonGUI()) {
             isNonGuiMode = true;
@@ -143,7 +143,7 @@ public class ExecuteExternalScript extends AbstractSampler implements Interrupti
         runningThread.start();
         runningThread.join();
 
-        // 判断是否命令行运行，如果是把 JMETER_NON_GUI恢复为true
+        // 判断是否命令行运行，如果是命令行模式，则把 JMETER_NON_GUI恢复为true
         if (isNonGuiMode) {
             setNonGuiProperty(true);
         }
