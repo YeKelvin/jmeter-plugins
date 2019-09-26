@@ -111,7 +111,7 @@ public class ExecuteExternalScriptGui extends AbstractSamplerGui {
         scriptNameField.setText("");
         propsNameSuffixField.setText("");
         syncToProps.setSelectedItem("true");
-        syncToVars.setSelectedItem("true");
+        syncToVars.setSelectedItem("false");
         printToConsoleComboBox.setSelectedItem("false");
     }
 
@@ -165,8 +165,8 @@ public class ExecuteExternalScriptGui extends AbstractSamplerGui {
     private Component getSyncToVarsComboBox() {
         if (syncToVars == null) {
             syncToVars = GuiUtil.createComboBox(ExecuteExternalScript.SYNC_TO_VARS);
-            syncToVars.addItem("true");
             syncToVars.addItem("false");
+            syncToVars.addItem("true");
         }
         return syncToVars;
     }

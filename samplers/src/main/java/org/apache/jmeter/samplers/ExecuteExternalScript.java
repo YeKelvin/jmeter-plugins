@@ -165,6 +165,18 @@ public class ExecuteExternalScript extends AbstractSampler implements Interrupti
         // 提取外部脚本执行结果
         ExternalScriptResultDTO scriptResult = (ExternalScriptResultDTO) props.get("externalScriptResult");
 
+        // 把外部脚本中的增量 vars同步至当前线程的 vars中
+        if (isSyncToVars()) {
+            Map<String, Object> externalData = scriptResult.getExternalData();
+            externalData.forEach((key, value) -> {
+                if (value instanceof String) {
+                    getThreadContext().getVariables().put(key, (String) value);
+                } else {
+                    getThreadContext().getVariables().putObject(key, value);
+                }
+            });
+        }
+
         // 把外部脚本中新增的 JMeterVars变量加入 JMeterProps中
         // 如果设置了 JMeterProps属性名称后缀，则把外部脚本中获取的变量名都加上后缀
         setPropsWithSuffix(scriptResult);

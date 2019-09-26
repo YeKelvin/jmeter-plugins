@@ -106,8 +106,22 @@ public class ExternalScriptDataTransfer extends ConfigTestElement implements Thr
         threadGroupSampleCount = getSampleCount(getThreadContext().getThread().getTestTree());
 
         if (props.containsKey("callerVars")) {
-            // 把调用者线程的 vars设置为当前线程的 vars
-            getThreadContext().setVariables((JMeterVariables) props.get("callerVars"));
+            // 把调用者线程的 vars复制一份到当前线程的 vars中，同名key不覆盖
+            JMeterVariables callerVars = (JMeterVariables) props.get("callerVars");
+            JMeterVariables currentVars = getThreadContext().getVariables();
+
+            // 获取 callerVars 和 currentVars的差集
+            Collection<Map.Entry<String, Object>> subtract = CollectionUtils.subtract(callerVars.entrySet(), currentVars.entrySet());
+
+            if (!subtract.isEmpty()) {
+                subtract.forEach(e -> {
+                    if (e.getValue() instanceof String) {
+                        currentVars.put(e.getKey(), (String) e.getValue());
+                    } else {
+                        currentVars.putObject(e.getKey(), e.getValue());
+                    }
+                });
+            }
         }
 
         // 保存 JMeterVars副本
