@@ -55,6 +55,7 @@ public class ExecuteExternalScriptGui extends AbstractSamplerGui {
         mainPanel.add(bodyPanel);
 
         add(mainPanel, BorderLayout.CENTER);
+        add(getNotePanel(), BorderLayout.SOUTH);
     }
 
     @Override
@@ -188,6 +189,16 @@ public class ExecuteExternalScriptGui extends AbstractSamplerGui {
     private Component getPrintToConsoleLabel() {
         return GuiUtil.createLabel(
                 "打印 Result到控制台：", printToConsoleComboBox);
+    }
+
+    private Component getNotePanel() {
+        String note = "说明：\n" +
+                "1. 【脚本目录路径】：请使用变量动态获取\n" +
+                "2. 【脚本名称】：需要包含.jmx\n" +
+                "3. 【同步增量 vars至 props】：将外部脚本中新增的 var放入 prop中\n" +
+                "4. 【同步 vars】：将调用者的 vars带入外部脚本中（不会覆盖外部脚本中已存在的key），执行结束时将外部脚本新增的 var带回给调用者的 vars中\n" +
+                "5. 【增量属性名称后缀】：格式为 属性名称_后缀";
+        return GuiUtil.createNotePanel(note, this.getBackground());
     }
 
 }
