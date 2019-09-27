@@ -32,7 +32,17 @@ public class JsonPathUtil {
      */
     public static String extractAsString(String json, String jsonPath) {
         Object obj = JsonPath.read(json, jsonPath);
-        return obj == null ? null : obj.toString();
+        return obj == null ? "null" : obj.toString();
+    }
+
+    public static int extractAsInt(String json, String jsonPath) {
+        Object obj = JsonPath.read(json, jsonPath);
+        return obj == null ? 0 : Integer.valueOf(obj.toString());
+    }
+
+    public static float extractAsFloat(String json, String jsonPath) {
+        Object obj = JsonPath.read(json, jsonPath);
+        return obj == null ? 0 : Float.valueOf(obj.toString());
     }
 
     /**
