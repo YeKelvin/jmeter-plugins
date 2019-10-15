@@ -8,6 +8,9 @@ import com.jayway.jsonpath.JsonPath;
 import com.jayway.jsonpath.Option;
 import com.jayway.jsonpath.spi.json.GsonJsonProvider;
 import com.jayway.jsonpath.spi.mapper.GsonMappingProvider;
+import org.slf4j.Logger;
+import pers.kelvin.util.exception.ExceptionUtil;
+import pers.kelvin.util.log.LogUtil;
 
 import java.util.EnumSet;
 import java.util.List;
@@ -21,6 +24,8 @@ import java.util.List;
  */
 public class JsonPathUtil {
 
+    private static final Logger logger = LogUtil.getLogger(JsonUtil.class);
+
     private static Gson gson = new GsonBuilder().serializeNulls().create();
 
     private static Configuration config;
@@ -31,18 +36,33 @@ public class JsonPathUtil {
      * @return json值
      */
     public static String extractAsString(String json, String jsonPath) {
-        Object obj = JsonPath.read(json, jsonPath);
-        return obj == null ? "null" : obj.toString();
+        try {
+            Object obj = JsonPath.read(json, jsonPath);
+            return obj == null ? "null" : obj.toString();
+        } catch (Exception e) {
+            logger.error(ExceptionUtil.getStackTrace(e));
+            return "";
+        }
     }
 
     public static int extractAsInt(String json, String jsonPath) {
-        Object obj = JsonPath.read(json, jsonPath);
-        return obj == null ? 0 : Integer.valueOf(obj.toString());
+        try {
+            Object obj = JsonPath.read(json, jsonPath);
+            return obj == null ? 0 : Integer.valueOf(obj.toString());
+        } catch (Exception e) {
+            logger.error(ExceptionUtil.getStackTrace(e));
+            return 0;
+        }
     }
 
     public static float extractAsFloat(String json, String jsonPath) {
-        Object obj = JsonPath.read(json, jsonPath);
-        return obj == null ? 0 : Float.valueOf(obj.toString());
+        try {
+            Object obj = JsonPath.read(json, jsonPath);
+            return obj == null ? 0 : Float.valueOf(obj.toString());
+        } catch (Exception e) {
+            logger.error(ExceptionUtil.getStackTrace(e));
+            return 0;
+        }
     }
 
     /**
@@ -82,8 +102,13 @@ public class JsonPathUtil {
      * @return length
      */
     public static int getArrayLength(String json, String jsonPath) {
-        List<Integer> size = JsonPath.read(json, jsonPath);
-        return size.get(0);
+        try {
+            List<Integer> size = JsonPath.read(json, jsonPath);
+            return size.get(0);
+        } catch (Exception e) {
+            logger.error(ExceptionUtil.getStackTrace(e));
+            return 0;
+        }
     }
 
 }
