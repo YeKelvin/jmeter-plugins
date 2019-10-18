@@ -6,7 +6,6 @@ import org.apache.jmeter.protocol.jdbc.sampler.JDBCSampler;
 import org.apache.jmeter.samplers.SampleEvent;
 import org.apache.jmeter.samplers.SampleListener;
 import org.apache.jmeter.samplers.SampleResult;
-import org.apache.jmeter.samplers.Sampler;
 import org.apache.jmeter.testelement.ThreadListener;
 import org.apache.jmeter.threads.JMeterVariables;
 import org.apache.jmeter.util.JMeterUtils;
@@ -14,7 +13,6 @@ import org.apache.jorphan.collections.ListedHashTree;
 import org.apache.jorphan.collections.SearchByClass;
 import org.slf4j.Logger;
 import pers.kelvin.util.FileUtil;
-import pers.kelvin.util.json.JsonUtil;
 import pers.kelvin.util.log.LogUtil;
 
 import java.util.*;
@@ -36,26 +34,25 @@ public class ExternalScriptDataTransfer extends ConfigTestElement implements Thr
 
     private HashMap<String, Object> clonedVars;
 
-    private int threadGroupSampleCount;
-
-    private int completedSampleCount;
+    private Map<String, Object> scriptData;
 
     private boolean isSuccess = true;
+
+    private ExternalScriptResultDTO scriptResult;
 
     private SampleResult errorSampleResult;
 
     public ExternalScriptDataTransfer() {
         super();
         isPrintSampleResultToConsole = Boolean.valueOf(JMeterUtils.getProperty("printSampleResultToConsole"));
+        scriptResult = new ExternalScriptResultDTO();
+        scriptData = new HashMap<>();
         clonedVars = new HashMap<>();
     }
 
     @Override
     public void sampleOccurred(SampleEvent e) {
         SampleResult result = e.getResult();
-
-        // 统计已完成的 sample的数量
-        completedSampleCount++;
 
         // 打印 sample数据到console，用于脚本调试
         if (isPrintSampleResultToConsole) {
@@ -67,29 +64,17 @@ public class ExternalScriptDataTransfer extends ConfigTestElement implements Thr
             errorSampleResult = result;
         }
 
-        // 当所有 sample执行完毕时，把增量的 JMeterVars写入 JMeterProps中，用于在线程组间传递数据
-        if (threadGroupSampleCount == completedSampleCount || !result.isSuccessful()) {
-            // 获取 ThreadGroup运行前后的 JMeterVars的差集
-            Collection<Map.Entry<String, Object>> subtract = CollectionUtils.subtract(
-                    getThreadContext().getVariables().entrySet(), clonedVars.entrySet());
+        // 获取 Sampler运行前后的 JMeterVars的差集
+        Collection<Map.Entry<String, Object>> subtract = CollectionUtils.subtract(
+                getThreadContext().getVariables().entrySet(), clonedVars.entrySet());
 
-            Map<String, Object> sentToPropsMap = new HashMap<>();
-            if (!subtract.isEmpty()) {
-                // 把差集结果放入临时 map对象中
-                subtract.forEach(entry -> sentToPropsMap.put(entry.getKey(), entry.getValue()));
-
-                // 删除不必要的key
-                removeUnwantedKey(sentToPropsMap);
-                logger.debug("sentToPropsMap after removeUnwantedKey={}", JsonUtil.toJson(sentToPropsMap));
-            }
-
-            // 将增量的 JMeterVars写入 ExternalScriptResultDTO中返回给调用者
-            ExternalScriptResultDTO scriptResult = new ExternalScriptResultDTO();
-            scriptResult.setSuccess(isSuccess);
-            scriptResult.setExternalData(sentToPropsMap);
-            scriptResult.setErrorSampleResult(errorSampleResult);
-            props.put("externalScriptResult", scriptResult);
+        if (!subtract.isEmpty()) {
+            // 把差集结果放入 map对象中
+            subtract.forEach(entry -> scriptData.put(entry.getKey(), entry.getValue()));
+            // 删除不必要的key
+            removeUnwantedKey(scriptData);
         }
+
     }
 
     @Override
@@ -102,9 +87,6 @@ public class ExternalScriptDataTransfer extends ConfigTestElement implements Thr
 
     @Override
     public void threadStarted() {
-        // 获取当前线程组下的 sample数量， sample总数 = 线程组 sample数 * 线程组循环数
-        threadGroupSampleCount = getSampleCount(getThreadContext().getThread().getTestTree());
-
         if (props.containsKey("callerVars")) {
             // 把调用者线程的 vars复制一份到当前线程的 vars中，同名key不覆盖
             JMeterVariables callerVars = (JMeterVariables) props.get("callerVars");
@@ -130,22 +112,11 @@ public class ExternalScriptDataTransfer extends ConfigTestElement implements Thr
 
     @Override
     public void threadFinished() {
-        // 线程组执行结束时清理数据
-        isSuccess = true;
-        errorSampleResult = null;
-        isPrintSampleResultToConsole = false;
-        threadGroupSampleCount = 0;
-        completedSampleCount = 0;
-        clonedVars.clear();
-    }
-
-    /**
-     * 获取 ListedHashTree中的 sample数量
-     */
-    private int getSampleCount(ListedHashTree testTree) {
-        SearchByClass<Sampler> searcher = new SearchByClass<>(Sampler.class);
-        testTree.traverse(searcher);
-        return searcher.getSearchResults().size();
+        // 将增量的 JMeterVars写入 ExternalScriptResultDTO中返回给调用者
+        scriptResult.setSuccess(isSuccess);
+        scriptResult.setExternalData(scriptData);
+        scriptResult.setErrorSampleResult(errorSampleResult);
+        props.put("externalScriptResult", scriptResult);
     }
 
     /**

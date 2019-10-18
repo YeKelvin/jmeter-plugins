@@ -164,10 +164,10 @@ public class ExecuteExternalScript extends AbstractSampler implements Interrupti
 
         // 提取外部脚本执行结果
         ExternalScriptResultDTO scriptResult = (ExternalScriptResultDTO) props.get("externalScriptResult");
+        Map<String, Object> externalData = scriptResult.getExternalData();
 
         // 把外部脚本中的增量 vars同步至当前线程的 vars中
         if (isSyncToVars()) {
-            Map<String, Object> externalData = scriptResult.getExternalData();
             externalData.forEach((key, value) -> {
                 if (value instanceof String) {
                     getThreadContext().getVariables().put(key, (String) value);
@@ -179,7 +179,7 @@ public class ExecuteExternalScript extends AbstractSampler implements Interrupti
 
         // 把外部脚本中新增的 JMeterVars变量加入 JMeterProps中
         // 如果设置了 JMeterProps属性名称后缀，则把外部脚本中获取的变量名都加上后缀
-        setPropsWithSuffix(scriptResult);
+        setPropsWithSuffix(externalData);
 
         return scriptResult;
     }
@@ -351,21 +351,21 @@ public class ExecuteExternalScript extends AbstractSampler implements Interrupti
         props.remove("callerVars");
     }
 
-    private void setPropsWithSuffix(ExternalScriptResultDTO scriptResult) {
+    private void setPropsWithSuffix(Map<String, Object> externalData) {
         if (!isSyncToProps()) {
             return;
         }
-        Map<String, Object> scriptData = scriptResult.getExternalData();
 
-        if (MapUtils.isEmpty(scriptData)) {
+        if (MapUtils.isEmpty(externalData)) {
             return;
         }
 
+        // 属性名称后缀
         String propsNameSuffix = getPropsNameSuffix();
         if (StringUtil.isBlank(propsNameSuffix)) {
-            scriptResult.getExternalData().forEach((key, value) -> props.put(key, value.toString()));
+            externalData.forEach((key, value) -> props.put(key, value.toString()));
         } else {
-            scriptResult.getExternalData().forEach((key, value) -> props.put(key + "_" + propsNameSuffix, value.toString()));
+            externalData.forEach((key, value) -> props.put(key + "_" + propsNameSuffix, value.toString()));
         }
     }
 
