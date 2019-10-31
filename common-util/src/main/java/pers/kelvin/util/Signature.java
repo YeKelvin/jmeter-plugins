@@ -36,29 +36,25 @@ public class Signature {
             return "";
         }
 
+        // json排序
         Map<Object, Object> resultMap = sortMapByKey(gson.fromJson(json, JsonUtil.mapType));
         StringBuffer orderedSB = new StringBuffer();
         if (resultMap != null) {
             resultMap.forEach((key, value) -> traverse(orderedSB, key, value));
         }
-
         String sign = orderedSB.substring(0, orderedSB.length() - 1);
-        System.out.println(sign);
+
+        // 拼接前缀
         if (StringUtil.isNotBlank(prefix)) {
             sign = prefix + "&" + sign;
         }
-        logger.debug("sign before md5={}", sign);
+        logger.debug("sign={}", sign);
 
         // md5加密
         if (StringUtil.isNotBlank(sign)) {
             sign = md5(sign);
         }
         return sign;
-    }
-
-    public static void main(String[] args) {
-        String json = "{\"appType\":\"userApp\",\"loginName\":\"85588158158\",\"cityCode\":\"855120000\",\"keyword\":\"新丽\"}";
-        System.out.println(Signature.sign(json,"chaos"));
     }
 
     /**
