@@ -44,18 +44,14 @@ public class CambodiaMobilePhone {
         PHONE_RULE.add(new String[]{"98","6"});
 
         // metfone
-        PHONE_RULE.add(new String[]{"31","6"});
         PHONE_RULE.add(new String[]{"31","7"});
         PHONE_RULE.add(new String[]{"60","6"});
         PHONE_RULE.add(new String[]{"66","6"});
         PHONE_RULE.add(new String[]{"67","6"});
         PHONE_RULE.add(new String[]{"68","6"});
-        PHONE_RULE.add(new String[]{"71","6"});
         PHONE_RULE.add(new String[]{"71","7"});
-        PHONE_RULE.add(new String[]{"88","6"});
         PHONE_RULE.add(new String[]{"88","7"});
         PHONE_RULE.add(new String[]{"90","6"});
-        PHONE_RULE.add(new String[]{"97","6"});
         PHONE_RULE.add(new String[]{"97","7"});
 
         // qb
@@ -65,11 +61,9 @@ public class CambodiaMobilePhone {
         PHONE_RULE.add(new String[]{"84","6"});
 
         // cootel
-        PHONE_RULE.add(new String[]{"38","6"});
         PHONE_RULE.add(new String[]{"38","7"});
 
         // seatel
-        PHONE_RULE.add(new String[]{"18","6"});
         PHONE_RULE.add(new String[]{"18","7"});
 
     }
