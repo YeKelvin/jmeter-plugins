@@ -171,8 +171,8 @@ public class Randoms {
      * 获取柬埔寨手机号码
      */
     public static String getCambodiaMobileNumber() {
-        return getNumber("855" +
-                CambodiaMobilePhone.getRandomPhoneCode(), CambodiaMobilePhone.getRandomPhoneLength());
+        String[] mobileRule = CambodiaMobilePhone.getRandomPhoneCode();
+        return getNumber("855" + mobileRule[0],Integer.valueOf(mobileRule[1]));
     }
 
 }

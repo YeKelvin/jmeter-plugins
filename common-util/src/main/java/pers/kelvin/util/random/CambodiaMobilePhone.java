@@ -9,75 +9,76 @@ import java.util.Random;
  * @author KelvinYe
  */
 public class CambodiaMobilePhone {
-    private static final ArrayList<String> PHONE_CODE = new ArrayList<>();
-    private static final ArrayList<Integer> PHONE_LENGTH = new ArrayList<>();
+    private static final ArrayList<String[]> PHONE_RULE = new ArrayList<>();
 
     static {
-        // PHONE_CODE
-        PHONE_CODE.add("10");
-        PHONE_CODE.add("15");
-        PHONE_CODE.add("16");
-        PHONE_CODE.add("69");
-        PHONE_CODE.add("70");
-        PHONE_CODE.add("81");
-        PHONE_CODE.add("86");
-        PHONE_CODE.add("87");
-        PHONE_CODE.add("93");
-        PHONE_CODE.add("98");
-        PHONE_CODE.add("96");
-        PHONE_CODE.add("88");
-        PHONE_CODE.add("97");
-        PHONE_CODE.add("71");
-        PHONE_CODE.add("60");
-        PHONE_CODE.add("66");
-        PHONE_CODE.add("67");
-        PHONE_CODE.add("68");
-        PHONE_CODE.add("90");
-        PHONE_CODE.add("31");
-        PHONE_CODE.add("91");
-        PHONE_CODE.add("11");
-        PHONE_CODE.add("12");
-        PHONE_CODE.add("14");
-        PHONE_CODE.add("17");
-        PHONE_CODE.add("61");
-        PHONE_CODE.add("76");
-        PHONE_CODE.add("77");
-        PHONE_CODE.add("78");
-        PHONE_CODE.add("85");
-        PHONE_CODE.add("89");
-        PHONE_CODE.add("92");
-        PHONE_CODE.add("95");
-        PHONE_CODE.add("99");
-        PHONE_CODE.add("18");
-        PHONE_CODE.add("38");
-        PHONE_CODE.add("13");
-        PHONE_CODE.add("80");
-        PHONE_CODE.add("83");
-        PHONE_CODE.add("84");
-        PHONE_CODE.add("79");
+        // cellcard
+        PHONE_RULE.add(new String[]{"11","6"});
+        PHONE_RULE.add(new String[]{"12","6"});
+        PHONE_RULE.add(new String[]{"12","7"});
+        PHONE_RULE.add(new String[]{"14","6"});
+        PHONE_RULE.add(new String[]{"17","6"});
+        PHONE_RULE.add(new String[]{"61","6"});
+        PHONE_RULE.add(new String[]{"76","7"});
+        PHONE_RULE.add(new String[]{"77","6"});
+        PHONE_RULE.add(new String[]{"78","6"});
+        PHONE_RULE.add(new String[]{"79","6"});
+        PHONE_RULE.add(new String[]{"85","6"});
+        PHONE_RULE.add(new String[]{"89","6"});
+        PHONE_RULE.add(new String[]{"92","6"});
+        PHONE_RULE.add(new String[]{"95","6"});
+        PHONE_RULE.add(new String[]{"99","6"});
 
-        // PHONE_LENGTH
-        PHONE_LENGTH.add(6);
-        PHONE_LENGTH.add(7);
+        // smart
+        PHONE_RULE.add(new String[]{"10","6"});
+        PHONE_RULE.add(new String[]{"15","6"});
+        PHONE_RULE.add(new String[]{"16","6"});
+        PHONE_RULE.add(new String[]{"69","6"});
+        PHONE_RULE.add(new String[]{"70","6"});
+        PHONE_RULE.add(new String[]{"81","6"});
+        PHONE_RULE.add(new String[]{"86","6"});
+        PHONE_RULE.add(new String[]{"87","6"});
+        PHONE_RULE.add(new String[]{"93","6"});
+        PHONE_RULE.add(new String[]{"96","6"});
+        PHONE_RULE.add(new String[]{"96","7"});
+        PHONE_RULE.add(new String[]{"98","6"});
+
+        // metfone
+        PHONE_RULE.add(new String[]{"31","6"});
+        PHONE_RULE.add(new String[]{"31","7"});
+        PHONE_RULE.add(new String[]{"60","6"});
+        PHONE_RULE.add(new String[]{"66","6"});
+        PHONE_RULE.add(new String[]{"67","6"});
+        PHONE_RULE.add(new String[]{"68","6"});
+        PHONE_RULE.add(new String[]{"71","6"});
+        PHONE_RULE.add(new String[]{"71","7"});
+        PHONE_RULE.add(new String[]{"88","6"});
+        PHONE_RULE.add(new String[]{"88","7"});
+        PHONE_RULE.add(new String[]{"90","6"});
+        PHONE_RULE.add(new String[]{"97","6"});
+        PHONE_RULE.add(new String[]{"97","7"});
+
+        // qb
+        PHONE_RULE.add(new String[]{"13","6"});
+        PHONE_RULE.add(new String[]{"80","6"});
+        PHONE_RULE.add(new String[]{"83","6"});
+        PHONE_RULE.add(new String[]{"84","6"});
+
+        // cootel
+        PHONE_RULE.add(new String[]{"38","6"});
+        PHONE_RULE.add(new String[]{"38","7"});
+
+        // seatel
+        PHONE_RULE.add(new String[]{"18","6"});
+        PHONE_RULE.add(new String[]{"18","7"});
+
     }
 
     /**
-     * 随机生成柬埔寨手机号前缀
+     * 随机生成柬埔寨手机号规则（前缀 + 长度）
      */
-    public static String getRandomPhoneCode() {
-        return PHONE_CODE.get(new Random().nextInt(PHONE_CODE.size()));
+    public static String[] getRandomPhoneCode() {
+        return PHONE_RULE.get(new Random().nextInt(PHONE_RULE.size()));
     }
-
-    /**
-     * 随机生成柬埔寨手机号长度
-     */
-    public static int getRandomPhoneLength() {
-        return PHONE_LENGTH.get(new Random().nextInt(PHONE_LENGTH.size()));
-    }
-
-    public static void main(String[] args) {
-        System.out.println(getRandomPhoneLength());
-    }
-
 
 }
