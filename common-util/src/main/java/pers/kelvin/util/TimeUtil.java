@@ -55,6 +55,13 @@ public class TimeUtil {
     }
 
     /**
+     * 获取当前日期，并根据 pattern格式化时间
+     */
+    public static String getCurrentDate(String pattern) {
+        return new SimpleDateFormat(pattern).format(new Date());
+    }
+
+    /**
      * 获取当前日期
      */
     public static String getCurrentDate() {
@@ -207,12 +214,4 @@ public class TimeUtil {
         long s = Long.valueOf(hms[1].substring(0, 2)) * 1000;
         return m + s;
     }
-
-    public static void main(String[] args) {
-        String timeStr = "02m:30s";
-        long timeLong = elapsedTimeAsMSToLong(timeStr);
-        System.out.println(timeLong);
-        System.out.println(formatElapsedTimeAsMS(timeLong));
-    }
-
 }
