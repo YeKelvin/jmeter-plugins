@@ -45,6 +45,7 @@
         <httpcore.version>4.4.11</httpcore.version>
         <commons-text.version>1.6</commons-text.version>
         <guava.version>28.0-jre</guava.version>
+        <poi.version>4.1.1</poi.version>
     </properties>
 
     <dependencyManagement>
@@ -287,6 +288,16 @@
                 <groupId>com.google.guava</groupId>
                 <artifactId>guava</artifactId>
                 <version>${guava.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.poi</groupId>
+                <artifactId>poi</artifactId>
+                <version>${poi.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.poi</groupId>
+                <artifactId>poi-ooxml</artifactId>
+                <version>${poi.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
