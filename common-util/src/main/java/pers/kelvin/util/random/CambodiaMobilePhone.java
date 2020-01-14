@@ -39,7 +39,6 @@ public class CambodiaMobilePhone {
         PHONE_RULE.add(new String[]{"86","6"});
         PHONE_RULE.add(new String[]{"87","6"});
         PHONE_RULE.add(new String[]{"93","6"});
-        PHONE_RULE.add(new String[]{"96","6"});
         PHONE_RULE.add(new String[]{"96","7"});
         PHONE_RULE.add(new String[]{"98","6"});
 
