@@ -34,7 +34,7 @@
         <jsch.version>0.1.54</jsch.version>
         <dubbo.version>2.5.3</dubbo.version>
         <org.springframework.version>4.3.17.RELEASE</org.springframework.version>
-        <zookeeper.version>3.4.6</zookeeper.version>
+        <zookeeper.version>3.4.14</zookeeper.version>
         <zkclient.version>0.10</zkclient.version>
         <lombok.version>1.16.16</lombok.version>
         <testng.version>6.14.2</testng.version>
