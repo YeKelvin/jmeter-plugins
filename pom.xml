@@ -46,6 +46,7 @@
         <commons-text.version>1.6</commons-text.version>
         <guava.version>28.0-jre</guava.version>
         <poi.version>4.1.1</poi.version>
+        <yaml.version>1.26</yaml.version>
     </properties>
 
     <dependencyManagement>
@@ -140,7 +141,6 @@
                 <groupId>org.testng</groupId>
                 <artifactId>testng</artifactId>
                 <version>${testng.version}</version>
-                <scope>test</scope>
             </dependency>
             <dependency>
                 <groupId>com.alibaba</groupId>
@@ -298,6 +298,11 @@
                 <groupId>org.apache.poi</groupId>
                 <artifactId>poi-ooxml</artifactId>
                 <version>${poi.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.yaml</groupId>
+                <artifactId>snakeyaml</artifactId>
+                <version>${yaml.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
