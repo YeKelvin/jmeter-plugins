@@ -8,6 +8,7 @@ import org.apache.jmeter.threads.JMeterContextService;
 import org.apache.jmeter.util.JMeterUtils;
 import org.slf4j.Logger;
 import pers.kelvin.util.FileUtil;
+import pers.kelvin.util.YamlUtil;
 import pers.kelvin.util.exception.ExceptionUtil;
 import pers.kelvin.util.json.JsonUtil;
 import pers.kelvin.util.log.LogUtil;
@@ -15,6 +16,7 @@ import pers.kelvin.util.log.LogUtil;
 import java.io.File;
 import java.lang.reflect.Type;
 import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author: KelvinYe
@@ -55,30 +57,30 @@ public class ENVDataSet extends ConfigTestElement implements TestStateListener, 
      */
     public HashMap<String, String> getEnvMap(String filePath) {
         HashMap<String, String> envMap = new HashMap<>();
-        if (isEnvFile(filePath)) {
-            String envJson = FileUtil.readEnvFile(filePath);
-            logger.debug("filePath={}", filePath);
-            logger.debug("envJson={}", envJson);
+        File file = new File(filePath);
+        // 判断是否为 yaml文件
+        if (file.isFile() && filePath.endsWith("yaml")) {
             try {
-                envMap = JsonUtil.fromJson(envJson, hashMap);
+                envMap = parseYaml(file);
             } catch (Exception e) {
                 logger.error(ExceptionUtil.getStackTrace(e));
             }
         } else {
-            logger.error("{}非 .env文件", filePath);
+            logger.error("{} 非 yaml文件", filePath);
         }
         return envMap;
     }
 
-
-    /**
-     * 判断文件后缀是否为env
-     *
-     * @param filePath 文件路径
-     */
-    private Boolean isEnvFile(String filePath) {
-        File file = new File(filePath);
-        return file.isFile() && filePath.endsWith("env");
+    private HashMap<String, String> parseYaml(File file) {
+        HashMap<String, String> map = new HashMap<>();
+        @SuppressWarnings("unchecked")
+        Map<String, Object> yamlMap = (Map<String, Object>) YamlUtil.parseYaml(file);
+        if (yamlMap != null) {
+            yamlMap.forEach((key, value) -> {
+                map.put(key, String.valueOf(value));
+            });
+        }
+        return map;
     }
 
     @Override

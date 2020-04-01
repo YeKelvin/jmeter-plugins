@@ -2,14 +2,14 @@ package pers.kelvin.util;
 
 
 import org.slf4j.Logger;
-import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.Yaml;
 import pers.kelvin.util.exception.ExceptionUtil;
 import pers.kelvin.util.log.LogUtil;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
-import java.util.Map;
 
 public class YamlUtil {
 
@@ -26,19 +26,6 @@ public class YamlUtil {
         } catch (Exception e) {
             logger.error(ExceptionUtil.getStackTrace(e));
             return null;
-        }
-    }
-
-    public static void writerYaml(File file, Map<String, String> map) {
-        try {
-            DumperOptions dumperOptions = new DumperOptions();
-            dumperOptions.setDefaultFlowStyle(DumperOptions.FlowStyle.BLOCK);
-            dumperOptions.setDefaultScalarStyle(DumperOptions.ScalarStyle.PLAIN);
-            dumperOptions.setPrettyFlow(false);
-            Yaml yaml = new Yaml(dumperOptions);
-            yaml.dump(map, new OutputStreamWriter((new FileOutputStream(file)), StandardCharsets.UTF_8.name()));
-        } catch (Exception e) {
-            logger.error(ExceptionUtil.getStackTrace(e));
         }
     }
 }

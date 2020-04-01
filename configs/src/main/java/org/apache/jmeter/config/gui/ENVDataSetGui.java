@@ -106,13 +106,13 @@ public class ENVDataSetGui extends AbstractConfigGui {
     private Component getConfigNameComboBox() {
         if (configNameComboBox == null) {
             configNameComboBox = GuiUtil.createComboBox(ENVDataSet.CONFIG_NAME);
-            comboBoxAddItem(getEnvList(getConfigPath()));
+            comboBoxAddItem(getConfigFileList(getConfigPath()));
         }
         return configNameComboBox;
     }
 
     private Component getConfigNameLabel() {
-        return GuiUtil.createLabel("ENV文件名称：", getConfigNameComboBox());
+        return GuiUtil.createLabel("配置文件名称：", getConfigNameComboBox());
     }
 
     private JPanel createTablePanel() {
@@ -138,7 +138,7 @@ public class ENVDataSetGui extends AbstractConfigGui {
 
     private JPanel getNotePanel() {
         String note = "说明：\n" +
-                "1. 配置文件名称的后缀必须为 .env ，内容为 json ，且必须放在 ${JMETER_HOME}/config 目录下；\n" +
+                "1. 配置文件必须是 Yaml格式 ，且必须放在 ${JMETER_HOME}/config 目录下；\n" +
                 "2. Non-Gui模式下，命令行存在 -JconfigName 参数时，优先读取 ${__P(configName)} 配置文件。";
         return GuiUtil.createNotePanel(note, this.getBackground());
     }
@@ -163,24 +163,24 @@ public class ENVDataSetGui extends AbstractConfigGui {
     }
 
     /**
-     * 获取 env文件的列表
+     * 获取配置文件的列表
      *
-     * @param dirPath env文件所在目录
+     * @param dirPath 配置文件所在目录
      */
-    private ArrayList<File> getEnvList(String dirPath) {
-        ArrayList<File> envList = new ArrayList<>();
+    private ArrayList<File> getConfigFileList(String dirPath) {
+        ArrayList<File> fileList = new ArrayList<>();
         File dir = new File(dirPath);
         File[] files = dir.listFiles();
         if (files != null) {
             for (File file : files) {
                 if (file.isDirectory()) {
-                    envList.addAll(getEnvList(file.getAbsolutePath()));
-                } else if (file.getName().endsWith("env")) {
-                    envList.add(file);
+                    fileList.addAll(getConfigFileList(file.getAbsolutePath()));
+                } else if (file.getName().endsWith("yaml")) {
+                    fileList.add(file);
                 }
             }
         }
-        return envList;
+        return fileList;
     }
 
     private String getConfigPath() {
