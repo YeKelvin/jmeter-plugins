@@ -90,7 +90,7 @@ public class JsonFileUtil {
 
 
     public static String readJsonFileToString(String filePath) throws IOException {
-        StringBuilder content = new StringBuilder();
+        StringBuffer content = new StringBuffer();
         File file = new File(filePath);
         if (file.exists()) {
             InputStreamReader reader = new InputStreamReader(new FileInputStream(file), StandardCharsets.UTF_8);

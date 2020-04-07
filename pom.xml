@@ -7,7 +7,7 @@
     <groupId>jmeter-plugins</groupId>
     <artifactId>jmeter-plugins</artifactId>
     <packaging>pom</packaging>
-    <version>3.1</version>
+    <version>5.1.1</version>
     <modules>
         <module>common-util</module>
         <module>dubbo-zookeeper</module>
@@ -54,17 +54,17 @@
             <dependency>
                 <groupId>jmeter-plugins</groupId>
                 <artifactId>jmeter-plugins-common-util</artifactId>
-                <version>3.1</version>
+                <version>5.1.1</version>
             </dependency>
             <dependency>
                 <groupId>jmeter-plugins</groupId>
                 <artifactId>jmeter-plugins-configs</artifactId>
-                <version>3.1</version>
+                <version>5.1.1</version>
             </dependency>
             <dependency>
                 <groupId>jmeter-plugins</groupId>
                 <artifactId>jmeter-plugins-visualizers</artifactId>
-                <version>3.1</version>
+                <version>5.1.1</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.jmeter</groupId>

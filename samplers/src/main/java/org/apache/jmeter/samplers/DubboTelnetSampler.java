@@ -234,21 +234,13 @@ public class DubboTelnetSampler extends AbstractSampler {
      * @param requestData   请求数据
      * @return 响应报文
      */
-    private String invokeDubbo(String dubboAddress, String interfaceName, String requestData)
-            throws IOException, JSchException {
+    private String invokeDubbo(String dubboAddress, String interfaceName, String requestData) throws IOException {
         // 分割地址，格式为host:port
         String[] address = dubboAddress.split(":");
         String dubboHost = address[0];
         String dubboPort = address.length == 1 ? "0000" : address[1];
 
-        boolean isSSHTelnet = isSSHTelnet();
-        logger.debug("isSSHTelnet={}", isSSHTelnet);
-
-        if (isSSHTelnet) {
-            return sshTelnetInvoke(dubboHost, dubboPort, interfaceName, requestData);
-        } else {
-            return telnetInvoke(dubboHost, dubboPort, interfaceName, requestData);
-        }
+        return telnetInvoke(dubboHost, dubboPort, interfaceName, requestData);
     }
 
     /**
@@ -285,7 +277,7 @@ public class DubboTelnetSampler extends AbstractSampler {
         // 分割地址，格式为host:port
         String[] sshAddressArray = getSSHAddress().split(":");
         String sshHost = sshAddressArray[0];
-        int sshPort = Integer.valueOf(sshAddressArray.length == 1 ? "22" : sshAddressArray[1]);
+        int sshPort = Integer.parseInt(sshAddressArray.length == 1 ? "22" : sshAddressArray[1]);
 
         SSHTelnetClient telnet = new SSHTelnetClient(sshHost, sshPort, getSSHUserName(), getSSHPassword(),
                 getEncode(), defaultTimeout);
@@ -383,7 +375,4 @@ public class DubboTelnetSampler extends AbstractSampler {
         return JMeterVarsUtil.getDefault("sshPassword", "");
     }
 
-    private boolean isSSHTelnet() {
-        return JMeterVarsUtil.getDefaultAsBoolean("isSSHConnect", false);
-    }
 }

@@ -1,7 +1,7 @@
 package org.apache.jmeter.config.gui;
 
 
-import org.apache.jmeter.config.SSHPortForwarding;
+import org.apache.jmeter.config.SSHConfiguration;
 import org.apache.jmeter.gui.util.VerticalPanel;
 import org.apache.jmeter.testelement.TestElement;
 import pers.kelvin.util.GuiUtil;
@@ -14,15 +14,16 @@ import java.awt.*;
  *
  * @author Kelvin.Ye
  */
-public class SSHPortForwardingGui extends AbstractConfigGui {
+public class SSHConfigurationGui extends AbstractConfigGui {
 
     private JTextField sshAddressTextField;
     private JTextField sshUserNameTextField;
     private JTextField sshPasswordTextField;
+    private JComboBox<String> sshLocalForwardingComboBox;
     private JTextField localForwardingPortTextField;
     private JTextField remoteAddressTextField;
 
-    public SSHPortForwardingGui() {
+    public SSHConfigurationGui() {
         init();
     }
 
@@ -43,6 +44,9 @@ public class SSHPortForwardingGui extends AbstractConfigGui {
         bodyPanel.add(getSSHPasswordLabel(), GuiUtil.GridBag.labelConstraints);
         bodyPanel.add(getSSHPasswordTextField(), GuiUtil.GridBag.editorConstraints);
 
+        bodyPanel.add(getSSHLocalForwardingLabel(), GuiUtil.GridBag.labelConstraints);
+        bodyPanel.add(getSSHLocalForwardingComboBox(), GuiUtil.GridBag.editorConstraints);
+
         bodyPanel.add(getLocalForwardingPortLabel(), GuiUtil.GridBag.labelConstraints);
         bodyPanel.add(getLocalForwardingPortTextField(), GuiUtil.GridBag.editorConstraints);
 
@@ -58,7 +62,7 @@ public class SSHPortForwardingGui extends AbstractConfigGui {
 
     @Override
     public String getStaticLabel() {
-        return "SSH Port Forwarding";
+        return "SSH Configuration";
     }
 
 
@@ -70,7 +74,7 @@ public class SSHPortForwardingGui extends AbstractConfigGui {
 
     @Override
     public TestElement createTestElement() {
-        SSHPortForwarding el = new SSHPortForwarding();
+        SSHConfiguration el = new SSHConfiguration();
         modifyTestElement(el);
         return el;
     }
@@ -81,11 +85,12 @@ public class SSHPortForwardingGui extends AbstractConfigGui {
     @Override
     public void modifyTestElement(TestElement el) {
         super.configureTestElement(el);
-        el.setProperty(SSHPortForwarding.SSH_ADDRESS, sshAddressTextField.getText());
-        el.setProperty(SSHPortForwarding.SSH_USER_NAME, sshUserNameTextField.getText());
-        el.setProperty(SSHPortForwarding.SSH_PASSWORD, sshPasswordTextField.getText());
-        el.setProperty(SSHPortForwarding.LOCAL_FORWARDING_PORT, localForwardingPortTextField.getText());
-        el.setProperty(SSHPortForwarding.REMOTE_ADDRESS, remoteAddressTextField.getText());
+        el.setProperty(SSHConfiguration.SSH_ADDRESS, sshAddressTextField.getText());
+        el.setProperty(SSHConfiguration.SSH_USER_NAME, sshUserNameTextField.getText());
+        el.setProperty(SSHConfiguration.SSH_PASSWORD, sshPasswordTextField.getText());
+        el.setProperty(SSHConfiguration.SSH_PORT_FORWARDING, (String) sshLocalForwardingComboBox.getSelectedItem());
+        el.setProperty(SSHConfiguration.LOCAL_FORWARDING_PORT, localForwardingPortTextField.getText());
+        el.setProperty(SSHConfiguration.REMOTE_ADDRESS, remoteAddressTextField.getText());
     }
 
     /**
@@ -94,11 +99,12 @@ public class SSHPortForwardingGui extends AbstractConfigGui {
     @Override
     public void configure(TestElement el) {
         super.configure(el);
-        sshAddressTextField.setText(el.getPropertyAsString(SSHPortForwarding.SSH_ADDRESS));
-        sshUserNameTextField.setText(el.getPropertyAsString(SSHPortForwarding.SSH_USER_NAME));
-        sshPasswordTextField.setText(el.getPropertyAsString(SSHPortForwarding.SSH_PASSWORD));
-        localForwardingPortTextField.setText(el.getPropertyAsString(SSHPortForwarding.LOCAL_FORWARDING_PORT));
-        remoteAddressTextField.setText(el.getPropertyAsString(SSHPortForwarding.REMOTE_ADDRESS));
+        sshAddressTextField.setText(el.getPropertyAsString(SSHConfiguration.SSH_ADDRESS));
+        sshUserNameTextField.setText(el.getPropertyAsString(SSHConfiguration.SSH_USER_NAME));
+        sshPasswordTextField.setText(el.getPropertyAsString(SSHConfiguration.SSH_PASSWORD));
+        sshLocalForwardingComboBox.setSelectedItem(el.getPropertyAsString(SSHConfiguration.SSH_PORT_FORWARDING));
+        localForwardingPortTextField.setText(el.getPropertyAsString(SSHConfiguration.LOCAL_FORWARDING_PORT));
+        remoteAddressTextField.setText(el.getPropertyAsString(SSHConfiguration.REMOTE_ADDRESS));
     }
 
     @Override
@@ -107,13 +113,14 @@ public class SSHPortForwardingGui extends AbstractConfigGui {
         sshAddressTextField.setText("");
         sshUserNameTextField.setText("");
         sshPasswordTextField.setText("");
+        sshLocalForwardingComboBox.setSelectedItem("");
         localForwardingPortTextField.setText("");
         remoteAddressTextField.setText("");
     }
 
     private Component getSSHAddressTextField() {
         if (sshAddressTextField == null) {
-            sshAddressTextField = GuiUtil.createTextField(SSHPortForwarding.SSH_ADDRESS);
+            sshAddressTextField = GuiUtil.createTextField(SSHConfiguration.SSH_ADDRESS);
         }
         return sshAddressTextField;
     }
@@ -124,7 +131,7 @@ public class SSHPortForwardingGui extends AbstractConfigGui {
 
     private Component getSSHUserNameTextField() {
         if (sshUserNameTextField == null) {
-            sshUserNameTextField = GuiUtil.createTextField(SSHPortForwarding.SSH_USER_NAME);
+            sshUserNameTextField = GuiUtil.createTextField(SSHConfiguration.SSH_USER_NAME);
         }
         return sshUserNameTextField;
     }
@@ -135,7 +142,7 @@ public class SSHPortForwardingGui extends AbstractConfigGui {
 
     private Component getSSHPasswordTextField() {
         if (sshPasswordTextField == null) {
-            sshPasswordTextField = GuiUtil.createTextField(SSHPortForwarding.SSH_PASSWORD);
+            sshPasswordTextField = GuiUtil.createTextField(SSHConfiguration.SSH_PASSWORD);
         }
         return sshPasswordTextField;
     }
@@ -144,9 +151,23 @@ public class SSHPortForwardingGui extends AbstractConfigGui {
         return GuiUtil.createLabel("SSH密码：", getSSHPasswordTextField());
     }
 
+    private Component getSSHLocalForwardingComboBox() {
+        if (sshLocalForwardingComboBox == null) {
+            sshLocalForwardingComboBox = GuiUtil.createComboBox(SSHConfiguration.SSH_PORT_FORWARDING);
+            sshLocalForwardingComboBox.addItem("true");
+            sshLocalForwardingComboBox.addItem("false");
+        }
+        return sshLocalForwardingComboBox;
+    }
+
+    private Component getSSHLocalForwardingLabel() {
+        return GuiUtil.createLabel("是否启用本地端口转发：", getSSHLocalForwardingComboBox());
+    }
+
+
     private Component getLocalForwardingPortTextField() {
         if (localForwardingPortTextField == null) {
-            localForwardingPortTextField = GuiUtil.createTextField(SSHPortForwarding.LOCAL_FORWARDING_PORT);
+            localForwardingPortTextField = GuiUtil.createTextField(SSHConfiguration.LOCAL_FORWARDING_PORT);
         }
         return localForwardingPortTextField;
     }
@@ -157,7 +178,7 @@ public class SSHPortForwardingGui extends AbstractConfigGui {
 
     private Component getRemoteAddressTextField() {
         if (remoteAddressTextField == null) {
-            remoteAddressTextField = GuiUtil.createTextField(SSHPortForwarding.REMOTE_ADDRESS);
+            remoteAddressTextField = GuiUtil.createTextField(SSHConfiguration.REMOTE_ADDRESS);
         }
         return remoteAddressTextField;
     }

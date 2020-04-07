@@ -84,7 +84,7 @@ public class GroovyUtil {
             }
         }
 
-        StringBuilder newExpression = new StringBuilder();
+        StringBuffer newExpression = new StringBuffer();
         int beginIndex = 0;
 
         // 转换表达式
@@ -109,7 +109,7 @@ public class GroovyUtil {
 
     public static String transformExpression2(String expression) {
         // 去除空格
-        StringBuilder sb = new StringBuilder();
+        StringBuffer sb = new StringBuffer();
 
         // 上一个字符
         char previous = '\u0000';

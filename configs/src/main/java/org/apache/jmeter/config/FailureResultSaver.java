@@ -23,8 +23,6 @@ public class FailureResultSaver extends ConfigTestElement implements SampleListe
 
     public static final String LOG_PATH = "FailureResultSaver.logPath";
 
-    public static final String FORMAT_TYPE = "FailureResultSaver.formatType";
-
     public static final String ERROR_CLASSIFICATION = "FailureResultSaver.errorClassification";
 
     public static final String EXCLUDE = "FailureResultSaver.exclude";
@@ -33,10 +31,6 @@ public class FailureResultSaver extends ConfigTestElement implements SampleListe
 
     private String getLogPath() {
         return getPropertyAsString(LOG_PATH);
-    }
-
-    private String getFormatType() {
-        return getPropertyAsString(FORMAT_TYPE);
     }
 
     private String getErrorClassification() {
@@ -113,38 +107,28 @@ public class FailureResultSaver extends ConfigTestElement implements SampleListe
     }
 
     private String getResultContent(SampleResult result) {
-        if ("Dubbo".equals(getFormatType())) {
-            return getDubboResult(result);
+        StringBuffer resultContent = new StringBuffer();
+        resultContent
+                .append("【Start Time】: ")
+                .append(LINE_SEP)
+                .append(TimeUtil.timeStampToString(result.getStartTime(), "yyyy.MM.dd HH:mm:ss"));
+
+        String requestHeaders = result.getRequestHeaders();
+        if (requestHeaders != null && !requestHeaders.isEmpty()) {
+            resultContent.append("【Request Headers】: ").append(LINE_SEP).append(requestHeaders);
         }
-        return getHttpResult(result);
-    }
 
-    private String getHttpResult(SampleResult result) {
-        return String.format("【Start Time】: %s" + LINE_SEP +
-                        "【Request Header】:" + LINE_SEP +
-                        "%s" +
-                        "【Request Data】:" + LINE_SEP +
-                        "%s" +
-                        "【Response Header】:" + LINE_SEP +
-                        "%s" +
-                        "【Response Data】:" + LINE_SEP +
-                        "%s" + LINE_SEP +
-                        "【elapsed】: %s ms" + LINE_SEP + LINE_SEP + LINE_SEP,
-                TimeUtil.timeStampToString(result.getStartTime(), "yyyy.MM.dd HH:mm:ss"),
-                result.getRequestHeaders(), result.getSamplerData(),
-                result.getResponseHeaders(), result.getResponseDataAsString(),
-                result.getEndTime() - result.getStartTime());
-    }
+        resultContent.append("【Request Data】: ").append(LINE_SEP).append(result.getSamplerData());
 
-    private String getDubboResult(SampleResult result) {
-        return String.format("【Start Time】: %s" + LINE_SEP +
-                        "【Request Data】: %s" + LINE_SEP +
-                        "【Response Data】: %s" + LINE_SEP +
-                        "【elapsed】:%s ms" + LINE_SEP + LINE_SEP + LINE_SEP,
-                TimeUtil.timeStampToString(result.getStartTime(), "yyyy.MM.dd HH:mm:ss"),
-                result.getSamplerData(),
-                result.getResponseDataAsString(),
-                result.getEndTime() - result.getStartTime());
+        String responseHeaders = result.getResponseHeaders();
+        if (responseHeaders != null && !responseHeaders.isEmpty()) {
+            resultContent.append("【Response Headers】: ").append(LINE_SEP).append(responseHeaders);
+        }
+
+        resultContent.append("【Response Data】: ").append(LINE_SEP).append(result.getResponseDataAsString()).append(LINE_SEP);
+        resultContent.append("【elapsed】: ").append(result.getEndTime() - result.getStartTime()).append(" ms")
+                .append(LINE_SEP).append(LINE_SEP).append(LINE_SEP);
+        return resultContent.toString();
     }
 
     private void outputFile(String content) {

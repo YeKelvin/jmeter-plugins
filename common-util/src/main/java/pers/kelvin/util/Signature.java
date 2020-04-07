@@ -149,7 +149,7 @@ public class Signature {
     }
 
     private static String bytesToHexString(byte[] src) {
-        StringBuilder sb = new StringBuilder();
+        StringBuffer sb = new StringBuffer();
         if (src == null || src.length <= 0) {
             return "";
         }

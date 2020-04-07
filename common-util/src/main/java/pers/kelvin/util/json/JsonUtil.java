@@ -136,8 +136,8 @@ public class JsonUtil {
      */
     public static String prettyJsonWithPlaceholder(String json) {
         //缩进
-        StringBuilder indent = new StringBuilder();
-        StringBuilder sb = new StringBuilder();
+        StringBuffer indent = new StringBuffer();
+        StringBuffer sb = new StringBuffer();
 
         // 上一个字符
         char previous = '\u0000';
@@ -210,8 +210,8 @@ public class JsonUtil {
 
     public static String jsonFormat(String json) {
         //缩进
-        StringBuilder indent = new StringBuilder();
-        StringBuilder sb = new StringBuilder();
+        StringBuffer indent = new StringBuffer();
+        StringBuffer sb = new StringBuffer();
 
         for (char c : json.toCharArray()) {
             switch (c) {
@@ -248,7 +248,7 @@ public class JsonUtil {
      * @return
      */
     public static String removeSpacesAndLineBreaks(String json) {
-        StringBuilder sb = new StringBuilder();
+        StringBuffer sb = new StringBuffer();
         // 上一个字符
         char previous = '\u0000';
         // 是否在双引号内

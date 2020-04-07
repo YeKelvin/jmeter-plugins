@@ -128,7 +128,7 @@ public class FileUtil {
      * @return 文件内容
      */
     public static String readFile(String outputFilePath) {
-        StringBuilder content = new StringBuilder();
+        StringBuffer content = new StringBuffer();
         try (
                 BufferedReader reader = new BufferedReader(
                         new InputStreamReader(new FileInputStream(new File(outputFilePath)), StandardCharsets.UTF_8))

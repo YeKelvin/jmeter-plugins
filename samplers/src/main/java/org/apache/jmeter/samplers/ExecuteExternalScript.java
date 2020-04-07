@@ -6,7 +6,7 @@ import org.apache.jmeter.JMeter;
 import org.apache.jmeter.config.ENVDataSet;
 import org.apache.jmeter.config.ExternalScriptDataTransfer;
 import org.apache.jmeter.config.ExternalScriptResultDTO;
-import org.apache.jmeter.config.SSHPortForwarding;
+import org.apache.jmeter.config.SSHConfiguration;
 import org.apache.jmeter.control.LoopController;
 import org.apache.jmeter.engine.StandardJMeterEngine;
 import org.apache.jmeter.exceptions.IllegalUserActionException;
@@ -268,7 +268,7 @@ public class ExecuteExternalScript extends AbstractSampler implements Interrupti
 
         // 从 HashTree中搜索对应的组件对象
         SearchByClass<AbstractThreadGroup> tgSearcher = new SearchByClass<>(AbstractThreadGroup.class);
-        SearchByClass<SSHPortForwarding> sshSearcher = new SearchByClass<>(SSHPortForwarding.class);
+        SearchByClass<SSHConfiguration> sshSearcher = new SearchByClass<>(SSHConfiguration.class);
         SearchByClass<ReportCollector> reportSearcher = new SearchByClass<>(ReportCollector.class);
         SearchByClass<ResultCollector> rcSearcher = new SearchByClass<>(ResultCollector.class);
         testPlanTree.traverse(tgSearcher);
@@ -276,7 +276,7 @@ public class ExecuteExternalScript extends AbstractSampler implements Interrupti
         testPlanTree.traverse(reportSearcher);
         testPlanTree.traverse(rcSearcher);
         Iterator<AbstractThreadGroup> tgIter = tgSearcher.getSearchResults().iterator();
-        Iterator<SSHPortForwarding> sshIter = sshSearcher.getSearchResults().iterator();
+        Iterator<SSHConfiguration> sshIter = sshSearcher.getSearchResults().iterator();
         Iterator<ReportCollector> reportIter = reportSearcher.getSearchResults().iterator();
         Iterator<ResultCollector> rcIter = rcSearcher.getSearchResults().iterator();
 
@@ -284,7 +284,7 @@ public class ExecuteExternalScript extends AbstractSampler implements Interrupti
         // 删除 TestPlan下的组件
         while (sshIter.hasNext()) {
             // 删除 ssh端口转发组件
-            SSHPortForwarding sshPortForwarding = sshIter.next();
+            SSHConfiguration sshPortForwarding = sshIter.next();
             testPlanTree.remove(sshPortForwarding);
         }
 

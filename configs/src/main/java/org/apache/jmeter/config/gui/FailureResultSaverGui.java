@@ -16,8 +16,6 @@ public class FailureResultSaverGui extends AbstractConfigGui {
 
     private JTextField logPathTextField;
 
-    private JComboBox<String> formatTypeComboBox;
-
     private JTextField errorClassificationTextField;
 
     private JTextField excludeTextField;
@@ -35,8 +33,6 @@ public class FailureResultSaverGui extends AbstractConfigGui {
         bodyPanel.setBorder(GuiUtil.createTitledBorder("配置错误日志信息"));
         bodyPanel.add(getLogPathLabel(), GuiUtil.GridBag.labelConstraints);
         bodyPanel.add(getLogPathTextField(), GuiUtil.GridBag.editorConstraints);
-        bodyPanel.add(getFormatTypeLabel(), GuiUtil.GridBag.labelConstraints);
-        bodyPanel.add(getFormatTypeComboBox(), GuiUtil.GridBag.editorConstraints);
         bodyPanel.add(getErrorClassificationLabel(), GuiUtil.GridBag.labelConstraints);
         bodyPanel.add(getErrorClassificationTextField(), GuiUtil.GridBag.editorConstraints);
         bodyPanel.add(getExcludeLabel(), GuiUtil.GridBag.labelConstraints);
@@ -74,7 +70,6 @@ public class FailureResultSaverGui extends AbstractConfigGui {
     public void modifyTestElement(TestElement el) {
         super.configureTestElement(el);
         el.setProperty(FailureResultSaver.LOG_PATH, logPathTextField.getText());
-        el.setProperty(FailureResultSaver.FORMAT_TYPE, (String) formatTypeComboBox.getSelectedItem());
         el.setProperty(FailureResultSaver.ERROR_CLASSIFICATION, errorClassificationTextField.getText());
         el.setProperty(FailureResultSaver.EXCLUDE, excludeTextField.getText());
     }
@@ -86,7 +81,6 @@ public class FailureResultSaverGui extends AbstractConfigGui {
     public void configure(TestElement el) {
         super.configure(el);
         logPathTextField.setText(el.getPropertyAsString(FailureResultSaver.LOG_PATH));
-        formatTypeComboBox.setSelectedItem(el.getPropertyAsString(FailureResultSaver.FORMAT_TYPE));
         errorClassificationTextField.setText(el.getPropertyAsString(FailureResultSaver.ERROR_CLASSIFICATION));
         excludeTextField.setText(el.getPropertyAsString(FailureResultSaver.EXCLUDE));
     }
@@ -95,7 +89,6 @@ public class FailureResultSaverGui extends AbstractConfigGui {
     public void clearGui() {
         super.clearGui();
         logPathTextField.setText("");
-        formatTypeComboBox.setSelectedItem("");
         errorClassificationTextField.setText("");
         excludeTextField.setText("");
     }
@@ -109,19 +102,6 @@ public class FailureResultSaverGui extends AbstractConfigGui {
 
     private Component getLogPathLabel() {
         return GuiUtil.createLabel("日志路径：", getLogPathTextField());
-    }
-
-    private Component getFormatTypeComboBox() {
-        if (formatTypeComboBox == null) {
-            formatTypeComboBox = GuiUtil.createComboBox(FailureResultSaver.LOG_PATH);
-            formatTypeComboBox.addItem("HTTP");
-            formatTypeComboBox.addItem("Dubbo");
-        }
-        return formatTypeComboBox;
-    }
-
-    private Component getFormatTypeLabel() {
-        return GuiUtil.createLabel("日志格式：", getFormatTypeComboBox());
     }
 
     private Component getErrorClassificationTextField() {
