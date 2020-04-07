@@ -79,7 +79,7 @@ public class ReportCollector extends AbstractTestElement implements TestStateLis
                 testSuiteData.getStartTime(), testSuiteData.getEndTime(), DATE_FORMAT_PATTERN));
 
         // 如判断为追加模式且 html文件存在时，以追加模式写入数据，否则以新建模式写入数据
-        if (Boolean.valueOf(getIsAppend()) && FileUtil.exists(getReportPath())) {
+        if (Boolean.parseBoolean(getIsAppend()) && FileUtil.exists(getReportPath())) {
             ReportManager.appendDataToHtmlFile(getReportPath());
         } else {
             ReportManager.flush(getReportPath());
@@ -101,7 +101,7 @@ public class ReportCollector extends AbstractTestElement implements TestStateLis
     public void threadStarted() {
         TestSuiteData testSuiteData = ReportManager.getReport().getTestSuite(getScriptName());
         TestCaseData testCaseData = new TestCaseData(String.valueOf(testSuiteData.getTestCaseStartID()));
-        testCaseData.setTitle(getThreadName());
+        testCaseData.setTitle(getThreadNum() + "-" + getThreadName());
         testCaseData.setStartTime(TimeUtil.currentTimeAsString(DATE_FORMAT_PATTERN));
         testSuiteData.putTestCase(testCaseData);
     }
@@ -117,7 +117,7 @@ public class ReportCollector extends AbstractTestElement implements TestStateLis
     @Override
     public void sampleOccurred(SampleEvent sampleEvent) {
         TestSuiteData testSuite = ReportManager.getReport().getTestSuite(getScriptName());
-        TestCaseData testCase = testSuite.getTestCase(getThreadName());
+        TestCaseData testCase = testSuite.getTestCase(getThreadNum() + "-" + getThreadName());
         TestCaseStepData testCaseStep = new TestCaseStepData();
 
         // 设置测试数据
@@ -145,7 +145,7 @@ public class ReportCollector extends AbstractTestElement implements TestStateLis
         testCase.putTestCaseStep(testCaseStep);
 
         // 另外把 sample 执行结果打印到控制台
-        printStatusToConsole(result.isSuccessful(), getThreadName());
+        printStatusToConsole(result.isSuccessful(), getThreadNum() + "-" + getThreadName());
     }
 
     @Override
@@ -174,6 +174,10 @@ public class ReportCollector extends AbstractTestElement implements TestStateLis
     @Override
     public String getThreadName() {
         return JMeterContextService.getContext().getThread().getThreadName();
+    }
+
+    private String getThreadNum() {
+        return String.valueOf(JMeterContextService.getContext().getThreadNum());
     }
 
     private String getReportName() {
@@ -253,7 +257,7 @@ public class ReportCollector extends AbstractTestElement implements TestStateLis
         ArrayList<TestSuiteData> testSuiteList = ReportManager.getReport().getTestSuiteList();
 
         // 如为append模式则追加写文件
-        if (Boolean.valueOf(getIsAppend()) && FileUtil.exists(getDataFilePath())) {
+        if (Boolean.parseBoolean(getIsAppend()) && FileUtil.exists(getDataFilePath())) {
             // 循环添加数据
             for (TestSuiteData testSuite : testSuiteList) {
                 appendListJsonToFile(getDataFilePath(), testSuite);
