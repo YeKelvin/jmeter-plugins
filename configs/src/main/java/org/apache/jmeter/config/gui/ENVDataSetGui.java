@@ -37,7 +37,7 @@ public class ENVDataSetGui extends AbstractConfigGui {
         add(makeTitlePanel(), BorderLayout.NORTH);
 
         JPanel bodyPanel = new JPanel(new GridBagLayout());
-        bodyPanel.setBorder(GuiUtil.createTitledBorder("配置环境信息"));
+        bodyPanel.setBorder(GuiUtil.createTitledBorder("请选择测试环境"));
         bodyPanel.add(getConfigNameLabel(), GuiUtil.GridBag.labelConstraints);
         bodyPanel.add(getConfigNameComboBox(), GuiUtil.GridBag.editorConstraints);
         bodyPanel.add(createTablePanel(), GuiUtil.GridBag.fillBottomConstraints);
