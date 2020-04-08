@@ -2,7 +2,7 @@ package org.apache.jmeter.samplers.gui;
 
 
 import org.apache.jmeter.gui.util.VerticalPanel;
-import org.apache.jmeter.samplers.ExecuteExternalScript;
+import org.apache.jmeter.samplers.JMeterScriptSampler;
 import org.apache.jmeter.testelement.TestElement;
 import pers.kelvin.util.GuiUtil;
 
@@ -12,7 +12,7 @@ import java.awt.*;
 /**
  * @author KelvinYe
  */
-public class ExecuteExternalScriptGui extends AbstractSamplerGui {
+public class JMeterScriptSamplerGui extends AbstractSamplerGui {
 
     private JTextField externalScriptPathField;
     private JTextField scriptNameField;
@@ -21,7 +21,7 @@ public class ExecuteExternalScriptGui extends AbstractSamplerGui {
     private JComboBox<String> syncToVars;
     private JComboBox<String> printToConsoleComboBox;
 
-    public ExecuteExternalScriptGui() {
+    public JMeterScriptSamplerGui() {
         init();
     }
 
@@ -60,7 +60,7 @@ public class ExecuteExternalScriptGui extends AbstractSamplerGui {
 
     @Override
     public String getStaticLabel() {
-        return "Execute External Script";
+        return "JMeter Script Sampler";
     }
 
 
@@ -72,7 +72,7 @@ public class ExecuteExternalScriptGui extends AbstractSamplerGui {
 
     @Override
     public TestElement createTestElement() {
-        ExecuteExternalScript el = new ExecuteExternalScript();
+        JMeterScriptSampler el = new JMeterScriptSampler();
         modifyTestElement(el);
         return el;
     }
@@ -83,12 +83,12 @@ public class ExecuteExternalScriptGui extends AbstractSamplerGui {
     @Override
     public void modifyTestElement(TestElement el) {
         super.configureTestElement(el);
-        el.setProperty(ExecuteExternalScript.EXTERNAL_SCRIPT_PATH, externalScriptPathField.getText());
-        el.setProperty(ExecuteExternalScript.SCRIPT_NAME, scriptNameField.getText());
-        el.setProperty(ExecuteExternalScript.PROPS_NAME_SUFFIX, propsNameSuffixField.getText());
-        el.setProperty(ExecuteExternalScript.SYNC_TO_PROPS, (String) syncToProps.getSelectedItem());
-        el.setProperty(ExecuteExternalScript.SYNC_TO_VARS, (String) syncToVars.getSelectedItem());
-        el.setProperty(ExecuteExternalScript.PRINT_TO_CONSOLE, (String) printToConsoleComboBox.getSelectedItem());
+        el.setProperty(JMeterScriptSampler.EXTERNAL_SCRIPT_PATH, externalScriptPathField.getText());
+        el.setProperty(JMeterScriptSampler.SCRIPT_NAME, scriptNameField.getText());
+        el.setProperty(JMeterScriptSampler.PROPS_NAME_SUFFIX, propsNameSuffixField.getText());
+        el.setProperty(JMeterScriptSampler.SYNC_TO_PROPS, (String) syncToProps.getSelectedItem());
+        el.setProperty(JMeterScriptSampler.SYNC_TO_VARS, (String) syncToVars.getSelectedItem());
+        el.setProperty(JMeterScriptSampler.PRINT_TO_CONSOLE, (String) printToConsoleComboBox.getSelectedItem());
     }
 
     /**
@@ -97,12 +97,12 @@ public class ExecuteExternalScriptGui extends AbstractSamplerGui {
     @Override
     public void configure(TestElement el) {
         super.configure(el);
-        externalScriptPathField.setText(el.getPropertyAsString(ExecuteExternalScript.EXTERNAL_SCRIPT_PATH));
-        scriptNameField.setText(el.getPropertyAsString(ExecuteExternalScript.SCRIPT_NAME));
-        propsNameSuffixField.setText(el.getPropertyAsString(ExecuteExternalScript.PROPS_NAME_SUFFIX));
-        syncToProps.setSelectedItem(el.getPropertyAsString(ExecuteExternalScript.SYNC_TO_PROPS));
-        syncToVars.setSelectedItem(el.getPropertyAsString(ExecuteExternalScript.SYNC_TO_VARS));
-        printToConsoleComboBox.setSelectedItem(el.getPropertyAsString(ExecuteExternalScript.PRINT_TO_CONSOLE));
+        externalScriptPathField.setText(el.getPropertyAsString(JMeterScriptSampler.EXTERNAL_SCRIPT_PATH));
+        scriptNameField.setText(el.getPropertyAsString(JMeterScriptSampler.SCRIPT_NAME));
+        propsNameSuffixField.setText(el.getPropertyAsString(JMeterScriptSampler.PROPS_NAME_SUFFIX));
+        syncToProps.setSelectedItem(el.getPropertyAsString(JMeterScriptSampler.SYNC_TO_PROPS));
+        syncToVars.setSelectedItem(el.getPropertyAsString(JMeterScriptSampler.SYNC_TO_VARS));
+        printToConsoleComboBox.setSelectedItem(el.getPropertyAsString(JMeterScriptSampler.PRINT_TO_CONSOLE));
     }
 
     @Override
@@ -118,7 +118,7 @@ public class ExecuteExternalScriptGui extends AbstractSamplerGui {
 
     private Component getExternalScriptPathTextField() {
         if (externalScriptPathField == null) {
-            externalScriptPathField = GuiUtil.createTextField(ExecuteExternalScript.EXTERNAL_SCRIPT_PATH);
+            externalScriptPathField = GuiUtil.createTextField(JMeterScriptSampler.EXTERNAL_SCRIPT_PATH);
         }
         return externalScriptPathField;
     }
@@ -129,7 +129,7 @@ public class ExecuteExternalScriptGui extends AbstractSamplerGui {
 
     private Component getScriptNameTextField() {
         if (scriptNameField == null) {
-            scriptNameField = GuiUtil.createTextField(ExecuteExternalScript.SCRIPT_NAME);
+            scriptNameField = GuiUtil.createTextField(JMeterScriptSampler.SCRIPT_NAME);
         }
         return scriptNameField;
     }
@@ -140,7 +140,7 @@ public class ExecuteExternalScriptGui extends AbstractSamplerGui {
 
     private Component getPropsNameSuffixTextField() {
         if (propsNameSuffixField == null) {
-            propsNameSuffixField = GuiUtil.createTextField(ExecuteExternalScript.PROPS_NAME_SUFFIX);
+            propsNameSuffixField = GuiUtil.createTextField(JMeterScriptSampler.PROPS_NAME_SUFFIX);
         }
         return propsNameSuffixField;
     }
@@ -151,7 +151,7 @@ public class ExecuteExternalScriptGui extends AbstractSamplerGui {
 
     private Component getSyncToPropsComboBox() {
         if (syncToProps == null) {
-            syncToProps = GuiUtil.createComboBox(ExecuteExternalScript.SYNC_TO_PROPS);
+            syncToProps = GuiUtil.createComboBox(JMeterScriptSampler.SYNC_TO_PROPS);
             syncToProps.addItem("true");
             syncToProps.addItem("false");
         }
@@ -165,7 +165,7 @@ public class ExecuteExternalScriptGui extends AbstractSamplerGui {
 
     private Component getSyncToVarsComboBox() {
         if (syncToVars == null) {
-            syncToVars = GuiUtil.createComboBox(ExecuteExternalScript.SYNC_TO_VARS);
+            syncToVars = GuiUtil.createComboBox(JMeterScriptSampler.SYNC_TO_VARS);
             syncToVars.addItem("false");
             syncToVars.addItem("true");
         }
@@ -179,7 +179,7 @@ public class ExecuteExternalScriptGui extends AbstractSamplerGui {
 
     private Component getPrintToConsoleComboBox() {
         if (printToConsoleComboBox == null) {
-            printToConsoleComboBox = GuiUtil.createComboBox(ExecuteExternalScript.PRINT_TO_CONSOLE);
+            printToConsoleComboBox = GuiUtil.createComboBox(JMeterScriptSampler.PRINT_TO_CONSOLE);
             printToConsoleComboBox.addItem("false");
             printToConsoleComboBox.addItem("true");
         }

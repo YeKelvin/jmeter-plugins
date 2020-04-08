@@ -37,6 +37,7 @@ public class DubboTelnetSamplerGui extends AbstractSamplerGui implements ActionL
     private JTextField interfaceNameTextField;
     private JTextField expectationTextField;
     private JTextField encodeTextField;
+    private JComboBox<String> throughSSHComboBox;
     private JSyntaxTextArea paramsTextArea;
 
     private JComboBox<String> useTemplateComboBox;
@@ -65,6 +66,8 @@ public class DubboTelnetSamplerGui extends AbstractSamplerGui implements ActionL
         interfacePanel.add(getExpectationTextField(), GuiUtil.GridBag.editorConstraints);
         interfacePanel.add(getEncodeLabel(), GuiUtil.GridBag.labelConstraints);
         interfacePanel.add(getEncodeTextField(), GuiUtil.GridBag.editorConstraints);
+        interfacePanel.add(getThroughSSHLabel(), GuiUtil.GridBag.labelConstraints);
+        interfacePanel.add(getThroughSSHComboBox(), GuiUtil.GridBag.editorConstraints);
         interfacePanel.add(getParamsLabel(), GuiUtil.GridBag.labelConstraints);
         interfacePanel.add(getButtonPanel(), GuiUtil.GridBag.editorConstraints);
         interfacePanel.add(getParamsPanel(), GuiUtil.GridBag.fillBottomConstraints);
@@ -113,6 +116,7 @@ public class DubboTelnetSamplerGui extends AbstractSamplerGui implements ActionL
         element.setProperty(DubboTelnetSampler.INTERFACE_NAME, interfaceNameTextField.getText());
         element.setProperty(DubboTelnetSampler.EXPECTATION, expectationTextField.getText());
         element.setProperty(DubboTelnetSampler.ENCODE, encodeTextField.getText());
+        element.setProperty(DubboTelnetSampler.THROUGH_SSH, (String) throughSSHComboBox.getSelectedItem());
         element.setProperty(DubboTelnetSampler.PARAMS, getParamsText());
         element.setProperty(DubboTelnetSampler.USE_TEMPLATE, (String) useTemplateComboBox.getSelectedItem());
         element.setProperty(DubboTelnetSampler.INTERFACE_PATH, interfacePathTextField.getText());
@@ -126,6 +130,7 @@ public class DubboTelnetSamplerGui extends AbstractSamplerGui implements ActionL
         interfaceNameTextField.setText(el.getPropertyAsString(DubboTelnetSampler.INTERFACE_NAME));
         expectationTextField.setText(el.getPropertyAsString(DubboTelnetSampler.EXPECTATION));
         encodeTextField.setText(el.getPropertyAsString(DubboTelnetSampler.ENCODE));
+        throughSSHComboBox.setSelectedItem(el.getPropertyAsString(DubboTelnetSampler.THROUGH_SSH));
         paramsTextArea.setInitialText(prettyParams(el.getPropertyAsString(DubboTelnetSampler.PARAMS)));
         paramsTextArea.setCaretPosition(0);
         useTemplateComboBox.setSelectedItem(el.getPropertyAsString(DubboTelnetSampler.USE_TEMPLATE));
@@ -145,6 +150,7 @@ public class DubboTelnetSamplerGui extends AbstractSamplerGui implements ActionL
         interfaceNameTextField.setText("");
         expectationTextField.setText("");
         encodeTextField.setText("");
+        throughSSHComboBox.setSelectedItem("");
         paramsTextArea.setInitialText("");
         useTemplateComboBox.setSelectedItem("");
         interfacePathTextField.setText("");
@@ -206,6 +212,23 @@ public class DubboTelnetSamplerGui extends AbstractSamplerGui implements ActionL
         return encodeTextField;
     }
 
+    private Component getEncodeLabel() {
+        return GuiUtil.createLabel("字符编码：", getEncodeTextField());
+    }
+
+    private Component getThroughSSHComboBox() {
+        if (throughSSHComboBox == null) {
+            throughSSHComboBox = GuiUtil.createComboBox(DubboTelnetSampler.THROUGH_SSH);
+            throughSSHComboBox.addItem("false");
+            throughSSHComboBox.addItem("true");
+        }
+        return throughSSHComboBox;
+    }
+
+    private Component getThroughSSHLabel() {
+        return GuiUtil.createLabel("是否使用ssh：", getThroughSSHComboBox());
+    }
+
     private Component getParamsTextArea() {
         if (paramsTextArea == null) {
             paramsTextArea = GuiUtil.createTextArea(DubboTelnetSampler.PARAMS, 20);
@@ -219,10 +242,6 @@ public class DubboTelnetSamplerGui extends AbstractSamplerGui implements ActionL
 
     private Component getParamsPanel() {
         return JTextScrollPane.getInstance((JSyntaxTextArea) getParamsTextArea());
-    }
-
-    private Component getEncodeLabel() {
-        return GuiUtil.createLabel("字符编码：", getEncodeTextField());
     }
 
     private Component getUseTemplateComboBox() {
@@ -331,7 +350,7 @@ public class DubboTelnetSamplerGui extends AbstractSamplerGui implements ActionL
      * 格式化json
      *
      * @param params json字符串
-     * @return
+     * @return String
      */
     private String prettyParams(String params) {
         if (JSON_ACTION.equals(currentParamsContentType)) {

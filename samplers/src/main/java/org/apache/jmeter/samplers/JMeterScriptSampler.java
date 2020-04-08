@@ -16,9 +16,11 @@ import org.apache.jmeter.reporters.ResultCollector;
 import org.apache.jmeter.save.SaveService;
 import org.apache.jmeter.testelement.TestPlan;
 import org.apache.jmeter.threads.AbstractThreadGroup;
+import org.apache.jmeter.threads.JMeterContextService;
 import org.apache.jmeter.util.JMeterUtils;
 import org.apache.jmeter.visualizers.ReportCollector;
 import org.apache.jorphan.collections.HashTree;
+import org.apache.jorphan.collections.ListedHashTree;
 import org.apache.jorphan.collections.SearchByClass;
 import org.slf4j.Logger;
 import pers.kelvin.util.FileUtil;
@@ -33,6 +35,7 @@ import pers.kelvin.util.log.LogUtil;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Properties;
@@ -40,20 +43,20 @@ import java.util.Properties;
 /**
  * @author KelvinYe
  */
-public class ExecuteExternalScript extends AbstractSampler implements Interruptible {
+public class JMeterScriptSampler extends AbstractSampler implements Interruptible {
 
-    private static final Logger logger = LogUtil.getLogger(ExecuteExternalScript.class);
+    private static final Logger logger = LogUtil.getLogger(JMeterScriptSampler.class);
 
     private static final String LINE_SEP = FileUtil.LINE_SEPARATOR;
 
     private Properties props = JMeterUtils.getJMeterProperties();
 
-    public static final String EXTERNAL_SCRIPT_PATH = "ExecuteExternalScript.externalScriptPath";
-    public static final String SCRIPT_NAME = "ExecuteExternalScript.scriptName";
-    public static final String PROPS_NAME_SUFFIX = "ExecuteExternalScript.propsNameSuffix";
-    public static final String SYNC_TO_PROPS = "ExecuteExternalScript.syncToProps";
-    public static final String SYNC_TO_VARS = "ExecuteExternalScript.syncToVars";
-    public static final String PRINT_TO_CONSOLE = "ExecuteExternalScript.printSampleResultToConsole";
+    public static final String EXTERNAL_SCRIPT_PATH = "ExecuteJMeterScriptSampler.externalScriptPath";
+    public static final String SCRIPT_NAME = "ExecuteJMeterScriptSampler.scriptName";
+    public static final String PROPS_NAME_SUFFIX = "ExecuteJMeterScriptSampler.propsNameSuffix";
+    public static final String SYNC_TO_PROPS = "ExecuteJMeterScriptSampler.syncToProps";
+    public static final String SYNC_TO_VARS = "ExecuteJMeterScriptSampler.syncToVars";
+    public static final String PRINT_TO_CONSOLE = "ExecuteJMeterScriptSampler.printSampleResultToConsole";
 
     @Override
     public SampleResult sample(Entry entry) {
@@ -377,5 +380,25 @@ public class ExecuteExternalScript extends AbstractSampler implements Interrupti
     public boolean interrupt() {
         clearExternalScriptProps();
         return true;
+    }
+
+    /**
+     * 获取当前线程下的查看结果树组件
+     */
+    private Collection<ResultCollector> getResultCollectors() {
+        ListedHashTree tree = JMeterContextService.getContext().getThread().getTestTree();
+        SearchByClass<ResultCollector> searcher = new SearchByClass<>(ResultCollector.class);
+        tree.traverse(searcher);
+        return searcher.getSearchResults();
+    }
+
+    /**
+     * 获取当前线程下的HTML报告组件
+     */
+    private Collection<ReportCollector> getReportCollectors() {
+        ListedHashTree tree = JMeterContextService.getContext().getThread().getTestTree();
+        SearchByClass<ReportCollector> searcher = new SearchByClass<>(ReportCollector.class);
+        tree.traverse(searcher);
+        return searcher.getSearchResults();
     }
 }

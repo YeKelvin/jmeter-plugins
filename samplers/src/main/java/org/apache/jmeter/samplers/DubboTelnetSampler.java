@@ -5,6 +5,7 @@ import com.google.gson.reflect.TypeToken;
 import com.jayway.jsonpath.DocumentContext;
 import com.jcraft.jsch.JSchException;
 import groovy.lang.Binding;
+import org.apache.jmeter.config.SSHConfiguration;
 import org.apache.jmeter.engine.util.ValueReplacer;
 import org.apache.jmeter.functions.InvalidVariableException;
 import org.apache.jmeter.samplers.utils.GroovyUtil;
@@ -47,6 +48,7 @@ public class DubboTelnetSampler extends AbstractSampler {
     public static final String EXPECTATION = "DubboTelnetSampler.expectation";
     public static final String ENCODE = "DubboTelnetSampler.encode";
     public static final String PARAMS = "DubboTelnetSampler.params";
+    public static final String THROUGH_SSH = "DubboTelnetSampler.throughSSH";
 
     public static final String USE_TEMPLATE = "DubboTelnetSampler.useTemplate";
     public static final String INTERFACE_PATH = "DubboTelnetSampler.interfacePath";
@@ -234,13 +236,18 @@ public class DubboTelnetSampler extends AbstractSampler {
      * @param requestData   请求数据
      * @return 响应报文
      */
-    private String invokeDubbo(String dubboAddress, String interfaceName, String requestData) throws IOException {
+    private String invokeDubbo(String dubboAddress, String interfaceName, String requestData)
+            throws IOException, JSchException {
         // 分割地址，格式为host:port
         String[] address = dubboAddress.split(":");
         String dubboHost = address[0];
         String dubboPort = address.length == 1 ? "0000" : address[1];
 
-        return telnetInvoke(dubboHost, dubboPort, interfaceName, requestData);
+        if (throughSSH()) {
+            return telnetInvokeBySSH(dubboHost, dubboPort, interfaceName, requestData);
+        } else {
+            return telnetInvoke(dubboHost, dubboPort, interfaceName, requestData);
+        }
     }
 
     /**
@@ -272,7 +279,7 @@ public class DubboTelnetSampler extends AbstractSampler {
      * @throws IOException   输入输出流异常
      * @throws JSchException ssh连接异常
      */
-    private String sshTelnetInvoke(String dubboHost, String dubboPort, String interfaceName, String requestData)
+    private String telnetInvokeBySSH(String dubboHost, String dubboPort, String interfaceName, String requestData)
             throws IOException, JSchException {
         // 分割地址，格式为host:port
         String[] sshAddressArray = getSSHAddress().split(":");
@@ -364,15 +371,19 @@ public class DubboTelnetSampler extends AbstractSampler {
     }
 
     private String getSSHAddress() {
-        return JMeterVarsUtil.getDefault("sshAddress", "");
+        return JMeterVarsUtil.getDefault(SSHConfiguration.SSH_ADDRESS, "");
     }
 
     private String getSSHUserName() {
-        return JMeterVarsUtil.getDefault("sshUserName", "");
+        return JMeterVarsUtil.getDefault(SSHConfiguration.SSH_USER_NAME, "");
     }
 
     private String getSSHPassword() {
-        return JMeterVarsUtil.getDefault("sshPassword", "");
+        return JMeterVarsUtil.getDefault(SSHConfiguration.SSH_PASSWORD, "");
     }
 
+    private boolean throughSSH() {
+        return JMeterUtils.getPropDefault(
+                "throughSSH", JMeterVarsUtil.getDefaultAsBoolean(THROUGH_SSH, false));
+    }
 }
