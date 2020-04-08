@@ -4,8 +4,6 @@ package org.apache.jmeter.samplers;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.jmeter.JMeter;
 import org.apache.jmeter.config.ENVDataSet;
-import org.apache.jmeter.config.ExternalScriptDataTransfer;
-import org.apache.jmeter.config.ExternalScriptResultDTO;
 import org.apache.jmeter.config.SSHConfiguration;
 import org.apache.jmeter.control.LoopController;
 import org.apache.jmeter.engine.StandardJMeterEngine;
@@ -51,17 +49,16 @@ public class JMeterScriptSampler extends AbstractSampler implements Interruptibl
 
     private Properties props = JMeterUtils.getJMeterProperties();
 
-    public static final String EXTERNAL_SCRIPT_PATH = "ExecuteJMeterScriptSampler.externalScriptPath";
-    public static final String SCRIPT_NAME = "ExecuteJMeterScriptSampler.scriptName";
-    public static final String PROPS_NAME_SUFFIX = "ExecuteJMeterScriptSampler.propsNameSuffix";
-    public static final String SYNC_TO_PROPS = "ExecuteJMeterScriptSampler.syncToProps";
-    public static final String SYNC_TO_VARS = "ExecuteJMeterScriptSampler.syncToVars";
-    public static final String PRINT_TO_CONSOLE = "ExecuteJMeterScriptSampler.printSampleResultToConsole";
+    public static final String EXTERNAL_SCRIPT_PATH = "JMeterScriptSampler.externalScriptPath";
+    public static final String SCRIPT_NAME = "JMeterScriptSampler.scriptName";
+    public static final String PROPS_NAME_SUFFIX = "JMeterScriptSampler.propsNameSuffix";
+    public static final String SYNC_TO_PROPS = "JMeterScriptSampler.syncToProps";
+    public static final String SYNC_TO_VARS = "JMeterScriptSampler.syncToVars";
+    public static final String PRINT_TO_CONSOLE = "JMeterScriptSampler.printSampleResultToConsole";
 
     @Override
     public SampleResult sample(Entry entry) {
         String scriptPath = getScriptPath();
-        logger.debug("开始执行外部脚本[{}]", scriptPath);
 
         SampleResult result = new SampleResult();
         result.setSampleLabel(getName());
@@ -69,12 +66,12 @@ public class JMeterScriptSampler extends AbstractSampler implements Interruptibl
         try {
             result.setSamplerData("执行外部脚本：" + scriptPath);
             result.sampleStart();
-            // 运行外部脚本
-            ExternalScriptResultDTO externalScriptResult = runExternalScript(scriptPath);
-            result.setResponseData(getExecuteResult(externalScriptResult), StandardCharsets.UTF_8.name());
+            // 运行JMeter脚本
+            JMeterScriptResultDTO jmeterScriptResult = runJMeterScript(scriptPath);
+            result.setResponseData(getExecuteResult(jmeterScriptResult), StandardCharsets.UTF_8.name());
             result.setSuccessful(true);
-            // 判断外部脚本的 sampler是否运行失败
-            SampleResult errorResult = externalScriptResult.getErrorSampleResult();
+            // 判断JMeter脚本的 Sampler是否运行失败
+            SampleResult errorResult = jmeterScriptResult.getErrorSampleResult();
             if (errorResult != null) {
                 setErrorSampleResult(result, errorResult);
                 result.setSuccessful(false);
@@ -91,7 +88,6 @@ public class JMeterScriptSampler extends AbstractSampler implements Interruptibl
             // 清理外部脚本中设置的 JMeterProps
             clearExternalScriptProps();
         }
-        logger.debug("执行外部脚本成功[{}]", scriptPath);
         return result;
     }
 
@@ -130,7 +126,7 @@ public class JMeterScriptSampler extends AbstractSampler implements Interruptibl
      * @param scriptAbsPath 脚本绝对路径
      * @return 执行结果
      */
-    private ExternalScriptResultDTO runExternalScript(String scriptAbsPath) throws IllegalUserActionException, IOException, InterruptedException {
+    private JMeterScriptResultDTO runJMeterScript(String scriptAbsPath) throws IllegalUserActionException, IOException, InterruptedException {
         // 加载脚本
         HashTree clonedTree = loadScriptTree(scriptAbsPath);
 
@@ -166,7 +162,7 @@ public class JMeterScriptSampler extends AbstractSampler implements Interruptibl
         }
 
         // 提取外部脚本执行结果
-        ExternalScriptResultDTO scriptResult = (ExternalScriptResultDTO) props.get("externalScriptResult");
+        JMeterScriptResultDTO scriptResult = (JMeterScriptResultDTO) props.get("jmeterScriptResult");
         Map<String, Object> externalData = scriptResult.getExternalData();
 
         // 把外部脚本中的增量 vars同步至当前线程的 vars中
@@ -206,14 +202,18 @@ public class JMeterScriptSampler extends AbstractSampler implements Interruptibl
         // 删除已禁用的组件
         HashTree clonedTree = JMeter.convertSubTree(tree, true);
 
-        // 强制设置线程组的错误动作、线程数和循环次数
+        // 校验脚本中是否仅存在一个线程组
+        // 设置该线程组配置，修改如下
+        // 错误动作=ON_SAMPLE_ERROR_START_NEXT_LOOP
+        // 线程数=1
+        // 循环次数=1
         setThreadGroupParams(clonedTree);
 
         // 删除不必要的组件
         removeUnwantedComponents(clonedTree);
 
-        // 对外部脚本添加组件，用于数据传递
-        clonedTree.add(clonedTree.getArray()[0], new ExternalScriptDataTransfer());
+        // 向脚本中添加组件
+        addComponents(clonedTree);
 
         return clonedTree;
     }
@@ -221,10 +221,10 @@ public class JMeterScriptSampler extends AbstractSampler implements Interruptibl
     /**
      * 序列化 JMeterProps的差集
      *
-     * @param scriptResult ExternalScriptResultDTO对象
+     * @param scriptResult JMeterScriptResultDTO
      * @return json
      */
-    private String getExecuteResult(ExternalScriptResultDTO scriptResult) {
+    private String getExecuteResult(JMeterScriptResultDTO scriptResult) {
         if (MapUtils.isEmpty(scriptResult.getExternalData())) {
             return "{\"success\":" + scriptResult.getSuccess() + ",\"msg\":\"外部脚本没有设置新的变量\"}";
         }
@@ -283,27 +283,31 @@ public class JMeterScriptSampler extends AbstractSampler implements Interruptibl
         Iterator<ReportCollector> reportIter = reportSearcher.getSearchResults().iterator();
         Iterator<ResultCollector> rcIter = rcSearcher.getSearchResults().iterator();
 
-        // 逐个删除以上搜索的对象
+        // 遍历删除以上搜索的对象
         // 删除 TestPlan下的组件
         while (sshIter.hasNext()) {
-            // 删除 ssh端口转发组件
+            // 删除 SSH Configuration组件
             SSHConfiguration sshPortForwarding = sshIter.next();
             testPlanTree.remove(sshPortForwarding);
         }
 
         while (reportIter.hasNext()) {
-            // 删除 Local Html Report组件
+            // 删除 HTML Report组件
             ReportCollector reportCollector = reportIter.next();
             testPlanTree.remove(reportCollector);
         }
 
-        // 删除 ThreadGroup下的组件
+        while (rcIter.hasNext()) {
+            // 删除 TestPlan下的查看结果树组件
+            ResultCollector resultCollector = rcIter.next();
+            testPlanTree.remove(resultCollector);
+        }
+
+        // 删除 ThreadGroup下的查看结果树组件
         while (tgIter.hasNext()) {
             AbstractThreadGroup threadGroup = tgIter.next();
             HashTree threadGroupTree = testPlanTree.get(threadGroup);
-            while (rcIter.hasNext()) {
-                // 删除 查看结果树组件
-                ResultCollector resultCollector = rcIter.next();
+            for (ResultCollector resultCollector : rcSearcher.getSearchResults()) {
                 threadGroupTree.remove(resultCollector);
             }
         }
@@ -323,21 +327,21 @@ public class JMeterScriptSampler extends AbstractSampler implements Interruptibl
         testPlanTree.traverse(searcher);
 
         if (searcher.getSearchResults().size() != 1) {
-            throw new ServiceException("外部脚本中只支持存在一个线程组，请修改后重试");
+            throw new ServiceException("JMeter脚本中仅支持一个线程组，请修改脚本");
         }
 
         for (AbstractThreadGroup threadGroup : searcher.getSearchResults()) {
             if (!threadGroup.getOnErrorStartNextLoop()) {
-                logger.info("外部脚本中的线程组只支持错误时启动下一进程循环，已强制修改为错误时启动下一进程循环");
+                logger.info("JMeter脚本中的线程组仅支持错误时启动下一进程循环，已强制修改为错误时启动下一进程循环");
                 threadGroup.setProperty(AbstractThreadGroup.ON_SAMPLE_ERROR, AbstractThreadGroup.ON_SAMPLE_ERROR_START_NEXT_LOOP);
             }
             if (threadGroup.getNumThreads() != 1) {
-                logger.info("外部脚本的线程组只支持单次执行，已强制修改线程数为1");
+                logger.info("JMeter脚本的线程组仅支持单次执行，已强制修改线程数为1");
                 threadGroup.setNumThreads(1);
             }
             LoopController loopController = (LoopController) threadGroup.getSamplerController();
             if (loopController.getLoops() != 1) {
-                logger.info("外部脚本的线程组只支持单次执行，已强制修改次数为1");
+                logger.info("JMeter脚本的线程组仅支持单次执行，已强制修改循环次数为1");
                 loopController.setLoops(1);
             }
         }
@@ -350,7 +354,7 @@ public class JMeterScriptSampler extends AbstractSampler implements Interruptibl
         props.remove("configName");
         props.remove("propsNameSuffix");
         props.remove("printSampleResultToConsole");
-        props.remove("externalScriptResult");
+        props.remove("jmeterScriptResult");
         props.remove("callerVars");
     }
 
@@ -385,7 +389,7 @@ public class JMeterScriptSampler extends AbstractSampler implements Interruptibl
     /**
      * 获取当前线程下的查看结果树组件
      */
-    private Collection<ResultCollector> getResultCollectors() {
+    private Collection<ResultCollector> getResultCollectorIter() {
         ListedHashTree tree = JMeterContextService.getContext().getThread().getTestTree();
         SearchByClass<ResultCollector> searcher = new SearchByClass<>(ResultCollector.class);
         tree.traverse(searcher);
@@ -395,10 +399,30 @@ public class JMeterScriptSampler extends AbstractSampler implements Interruptibl
     /**
      * 获取当前线程下的HTML报告组件
      */
-    private Collection<ReportCollector> getReportCollectors() {
+    private Collection<ReportCollector> getReportCollectorIter() {
         ListedHashTree tree = JMeterContextService.getContext().getThread().getTestTree();
         SearchByClass<ReportCollector> searcher = new SearchByClass<>(ReportCollector.class);
         tree.traverse(searcher);
         return searcher.getSearchResults();
+    }
+
+    /**
+     * 添加各种必须的组件
+     */
+    private void addComponents(HashTree hashTree) {
+        Object testPlan = hashTree.getArray()[0];
+
+        // 添加 JMeter脚本数据传递组件
+        hashTree.add(testPlan, new JMeterScriptDataTransfer());
+
+        // 添加调用者的 查看结果树组件
+        for (ResultCollector resultCollector : getResultCollectorIter()) {
+            hashTree.add(testPlan, resultCollector);
+        }
+
+        // 添加调用者的 HTML报告组件
+        for (ReportCollector reportCollector : getReportCollectorIter()) {
+            hashTree.add(testPlan, reportCollector);
+        }
     }
 }

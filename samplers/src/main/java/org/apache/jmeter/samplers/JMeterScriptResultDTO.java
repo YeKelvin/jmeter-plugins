@@ -1,4 +1,4 @@
-package org.apache.jmeter.config;
+package org.apache.jmeter.samplers;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -13,7 +13,7 @@ import java.util.Map;
 @Setter
 @Getter
 @ToString
-public class ExternalScriptResultDTO {
+public class JMeterScriptResultDTO {
 
     private Boolean success;
 

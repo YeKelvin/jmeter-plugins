@@ -1,11 +1,9 @@
-package org.apache.jmeter.config;
+package org.apache.jmeter.samplers;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.jmeter.config.ConfigTestElement;
 import org.apache.jmeter.protocol.jdbc.config.DataSourceElement;
 import org.apache.jmeter.protocol.jdbc.sampler.JDBCSampler;
-import org.apache.jmeter.samplers.SampleEvent;
-import org.apache.jmeter.samplers.SampleListener;
-import org.apache.jmeter.samplers.SampleResult;
 import org.apache.jmeter.testelement.ThreadListener;
 import org.apache.jmeter.threads.JMeterVariables;
 import org.apache.jmeter.util.JMeterUtils;
@@ -22,9 +20,14 @@ import java.util.*;
  *
  * @author: KelvinYe
  */
-public class ExternalScriptDataTransfer extends ConfigTestElement implements ThreadListener, SampleListener {
+public class JMeterScriptDataTransfer extends ConfigTestElement implements ThreadListener, SampleListener {
 
-    private static final Logger logger = LogUtil.getLogger(ExternalScriptDataTransfer.class);
+    private static final Logger logger = LogUtil.getLogger(JMeterScriptDataTransfer.class);
+
+    public static final String CONFIG_NAME = "JMeterScriptDataTransfer.configName";
+    public static final String PROPS_NAME_SUFFIX = "JMeterScriptDataTransfer.propsNameSuffix";
+    public static final String CALLER_VARIABLES = "JMeterScriptDataTransfer.callerVariables";
+    public static final String SCRIPT_RESULT = "JMeterScriptDataTransfer.scriptResult";
 
     private static final String LINE_SEP = FileUtil.LINE_SEPARATOR;
 
@@ -38,14 +41,14 @@ public class ExternalScriptDataTransfer extends ConfigTestElement implements Thr
 
     private boolean isSuccess = true;
 
-    private ExternalScriptResultDTO scriptResult;
+    private JMeterScriptResultDTO scriptResult;
 
     private SampleResult errorSampleResult;
 
-    public ExternalScriptDataTransfer() {
+    public JMeterScriptDataTransfer() {
         super();
-        isPrintSampleResultToConsole = Boolean.valueOf(JMeterUtils.getProperty("printSampleResultToConsole"));
-        scriptResult = new ExternalScriptResultDTO();
+        isPrintSampleResultToConsole = Boolean.parseBoolean(JMeterUtils.getProperty("printSampleResultToConsole"));
+        scriptResult = new JMeterScriptResultDTO();
         scriptData = new HashMap<>();
         clonedVars = new HashMap<>();
     }
@@ -112,11 +115,11 @@ public class ExternalScriptDataTransfer extends ConfigTestElement implements Thr
 
     @Override
     public void threadFinished() {
-        // 将增量的 JMeterVars写入 ExternalScriptResultDTO中返回给调用者
+        // 通过全局变量返回结果给调用者
         scriptResult.setSuccess(isSuccess);
         scriptResult.setExternalData(scriptData);
         scriptResult.setErrorSampleResult(errorSampleResult);
-        props.put("externalScriptResult", scriptResult);
+        props.put("jmeterScriptResult", scriptResult);
     }
 
     /**

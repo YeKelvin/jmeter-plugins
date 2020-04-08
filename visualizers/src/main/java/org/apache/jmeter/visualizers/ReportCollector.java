@@ -3,6 +3,7 @@ package org.apache.jmeter.visualizers;
 
 import com.jayway.jsonpath.DocumentContext;
 import org.apache.jmeter.engine.event.LoopIterationEvent;
+import org.apache.jmeter.engine.util.NoThreadClone;
 import org.apache.jmeter.samplers.Interruptible;
 import org.apache.jmeter.samplers.SampleEvent;
 import org.apache.jmeter.samplers.SampleListener;
@@ -30,7 +31,7 @@ import java.util.ArrayList;
  * @author KelvinYe
  */
 public class ReportCollector extends AbstractTestElement implements TestStateListener,
-        ThreadListener, SampleListener, TestIterationListener, Interruptible {
+        ThreadListener, SampleListener, TestIterationListener, Interruptible, NoThreadClone {
 
     public static final String DATE_FORMAT_PATTERN = "yyyy.MM.dd HH:mm:ss";
 

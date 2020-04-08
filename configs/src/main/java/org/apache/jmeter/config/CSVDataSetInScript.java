@@ -2,6 +2,7 @@ package org.apache.jmeter.config;
 
 import org.apache.jmeter.engine.event.LoopIterationEvent;
 import org.apache.jmeter.engine.event.LoopIterationListener;
+import org.apache.jmeter.engine.util.NoConfigMerge;
 import org.slf4j.Logger;
 import pers.kelvin.util.log.LogUtil;
 
@@ -14,7 +15,7 @@ import java.util.List;
  * Date: 2018-04-17
  * Time: 11:10
  */
-public class CSVDataSetInScript extends ConfigTestElement implements LoopIterationListener {
+public class CSVDataSetInScript extends ConfigTestElement implements LoopIterationListener, NoConfigMerge {
 
     private static final Logger logger = LogUtil.getLogger(CSVDataSetInScript.class);
 
