@@ -46,7 +46,7 @@ public class FailureResultSaverGui extends AbstractConfigGui {
 
     @Override
     public String getStaticLabel() {
-        return "Failure Result Saver";
+        return "错误日志保存器";
     }
 
 

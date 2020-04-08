@@ -41,7 +41,7 @@ public class LocalHtmlReportGui extends AbstractListenerGui {
 
     @Override
     public String getStaticLabel() {
-        return "Local HTML Report";
+        return "HTML报告";
     }
 
     @Override

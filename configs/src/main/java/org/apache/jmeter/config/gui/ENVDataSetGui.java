@@ -48,7 +48,7 @@ public class ENVDataSetGui extends AbstractConfigGui {
 
     @Override
     public String getStaticLabel() {
-        return "ENV Date Set";
+        return "环境变量配置器";
     }
 
 

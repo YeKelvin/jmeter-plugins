@@ -62,7 +62,7 @@ public class SSHConfigurationGui extends AbstractConfigGui {
 
     @Override
     public String getStaticLabel() {
-        return "SSH Configuration";
+        return "SSH配置器";
     }
 
 

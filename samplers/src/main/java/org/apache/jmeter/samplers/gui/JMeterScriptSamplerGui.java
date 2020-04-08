@@ -60,7 +60,7 @@ public class JMeterScriptSamplerGui extends AbstractSamplerGui {
 
     @Override
     public String getStaticLabel() {
-        return "JMeter Script Sampler";
+        return "JMeterScript取样器";
     }
 
 

@@ -1,6 +1,6 @@
 package org.apache.jmeter.config.gui;
 
-import org.apache.jmeter.config.TraverseEmptyValue;
+import org.apache.jmeter.config.TraversalEmptyValue;
 import org.apache.jmeter.gui.util.JSyntaxTextArea;
 import org.apache.jmeter.gui.util.JTextScrollPane;
 import org.apache.jmeter.gui.util.VerticalPanel;
@@ -19,7 +19,7 @@ import java.io.IOException;
  * Date: 2018-04-17
  * Time: 11:10
  */
-public class TraverseEmptyValueGui extends AbstractConfigGui {
+public class TraversalEmptyValueGui extends AbstractConfigGui {
 
     private JComboBox<String> blankTypeComboBox;
     private JSyntaxTextArea paramsTextArea;
@@ -29,7 +29,7 @@ public class TraverseEmptyValueGui extends AbstractConfigGui {
     private JTextField interfacePathTextField;
     private JTextField interfaceNameTextField;
 
-    public TraverseEmptyValueGui() {
+    public TraversalEmptyValueGui() {
         init();
     }
 
@@ -70,7 +70,7 @@ public class TraverseEmptyValueGui extends AbstractConfigGui {
 
     @Override
     public String getStaticLabel() {
-        return "Traverse Empty Value";
+        return "空值遍历配置器";
     }
 
 
@@ -82,7 +82,7 @@ public class TraverseEmptyValueGui extends AbstractConfigGui {
 
     @Override
     public TestElement createTestElement() {
-        TraverseEmptyValue dataSet = new TraverseEmptyValue();
+        TraversalEmptyValue dataSet = new TraversalEmptyValue();
         modifyTestElement(dataSet);
         return dataSet;
     }
@@ -93,14 +93,14 @@ public class TraverseEmptyValueGui extends AbstractConfigGui {
     @Override
     public void modifyTestElement(TestElement el) {
         super.configureTestElement(el);
-        el.setProperty(TraverseEmptyValue.BLANK_TYPE, (String) blankTypeComboBox.getSelectedItem());
-        if (!el.getPropertyAsBoolean(TraverseEmptyValue.USE_TEMPLATE, false)) {
-            el.setProperty(TraverseEmptyValue.PATAMS, paramsTextArea.getText());
+        el.setProperty(TraversalEmptyValue.BLANK_TYPE, (String) blankTypeComboBox.getSelectedItem());
+        if (!el.getPropertyAsBoolean(TraversalEmptyValue.USE_TEMPLATE, false)) {
+            el.setProperty(TraversalEmptyValue.PATAMS, paramsTextArea.getText());
         }
-        el.setProperty(TraverseEmptyValue.EMPTY_CHECK_EXPECTATION, emptyCheckExpectationTextArea.getText());
-        el.setProperty(TraverseEmptyValue.USE_TEMPLATE, (String) useTemplateComboBox.getSelectedItem());
-        el.setProperty(TraverseEmptyValue.INTERFACE_PATH, interfacePathTextField.getText());
-        el.setProperty(TraverseEmptyValue.INTERFACE_NAME, interfaceNameTextField.getText());
+        el.setProperty(TraversalEmptyValue.EMPTY_CHECK_EXPECTATION, emptyCheckExpectationTextArea.getText());
+        el.setProperty(TraversalEmptyValue.USE_TEMPLATE, (String) useTemplateComboBox.getSelectedItem());
+        el.setProperty(TraversalEmptyValue.INTERFACE_PATH, interfacePathTextField.getText());
+        el.setProperty(TraversalEmptyValue.INTERFACE_NAME, interfaceNameTextField.getText());
     }
 
     /**
@@ -109,17 +109,17 @@ public class TraverseEmptyValueGui extends AbstractConfigGui {
     @Override
     public void configure(TestElement el) {
         super.configure(el);
-        blankTypeComboBox.setSelectedItem(el.getPropertyAsString(TraverseEmptyValue.BLANK_TYPE));
-        paramsTextArea.setInitialText(el.getPropertyAsString(TraverseEmptyValue.PATAMS));
+        blankTypeComboBox.setSelectedItem(el.getPropertyAsString(TraversalEmptyValue.BLANK_TYPE));
+        paramsTextArea.setInitialText(el.getPropertyAsString(TraversalEmptyValue.PATAMS));
         paramsTextArea.setCaretPosition(0);
-        emptyCheckExpectationTextArea.setInitialText(el.getPropertyAsString(TraverseEmptyValue.EMPTY_CHECK_EXPECTATION));
+        emptyCheckExpectationTextArea.setInitialText(el.getPropertyAsString(TraversalEmptyValue.EMPTY_CHECK_EXPECTATION));
         emptyCheckExpectationTextArea.setInitialText(getTemplateContent(
-                el.getPropertyAsBoolean(TraverseEmptyValue.USE_TEMPLATE, false),
-                el.getPropertyAsString(TraverseEmptyValue.INTERFACE_NAME)));
+                el.getPropertyAsBoolean(TraversalEmptyValue.USE_TEMPLATE, false),
+                el.getPropertyAsString(TraversalEmptyValue.INTERFACE_NAME)));
         emptyCheckExpectationTextArea.setCaretPosition(0);
-        useTemplateComboBox.setSelectedItem(el.getPropertyAsString(TraverseEmptyValue.USE_TEMPLATE));
-        interfacePathTextField.setText(el.getPropertyAsString(TraverseEmptyValue.INTERFACE_PATH));
-        interfacePathTextField.setText(el.getPropertyAsString(TraverseEmptyValue.INTERFACE_NAME));
+        useTemplateComboBox.setSelectedItem(el.getPropertyAsString(TraversalEmptyValue.USE_TEMPLATE));
+        interfacePathTextField.setText(el.getPropertyAsString(TraversalEmptyValue.INTERFACE_PATH));
+        interfacePathTextField.setText(el.getPropertyAsString(TraversalEmptyValue.INTERFACE_NAME));
     }
 
     @Override
@@ -135,7 +135,7 @@ public class TraverseEmptyValueGui extends AbstractConfigGui {
 
     private Component getBlankTypeComboBox() {
         if (blankTypeComboBox == null) {
-            blankTypeComboBox = GuiUtil.createComboBox(TraverseEmptyValue.BLANK_TYPE);
+            blankTypeComboBox = GuiUtil.createComboBox(TraversalEmptyValue.BLANK_TYPE);
             blankTypeComboBox.addItem("null");
             blankTypeComboBox.addItem("\"\"");
         }
@@ -148,7 +148,7 @@ public class TraverseEmptyValueGui extends AbstractConfigGui {
 
     private Component getParamsTextArea() {
         if (paramsTextArea == null) {
-            paramsTextArea = GuiUtil.createTextArea(TraverseEmptyValue.PATAMS, 20);
+            paramsTextArea = GuiUtil.createTextArea(TraversalEmptyValue.PATAMS, 20);
         }
         return paramsTextArea;
     }
@@ -163,7 +163,7 @@ public class TraverseEmptyValueGui extends AbstractConfigGui {
 
     private Component getEmptyCheckExpectationTextArea() {
         if (emptyCheckExpectationTextArea == null) {
-            emptyCheckExpectationTextArea = GuiUtil.createTextArea(TraverseEmptyValue.EMPTY_CHECK_EXPECTATION, 20);
+            emptyCheckExpectationTextArea = GuiUtil.createTextArea(TraversalEmptyValue.EMPTY_CHECK_EXPECTATION, 20);
         }
         return emptyCheckExpectationTextArea;
 
@@ -179,7 +179,7 @@ public class TraverseEmptyValueGui extends AbstractConfigGui {
 
     private Component getUseTemplateComboBox() {
         if (useTemplateComboBox == null) {
-            useTemplateComboBox = GuiUtil.createComboBox(TraverseEmptyValue.USE_TEMPLATE);
+            useTemplateComboBox = GuiUtil.createComboBox(TraversalEmptyValue.USE_TEMPLATE);
             useTemplateComboBox.addItem("false");
             useTemplateComboBox.addItem("true");
         }
@@ -192,7 +192,7 @@ public class TraverseEmptyValueGui extends AbstractConfigGui {
 
     private Component getInterfacePathTextField() {
         if (interfacePathTextField == null) {
-            interfacePathTextField = GuiUtil.createTextField(TraverseEmptyValue.INTERFACE_PATH);
+            interfacePathTextField = GuiUtil.createTextField(TraversalEmptyValue.INTERFACE_PATH);
         }
         return interfacePathTextField;
     }
@@ -203,7 +203,7 @@ public class TraverseEmptyValueGui extends AbstractConfigGui {
 
     private Component getInterfaceNameTextField() {
         if (interfaceNameTextField == null) {
-            interfaceNameTextField = GuiUtil.createTextField(TraverseEmptyValue.INTERFACE_NAME);
+            interfaceNameTextField = GuiUtil.createTextField(TraversalEmptyValue.INTERFACE_NAME);
         }
         return interfaceNameTextField;
     }
@@ -216,7 +216,7 @@ public class TraverseEmptyValueGui extends AbstractConfigGui {
     private Component getNotePanel() {
         String note = "\n" +
                 "1. 请将线程组设置为无限循环，数据遍历完毕时线程组将自动停止循环；\n" +
-                "2. 请求报文变量名= params，预期结果变量名= expectation，当前 JsonPath变量名= jsonPath；\n" +
+                "2. 请求报文变量名=params，预期结果变量名=expectation，当前 JsonPath变量名=jsonPath；\n" +
                 "3. 该插件中数据引用变量或函数不会替换为具体的值，请在使用的位置利用 ${__eval(${params})} 函数替换。";
         return GuiUtil.createNotePanel(note, this.getBackground());
     }

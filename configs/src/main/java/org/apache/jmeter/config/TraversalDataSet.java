@@ -15,26 +15,26 @@ import java.util.List;
  * Date: 2018-04-17
  * Time: 11:10
  */
-public class CSVDataSetInScript extends ConfigTestElement implements LoopIterationListener, NoConfigMerge {
+public class TraversalDataSet extends ConfigTestElement implements LoopIterationListener, NoConfigMerge {
 
-    private static final Logger logger = LogUtil.getLogger(CSVDataSetInScript.class);
+    private static final Logger logger = LogUtil.getLogger(TraversalDataSet.class);
 
-    public static final String VARIABLE_NAMES = "CSVDataSetInScript.variableNames";
+    public static final String VARIABLE_NAMES = "TraversalDataSet.variableNames";
 
-    public static final String DATA = "CSVDataSetInScript.data";
+    public static final String DATA_SET = "TraversalDataSet.dataSet";
 
     private String[] varNames = null;
 
     private int varNamesLength = 0;
 
-    private Iterator lineIter = null;
+    private Iterator<String> lineIter = null;
 
 
     @Override
     public void iterationStart(LoopIterationEvent event) {
-        Iterator iter = getLineIter();
+        Iterator<String> iter = getLineIter();
         if (iter.hasNext()) {
-            putVarsFromLine((String) iter.next());
+            putVarsFromLine(iter.next());
         } else {
             logger.info("CSV Data循环结束，线程组停止循环");
             getThreadContext().getThreadGroup().stop();
@@ -49,7 +49,7 @@ public class CSVDataSetInScript extends ConfigTestElement implements LoopIterati
         }
     }
 
-    private Iterator getLineIter() {
+    private Iterator<String> getLineIter() {
         if (lineIter == null) {
             lineIter = readData().iterator();
         }
@@ -75,10 +75,10 @@ public class CSVDataSetInScript extends ConfigTestElement implements LoopIterati
     }
 
     public String getVariableNames() {
-        return getPropertyAsString(CSVDataSetInScript.VARIABLE_NAMES);
+        return getPropertyAsString(TraversalDataSet.VARIABLE_NAMES);
     }
 
     public String getData() {
-        return getPropertyAsString(CSVDataSetInScript.DATA);
+        return getPropertyAsString(TraversalDataSet.DATA_SET);
     }
 }

@@ -17,23 +17,23 @@ import java.io.IOException;
 import java.util.Iterator;
 
 /**
- * Dubbo接口报文非空校验自动遍历
+ * Json报文自动遍历非空校验
  * User: Kelvin.Ye
  * Date: 2018-04-17
  * Time: 11:10
  */
-public class TraverseEmptyValue extends ConfigTestElement implements LoopIterationListener {
+public class TraversalEmptyValue extends ConfigTestElement implements LoopIterationListener {
 
-    private static final Logger logger = LogUtil.getLogger(TraverseEmptyValue.class);
+    private static final Logger logger = LogUtil.getLogger(TraversalEmptyValue.class);
 
-    public static final String BLANK_TYPE = "TraverseEmptyValue.blankType";
-    public static final String PATAMS = "TraverseEmptyValue.patams";
-    public static final String EMPTY_CHECK_EXPECTATION = "TraverseEmptyValue.emptyCheckExpectation";
-    public static final String USE_TEMPLATE = "TraverseEmptyValue.useTemplate";
-    public static final String INTERFACE_PATH = "TraverseEmptyValue.interfacePath";
-    public static final String INTERFACE_NAME = "TraverseEmptyValue.interfaceName";
+    public static final String BLANK_TYPE = "TraversalEmptyValue.blankType";
+    public static final String PATAMS = "TraversalEmptyValue.patams";
+    public static final String EMPTY_CHECK_EXPECTATION = "TraversalEmptyValue.emptyCheckExpectation";
+    public static final String USE_TEMPLATE = "TraversalEmptyValue.useTemplate";
+    public static final String INTERFACE_PATH = "TraversalEmptyValue.interfacePath";
+    public static final String INTERFACE_NAME = "TraversalEmptyValue.interfaceName";
 
-    private Iterator jsonPathIterator = null;
+    private Iterator<String> jsonPathIterator = null;
 
 
     @Override
@@ -46,9 +46,9 @@ public class TraverseEmptyValue extends ConfigTestElement implements LoopIterati
      * 循环获取jsonPath、expectation 和 params，并放入vars变量中
      */
     private void setVariables() {
-        Iterator iter = getJsonPathIterator();
+        Iterator<String> iter = getJsonPathIterator();
         if (iter.hasNext()) {
-            String jsonPath = (String) iter.next();
+            String jsonPath = iter.next();
             Object isSuccess = JsonPath.read(JsonUtil.toArrayJson(getEmptyCheckExpection()), jsonPath);
             if (isSuccess instanceof Boolean) {
                 String expection = String.valueOf(isSuccess);
@@ -85,7 +85,7 @@ public class TraverseEmptyValue extends ConfigTestElement implements LoopIterati
     /**
      * JsonPathList的迭代器
      */
-    private Iterator getJsonPathIterator() {
+    private Iterator<String> getJsonPathIterator() {
         if (jsonPathIterator == null) {
             jsonPathIterator = JsonPathUtil.getJsonPathList(JsonUtil.toArrayJson(getEmptyCheckExpection())).iterator();
         }
@@ -105,7 +105,7 @@ public class TraverseEmptyValue extends ConfigTestElement implements LoopIterati
             }
             return templateJson;
         }
-        return getPropertyAsString(TraverseEmptyValue.PATAMS);
+        return getPropertyAsString(TraversalEmptyValue.PATAMS);
     }
 
     /**
@@ -114,7 +114,7 @@ public class TraverseEmptyValue extends ConfigTestElement implements LoopIterati
     public String getEmptyCheckExpection() {
         //使testEL元素只读，即不能参数化
         setRunningVersion(false);
-        return getPropertyAsString(TraverseEmptyValue.EMPTY_CHECK_EXPECTATION);
+        return getPropertyAsString(TraversalEmptyValue.EMPTY_CHECK_EXPECTATION);
     }
 
     private boolean getUseTemplate() {

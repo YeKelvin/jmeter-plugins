@@ -1,9 +1,8 @@
 package org.apache.jmeter.config.gui;
 
-import org.apache.jmeter.config.CSVDataSetInScript;
+import org.apache.jmeter.config.TraversalDataSet;
 import org.apache.jmeter.gui.util.JSyntaxTextArea;
 import org.apache.jmeter.gui.util.JTextScrollPane;
-import org.apache.jmeter.gui.util.VerticalPanel;
 import org.apache.jmeter.testelement.TestElement;
 import pers.kelvin.util.GuiUtil;
 
@@ -15,12 +14,12 @@ import java.awt.*;
  * Date: 2018-04-17
  * Time: 11:10
  */
-public class CSVDataSetInScriptGui extends AbstractConfigGui {
+public class TraversalDataSetGui extends AbstractConfigGui {
 
     private JTextField variableNamesTextField;
     private JSyntaxTextArea dataTextArea;
 
-    public CSVDataSetInScriptGui() {
+    public TraversalDataSetGui() {
         init();
     }
 
@@ -45,7 +44,7 @@ public class CSVDataSetInScriptGui extends AbstractConfigGui {
 
     @Override
     public String getStaticLabel() {
-        return "CSV Date Set In Script";
+        return "数据遍历配置器";
     }
 
 
@@ -57,7 +56,7 @@ public class CSVDataSetInScriptGui extends AbstractConfigGui {
 
     @Override
     public TestElement createTestElement() {
-        CSVDataSetInScript dataSet = new CSVDataSetInScript();
+        TraversalDataSet dataSet = new TraversalDataSet();
         modifyTestElement(dataSet);
         return dataSet;
     }
@@ -68,8 +67,8 @@ public class CSVDataSetInScriptGui extends AbstractConfigGui {
     @Override
     public void modifyTestElement(TestElement el) {
         super.configureTestElement(el);
-        el.setProperty(CSVDataSetInScript.VARIABLE_NAMES, variableNamesTextField.getText());
-        el.setProperty(CSVDataSetInScript.DATA, dataTextArea.getText());
+        el.setProperty(TraversalDataSet.VARIABLE_NAMES, variableNamesTextField.getText());
+        el.setProperty(TraversalDataSet.DATA_SET, dataTextArea.getText());
     }
 
     /**
@@ -78,8 +77,8 @@ public class CSVDataSetInScriptGui extends AbstractConfigGui {
     @Override
     public void configure(TestElement el) {
         super.configure(el);
-        variableNamesTextField.setText(el.getPropertyAsString(CSVDataSetInScript.VARIABLE_NAMES));
-        dataTextArea.setInitialText(el.getPropertyAsString(CSVDataSetInScript.DATA));
+        variableNamesTextField.setText(el.getPropertyAsString(TraversalDataSet.VARIABLE_NAMES));
+        dataTextArea.setInitialText(el.getPropertyAsString(TraversalDataSet.DATA_SET));
         dataTextArea.setCaretPosition(0);
     }
 
@@ -92,24 +91,24 @@ public class CSVDataSetInScriptGui extends AbstractConfigGui {
 
     private Component getVariableNamesTextField() {
         if (variableNamesTextField == null) {
-            variableNamesTextField = GuiUtil.createTextField(CSVDataSetInScript.VARIABLE_NAMES);
+            variableNamesTextField = GuiUtil.createTextField(TraversalDataSet.VARIABLE_NAMES);
         }
         return variableNamesTextField;
     }
 
     private Component getVariableNamesLabel() {
-        return GuiUtil.createLabel("变量名称：", getVariableNamesTextField());
+        return GuiUtil.createLabel("变量名：", getVariableNamesTextField());
     }
 
     private Component getDataTextArea() {
         if (dataTextArea == null) {
-            dataTextArea = GuiUtil.createTextArea(CSVDataSetInScript.DATA, 20);
+            dataTextArea = GuiUtil.createTextArea(TraversalDataSet.DATA_SET, 20);
         }
         return dataTextArea;
     }
 
     private Component getDataLabel() {
-        return GuiUtil.createLabel("CSV数据：", getDataTextArea());
+        return GuiUtil.createLabel("数据集：", getDataTextArea());
     }
 
 
