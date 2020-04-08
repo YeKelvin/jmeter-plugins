@@ -1,7 +1,6 @@
 package org.apache.jmeter.visualizers;
 
 
-import com.jayway.jsonpath.DocumentContext;
 import org.apache.jmeter.engine.event.LoopIterationEvent;
 import org.apache.jmeter.engine.util.NoThreadClone;
 import org.apache.jmeter.samplers.Interruptible;
@@ -20,11 +19,8 @@ import org.apache.jmeter.visualizers.data.TestCaseStepData;
 import org.apache.jmeter.visualizers.data.TestSuiteData;
 import pers.kelvin.util.FileUtil;
 import pers.kelvin.util.TimeUtil;
-import pers.kelvin.util.json.JsonPathUtil;
-import pers.kelvin.util.json.JsonUtil;
 
 import java.io.File;
-import java.util.ArrayList;
 
 
 /**
@@ -37,7 +33,6 @@ public class ReportCollector extends AbstractTestElement implements TestStateLis
 
     public static final String REPORT_NAME = "ReportCollector.reportName";
     public static final String IS_APPEND = "ReportCollector.isAppend";
-    public static final String DATA_FILE_NAME = "ReportCollector.dataFileName";
 
     public ReportCollector() {
         super();
@@ -84,11 +79,6 @@ public class ReportCollector extends AbstractTestElement implements TestStateLis
             ReportManager.appendDataToHtmlFile(getReportPath());
         } else {
             ReportManager.flush(getReportPath());
-        }
-
-        // 如命令模式有 -PdataFileName选项，则输出数据文件
-        if (isOutputDataFile()) {
-            outputDataFile();
         }
 
         // 测试结束时重置测试数据集
@@ -182,18 +172,13 @@ public class ReportCollector extends AbstractTestElement implements TestStateLis
     }
 
     private String getReportName() {
-        // Non-Gui下，命令行存在 -JreportName 参数时，优先读取 reportName
+        // Non-Gui下，命令行存在 -JreportName 选项时，优先读取 reportName
         return JMeterUtils.getPropDefault("reportName", getPropertyAsString(REPORT_NAME));
     }
 
     private String getIsAppend() {
-        // Non-Gui下，命令行存在 -JisAppend 参数时，优先读取 isAppend
+        // Non-Gui下，命令行存在 -JisAppend 选项时，优先读取 isAppend
         return JMeterUtils.getPropDefault("isAppend", getPropertyAsString(IS_APPEND));
-    }
-
-    private String getDataFileName() {
-        // Non-Gui下，命令行存在 -JdataFileName 参数时，优先读取 dataFileName
-        return JMeterUtils.getPropDefault("dataFileName", getPropertyAsString(DATA_FILE_NAME));
     }
 
     /**
@@ -203,14 +188,6 @@ public class ReportCollector extends AbstractTestElement implements TestStateLis
         return JMeterUtils.getJMeterHome() + File.separator +
                 "htmlreport" + File.separator +
                 appendHTMLSuffix(getReportName());
-    }
-
-    /**
-     * 获取数据文件路径
-     */
-    private String getDataFilePath() {
-        return JMeterUtils.getJMeterHome() + File.separator +
-                "htmlreport" + File.separator + "datafile" + File.separator + getDataFileName();
     }
 
     /**
@@ -243,43 +220,6 @@ public class ReportCollector extends AbstractTestElement implements TestStateLis
      */
     private String getSampleElapsedTime(SampleResult result) {
         return result.getEndTime() - result.getStartTime() + "ms";
-    }
-
-
-    /**
-     * 判断是否输出 DataFile文件
-     */
-    private boolean isOutputDataFile() {
-        return getDataFileName() != null && !"".equals(getDataFileName());
-    }
-
-    private void outputDataFile() {
-        ReportManager.traverseReportData();
-        ArrayList<TestSuiteData> testSuiteList = ReportManager.getReport().getTestSuiteList();
-
-        // 如为append模式则追加写文件
-        if (Boolean.parseBoolean(getIsAppend()) && FileUtil.exists(getDataFilePath())) {
-            // 循环添加数据
-            for (TestSuiteData testSuite : testSuiteList) {
-                appendListJsonToFile(getDataFilePath(), testSuite);
-            }
-        } else {
-            FileUtil.outputFile(getDataFilePath(), JsonUtil.toJson(testSuiteList));
-        }
-    }
-
-    /**
-     * 读取文件中list json串，追加list内容后回写文件
-     *
-     * @param filePath 文件路径
-     * @param newList  列表对象 或列表json串
-     */
-    private static void appendListJsonToFile(String filePath, Object newList) {
-        String content = FileUtil.readFile(filePath);
-        DocumentContext ctx = JsonPathUtil.jsonParse(content);
-        ctx.add("$", newList);
-        content = ctx.jsonString();
-        FileUtil.outputFile(filePath, content);
     }
 
     @Override

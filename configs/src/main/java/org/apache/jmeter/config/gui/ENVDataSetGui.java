@@ -139,7 +139,7 @@ public class ENVDataSetGui extends AbstractConfigGui {
     private JPanel getNotePanel() {
         String note = "说明：\n" +
                 "1. 配置文件必须是 Yaml格式 ，且必须放在 ${JMETER_HOME}/config 目录下；\n" +
-                "2. Non-Gui模式下，命令行存在 -JconfigName 参数时，优先读取 ${__P(configName)} 配置文件。";
+                "2. Non-Gui命令说明：存在 -JconfigName 选项时，优先读取 ${__P(configName)} 配置文件。";
         return GuiUtil.createNotePanel(note, this.getBackground());
     }
 

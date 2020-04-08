@@ -103,12 +103,11 @@ public class LocalHtmlReportGui extends AbstractListenerGui {
 
     private Component getNoteJPanel() {
         String note = "\n说明：\n" +
-                "1. 测试报告的路径为 ${JMETER_HOME}/htmlreport/${reportName}.html；\n" +
+                "1. 测试报告的路径为 ${JMETER_HOME}/htmlreport/${reportName}；\n" +
                 "2. 执行前必须先在 ${JMETER_HOME} 下创建 htmlreport 目录；\n" +
-                "3. Non-Gui模式命令解释：\n" +
-                "       a. 存在 -JreportName 参数时，优先读取 ${__P(reportName)} HTML报告名称；\n" +
-                "       b. 存在 -JisAppend 参数时，优先读取 ${__P(isAppend)} 追加模式；\n" +
-                "       c. 存在 -JdataFileName 参数时，优先读取 ${__P(dataFileName)} 数据文件名称。";
+                "3. Non-Gui命令说明：\n" +
+                "       a. 存在 -JreportName 选项时，优先读取 ${__P(reportName)} HTML报告名称；\n" +
+                "       b. 存在 -JisAppend 选项时，优先读取 ${__P(isAppend)} 追加模式；\n";
         return GuiUtil.createNotePanel(note, this.getBackground());
     }
 }
