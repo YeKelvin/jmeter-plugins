@@ -24,7 +24,6 @@ public class JMeterScriptDataTransfer extends ConfigTestElement implements Threa
 
     private static final Logger logger = LogUtil.getLogger(JMeterScriptDataTransfer.class);
 
-    public static final String CONFIG_NAME = "JMeterScriptDataTransfer.configName";
     public static final String PROPS_NAME_SUFFIX = "JMeterScriptDataTransfer.propsNameSuffix";
     public static final String CALLER_VARIABLES = "JMeterScriptDataTransfer.callerVariables";
     public static final String SCRIPT_RESULT = "JMeterScriptDataTransfer.scriptResult";
@@ -32,8 +31,6 @@ public class JMeterScriptDataTransfer extends ConfigTestElement implements Threa
     private static final String LINE_SEP = FileUtil.LINE_SEPARATOR;
 
     private Properties props = JMeterUtils.getJMeterProperties();
-
-    private boolean isPrintSampleResultToConsole;
 
     private HashMap<String, Object> clonedVars;
 
@@ -47,7 +44,6 @@ public class JMeterScriptDataTransfer extends ConfigTestElement implements Threa
 
     public JMeterScriptDataTransfer() {
         super();
-        isPrintSampleResultToConsole = Boolean.parseBoolean(JMeterUtils.getProperty("printSampleResultToConsole"));
         scriptResult = new JMeterScriptResultDTO();
         scriptData = new HashMap<>();
         clonedVars = new HashMap<>();
@@ -56,11 +52,6 @@ public class JMeterScriptDataTransfer extends ConfigTestElement implements Threa
     @Override
     public void sampleOccurred(SampleEvent e) {
         SampleResult result = e.getResult();
-
-        // 打印 sample数据到console，用于脚本调试
-        if (isPrintSampleResultToConsole) {
-            printContentToConsole(result);
-        }
 
         if (!result.isSuccessful()) {
             isSuccess = false;
@@ -90,9 +81,9 @@ public class JMeterScriptDataTransfer extends ConfigTestElement implements Threa
 
     @Override
     public void threadStarted() {
-        if (props.containsKey("callerVars")) {
+        if (props.containsKey(CALLER_VARIABLES)) {
             // 把调用者线程的 vars复制一份到当前线程的 vars中，同名key不覆盖
-            JMeterVariables callerVars = (JMeterVariables) props.get("callerVars");
+            JMeterVariables callerVars = (JMeterVariables) props.get(CALLER_VARIABLES);
             JMeterVariables currentVars = getThreadContext().getVariables();
 
             // 获取 callerVars 和 currentVars的差集
@@ -119,7 +110,7 @@ public class JMeterScriptDataTransfer extends ConfigTestElement implements Threa
         scriptResult.setSuccess(isSuccess);
         scriptResult.setExternalData(scriptData);
         scriptResult.setErrorSampleResult(errorSampleResult);
-        props.put("jmeterScriptResult", scriptResult);
+        props.put(SCRIPT_RESULT, scriptResult);
     }
 
     /**
@@ -149,21 +140,6 @@ public class JMeterScriptDataTransfer extends ConfigTestElement implements Threa
     }
 
     /**
-     * 打印 sample数据到console
-     *
-     * @param result SampleResult对象
-     */
-    private void printContentToConsole(SampleResult result) {
-        String content = String.format("【Sample Name】: %s" + LINE_SEP +
-                        "【Request Data】:" + LINE_SEP +
-                        "%s" + LINE_SEP +
-                        "【Response Data】:" + LINE_SEP +
-                        "%s" + LINE_SEP + LINE_SEP,
-                result.getSampleLabel(), result.getSamplerData(), result.getResponseDataAsString());
-        System.out.println(content);
-    }
-
-    /**
      * 删除不需要的key
      */
     private void removeUnwantedKey(Map<String, Object> givenMap) {
@@ -172,7 +148,6 @@ public class JMeterScriptDataTransfer extends ConfigTestElement implements Threa
         givenMap.remove("START.HMS");
         givenMap.remove("TESTSTART.MS");
         givenMap.remove("JMeterThread.pack");
-        givenMap.remove("JMeterThread.last_sample_ok");
         givenMap.remove("__jm__" + getThreadContext().getThreadGroup().getName() + "__idx");
         givenMap.remove("__jmeter.U_T__");
         getKeyNameInJDBCRequest(getThreadContext().getThread().getTestTree()).forEach(givenMap::remove);

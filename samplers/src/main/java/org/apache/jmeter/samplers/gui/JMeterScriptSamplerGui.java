@@ -19,7 +19,6 @@ public class JMeterScriptSamplerGui extends AbstractSamplerGui {
     private JTextField propsNameSuffixField;
     private JComboBox<String> syncToProps;
     private JComboBox<String> syncToVars;
-    private JComboBox<String> printToConsoleComboBox;
 
     public JMeterScriptSamplerGui() {
         init();
@@ -48,9 +47,6 @@ public class JMeterScriptSamplerGui extends AbstractSamplerGui {
         bodyPanel.add(getSyncToVarsLabel(), GuiUtil.GridBag.labelConstraints);
         bodyPanel.add(getSyncToVarsComboBox(), GuiUtil.GridBag.editorConstraints);
 
-        bodyPanel.add(getPrintToConsoleLabel(), GuiUtil.GridBag.labelConstraints);
-        bodyPanel.add(getPrintToConsoleComboBox(), GuiUtil.GridBag.editorConstraints);
-
         VerticalPanel mainPanel = new VerticalPanel();
         mainPanel.add(bodyPanel);
 
@@ -60,7 +56,7 @@ public class JMeterScriptSamplerGui extends AbstractSamplerGui {
 
     @Override
     public String getStaticLabel() {
-        return "JMeterScript取样器";
+        return "JMeterScript 取样器";
     }
 
 
@@ -88,7 +84,6 @@ public class JMeterScriptSamplerGui extends AbstractSamplerGui {
         el.setProperty(JMeterScriptSampler.PROPS_NAME_SUFFIX, propsNameSuffixField.getText());
         el.setProperty(JMeterScriptSampler.SYNC_TO_PROPS, (String) syncToProps.getSelectedItem());
         el.setProperty(JMeterScriptSampler.SYNC_TO_VARS, (String) syncToVars.getSelectedItem());
-        el.setProperty(JMeterScriptSampler.PRINT_TO_CONSOLE, (String) printToConsoleComboBox.getSelectedItem());
     }
 
     /**
@@ -102,7 +97,6 @@ public class JMeterScriptSamplerGui extends AbstractSamplerGui {
         propsNameSuffixField.setText(el.getPropertyAsString(JMeterScriptSampler.PROPS_NAME_SUFFIX));
         syncToProps.setSelectedItem(el.getPropertyAsString(JMeterScriptSampler.SYNC_TO_PROPS));
         syncToVars.setSelectedItem(el.getPropertyAsString(JMeterScriptSampler.SYNC_TO_VARS));
-        printToConsoleComboBox.setSelectedItem(el.getPropertyAsString(JMeterScriptSampler.PRINT_TO_CONSOLE));
     }
 
     @Override
@@ -113,7 +107,6 @@ public class JMeterScriptSamplerGui extends AbstractSamplerGui {
         propsNameSuffixField.setText("");
         syncToProps.setSelectedItem("true");
         syncToVars.setSelectedItem("false");
-        printToConsoleComboBox.setSelectedItem("false");
     }
 
     private Component getExternalScriptPathTextField() {
@@ -177,27 +170,13 @@ public class JMeterScriptSamplerGui extends AbstractSamplerGui {
                 "同步 vars：", syncToVars);
     }
 
-    private Component getPrintToConsoleComboBox() {
-        if (printToConsoleComboBox == null) {
-            printToConsoleComboBox = GuiUtil.createComboBox(JMeterScriptSampler.PRINT_TO_CONSOLE);
-            printToConsoleComboBox.addItem("false");
-            printToConsoleComboBox.addItem("true");
-        }
-        return printToConsoleComboBox;
-    }
-
-    private Component getPrintToConsoleLabel() {
-        return GuiUtil.createLabel(
-                "打印 Result到控制台：", printToConsoleComboBox);
-    }
-
     private Component getNotePanel() {
         String note = "说明：\n" +
-                "1. 【脚本目录路径】：请使用变量动态获取\n" +
-                "2. 【脚本名称】：需要包含.jmx\n" +
-                "3. 【同步增量 vars至 props】：将外部脚本中新增的 var放入 prop中\n" +
-                "4. 【同步 vars】：将调用者的 vars带入外部脚本中（不会覆盖外部脚本中已存在的key），执行结束时将外部脚本新增的 var带回给调用者的 vars中\n" +
-                "5. 【增量属性名称后缀】：格式为 属性名称_后缀";
+                "   1. 【脚本目录路径】：请使用环境变量\n" +
+                "   2. 【脚本名称】：需要包含.jmx\n" +
+                "   3. 【同步增量vars至props】：将外部脚本中新增的 var放入 prop中\n" +
+                "   4. 【同步vars】：将调用者的 vars带入外部脚本中（不会覆盖外部脚本中已存在的key），执行结束时将外部脚本新增的 var带回给调用者的 vars中\n" +
+                "   5. 【增量属性名称后缀】：格式为 属性名称_后缀";
         return GuiUtil.createNotePanel(note, this.getBackground());
     }
 

@@ -71,7 +71,7 @@ public class TestSuiteData {
      * list升序排序
      */
     public void sort() {
-        testCaseList.sort(Comparator.comparingInt(obj -> Integer.valueOf(obj.getId())));
+        testCaseList.sort(Comparator.comparingInt(obj -> Integer.parseInt(obj.getId())));
     }
 
     /**

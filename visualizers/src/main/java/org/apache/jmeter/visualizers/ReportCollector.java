@@ -27,10 +27,9 @@ import java.io.File;
  * @author KelvinYe
  */
 public class ReportCollector extends AbstractTestElement implements TestStateListener,
-        ThreadListener, SampleListener, TestIterationListener, Interruptible, NoThreadClone {
+        ThreadListener, SampleListener, TestIterationListener, Interruptible {
 
     public static final String DATE_FORMAT_PATTERN = "yyyy.MM.dd HH:mm:ss";
-
     public static final String REPORT_NAME = "ReportCollector.reportName";
     public static final String IS_APPEND = "ReportCollector.isAppend";
 
@@ -92,7 +91,7 @@ public class ReportCollector extends AbstractTestElement implements TestStateLis
     public void threadStarted() {
         TestSuiteData testSuiteData = ReportManager.getReport().getTestSuite(getScriptName());
         TestCaseData testCaseData = new TestCaseData(String.valueOf(testSuiteData.getTestCaseStartID()));
-        testCaseData.setTitle(getThreadNum() + "-" + getThreadName());
+        testCaseData.setTitle(getThreadName());
         testCaseData.setStartTime(TimeUtil.currentTimeAsString(DATE_FORMAT_PATTERN));
         testSuiteData.putTestCase(testCaseData);
     }
@@ -108,7 +107,7 @@ public class ReportCollector extends AbstractTestElement implements TestStateLis
     @Override
     public void sampleOccurred(SampleEvent sampleEvent) {
         TestSuiteData testSuite = ReportManager.getReport().getTestSuite(getScriptName());
-        TestCaseData testCase = testSuite.getTestCase(getThreadNum() + "-" + getThreadName());
+        TestCaseData testCase = testSuite.getTestCase(getThreadName());
         TestCaseStepData testCaseStep = new TestCaseStepData();
 
         // 设置测试数据
@@ -136,7 +135,7 @@ public class ReportCollector extends AbstractTestElement implements TestStateLis
         testCase.putTestCaseStep(testCaseStep);
 
         // 另外把 sample 执行结果打印到控制台
-        printStatusToConsole(result.isSuccessful(), getThreadNum() + "-" + getThreadName());
+        printStatusToConsole(result.isSuccessful(), getThreadName());
     }
 
     @Override
@@ -165,10 +164,6 @@ public class ReportCollector extends AbstractTestElement implements TestStateLis
     @Override
     public String getThreadName() {
         return JMeterContextService.getContext().getThread().getThreadName();
-    }
-
-    private String getThreadNum() {
-        return String.valueOf(JMeterContextService.getContext().getThreadNum());
     }
 
     private String getReportName() {

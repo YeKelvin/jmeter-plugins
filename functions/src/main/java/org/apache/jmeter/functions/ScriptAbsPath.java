@@ -18,7 +18,7 @@ import java.util.List;
  * Date     2018-08-22
  * Time     17:11
  */
-public class ScriptBaseDir extends AbstractFunction {
+public class ScriptAbsPath extends AbstractFunction {
     /**
      * 自定义function的描述
      */
@@ -31,7 +31,7 @@ public class ScriptBaseDir extends AbstractFunction {
     /**
      * function名称
      */
-    private static final String KEY = "__ScriptBaseDir";
+    private static final String KEY = "__ScriptAbsPath";
 
     /**
      * function传入的参数的值
@@ -68,14 +68,14 @@ public class ScriptBaseDir extends AbstractFunction {
     @Override
     public String execute(SampleResult sampleResult, Sampler sampler) throws InvalidVariableException {
         try {
-            String scriptBasePath = FileServer.getFileServer().getBaseDir();
+            String scriptAbsPath = FileServer.getFileServer().getBaseDir();
             if (CollectionUtils.isNotEmpty(parameters)) {
                 for (CompoundVariable parameter : parameters) {
                     String childPath = parameter.execute().trim();
-                    scriptBasePath = PathUtil.pathJoin(scriptBasePath, childPath);
+                    scriptAbsPath = PathUtil.pathJoin(scriptAbsPath, childPath);
                 }
             }
-            return scriptBasePath.replace("\\", "/");
+            return scriptAbsPath.replace("\\", "/");
         } catch (Exception ex) {
             throw new InvalidVariableException(ex);
         }

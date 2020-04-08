@@ -41,7 +41,7 @@ import java.util.Properties;
 /**
  * @author KelvinYe
  */
-public class JMeterScriptSampler extends AbstractSampler implements Interruptible {
+public class JMeterScriptSampler extends AbstractSampler implements SampleMonitor, Interruptible {
 
     private static final Logger logger = LogUtil.getLogger(JMeterScriptSampler.class);
 
@@ -54,7 +54,8 @@ public class JMeterScriptSampler extends AbstractSampler implements Interruptibl
     public static final String PROPS_NAME_SUFFIX = "JMeterScriptSampler.propsNameSuffix";
     public static final String SYNC_TO_PROPS = "JMeterScriptSampler.syncToProps";
     public static final String SYNC_TO_VARS = "JMeterScriptSampler.syncToVars";
-    public static final String PRINT_TO_CONSOLE = "JMeterScriptSampler.printSampleResultToConsole";
+
+    private Collection<ResultCollector> resultCollectors;
 
     @Override
     public SampleResult sample(Entry entry) {
@@ -100,7 +101,9 @@ public class JMeterScriptSampler extends AbstractSampler implements Interruptibl
     }
 
     private String getPropsNameSuffix() {
-        return JMeterUtils.getPropDefault("propsNameSuffix", getPropertyAsString(PROPS_NAME_SUFFIX));
+        return JMeterUtils.getPropDefault(
+                JMeterScriptDataTransfer.PROPS_NAME_SUFFIX, getPropertyAsString(PROPS_NAME_SUFFIX)
+        );
     }
 
     private boolean isSyncToProps() {
@@ -109,10 +112,6 @@ public class JMeterScriptSampler extends AbstractSampler implements Interruptibl
 
     private boolean isSyncToVars() {
         return getPropertyAsBoolean(SYNC_TO_VARS);
-    }
-
-    private String getPrintToConsole() {
-        return JMeterUtils.getPropDefault("printSampleResultToConsole", getPropertyAsString(PRINT_TO_CONSOLE));
     }
 
     private String getScriptPath() {
@@ -126,17 +125,17 @@ public class JMeterScriptSampler extends AbstractSampler implements Interruptibl
      * @param scriptAbsPath 脚本绝对路径
      * @return 执行结果
      */
-    private JMeterScriptResultDTO runJMeterScript(String scriptAbsPath) throws IllegalUserActionException, IOException, InterruptedException {
+    private JMeterScriptResultDTO runJMeterScript(String scriptAbsPath)
+            throws IllegalUserActionException, IOException, InterruptedException {
         // 加载脚本
         HashTree clonedTree = loadScriptTree(scriptAbsPath);
 
         // 设置 JMeterProps，用于传递给外部脚本使用
-        props.put("propsNameSuffix", getPropsNameSuffix());
-        props.put("printSampleResultToConsole", getPrintToConsole());
+        props.put(JMeterScriptDataTransfer.PROPS_NAME_SUFFIX, getPropsNameSuffix());
         props.put("configName", JMeterVarsUtil.getDefault(ENVDataSet.CONFIG_NAME));
         // 判断是否需要把当前线程的 vars同步至外部脚本
         if (isSyncToVars()) {
-            props.put("callerVars", getThreadContext().getVariables());
+            props.put(JMeterScriptDataTransfer.CALLER_VARIABLES, getThreadContext().getVariables());
         }
 
         // 开始执行外部脚本
@@ -162,7 +161,7 @@ public class JMeterScriptSampler extends AbstractSampler implements Interruptibl
         }
 
         // 提取外部脚本执行结果
-        JMeterScriptResultDTO scriptResult = (JMeterScriptResultDTO) props.get("jmeterScriptResult");
+        JMeterScriptResultDTO scriptResult = (JMeterScriptResultDTO) props.get(JMeterScriptDataTransfer.SCRIPT_RESULT);
         Map<String, Object> externalData = scriptResult.getExternalData();
 
         // 把外部脚本中的增量 vars同步至当前线程的 vars中
@@ -352,10 +351,9 @@ public class JMeterScriptSampler extends AbstractSampler implements Interruptibl
      */
     private void clearExternalScriptProps() {
         props.remove("configName");
-        props.remove("propsNameSuffix");
-        props.remove("printSampleResultToConsole");
-        props.remove("jmeterScriptResult");
-        props.remove("callerVars");
+        props.remove(JMeterScriptDataTransfer.PROPS_NAME_SUFFIX);
+        props.remove(JMeterScriptDataTransfer.SCRIPT_RESULT);
+        props.remove(JMeterScriptDataTransfer.CALLER_VARIABLES);
     }
 
     private void setPropsWithSuffix(Map<String, Object> externalData) {
@@ -393,7 +391,9 @@ public class JMeterScriptSampler extends AbstractSampler implements Interruptibl
         ListedHashTree tree = JMeterContextService.getContext().getThread().getTestTree();
         SearchByClass<ResultCollector> searcher = new SearchByClass<>(ResultCollector.class);
         tree.traverse(searcher);
-        return searcher.getSearchResults();
+        Collection<ResultCollector> resultCollectors = searcher.getSearchResults();
+        this.resultCollectors = resultCollectors;
+        return resultCollectors;
     }
 
     /**
@@ -424,5 +424,14 @@ public class JMeterScriptSampler extends AbstractSampler implements Interruptibl
         for (ReportCollector reportCollector : getReportCollectorIter()) {
             hashTree.add(testPlan, reportCollector);
         }
+    }
+
+    @Override
+    public void sampleStarting(Sampler sampler) {
+    }
+
+    @Override
+    public void sampleEnded(Sampler sampler) {
+
     }
 }
