@@ -1,5 +1,9 @@
 package org.apache.jmeter.common.utils;
 
+import org.apache.jmeter.common.utils.random.CambodiaMobilePhone;
+import org.apache.jmeter.common.utils.random.IDCard;
+import org.apache.jmeter.common.utils.random.MobilePhone;
+
 import java.util.Random;
 
 /**
@@ -172,7 +176,7 @@ public class Randoms {
      */
     public static String getCambodiaMobileNumber() {
         String[] mobileRule = CambodiaMobilePhone.getRandomPhoneCode();
-        return getNumber("855" + mobileRule[0],Integer.valueOf(mobileRule[1]));
+        return getNumber("855" + mobileRule[0],Integer.parseInt(mobileRule[1]));
     }
 
 }
