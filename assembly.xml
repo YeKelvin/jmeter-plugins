@@ -44,7 +44,7 @@
         <!--<dependencySet>-->
             <!--<unpack>false</unpack>-->
             <!--<scope>runtime</scope>-->
-            <!--<outputDirectory>\</outputDirectory>-->
+            <!--<outputDirectory>/</outputDirectory>-->
         <!--</dependencySet>-->
     <!--</dependencySets>-->
 </assembly>

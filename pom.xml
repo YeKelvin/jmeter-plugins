@@ -335,7 +335,6 @@
                 </executions>
                 <configuration>
                     <descriptors>
-<!--                        <descriptor>assembly/assembly.xml</descriptor>-->
                         <descriptor>assembly.xml</descriptor>
                     </descriptors>
                 </configuration>
