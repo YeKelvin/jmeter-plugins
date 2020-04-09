@@ -6,9 +6,9 @@ import org.apache.jmeter.protocol.http.sampler.HTTPSamplerProxy;
 import org.apache.jmeter.samplers.SampleResult;
 import org.apache.jmeter.samplers.Sampler;
 import org.slf4j.Logger;
-import pers.kelvin.util.Signature;
-import pers.kelvin.util.exception.ExceptionUtil;
-import pers.kelvin.util.log.LogUtil;
+import org.apache.jmeter.common.utils.Signature;
+import org.apache.jmeter.common.utils.ExceptionUtil;
+import org.apache.jmeter.common.utils.LogUtil;
 
 import java.net.MalformedURLException;
 import java.util.Collection;

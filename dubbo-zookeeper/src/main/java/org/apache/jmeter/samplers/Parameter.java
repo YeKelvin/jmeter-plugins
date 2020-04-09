@@ -2,8 +2,8 @@ package org.apache.jmeter.samplers;
 
 import com.jayway.jsonpath.DocumentContext;
 import lombok.Getter;
-import pers.kelvin.util.json.JsonPathUtil;
-import pers.kelvin.util.json.JsonUtil;
+import org.apache.jmeter.common.utils.json.JsonPathUtil;
+import org.apache.jmeter.common.utils.json.JsonUtil;
 
 /**
  * Description: 请求参数相关

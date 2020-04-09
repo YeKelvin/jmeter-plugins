@@ -1,17 +1,16 @@
 package org.apache.jmeter.config;
 
 import com.google.gson.reflect.TypeToken;
+import org.apache.jmeter.common.CliOption;
+import org.apache.jmeter.common.utils.ExceptionUtil;
+import org.apache.jmeter.common.utils.LogUtil;
+import org.apache.jmeter.common.utils.YamlUtil;
 import org.apache.jmeter.engine.util.NoConfigMerge;
 import org.apache.jmeter.engine.util.NoThreadClone;
 import org.apache.jmeter.testelement.TestStateListener;
 import org.apache.jmeter.threads.JMeterContextService;
 import org.apache.jmeter.util.JMeterUtils;
 import org.slf4j.Logger;
-import pers.kelvin.util.FileUtil;
-import pers.kelvin.util.YamlUtil;
-import pers.kelvin.util.exception.ExceptionUtil;
-import pers.kelvin.util.json.JsonUtil;
-import pers.kelvin.util.log.LogUtil;
 
 import java.io.File;
 import java.lang.reflect.Type;
@@ -40,7 +39,7 @@ public class ENVDataSet extends ConfigTestElement implements TestStateListener, 
      * 获取环境变量配置文件名称
      */
     public String getFileName() {
-        return JMeterUtils.getPropDefault("configName", getPropertyAsString(CONFIG_NAME));
+        return JMeterUtils.getPropDefault(CliOption.CONFIG_NAME, getPropertyAsString(CONFIG_NAME));
     }
 
     /**

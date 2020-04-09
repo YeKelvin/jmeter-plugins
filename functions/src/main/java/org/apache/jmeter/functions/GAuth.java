@@ -4,9 +4,9 @@ import org.apache.jmeter.engine.util.CompoundVariable;
 import org.apache.jmeter.samplers.SampleResult;
 import org.apache.jmeter.samplers.Sampler;
 import org.slf4j.Logger;
-import pers.kelvin.util.GoogleAuthenticator;
-import pers.kelvin.util.exception.ExceptionUtil;
-import pers.kelvin.util.log.LogUtil;
+import org.apache.jmeter.common.utils.GoogleAuthenticator;
+import org.apache.jmeter.common.utils.ExceptionUtil;
+import org.apache.jmeter.common.utils.LogUtil;
 
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;

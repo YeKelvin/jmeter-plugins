@@ -10,8 +10,8 @@ import org.apache.jmeter.util.JMeterUtils;
 import org.apache.jorphan.collections.ListedHashTree;
 import org.apache.jorphan.collections.SearchByClass;
 import org.slf4j.Logger;
-import pers.kelvin.util.FileUtil;
-import pers.kelvin.util.log.LogUtil;
+import org.apache.jmeter.common.utils.FileUtil;
+import org.apache.jmeter.common.utils.LogUtil;
 
 import java.util.*;
 
@@ -24,9 +24,9 @@ public class JMeterScriptDataTransfer extends ConfigTestElement implements Threa
 
     private static final Logger logger = LogUtil.getLogger(JMeterScriptDataTransfer.class);
 
-    public static final String PROPS_NAME_SUFFIX = "JMeterScriptDataTransfer.propsNameSuffix";
     public static final String CALLER_VARIABLES = "JMeterScriptDataTransfer.callerVariables";
     public static final String SCRIPT_RESULT = "JMeterScriptDataTransfer.scriptResult";
+    public static final String PARENT_RESULT = "JMeterScriptDataTransfer.parentResult";
 
     private static final String LINE_SEP = FileUtil.LINE_SEPARATOR;
 

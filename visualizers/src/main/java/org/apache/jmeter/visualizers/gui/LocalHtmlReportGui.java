@@ -4,7 +4,7 @@ package org.apache.jmeter.visualizers.gui;
 import org.apache.jmeter.gui.util.VerticalPanel;
 import org.apache.jmeter.testelement.TestElement;
 import org.apache.jmeter.visualizers.ReportCollector;
-import pers.kelvin.util.GuiUtil;
+import org.apache.jmeter.common.utils.GuiUtil;
 
 import javax.swing.*;
 import java.awt.*;

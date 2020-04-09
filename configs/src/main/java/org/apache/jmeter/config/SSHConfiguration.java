@@ -8,9 +8,9 @@ import org.apache.jmeter.samplers.Interruptible;
 import org.apache.jmeter.testelement.TestStateListener;
 import org.apache.jmeter.util.JMeterUtils;
 import org.slf4j.Logger;
-import pers.kelvin.util.JMeterVarsUtil;
-import pers.kelvin.util.exception.ExceptionUtil;
-import pers.kelvin.util.log.LogUtil;
+import org.apache.jmeter.common.utils.JMeterVarsUtil;
+import org.apache.jmeter.common.utils.ExceptionUtil;
+import org.apache.jmeter.common.utils.LogUtil;
 
 /**
  * SSH配置器

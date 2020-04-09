@@ -8,8 +8,8 @@ import org.apache.jmeter.util.JMeterUtils;
 import org.apache.jorphan.gui.GuiUtils;
 import org.apache.jorphan.gui.ObjectTableModel;
 import org.apache.jorphan.reflect.Functor;
-import pers.kelvin.util.GuiUtil;
-import pers.kelvin.util.StringUtil;
+import org.apache.jmeter.common.utils.GuiUtil;
+import org.apache.jmeter.common.utils.StringUtil;
 
 import javax.swing.*;
 import javax.swing.table.TableRowSorter;

@@ -2,7 +2,7 @@ package org.apache.jmeter.samplers;
 
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
-import pers.kelvin.util.ReflectUtil;
+import org.apache.jmeter.common.utils.ReflectUtil;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;

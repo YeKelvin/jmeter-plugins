@@ -4,7 +4,7 @@ package org.apache.jmeter.config.gui;
 import org.apache.jmeter.config.SSHConfiguration;
 import org.apache.jmeter.gui.util.VerticalPanel;
 import org.apache.jmeter.testelement.TestElement;
-import pers.kelvin.util.GuiUtil;
+import org.apache.jmeter.common.utils.GuiUtil;
 
 import javax.swing.*;
 import java.awt.*;

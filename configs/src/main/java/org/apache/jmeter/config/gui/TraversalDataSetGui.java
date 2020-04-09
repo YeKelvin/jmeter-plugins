@@ -4,7 +4,7 @@ import org.apache.jmeter.config.TraversalDataSet;
 import org.apache.jmeter.gui.util.JSyntaxTextArea;
 import org.apache.jmeter.gui.util.JTextScrollPane;
 import org.apache.jmeter.testelement.TestElement;
-import pers.kelvin.util.GuiUtil;
+import org.apache.jmeter.common.utils.GuiUtil;
 
 import javax.swing.*;
 import java.awt.*;

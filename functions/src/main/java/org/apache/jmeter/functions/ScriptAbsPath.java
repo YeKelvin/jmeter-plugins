@@ -5,7 +5,7 @@ import org.apache.jmeter.engine.util.CompoundVariable;
 import org.apache.jmeter.samplers.SampleResult;
 import org.apache.jmeter.samplers.Sampler;
 import org.apache.jmeter.services.FileServer;
-import pers.kelvin.util.PathUtil;
+import org.apache.jmeter.common.utils.PathUtil;
 
 import java.util.Collection;
 import java.util.LinkedList;

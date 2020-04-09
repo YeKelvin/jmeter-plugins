@@ -3,7 +3,7 @@
 一系列公共函数，用于给 jmeter中 groovy或 beanshell脚本调用。
 
 ### 方法说明
-#### 1 `pers.kelvin.util.random.Randoms`
+#### 1 `org.apache.jmeter.common.utils.Randoms`
 ##### 1.1 `getNumber(int length)`
 获取随机数。
 

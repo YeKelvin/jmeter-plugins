@@ -21,14 +21,14 @@ import org.apache.jorphan.collections.HashTree;
 import org.apache.jorphan.collections.ListedHashTree;
 import org.apache.jorphan.collections.SearchByClass;
 import org.slf4j.Logger;
-import pers.kelvin.util.FileUtil;
-import pers.kelvin.util.JMeterVarsUtil;
-import pers.kelvin.util.PathUtil;
-import pers.kelvin.util.StringUtil;
-import pers.kelvin.util.exception.ExceptionUtil;
-import pers.kelvin.util.exception.ServiceException;
-import pers.kelvin.util.json.JsonUtil;
-import pers.kelvin.util.log.LogUtil;
+import org.apache.jmeter.common.utils.FileUtil;
+import org.apache.jmeter.common.utils.JMeterVarsUtil;
+import org.apache.jmeter.common.utils.PathUtil;
+import org.apache.jmeter.common.utils.ExceptionUtil;
+import org.apache.jmeter.common.utils.exception.ServiceException;
+import org.apache.jmeter.common.utils.json.JsonUtil;
+import org.apache.jmeter.common.utils.LogUtil;
+import org.apache.jmeter.common.CliOption;
 
 import java.io.File;
 import java.io.IOException;
@@ -49,7 +49,7 @@ public class JMeterScriptSampler extends AbstractSampler implements SampleMonito
 
     private Properties props = JMeterUtils.getJMeterProperties();
 
-    public static final String EXTERNAL_SCRIPT_PATH = "JMeterScriptSampler.externalScriptPath";
+    public static final String JMETER_SCRIPT_PATH = "JMeterScriptSampler.externalScriptPath";
     public static final String SCRIPT_NAME = "JMeterScriptSampler.scriptName";
     public static final String PROPS_NAME_SUFFIX = "JMeterScriptSampler.propsNameSuffix";
     public static final String SYNC_TO_PROPS = "JMeterScriptSampler.syncToProps";
@@ -93,17 +93,11 @@ public class JMeterScriptSampler extends AbstractSampler implements SampleMonito
     }
 
     private String getExternalScriptPath() {
-        return getPropertyAsString(EXTERNAL_SCRIPT_PATH);
+        return getPropertyAsString(JMETER_SCRIPT_PATH);
     }
 
     private String getScriptName() {
         return getPropertyAsString(SCRIPT_NAME);
-    }
-
-    private String getPropsNameSuffix() {
-        return JMeterUtils.getPropDefault(
-                JMeterScriptDataTransfer.PROPS_NAME_SUFFIX, getPropertyAsString(PROPS_NAME_SUFFIX)
-        );
     }
 
     private boolean isSyncToProps() {
@@ -128,11 +122,11 @@ public class JMeterScriptSampler extends AbstractSampler implements SampleMonito
     private JMeterScriptResultDTO runJMeterScript(String scriptAbsPath)
             throws IllegalUserActionException, IOException, InterruptedException {
         // 加载脚本
-        HashTree clonedTree = loadScriptTree(scriptAbsPath);
+        HashTree testTree = loadScriptTree(scriptAbsPath);
 
-        // 设置 JMeterProps，用于传递给外部脚本使用
-        props.put(JMeterScriptDataTransfer.PROPS_NAME_SUFFIX, getPropsNameSuffix());
-        props.put("configName", JMeterVarsUtil.getDefault(ENVDataSet.CONFIG_NAME));
+        // 设置全局变量，用于传递给子脚本使用
+        props.put(CliOption.CONFIG_NAME, JMeterVarsUtil.getDefault(ENVDataSet.CONFIG_NAME));
+
         // 判断是否需要把当前线程的 vars同步至外部脚本
         if (isSyncToVars()) {
             props.put(JMeterScriptDataTransfer.CALLER_VARIABLES, getThreadContext().getVariables());
@@ -141,7 +135,7 @@ public class JMeterScriptSampler extends AbstractSampler implements SampleMonito
         // 开始执行外部脚本
         StandardJMeterEngine engine = new StandardJMeterEngine();
         engine.setProperties(props);
-        engine.configure(clonedTree);
+        engine.configure(testTree);
 
         // 判断是否命令行运行，如果是命令行模式，则临时设置 JMETER_NON_GUI为false
         boolean isNonGuiMode = false;
@@ -177,7 +171,7 @@ public class JMeterScriptSampler extends AbstractSampler implements SampleMonito
 
         // 把外部脚本中新增的 JMeterVars变量加入 JMeterProps中
         // 如果设置了 JMeterProps属性名称后缀，则把外部脚本中获取的变量名都加上后缀
-        setPropsWithSuffix(externalData);
+        setProps(externalData);
 
         return scriptResult;
     }
@@ -318,10 +312,10 @@ public class JMeterScriptSampler extends AbstractSampler implements SampleMonito
      * @param hashTree jmx脚本的 HashTree对象
      */
     private void setThreadGroupParams(HashTree hashTree) {
-        // 获取 TestPlan的HashTree对象
+        // 获取 TestPlan的subTree
         HashTree testPlanTree = hashTree.get(hashTree.getArray()[0]);
 
-        // 从 HashTree中搜索对应的组件对象
+        // 从 TestPlan中搜索 ThreadGroup
         SearchByClass<AbstractThreadGroup> searcher = new SearchByClass<>(AbstractThreadGroup.class);
         testPlanTree.traverse(searcher);
 
@@ -330,6 +324,9 @@ public class JMeterScriptSampler extends AbstractSampler implements SampleMonito
         }
 
         for (AbstractThreadGroup threadGroup : searcher.getSearchResults()) {
+            // 将子脚本的线程组名称更改为调用者线程组的名称
+            threadGroup.setName(JMeterContextService.getContext().getThread().getThreadName());
+
             if (!threadGroup.getOnErrorStartNextLoop()) {
                 logger.info("JMeter脚本中的线程组仅支持错误时启动下一进程循环，已强制修改为错误时启动下一进程循环");
                 threadGroup.setProperty(AbstractThreadGroup.ON_SAMPLE_ERROR, AbstractThreadGroup.ON_SAMPLE_ERROR_START_NEXT_LOOP);
@@ -350,13 +347,12 @@ public class JMeterScriptSampler extends AbstractSampler implements SampleMonito
      * 清空外部脚本的执行结果
      */
     private void clearExternalScriptProps() {
-        props.remove("configName");
-        props.remove(JMeterScriptDataTransfer.PROPS_NAME_SUFFIX);
+        props.remove(CliOption.CONFIG_NAME);
         props.remove(JMeterScriptDataTransfer.SCRIPT_RESULT);
         props.remove(JMeterScriptDataTransfer.CALLER_VARIABLES);
     }
 
-    private void setPropsWithSuffix(Map<String, Object> externalData) {
+    private void setProps(Map<String, Object> externalData) {
         if (!isSyncToProps()) {
             return;
         }
@@ -365,13 +361,7 @@ public class JMeterScriptSampler extends AbstractSampler implements SampleMonito
             return;
         }
 
-        // 属性名称后缀
-        String propsNameSuffix = getPropsNameSuffix();
-        if (StringUtil.isBlank(propsNameSuffix)) {
-            externalData.forEach((key, value) -> props.put(key, value.toString()));
-        } else {
-            externalData.forEach((key, value) -> props.put(key + "_" + propsNameSuffix, value.toString()));
-        }
+        externalData.forEach((key, value) -> props.put(key, value.toString()));
     }
 
     private void setNonGuiProperty(boolean isNonGui) {

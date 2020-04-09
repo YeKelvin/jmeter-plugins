@@ -4,7 +4,7 @@ import org.apache.jmeter.engine.event.LoopIterationEvent;
 import org.apache.jmeter.engine.event.LoopIterationListener;
 import org.apache.jmeter.engine.util.NoConfigMerge;
 import org.slf4j.Logger;
-import pers.kelvin.util.log.LogUtil;
+import org.apache.jmeter.common.utils.LogUtil;
 
 import java.util.Arrays;
 import java.util.Iterator;

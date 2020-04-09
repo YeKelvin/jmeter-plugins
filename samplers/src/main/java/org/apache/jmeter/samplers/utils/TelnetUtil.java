@@ -3,8 +3,8 @@ package org.apache.jmeter.samplers.utils;
 
 import org.apache.commons.net.telnet.TelnetClient;
 import org.slf4j.Logger;
-import pers.kelvin.util.exception.ExceptionUtil;
-import pers.kelvin.util.log.LogUtil;
+import org.apache.jmeter.common.utils.ExceptionUtil;
+import org.apache.jmeter.common.utils.LogUtil;
 
 import java.io.IOException;
 import java.io.InputStreamReader;

@@ -1,12 +1,10 @@
 package org.apache.jmeter.visualizers.utils;
 
 import com.jayway.jsonpath.DocumentContext;
-import com.jayway.jsonpath.JsonPath;
 import org.apache.jmeter.visualizers.data.OverviewInfo;
-import pers.kelvin.util.json.JsonPathUtil;
-import pers.kelvin.util.json.JsonUtil;
+import org.apache.jmeter.common.utils.json.JsonPathUtil;
+import org.apache.jmeter.common.utils.json.JsonUtil;
 
-import java.io.IOException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 

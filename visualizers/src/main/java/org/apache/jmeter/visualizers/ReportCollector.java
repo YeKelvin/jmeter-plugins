@@ -1,7 +1,9 @@
 package org.apache.jmeter.visualizers;
 
 
-import org.apache.jmeter.engine.event.LoopIterationEvent;
+import org.apache.jmeter.common.CliOption;
+import org.apache.jmeter.common.utils.FileUtil;
+import org.apache.jmeter.common.utils.TimeUtil;
 import org.apache.jmeter.engine.util.NoThreadClone;
 import org.apache.jmeter.samplers.Interruptible;
 import org.apache.jmeter.samplers.SampleEvent;
@@ -9,7 +11,6 @@ import org.apache.jmeter.samplers.SampleListener;
 import org.apache.jmeter.samplers.SampleResult;
 import org.apache.jmeter.services.FileServer;
 import org.apache.jmeter.testelement.AbstractTestElement;
-import org.apache.jmeter.testelement.TestIterationListener;
 import org.apache.jmeter.testelement.TestStateListener;
 import org.apache.jmeter.testelement.ThreadListener;
 import org.apache.jmeter.threads.JMeterContextService;
@@ -17,8 +18,6 @@ import org.apache.jmeter.util.JMeterUtils;
 import org.apache.jmeter.visualizers.data.TestCaseData;
 import org.apache.jmeter.visualizers.data.TestCaseStepData;
 import org.apache.jmeter.visualizers.data.TestSuiteData;
-import pers.kelvin.util.FileUtil;
-import pers.kelvin.util.TimeUtil;
 
 import java.io.File;
 
@@ -26,12 +25,15 @@ import java.io.File;
 /**
  * @author KelvinYe
  */
-public class ReportCollector extends AbstractTestElement implements TestStateListener,
-        ThreadListener, SampleListener, TestIterationListener, Interruptible {
+public class ReportCollector extends AbstractTestElement
+        implements TestStateListener, ThreadListener, SampleListener, Interruptible, NoThreadClone {
 
     public static final String DATE_FORMAT_PATTERN = "yyyy.MM.dd HH:mm:ss";
     public static final String REPORT_NAME = "ReportCollector.reportName";
     public static final String IS_APPEND = "ReportCollector.isAppend";
+
+    private int startCount;
+    private String scriptName;
 
     public ReportCollector() {
         super();
@@ -52,10 +54,14 @@ public class ReportCollector extends AbstractTestElement implements TestStateLis
      */
     @Override
     public void testStarted(String host) {
-        TestSuiteData testSuiteData = new TestSuiteData();
-        testSuiteData.setTitle(getScriptName());
-        testSuiteData.setStartTime(TimeUtil.currentTimeAsString(DATE_FORMAT_PATTERN));
-        ReportManager.getReport().putTestSuite(testSuiteData);
+        if (startCount == 0) {
+            scriptName = getScriptName();
+            TestSuiteData testSuiteData = new TestSuiteData();
+            testSuiteData.setTitle(scriptName);
+            testSuiteData.setStartTime(getStringTime());
+            ReportManager.getReport().putTestSuite(testSuiteData);
+        }
+        startCount++;
     }
 
     @Override
@@ -68,20 +74,22 @@ public class ReportCollector extends AbstractTestElement implements TestStateLis
      */
     @Override
     public void testEnded(String host) {
-        TestSuiteData testSuiteData = ReportManager.getReport().getTestSuite(getScriptName());
-        testSuiteData.setEndTime(TimeUtil.currentTimeAsString(DATE_FORMAT_PATTERN));
-        testSuiteData.setElapsedTime(TimeUtil.formatElapsedTimeAsHMS(
-                testSuiteData.getStartTime(), testSuiteData.getEndTime(), DATE_FORMAT_PATTERN));
+        startCount--;
+        if (startCount == 0) {
+            TestSuiteData testSuiteData = ReportManager.getReport().getTestSuite(scriptName);
+            testSuiteData.setEndTime(getStringTime());
+            testSuiteData.setElapsedTime(getElapsedTime(testSuiteData.getStartTime(), testSuiteData.getEndTime()));
 
-        // 如判断为追加模式且 html文件存在时，以追加模式写入数据，否则以新建模式写入数据
-        if (Boolean.parseBoolean(getIsAppend()) && FileUtil.exists(getReportPath())) {
-            ReportManager.appendDataToHtmlFile(getReportPath());
-        } else {
-            ReportManager.flush(getReportPath());
+            // 如判断为追加模式且 html文件存在时，以追加模式写入数据，否则以新建模式写入数据
+            if (Boolean.parseBoolean(getIsAppend()) && FileUtil.exists(getReportPath())) {
+                ReportManager.appendDataToHtmlFile(getReportPath());
+            } else {
+                ReportManager.flush(getReportPath());
+            }
+
+            // 测试结束时重置测试数据集
+            ReportManager.clearReportDataSet();
         }
-
-        // 测试结束时重置测试数据集
-        ReportManager.clearReportDataSet();
     }
 
     /**
@@ -92,7 +100,7 @@ public class ReportCollector extends AbstractTestElement implements TestStateLis
         TestSuiteData testSuiteData = ReportManager.getReport().getTestSuite(getScriptName());
         TestCaseData testCaseData = new TestCaseData(String.valueOf(testSuiteData.getTestCaseStartID()));
         testCaseData.setTitle(getThreadName());
-        testCaseData.setStartTime(TimeUtil.currentTimeAsString(DATE_FORMAT_PATTERN));
+        testCaseData.setStartTime(getStringTime());
         testSuiteData.putTestCase(testCaseData);
     }
 
@@ -127,9 +135,8 @@ public class ReportCollector extends AbstractTestElement implements TestStateLis
         }
 
         // 每次sample执行完毕覆盖testCase的完成时间和耗时
-        testCase.setEndTime(TimeUtil.currentTimeAsString(DATE_FORMAT_PATTERN));
-        testCase.setElapsedTime(TimeUtil.formatElapsedTimeAsMS(
-                testCase.getStartTime(), testCase.getEndTime(), DATE_FORMAT_PATTERN));
+        testCase.setEndTime(getStringTime());
+        testCase.setElapsedTime(getElapsedTime(testCase.getStartTime(), testCase.getEndTime()));
 
         // 把测试步骤数据添加至测试案例集中
         testCase.putTestCaseStep(testCaseStep);
@@ -148,11 +155,6 @@ public class ReportCollector extends AbstractTestElement implements TestStateLis
         // pass
     }
 
-    @Override
-    public void testIterationStart(LoopIterationEvent loopIterationEvent) {
-        // pass
-    }
-
     /**
      * 获取脚本名称（去文件后缀）
      */
@@ -168,12 +170,12 @@ public class ReportCollector extends AbstractTestElement implements TestStateLis
 
     private String getReportName() {
         // Non-Gui下，命令行存在 -JreportName 选项时，优先读取 reportName
-        return JMeterUtils.getPropDefault("reportName", getPropertyAsString(REPORT_NAME));
+        return JMeterUtils.getPropDefault(CliOption.REPORT_NAME, getPropertyAsString(REPORT_NAME));
     }
 
     private String getIsAppend() {
         // Non-Gui下，命令行存在 -JisAppend 选项时，优先读取 isAppend
-        return JMeterUtils.getPropDefault("isAppend", getPropertyAsString(IS_APPEND));
+        return JMeterUtils.getPropDefault(CliOption.IS_APPEND, getPropertyAsString(IS_APPEND));
     }
 
     /**
@@ -221,6 +223,14 @@ public class ReportCollector extends AbstractTestElement implements TestStateLis
     public boolean interrupt() {
         testEnded();
         return true;
+    }
+
+    private String getStringTime() {
+        return TimeUtil.currentTimeAsString(DATE_FORMAT_PATTERN);
+    }
+
+    private String getElapsedTime(String startTime, String endTime) {
+        return TimeUtil.formatElapsedTimeAsHMS(startTime, endTime, DATE_FORMAT_PATTERN);
     }
 
 }
