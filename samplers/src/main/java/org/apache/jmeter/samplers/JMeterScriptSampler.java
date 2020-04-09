@@ -53,6 +53,8 @@ public class JMeterScriptSampler extends AbstractSampler implements Interruptibl
     public static final String SYNC_TO_PROPS = "JMeterScriptSampler.syncToProps";
     public static final String SYNC_TO_VARS = "JMeterScriptSampler.syncToVars";
 
+    private Thread runningThread;
+
     @Override
     public SampleResult sample(Entry entry) {
         String scriptPath = getScriptPath();
@@ -133,6 +135,7 @@ public class JMeterScriptSampler extends AbstractSampler implements Interruptibl
 
         // 新建一个线程运行
         Thread runningThread = new Thread(engine, "StandardJMeterEngine");
+        this.runningThread = runningThread;
         runningThread.start();
         runningThread.join();
 
@@ -337,6 +340,7 @@ public class JMeterScriptSampler extends AbstractSampler implements Interruptibl
     @Override
     public boolean interrupt() {
         clearScriptProps();
+        runningThread.interrupt();
         return true;
     }
 
