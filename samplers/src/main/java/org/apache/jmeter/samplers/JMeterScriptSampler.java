@@ -42,7 +42,7 @@ import java.util.regex.Pattern;
 /**
  * @author KelvinYe
  */
-public class JMeterScriptSampler extends AbstractSampler implements SampleMonitor, Interruptible {
+public class JMeterScriptSampler extends AbstractSampler implements Interruptible {
 
     private static final Logger logger = LogUtil.getLogger(JMeterScriptSampler.class);
 
@@ -363,15 +363,6 @@ public class JMeterScriptSampler extends AbstractSampler implements SampleMonito
         for (ReportCollector reportCollector : getReportCollectorIter()) {
             hashTree.add(testPlan, reportCollector);
         }
-    }
-
-    @Override
-    public void sampleStarting(Sampler sampler) {
-    }
-
-    @Override
-    public void sampleEnded(Sampler sampler) {
-
     }
 
     /**
