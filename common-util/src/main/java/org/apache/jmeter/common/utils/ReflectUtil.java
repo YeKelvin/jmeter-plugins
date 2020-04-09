@@ -29,7 +29,7 @@ public class ReflectUtil {
     /**
      * 获取属性类型(type)，属性名(name)的map组成的list
      */
-    public static List getFiledsInfo(Object obj) {
+    public static List<Map<String, String>> getFiledsInfo(Object obj) {
         Field[] fields = obj.getClass().getDeclaredFields();
         List<Map<String, String>> list = new ArrayList<>();
         Map<String, String> infoMap;

@@ -61,4 +61,12 @@ public class StringUtil {
         }
         return lineBreaksPattern.matcher(str).replaceAll("");
     }
+
+    public static String joinNewline(String... lines) {
+        StringBuffer sb = new StringBuffer();
+        for (String line : lines) {
+            sb.append(line).append("\n");
+        }
+        return sb.toString();
+    }
 }
