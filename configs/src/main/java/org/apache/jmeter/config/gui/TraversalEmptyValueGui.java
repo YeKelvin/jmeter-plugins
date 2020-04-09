@@ -187,7 +187,7 @@ public class TraversalEmptyValueGui extends AbstractConfigGui {
     }
 
     private Component getUseTemplateLabel() {
-        return GuiUtil.createLabel("是否使用模板：", getUseTemplateComboBox());
+        return GuiUtil.createLabel("使用模板：", getUseTemplateComboBox());
     }
 
     private Component getInterfacePathTextField() {

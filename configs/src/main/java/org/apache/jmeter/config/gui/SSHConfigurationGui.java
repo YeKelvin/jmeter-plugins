@@ -161,7 +161,7 @@ public class SSHConfigurationGui extends AbstractConfigGui {
     }
 
     private Component getSSHLocalForwardingLabel() {
-        return GuiUtil.createLabel("是否启用本地端口转发：", getSSHLocalForwardingComboBox());
+        return GuiUtil.createLabel("启用本地端口转发：", getSSHLocalForwardingComboBox());
     }
 
 

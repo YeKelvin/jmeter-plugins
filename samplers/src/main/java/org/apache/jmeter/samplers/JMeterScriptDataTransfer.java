@@ -1,17 +1,17 @@
 package org.apache.jmeter.samplers;
 
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.jmeter.config.ConfigTestElement;
+import org.apache.jmeter.common.utils.LogUtil;
+import org.apache.jmeter.engine.util.NoThreadClone;
 import org.apache.jmeter.protocol.jdbc.config.DataSourceElement;
 import org.apache.jmeter.protocol.jdbc.sampler.JDBCSampler;
+import org.apache.jmeter.testelement.AbstractTestElement;
 import org.apache.jmeter.testelement.ThreadListener;
 import org.apache.jmeter.threads.JMeterVariables;
 import org.apache.jmeter.util.JMeterUtils;
 import org.apache.jorphan.collections.ListedHashTree;
 import org.apache.jorphan.collections.SearchByClass;
 import org.slf4j.Logger;
-import org.apache.jmeter.common.utils.FileUtil;
-import org.apache.jmeter.common.utils.LogUtil;
 
 import java.util.*;
 
@@ -20,15 +20,13 @@ import java.util.*;
  *
  * @author: KelvinYe
  */
-public class JMeterScriptDataTransfer extends ConfigTestElement implements ThreadListener, SampleListener {
+public class JMeterScriptDataTransfer extends AbstractTestElement
+        implements ThreadListener, SampleListener, NoThreadClone {
 
     private static final Logger logger = LogUtil.getLogger(JMeterScriptDataTransfer.class);
 
     public static final String CALLER_VARIABLES = "JMeterScriptDataTransfer.callerVariables";
     public static final String SCRIPT_RESULT = "JMeterScriptDataTransfer.scriptResult";
-    public static final String PARENT_RESULT = "JMeterScriptDataTransfer.parentResult";
-
-    private static final String LINE_SEP = FileUtil.LINE_SEPARATOR;
 
     private Properties props = JMeterUtils.getJMeterProperties();
 
@@ -38,20 +36,24 @@ public class JMeterScriptDataTransfer extends ConfigTestElement implements Threa
 
     private boolean isSuccess = true;
 
+    private SampleResult parentResult;
+
     private JMeterScriptResultDTO scriptResult;
 
     private SampleResult errorSampleResult;
 
-    public JMeterScriptDataTransfer() {
+    public JMeterScriptDataTransfer(SampleResult parentResult) {
         super();
-        scriptResult = new JMeterScriptResultDTO();
-        scriptData = new HashMap<>();
-        clonedVars = new HashMap<>();
+        this.scriptData = new HashMap<>();
+        this.clonedVars = new HashMap<>();
+        this.scriptResult = new JMeterScriptResultDTO();
+        this.parentResult = parentResult;
     }
 
     @Override
     public void sampleOccurred(SampleEvent e) {
         SampleResult result = e.getResult();
+        parentResult.addSubResult(result, false);
 
         if (!result.isSuccessful()) {
             isSuccess = false;

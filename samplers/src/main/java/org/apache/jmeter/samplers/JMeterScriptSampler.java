@@ -37,6 +37,8 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Properties;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * @author KelvinYe
@@ -51,11 +53,8 @@ public class JMeterScriptSampler extends AbstractSampler implements SampleMonito
 
     public static final String JMETER_SCRIPT_PATH = "JMeterScriptSampler.externalScriptPath";
     public static final String SCRIPT_NAME = "JMeterScriptSampler.scriptName";
-    public static final String PROPS_NAME_SUFFIX = "JMeterScriptSampler.propsNameSuffix";
     public static final String SYNC_TO_PROPS = "JMeterScriptSampler.syncToProps";
     public static final String SYNC_TO_VARS = "JMeterScriptSampler.syncToVars";
-
-    private Collection<ResultCollector> resultCollectors;
 
     @Override
     public SampleResult sample(Entry entry) {
@@ -68,7 +67,7 @@ public class JMeterScriptSampler extends AbstractSampler implements SampleMonito
             result.setSamplerData("执行外部脚本：" + scriptPath);
             result.sampleStart();
             // 运行JMeter脚本
-            JMeterScriptResultDTO jmeterScriptResult = runJMeterScript(scriptPath);
+            JMeterScriptResultDTO jmeterScriptResult = runJMeterScript(scriptPath, result);
             result.setResponseData(getExecuteResult(jmeterScriptResult), StandardCharsets.UTF_8.name());
             result.setSuccessful(true);
             // 判断JMeter脚本的 Sampler是否运行失败
@@ -85,7 +84,7 @@ public class JMeterScriptSampler extends AbstractSampler implements SampleMonito
             result.setSuccessful(false);
             result.setResponseData(ExceptionUtil.getStackTrace(e), StandardCharsets.UTF_8.name());
         } finally {
-            result.sampleEnd();
+            result.setEndTime(result.currentTimeInMillis());
             // 清理外部脚本中设置的 JMeterProps
             clearExternalScriptProps();
         }
@@ -119,10 +118,10 @@ public class JMeterScriptSampler extends AbstractSampler implements SampleMonito
      * @param scriptAbsPath 脚本绝对路径
      * @return 执行结果
      */
-    private JMeterScriptResultDTO runJMeterScript(String scriptAbsPath)
+    private JMeterScriptResultDTO runJMeterScript(String scriptAbsPath, SampleResult result)
             throws IllegalUserActionException, IOException, InterruptedException {
         // 加载脚本
-        HashTree testTree = loadScriptTree(scriptAbsPath);
+        HashTree testTree = loadScriptTree(scriptAbsPath, result);
 
         // 设置全局变量，用于传递给子脚本使用
         props.put(CliOption.CONFIG_NAME, JMeterVarsUtil.getDefault(ENVDataSet.CONFIG_NAME));
@@ -182,7 +181,7 @@ public class JMeterScriptSampler extends AbstractSampler implements SampleMonito
      * @param scriptAbsPath 脚本绝对路径
      * @return 脚本的 HashTree对象
      */
-    private HashTree loadScriptTree(String scriptAbsPath) throws IOException, IllegalUserActionException {
+    private HashTree loadScriptTree(String scriptAbsPath, SampleResult result) throws IOException, IllegalUserActionException {
         // 加载脚本
         File file = new File(scriptAbsPath);
         HashTree tree = SaveService.loadTree(file);
@@ -206,7 +205,7 @@ public class JMeterScriptSampler extends AbstractSampler implements SampleMonito
         removeUnwantedComponents(clonedTree);
 
         // 向脚本中添加组件
-        addComponents(clonedTree);
+        addComponents(clonedTree, result);
 
         return clonedTree;
     }
@@ -325,7 +324,7 @@ public class JMeterScriptSampler extends AbstractSampler implements SampleMonito
 
         for (AbstractThreadGroup threadGroup : searcher.getSearchResults()) {
             // 将子脚本的线程组名称更改为调用者线程组的名称
-            threadGroup.setName(JMeterContextService.getContext().getThread().getThreadName());
+            threadGroup.setName(getRawThreadName());
 
             if (!threadGroup.getOnErrorStartNextLoop()) {
                 logger.info("JMeter脚本中的线程组仅支持错误时启动下一进程循环，已强制修改为错误时启动下一进程循环");
@@ -375,18 +374,6 @@ public class JMeterScriptSampler extends AbstractSampler implements SampleMonito
     }
 
     /**
-     * 获取当前线程下的查看结果树组件
-     */
-    private Collection<ResultCollector> getResultCollectorIter() {
-        ListedHashTree tree = JMeterContextService.getContext().getThread().getTestTree();
-        SearchByClass<ResultCollector> searcher = new SearchByClass<>(ResultCollector.class);
-        tree.traverse(searcher);
-        Collection<ResultCollector> resultCollectors = searcher.getSearchResults();
-        this.resultCollectors = resultCollectors;
-        return resultCollectors;
-    }
-
-    /**
      * 获取当前线程下的HTML报告组件
      */
     private Collection<ReportCollector> getReportCollectorIter() {
@@ -399,16 +386,11 @@ public class JMeterScriptSampler extends AbstractSampler implements SampleMonito
     /**
      * 添加各种必须的组件
      */
-    private void addComponents(HashTree hashTree) {
+    private void addComponents(HashTree hashTree, SampleResult result) {
         Object testPlan = hashTree.getArray()[0];
 
         // 添加 JMeter脚本数据传递组件
-        hashTree.add(testPlan, new JMeterScriptDataTransfer());
-
-        // 添加调用者的 查看结果树组件
-        for (ResultCollector resultCollector : getResultCollectorIter()) {
-            hashTree.add(testPlan, resultCollector);
-        }
+        hashTree.add(testPlan, new JMeterScriptDataTransfer(result));
 
         // 添加调用者的 HTML报告组件
         for (ReportCollector reportCollector : getReportCollectorIter()) {
@@ -423,5 +405,14 @@ public class JMeterScriptSampler extends AbstractSampler implements SampleMonito
     @Override
     public void sampleEnded(Sampler sampler) {
 
+    }
+
+    private String getRawThreadName() {
+        String threadName = JMeterContextService.getContext().getThread().getThreadName();
+        String pattern = "[ ][\\d]+[-][\\d]+$";
+        Pattern r = Pattern.compile(pattern);
+        Matcher m = r.matcher(threadName);
+        threadName = m.replaceAll("");
+        return threadName;
     }
 }

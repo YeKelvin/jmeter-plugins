@@ -226,7 +226,7 @@ public class DubboTelnetSamplerGui extends AbstractSamplerGui implements ActionL
     }
 
     private Component getThroughSSHLabel() {
-        return GuiUtil.createLabel("是否使用ssh：", getThroughSSHComboBox());
+        return GuiUtil.createLabel("使用ssh：", getThroughSSHComboBox());
     }
 
     private Component getParamsTextArea() {
@@ -254,7 +254,7 @@ public class DubboTelnetSamplerGui extends AbstractSamplerGui implements ActionL
     }
 
     private Component getUseTemplateLabel() {
-        return GuiUtil.createLabel("是否使用模板：", getUseTemplateComboBox());
+        return GuiUtil.createLabel("使用模板：", getUseTemplateComboBox());
     }
 
     private Component getInterfacePathTextField() {

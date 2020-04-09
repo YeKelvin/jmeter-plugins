@@ -135,7 +135,7 @@ public class JMeterScriptSamplerGui extends AbstractSamplerGui {
 
     private Component getSyncToPropsLabel() {
         return GuiUtil.createLabel(
-                "同步增量的vars至props：", syncToProps);
+                "增量同步vars至props：", syncToProps);
     }
 
     private Component getSyncToVarsComboBox() {
@@ -149,15 +149,15 @@ public class JMeterScriptSamplerGui extends AbstractSamplerGui {
 
     private Component getSyncToVarsLabel() {
         return GuiUtil.createLabel(
-                "同步vars：", syncToVars);
+                "同步vars至子脚本：", syncToVars);
     }
 
     private Component getNotePanel() {
         String note = "说明：\n" +
                 "   1. 【脚本目录】：请使用环境变量\n" +
                 "   2. 【脚本名称】：需要包含.jmx\n" +
-                "   3. 【同步增量的vars至props】：将外部脚本中新增的 var放入 prop中\n" +
-                "   4. 【同步vars】：将调用者的 vars带入外部脚本中（不会覆盖外部脚本中已存在的key），执行结束时将外部脚本新增的 var带回给调用者的 vars中\n";
+                "   3. 【增量同步vars至props】：将外部脚本中新增的 var放入 prop中\n" +
+                "   4. 【同步vars至子脚本】：将调用者的 vars带入外部脚本中（不会覆盖外部脚本中已存在的key），执行结束时将外部脚本新增的 var带回给调用者的 vars中\n";
         return GuiUtil.createNotePanel(note, this.getBackground());
     }
 
