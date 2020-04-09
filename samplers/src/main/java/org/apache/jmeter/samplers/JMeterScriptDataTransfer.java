@@ -13,7 +13,12 @@ import org.apache.jorphan.collections.ListedHashTree;
 import org.apache.jorphan.collections.SearchByClass;
 import org.slf4j.Logger;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Properties;
+
 
 /**
  * Description:
@@ -34,13 +39,9 @@ public class JMeterScriptDataTransfer extends AbstractTestElement
 
     private Map<String, Object> scriptData;
 
-    private boolean isSuccess = true;
-
     private SampleResult parentResult;
 
     private JMeterScriptResultDTO scriptResult;
-
-    private SampleResult errorSampleResult;
 
     public JMeterScriptDataTransfer(SampleResult parentResult) {
         super();
@@ -56,17 +57,15 @@ public class JMeterScriptDataTransfer extends AbstractTestElement
         parentResult.addSubResult(result, false);
 
         if (!result.isSuccessful()) {
-            isSuccess = false;
-            errorSampleResult = result;
+            parentResult.setSuccessful(false);
         }
 
-        // 获取 Sampler运行前后的 JMeterVars的差集
-        Collection<Map.Entry<String, Object>> subtract = CollectionUtils.subtract(
-                getThreadContext().getVariables().entrySet(), clonedVars.entrySet());
+        // 获取 Sampler运行前后局部变量的差集
+        Collection<Map.Entry<String, Object>> differenceSet = getThreadVariablesDifferenceSet();
 
-        if (!subtract.isEmpty()) {
-            // 把差集结果放入 map对象中
-            subtract.forEach(entry -> scriptData.put(entry.getKey(), entry.getValue()));
+        if (!differenceSet.isEmpty()) {
+            // 存储差集
+            differenceSet.forEach(entry -> scriptData.put(entry.getKey(), entry.getValue()));
             // 删除不必要的key
             removeUnwantedKey(scriptData);
         }
@@ -84,15 +83,16 @@ public class JMeterScriptDataTransfer extends AbstractTestElement
     @Override
     public void threadStarted() {
         if (props.containsKey(CALLER_VARIABLES)) {
-            // 把调用者线程的 vars复制一份到当前线程的 vars中，同名key不覆盖
+            // 把调用者的局部变量复制到当前线程的局部变量中，同名 key不覆盖
             JMeterVariables callerVars = (JMeterVariables) props.get(CALLER_VARIABLES);
             JMeterVariables currentVars = getThreadContext().getVariables();
 
-            // 获取 callerVars 和 currentVars的差集
-            Collection<Map.Entry<String, Object>> subtract = CollectionUtils.subtract(callerVars.entrySet(), currentVars.entrySet());
+            // 获取调用者的局部变量和当前线程的局部变量的差集
+            Collection<Map.Entry<String, Object>> differenceSet =
+                    CollectionUtils.subtract(callerVars.entrySet(), currentVars.entrySet());
 
-            if (!subtract.isEmpty()) {
-                subtract.forEach(e -> {
+            if (!differenceSet.isEmpty()) {
+                differenceSet.forEach(e -> {
                     if (e.getValue() instanceof String) {
                         currentVars.put(e.getKey(), (String) e.getValue());
                     } else {
@@ -102,17 +102,18 @@ public class JMeterScriptDataTransfer extends AbstractTestElement
             }
         }
 
-        // 保存 JMeterVars副本
+        // 克隆当前线程的局部变量作为副本
         getThreadContext().getVariables().entrySet().forEach(e -> clonedVars.put(e.getKey(), e.getValue()));
     }
 
     @Override
     public void threadFinished() {
-        // 通过全局变量返回结果给调用者
-        scriptResult.setSuccess(isSuccess);
         scriptResult.setExternalData(scriptData);
-        scriptResult.setErrorSampleResult(errorSampleResult);
         props.put(SCRIPT_RESULT, scriptResult);
+    }
+
+    private Collection<Map.Entry<String, Object>> getThreadVariablesDifferenceSet() {
+        return CollectionUtils.subtract(getThreadContext().getVariables().entrySet(), clonedVars.entrySet());
     }
 
     /**

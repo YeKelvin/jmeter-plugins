@@ -21,7 +21,6 @@ import org.apache.jorphan.collections.HashTree;
 import org.apache.jorphan.collections.ListedHashTree;
 import org.apache.jorphan.collections.SearchByClass;
 import org.slf4j.Logger;
-import org.apache.jmeter.common.utils.FileUtil;
 import org.apache.jmeter.common.utils.JMeterVarsUtil;
 import org.apache.jmeter.common.utils.PathUtil;
 import org.apache.jmeter.common.utils.ExceptionUtil;
@@ -47,11 +46,9 @@ public class JMeterScriptSampler extends AbstractSampler implements SampleMonito
 
     private static final Logger logger = LogUtil.getLogger(JMeterScriptSampler.class);
 
-    private static final String LINE_SEP = FileUtil.LINE_SEPARATOR;
-
     private Properties props = JMeterUtils.getJMeterProperties();
 
-    public static final String JMETER_SCRIPT_PATH = "JMeterScriptSampler.externalScriptPath";
+    public static final String SCRIPT_PATH = "JMeterScriptSampler.scriptPath";
     public static final String SCRIPT_NAME = "JMeterScriptSampler.scriptName";
     public static final String SYNC_TO_PROPS = "JMeterScriptSampler.syncToProps";
     public static final String SYNC_TO_VARS = "JMeterScriptSampler.syncToVars";
@@ -64,20 +61,14 @@ public class JMeterScriptSampler extends AbstractSampler implements SampleMonito
         result.setSampleLabel(getName());
         result.setEncodingAndType(StandardCharsets.UTF_8.name());
         try {
-            result.setSamplerData("执行外部脚本：" + scriptPath);
+            result.setSamplerData("脚本路径: " + scriptPath);
             result.sampleStart();
+            result.setSuccessful(true);
             // 运行JMeter脚本
             JMeterScriptResultDTO jmeterScriptResult = runJMeterScript(scriptPath, result);
             result.setResponseData(getExecuteResult(jmeterScriptResult), StandardCharsets.UTF_8.name());
-            result.setSuccessful(true);
-            // 判断JMeter脚本的 Sampler是否运行失败
-            SampleResult errorResult = jmeterScriptResult.getErrorSampleResult();
-            if (errorResult != null) {
-                setErrorSampleResult(result, errorResult);
-                result.setSuccessful(false);
-            }
         } catch (Exception e) {
-            // 异常后，判断是否已开始统计sample时间，没有则开始统计
+            // 异常后，判断是否已记录开始时间，没有则记录
             if (!result.isStampedAtStart()) {
                 result.sampleStart();
             }
@@ -86,13 +77,9 @@ public class JMeterScriptSampler extends AbstractSampler implements SampleMonito
         } finally {
             result.setEndTime(result.currentTimeInMillis());
             // 清理外部脚本中设置的 JMeterProps
-            clearExternalScriptProps();
+            clearScriptProps();
         }
         return result;
-    }
-
-    private String getExternalScriptPath() {
-        return getPropertyAsString(JMETER_SCRIPT_PATH);
     }
 
     private String getScriptName() {
@@ -108,7 +95,8 @@ public class JMeterScriptSampler extends AbstractSampler implements SampleMonito
     }
 
     private String getScriptPath() {
-        String path = PathUtil.pathJoin(getExternalScriptPath(), getScriptName());
+        String scriptPath = getPropertyAsString(SCRIPT_PATH);
+        String path = PathUtil.pathJoin(scriptPath, getScriptName());
         return path.replace("\\", "/");
     }
 
@@ -120,18 +108,18 @@ public class JMeterScriptSampler extends AbstractSampler implements SampleMonito
      */
     private JMeterScriptResultDTO runJMeterScript(String scriptAbsPath, SampleResult result)
             throws IllegalUserActionException, IOException, InterruptedException {
-        // 加载脚本
+        // 加载子脚本
         HashTree testTree = loadScriptTree(scriptAbsPath, result);
 
         // 设置全局变量，用于传递给子脚本使用
         props.put(CliOption.CONFIG_NAME, JMeterVarsUtil.getDefault(ENVDataSet.CONFIG_NAME));
 
-        // 判断是否需要把当前线程的 vars同步至外部脚本
+        // 判断是否需要把当前线程的局部变量同步至子脚本
         if (isSyncToVars()) {
             props.put(JMeterScriptDataTransfer.CALLER_VARIABLES, getThreadContext().getVariables());
         }
 
-        // 开始执行外部脚本
+        // 开始执行子脚本
         StandardJMeterEngine engine = new StandardJMeterEngine();
         engine.setProperties(props);
         engine.configure(testTree);
@@ -153,11 +141,11 @@ public class JMeterScriptSampler extends AbstractSampler implements SampleMonito
             setNonGuiProperty(true);
         }
 
-        // 提取外部脚本执行结果
+        // 提取子脚本的执行结果
         JMeterScriptResultDTO scriptResult = (JMeterScriptResultDTO) props.get(JMeterScriptDataTransfer.SCRIPT_RESULT);
         Map<String, Object> externalData = scriptResult.getExternalData();
 
-        // 把外部脚本中的增量 vars同步至当前线程的 vars中
+        // 把子脚本中的增量局部变量同步至当前线程的局部变量中
         if (isSyncToVars()) {
             externalData.forEach((key, value) -> {
                 if (value instanceof String) {
@@ -168,8 +156,7 @@ public class JMeterScriptSampler extends AbstractSampler implements SampleMonito
             });
         }
 
-        // 把外部脚本中新增的 JMeterVars变量加入 JMeterProps中
-        // 如果设置了 JMeterProps属性名称后缀，则把外部脚本中获取的变量名都加上后缀
+        // 把子脚本中新增的局部变量同步至全局变量中
         setProps(externalData);
 
         return scriptResult;
@@ -192,22 +179,22 @@ public class JMeterScriptSampler extends AbstractSampler implements SampleMonito
         treeModel.addSubTree(tree, root);
 
         // 删除已禁用的组件
-        HashTree clonedTree = JMeter.convertSubTree(tree, true);
+        HashTree testTree = JMeter.convertSubTree(tree, true);
 
         // 校验脚本中是否仅存在一个线程组
         // 设置该线程组配置，修改如下
         // 错误动作=ON_SAMPLE_ERROR_START_NEXT_LOOP
         // 线程数=1
         // 循环次数=1
-        setThreadGroupParams(clonedTree);
+        setThreadGroupParams(testTree);
 
         // 删除不必要的组件
-        removeUnwantedComponents(clonedTree);
+        removeUnwantedComponents(testTree);
 
-        // 向脚本中添加组件
-        addComponents(clonedTree, result);
+        // 添加必须的组件
+        addComponents(testTree, result);
 
-        return clonedTree;
+        return testTree;
     }
 
     /**
@@ -230,26 +217,6 @@ public class JMeterScriptSampler extends AbstractSampler implements SampleMonito
         return json.replace("\"[", "[")
                 .replace("]\"", "]")
                 .replace("\\\"", "\"");
-    }
-
-    /**
-     * 设置失败 Sample的数据
-     *
-     * @param result SampleResult对象
-     */
-    private void setErrorSampleResult(SampleResult result, SampleResult errorResult) {
-        result.setRequestHeaders(errorResult.getRequestHeaders());
-        result.setResponseHeaders(errorResult.getRequestHeaders());
-        result.setSamplerData(result.getSamplerData() + LINE_SEP + LINE_SEP +
-                "外部脚本中，以下 Sample执行失败：" + LINE_SEP +
-                "【Error Sample Name】: " + errorResult.getSampleLabel() + LINE_SEP +
-                "【Error Request Data】:" + LINE_SEP +
-                errorResult.getSamplerData());
-        result.setResponseData(result.getResponseDataAsString() + LINE_SEP + LINE_SEP +
-                        "【Error Sample Name】: " + errorResult.getSampleLabel() + LINE_SEP +
-                        "【Error Response Data】:" + LINE_SEP +
-                        errorResult.getResponseDataAsString(),
-                StandardCharsets.UTF_8.name());
     }
 
     /**
@@ -345,7 +312,7 @@ public class JMeterScriptSampler extends AbstractSampler implements SampleMonito
     /**
      * 清空外部脚本的执行结果
      */
-    private void clearExternalScriptProps() {
+    private void clearScriptProps() {
         props.remove(CliOption.CONFIG_NAME);
         props.remove(JMeterScriptDataTransfer.SCRIPT_RESULT);
         props.remove(JMeterScriptDataTransfer.CALLER_VARIABLES);
@@ -369,7 +336,7 @@ public class JMeterScriptSampler extends AbstractSampler implements SampleMonito
 
     @Override
     public boolean interrupt() {
-        clearExternalScriptProps();
+        clearScriptProps();
         return true;
     }
 
@@ -407,6 +374,9 @@ public class JMeterScriptSampler extends AbstractSampler implements SampleMonito
 
     }
 
+    /**
+     * 获取线程名称（删除线程名称后 JMeter自动添加的序号）
+     */
     private String getRawThreadName() {
         String threadName = JMeterContextService.getContext().getThread().getThreadName();
         String pattern = "[ ][\\d]+[-][\\d]+$";

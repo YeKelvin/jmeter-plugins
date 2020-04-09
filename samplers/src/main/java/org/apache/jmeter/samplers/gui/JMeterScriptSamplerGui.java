@@ -14,7 +14,7 @@ import java.awt.*;
  */
 public class JMeterScriptSamplerGui extends AbstractSamplerGui {
 
-    private JTextField jmeterScriptPathField;
+    private JTextField scriptPathField;
     private JTextField scriptNameField;
     private JComboBox<String> syncToProps;
     private JComboBox<String> syncToVars;
@@ -31,8 +31,8 @@ public class JMeterScriptSamplerGui extends AbstractSamplerGui {
         JPanel bodyPanel = new JPanel(new GridBagLayout());
         bodyPanel.setBorder(GuiUtil.createTitledBorder("配置外部脚本信息"));
 
-        bodyPanel.add(getJMeterScriptPathLabel(), GuiUtil.GridBag.labelConstraints);
-        bodyPanel.add(getJMeterScriptPathTextField(), GuiUtil.GridBag.editorConstraints);
+        bodyPanel.add(getScriptPathLabel(), GuiUtil.GridBag.labelConstraints);
+        bodyPanel.add(getScriptPathTextField(), GuiUtil.GridBag.editorConstraints);
 
         bodyPanel.add(getScriptNameLabel(), GuiUtil.GridBag.labelConstraints);
         bodyPanel.add(getScriptNameTextField(), GuiUtil.GridBag.editorConstraints);
@@ -75,7 +75,7 @@ public class JMeterScriptSamplerGui extends AbstractSamplerGui {
     @Override
     public void modifyTestElement(TestElement el) {
         super.configureTestElement(el);
-        el.setProperty(JMeterScriptSampler.JMETER_SCRIPT_PATH, jmeterScriptPathField.getText());
+        el.setProperty(JMeterScriptSampler.SCRIPT_PATH, scriptPathField.getText());
         el.setProperty(JMeterScriptSampler.SCRIPT_NAME, scriptNameField.getText());
         el.setProperty(JMeterScriptSampler.SYNC_TO_PROPS, (String) syncToProps.getSelectedItem());
         el.setProperty(JMeterScriptSampler.SYNC_TO_VARS, (String) syncToVars.getSelectedItem());
@@ -87,7 +87,7 @@ public class JMeterScriptSamplerGui extends AbstractSamplerGui {
     @Override
     public void configure(TestElement el) {
         super.configure(el);
-        jmeterScriptPathField.setText(el.getPropertyAsString(JMeterScriptSampler.JMETER_SCRIPT_PATH));
+        scriptPathField.setText(el.getPropertyAsString(JMeterScriptSampler.SCRIPT_PATH));
         scriptNameField.setText(el.getPropertyAsString(JMeterScriptSampler.SCRIPT_NAME));
         syncToProps.setSelectedItem(el.getPropertyAsString(JMeterScriptSampler.SYNC_TO_PROPS));
         syncToVars.setSelectedItem(el.getPropertyAsString(JMeterScriptSampler.SYNC_TO_VARS));
@@ -96,21 +96,21 @@ public class JMeterScriptSamplerGui extends AbstractSamplerGui {
     @Override
     public void clearGui() {
         super.clearGui();
-        jmeterScriptPathField.setText("");
+        scriptPathField.setText("");
         scriptNameField.setText("");
         syncToProps.setSelectedItem("true");
         syncToVars.setSelectedItem("false");
     }
 
-    private Component getJMeterScriptPathTextField() {
-        if (jmeterScriptPathField == null) {
-            jmeterScriptPathField = GuiUtil.createTextField(JMeterScriptSampler.JMETER_SCRIPT_PATH);
+    private Component getScriptPathTextField() {
+        if (scriptPathField == null) {
+            scriptPathField = GuiUtil.createTextField(JMeterScriptSampler.SCRIPT_PATH);
         }
-        return jmeterScriptPathField;
+        return scriptPathField;
     }
 
-    private Component getJMeterScriptPathLabel() {
-        return GuiUtil.createLabel("脚本目录：", getJMeterScriptPathTextField());
+    private Component getScriptPathLabel() {
+        return GuiUtil.createLabel("脚本目录：", getScriptPathTextField());
     }
 
     private Component getScriptNameTextField() {
@@ -156,8 +156,8 @@ public class JMeterScriptSamplerGui extends AbstractSamplerGui {
         String note = "说明：\n" +
                 "   1. 【脚本目录】：请使用环境变量\n" +
                 "   2. 【脚本名称】：需要包含.jmx\n" +
-                "   3. 【增量同步vars至props】：将外部脚本中新增的 var放入 prop中\n" +
-                "   4. 【同步vars至子脚本】：将调用者的 vars带入外部脚本中（不会覆盖外部脚本中已存在的key），执行结束时将外部脚本新增的 var带回给调用者的 vars中\n";
+                "   3. 【增量同步vars至props】：将子脚本中新增的局部变量同步至全局变量中\n" +
+                "   4. 【同步vars至子脚本】：将调用者的局部变量同步至子脚本中（不会覆盖外部脚本中已存在的key），执行结束时将子脚本新增的局部变量返回给调用者\n";
         return GuiUtil.createNotePanel(note, this.getBackground());
     }
 
