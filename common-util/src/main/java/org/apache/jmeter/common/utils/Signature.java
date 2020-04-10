@@ -1,26 +1,27 @@
 package org.apache.jmeter.common.utils;
 
-import com.google.gson.Gson;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
-import org.slf4j.Logger;
 import org.apache.jmeter.common.utils.json.JsonUtil;
+import org.slf4j.Logger;
 
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
 /**
- * 报文加签工具类，Gson
- * json格式报文按照keyName首字母排序后用MD5加密。
+ * 报文加签工具类
+ * Json报文按照 key首字母排序后用MD5加密  todo 优化实现
  *
  * @author Kelvin.Ye
  */
 public class Signature {
-
     private static final Logger logger = LogUtil.getLogger(Signature.class);
-
-    private static Gson gson = JsonUtil.getGsonInstance();
 
     /**
      * 报文加签
@@ -34,8 +35,8 @@ public class Signature {
             return "";
         }
 
-        // json排序
-        Map<Object, Object> resultMap = sortMapByKey(gson.fromJson(json, JsonUtil.mapType));
+        // 排序Json
+        Map<Object, Object> resultMap = sortMapByKey(JsonUtil.fromJson(json, JsonUtil.mapType));
         StringBuffer orderedSB = new StringBuffer();
         if (resultMap != null) {
             resultMap.forEach((key, value) -> traverse(orderedSB, key, value));
@@ -56,11 +57,7 @@ public class Signature {
     }
 
     /**
-     * 报文排序后拼接各字段
-     *
-     * @param sb    StringBuffer对象
-     * @param key   key对象
-     * @param value value对象
+     * 递归遍历报文并排序，排序完成后拼接字段
      */
     private static void traverse(StringBuffer sb, Object key, Object value) {
         if (value instanceof Map) {
@@ -73,10 +70,7 @@ public class Signature {
     }
 
     /**
-     * 排序Map对象后拼接各字段
-     *
-     * @param map Map对象
-     * @return str
+     * 排序 Map并拼接字段
      */
     private static String traverseMap(Map<Object, Object> map) {
         StringBuffer sb = new StringBuffer();
@@ -93,10 +87,7 @@ public class Signature {
     }
 
     /**
-     * 排序List对象后拼接各字段
-     *
-     * @param list List对象
-     * @return str
+     * 排序 List并拼接字段
      */
     private static String traverseList(List<Object> list) {
         StringBuffer sb = new StringBuffer();
@@ -118,7 +109,7 @@ public class Signature {
     }
 
     /**
-     * Map 根据keyName 排序
+     * 根据 key排序 Map
      */
     private static Map<Object, Object> sortMapByKey(Map<Object, Object> map) {
         if (map == null || map.isEmpty()) {
@@ -138,7 +129,7 @@ public class Signature {
         try {
             MessageDigest md5 = MessageDigest.getInstance("MD5");
             byte[] data;
-            data= md5.digest(str.getBytes(StandardCharsets.UTF_8));
+            data = md5.digest(str.getBytes(StandardCharsets.UTF_8));
             strDigest = bytesToHexString(data).toLowerCase();
         } catch (Exception e) {
             logger.error(ExceptionUtil.getStackTrace(e));
