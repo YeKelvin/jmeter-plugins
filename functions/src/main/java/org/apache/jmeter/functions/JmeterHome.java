@@ -72,7 +72,7 @@ public class JmeterHome extends AbstractFunction {
             if (CollectionUtils.isNotEmpty(parameters)) {
                 for (CompoundVariable parameter : parameters) {
                     String childPath = parameter.execute().trim();
-                    path = PathUtil.pathJoin(path, childPath);
+                    path = PathUtil.join(path, childPath);
                 }
             }
             return path.replace("\\", "/");

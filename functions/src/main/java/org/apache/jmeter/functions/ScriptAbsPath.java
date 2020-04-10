@@ -72,7 +72,7 @@ public class ScriptAbsPath extends AbstractFunction {
             if (CollectionUtils.isNotEmpty(parameters)) {
                 for (CompoundVariable parameter : parameters) {
                     String childPath = parameter.execute().trim();
-                    scriptAbsPath = PathUtil.pathJoin(scriptAbsPath, childPath);
+                    scriptAbsPath = PathUtil.join(scriptAbsPath, childPath);
                 }
             }
             return scriptAbsPath.replace("\\", "/");

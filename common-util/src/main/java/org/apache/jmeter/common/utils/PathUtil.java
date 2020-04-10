@@ -12,28 +12,29 @@ public class PathUtil {
     /**
      * 目录路径拼接
      *
-     * @param parentPath 父路径
-     * @param childPath  子路径
+     * @param firstPath 父路径
+     * @param secondPath  子路径
      * @return 拼接路径
      */
-    public static String pathJoin(String parentPath, String childPath) {
-        if (parentPath.endsWith(WIN_SEP) || parentPath.endsWith(UNIX_SEP)) {
-            parentPath = parentPath.substring(0, parentPath.length() - 1);
+    public static String join(String firstPath, String secondPath) {
+        if (firstPath.endsWith(WIN_SEP) || firstPath.endsWith(UNIX_SEP)) {
+            firstPath = firstPath.substring(0, firstPath.length() - 1);
         }
-        if (childPath.startsWith(WIN_SEP) || childPath.startsWith(UNIX_SEP)) {
-            childPath = childPath.substring(1);
+        if (secondPath.startsWith(WIN_SEP) || secondPath.startsWith(UNIX_SEP)) {
+            secondPath = secondPath.substring(1);
         }
-        if (childPath.endsWith(WIN_SEP) || childPath.endsWith(UNIX_SEP)) {
-            childPath = childPath.substring(0, childPath.length() - 1);
+        if (secondPath.endsWith(WIN_SEP) || secondPath.endsWith(UNIX_SEP)) {
+            secondPath = secondPath.substring(0, secondPath.length() - 1);
         }
-        return parentPath + File.separator + childPath;
+        return firstPath + File.separator + secondPath;
     }
 
-    // todo：有bug
     public static String join(String path, String... names) {
+        StringBuffer sb = new StringBuffer(path);
         for (String name : names) {
-            path += File.separator + name;
+            sb.append(File.separator).append(name);
         }
+        path = sb.toString();
         return separatorPattern.matcher(path).replaceAll(File.separator);
     }
 }

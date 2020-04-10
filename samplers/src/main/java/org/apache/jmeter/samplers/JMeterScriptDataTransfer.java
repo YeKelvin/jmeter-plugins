@@ -37,11 +37,11 @@ public class JMeterScriptDataTransfer extends AbstractTestElement
 
     private HashMap<String, Object> clonedVars;
 
-    private Map<String, Object> scriptData;
+    private Map<String, Object> scriptData;  // todo incrementalVariables
 
     private SampleResult parentResult;
 
-    private JMeterScriptResultDTO scriptResult;
+    private JMeterScriptResultDTO scriptResult;  // todo 去掉
 
     public JMeterScriptDataTransfer(SampleResult parentResult) {
         super();

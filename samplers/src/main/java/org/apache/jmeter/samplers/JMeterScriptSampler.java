@@ -68,6 +68,7 @@ public class JMeterScriptSampler extends AbstractSampler implements Interruptibl
             result.setSuccessful(true);
             // 运行JMeter脚本
             JMeterScriptResultDTO jmeterScriptResult = runJMeterScript(scriptPath, result);
+            // todo 结果展示新增变量的列表（字符串），不再以json格式展示
             result.setResponseData(getExecuteResult(jmeterScriptResult), StandardCharsets.UTF_8.name());
         } catch (Exception e) {
             // 异常后，判断是否已记录开始时间，没有则记录
@@ -98,7 +99,7 @@ public class JMeterScriptSampler extends AbstractSampler implements Interruptibl
 
     private String getScriptPath() {
         String scriptPath = getPropertyAsString(SCRIPT_PATH);
-        String path = PathUtil.pathJoin(scriptPath, getScriptName());
+        String path = PathUtil.join(scriptPath, getScriptName());
         return path.replace("\\", "/");
     }
 
@@ -144,7 +145,7 @@ public class JMeterScriptSampler extends AbstractSampler implements Interruptibl
             setNonGuiProperty(true);
         }
 
-        // 提取子脚本的执行结果
+        // 提取子脚本的执行结果 todo 去掉JMeterScriptResultDTO
         JMeterScriptResultDTO scriptResult = (JMeterScriptResultDTO) props.get(JMeterScriptDataTransfer.SCRIPT_RESULT);
         Map<String, Object> externalData = scriptResult.getExternalData();
 
