@@ -21,10 +21,10 @@
             <directory>configs/target</directory>
             <outputDirectory>/</outputDirectory>
         </fileSet>
-        <fileSet>
-            <directory>dubbo-zookeeper/target</directory>
-            <outputDirectory>/</outputDirectory>
-        </fileSet>
+<!--        <fileSet>-->
+<!--            <directory>dubbo-zookeeper/target</directory>-->
+<!--            <outputDirectory>/</outputDirectory>-->
+<!--        </fileSet>-->
         <fileSet>
             <directory>functions/target</directory>
             <outputDirectory>/</outputDirectory>

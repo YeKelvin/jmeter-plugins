@@ -31,10 +31,8 @@ import org.slf4j.Logger;
 
 import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.Field;
 import java.nio.charset.StandardCharsets;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Properties;
@@ -112,7 +110,7 @@ public class JMeterScriptSampler extends AbstractSampler implements Interruptibl
      * @return 执行结果
      */
     private String runJMeterScript(String scriptAbsPath, SampleResult result)
-            throws IllegalUserActionException, IOException, InterruptedException, IllegalAccessException {
+            throws IllegalUserActionException, IOException, InterruptedException {
         // 加载子脚本
         HashTree testTree = loadScriptTree(scriptAbsPath, result);
 
@@ -133,7 +131,7 @@ public class JMeterScriptSampler extends AbstractSampler implements Interruptibl
         boolean isNonGuiMode = false;
         if (JMeter.isNonGUI()) {
             isNonGuiMode = true;
-            setNonGuiProperty(false);
+            setNonGui(false);
         }
 
         // 新建一个线程运行
@@ -144,11 +142,12 @@ public class JMeterScriptSampler extends AbstractSampler implements Interruptibl
 
         // 判断是否命令行运行，如果是命令行模式，则把 JMETER_NON_GUI恢复为true
         if (isNonGuiMode) {
-            setNonGuiProperty(true);
+            setNonGui(true);
         }
 
-        // 提取子脚本的执行结果 todo 去掉JMeterScriptResultDTO
-        Map<String, Object> incrementalVariables = objectToMap(props.get(JMeterScriptDataTransfer.INCREMENTAL_VARIABLES));
+        // 提取子脚本的执行结果
+        @SuppressWarnings("unchecked")
+        Map<String, Object> incrementalVariables = (Map<String, Object>) props.get(JMeterScriptDataTransfer.INCREMENTAL_VARIABLES);
 
         // 把子脚本中的增量局部变量同步至当前线程的局部变量中
         if (isSyncToVars()) {
@@ -315,19 +314,22 @@ public class JMeterScriptSampler extends AbstractSampler implements Interruptibl
         props.remove(JMeterScriptDataTransfer.CALLER_VARIABLES);
     }
 
-    private void setProps(Map<String, Object> externalData) {
+    private void setProps(Map<String, Object> incrementalVariables) {
         if (!isSyncToProps()) {
             return;
         }
 
-        if (MapUtils.isEmpty(externalData)) {
+        if (MapUtils.isEmpty(incrementalVariables)) {
             return;
         }
 
-        externalData.forEach((key, value) -> props.put(key, value.toString()));
+        incrementalVariables.forEach((key, value) -> {
+            System.out.println("key=" + key + ", value=" + value);
+            props.put(key, value);
+        });
     }
 
-    private void setNonGuiProperty(boolean isNonGui) {
+    private void setNonGui(boolean isNonGui) {
         System.setProperty(JMeter.JMETER_NON_GUI, String.valueOf(isNonGui));
     }
 
@@ -373,21 +375,5 @@ public class JMeterScriptSampler extends AbstractSampler implements Interruptibl
         Matcher m = r.matcher(threadName);
         threadName = m.replaceAll("");
         return threadName;
-    }
-
-    private Map<String, Object> objectToMap(Object obj) throws IllegalAccessException {
-        if (obj == null) {
-            return null;
-        }
-
-        Map<String, Object> map = new HashMap<>();
-
-        Field[] declaredFields = obj.getClass().getDeclaredFields();
-        for (Field field : declaredFields) {
-            field.setAccessible(true);
-            map.put(field.getName(), field.get(obj));
-        }
-
-        return map;
     }
 }

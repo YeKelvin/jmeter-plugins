@@ -34,6 +34,7 @@ public class ReportCollector extends AbstractTestElement
 
     private int startCount;
     private String scriptName;
+    private String reportName;
 
     public ReportCollector() {
         super();
@@ -56,6 +57,7 @@ public class ReportCollector extends AbstractTestElement
     public void testStarted(String host) {
         if (startCount == 0) {
             scriptName = getScriptName();
+            reportName = getReportName();
             TestSuiteData testSuiteData = new TestSuiteData();
             testSuiteData.setTitle(scriptName);
             testSuiteData.setStartTime(getStringTime());
@@ -182,9 +184,7 @@ public class ReportCollector extends AbstractTestElement
      * 获取测试报告路径
      */
     private String getReportPath() {
-        return JMeterUtils.getJMeterHome() + File.separator +
-                "htmlreport" + File.separator +
-                appendHTMLSuffix(getReportName());
+        return JMeterUtils.getJMeterHome() + File.separator + "htmlreport" + File.separator + appendHTMLSuffix(reportName);
     }
 
     /**
