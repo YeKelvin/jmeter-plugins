@@ -7,16 +7,14 @@ import org.slf4j.Logger;
 
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
-import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
 /**
  * 报文加签工具类
- * Json报文按照 key首字母排序后用MD5加密  todo 优化实现
+ * Json报文按照 key首字母排序后用MD5加密
  *
  * @author Kelvin.Ye
  */
@@ -59,11 +57,12 @@ public class Signature {
     /**
      * 递归遍历报文并排序，排序完成后拼接字段
      */
+    @SuppressWarnings("unchecked")
     private static void traverse(StringBuffer sb, Object key, Object value) {
         if (value instanceof Map) {
-            sb.append(key).append("=").append(traverseMap(new HashMap<Object, Object>((Map) value))).append("&");
+            sb.append(key).append("=").append(traverseMap((Map<Object, Object>) value)).append("&");
         } else if (value instanceof List) {
-            sb.append(key).append("=").append(traverseList(new ArrayList<Object>((List) value))).append("&");
+            sb.append(key).append("=").append(traverseList((List<Object>) value)).append("&");
         } else {
             sb.append(key).append("=").append(value).append("&");
         }
@@ -89,6 +88,7 @@ public class Signature {
     /**
      * 排序 List并拼接字段
      */
+    @SuppressWarnings("unchecked")
     private static String traverseList(List<Object> list) {
         StringBuffer sb = new StringBuffer();
         if (CollectionUtils.isEmpty(list)) {
@@ -97,9 +97,9 @@ public class Signature {
         sb.append("[");
         list.forEach(item -> {
             if (item instanceof Map) {
-                sb.append(traverseMap(new HashMap<Object, Object>((Map) item)));
+                sb.append(traverseMap((Map<Object, Object>) item));
             } else if (item instanceof List) {
-                sb.append(traverseList(new ArrayList<Object>((List) item)));
+                sb.append(traverseList((List<Object>) item));
             } else {
                 sb.append(item);
             }

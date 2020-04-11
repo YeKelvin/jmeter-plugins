@@ -1,5 +1,7 @@
 package org.apache.jmeter.common.utils;
 
+import org.apache.commons.lang3.time.DateUtils;
+
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -11,7 +13,6 @@ public class TimeUtil {
 
     /**
      * Date转String
-     * todo：DateUtils.parseDateStrictly("20171012 14:30:12", Locale.TRADITIONAL_CHINESE, "yyyyMMdd hh:mm:ss")
      */
     public static String dateToString(Date data, String dateFormatPattern) {
         SimpleDateFormat sdf = new SimpleDateFormat(dateFormatPattern);
@@ -21,15 +22,14 @@ public class TimeUtil {
     /**
      * long时间戳转String
      */
-    public static String timeStampToString(long timeStamp, String dateFormatPattern) {
+    public static String timestampToString(long timeStamp, String dateFormatPattern) {
         SimpleDateFormat sdf = new SimpleDateFormat(dateFormatPattern);
         return sdf.format(timeStamp);
     }
 
     public static long stringToTimestamp(String time, String dateFormatPattern) {
         try {
-            SimpleDateFormat simpleDateFormat = new SimpleDateFormat(dateFormatPattern);
-            Date date = simpleDateFormat.parse(time);
+            Date date = DateUtils.parseDateStrictly(time, dateFormatPattern);
             return date.getTime();
         } catch (ParseException e) {
             e.printStackTrace();
@@ -50,29 +50,8 @@ public class TimeUtil {
     /**
      * 获取当前时间
      */
-    public static String getCurrentTime() {
-        return new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
-    }
-
-    /**
-     * 获取当前日期，并根据 pattern格式化时间
-     */
-    public static String getCurrentDate(String pattern) {
-        return new SimpleDateFormat(pattern).format(new Date());
-    }
-
-    /**
-     * 获取当前日期
-     */
-    public static String getCurrentDate() {
-        return new SimpleDateFormat("yyyy-MM-dd").format(new Date());
-    }
-
-    /**
-     * 获取当前时间
-     */
-    public static Date currentTime() {
-        return new Date();
+    public static String currentTimeAsString() {
+        return currentTimeAsString("yyyy-MM-dd HH:mm:ss");
     }
 
     /**
@@ -80,6 +59,20 @@ public class TimeUtil {
      */
     public static String currentTimeAsString(String dateFormatPattern) {
         return new SimpleDateFormat(dateFormatPattern).format(new Date());
+    }
+
+    /**
+     * 获取当前日期，并根据 pattern格式化时间
+     */
+    public static String currentDate(String pattern) {
+        return new SimpleDateFormat(pattern).format(new Date());
+    }
+
+    /**
+     * 获取当前日期
+     */
+    public static String currentDate() {
+        return new SimpleDateFormat("yyyy-MM-dd").format(new Date());
     }
 
     /**
@@ -183,10 +176,10 @@ public class TimeUtil {
         elapsedTimeStr = elapsedTimeStr.replace(" ", "");
         String[] timsArray = elapsedTimeStr.split("\\+");
         String[] hms = timsArray[0].split(":");
-        long h = Long.valueOf(hms[0].substring(0, 2)) * 60 * 60 * 1000;
-        long m = Long.valueOf(hms[1].substring(0, 2)) * 60 * 1000;
-        long s = Long.valueOf(hms[2].substring(0, 2)) * 1000;
-        long ms = Long.valueOf(timsArray[1].substring(0, timsArray[1].length() - 2));
+        long h = Long.parseLong(hms[0].substring(0, 2)) * 60 * 60 * 1000;
+        long m = Long.parseLong(hms[1].substring(0, 2)) * 60 * 1000;
+        long s = Long.parseLong(hms[2].substring(0, 2)) * 1000;
+        long ms = Long.parseLong(timsArray[1].substring(0, timsArray[1].length() - 2));
         return h + m + s + ms;
     }
 
@@ -197,9 +190,9 @@ public class TimeUtil {
      */
     public static long elapsedTimeAsHMSToLong(String elapsedTimeStr) {
         String[] hms = elapsedTimeStr.split(":");
-        long h = Long.valueOf(hms[0].substring(0, 2)) * 60 * 60 * 1000;
-        long m = Long.valueOf(hms[1].substring(0, 2)) * 60 * 1000;
-        long s = Long.valueOf(hms[2].substring(0, 2)) * 1000;
+        long h = Long.parseLong(hms[0].substring(0, 2)) * 60 * 60 * 1000;
+        long m = Long.parseLong(hms[1].substring(0, 2)) * 60 * 1000;
+        long s = Long.parseLong(hms[2].substring(0, 2)) * 1000;
         return h + m + s;
     }
 
@@ -210,8 +203,8 @@ public class TimeUtil {
      */
     public static long elapsedTimeAsMSToLong(String elapsedTimeStr) {
         String[] hms = elapsedTimeStr.split(":");
-        long m = Long.valueOf(hms[0].substring(0, 2)) * 60 * 1000;
-        long s = Long.valueOf(hms[1].substring(0, 2)) * 1000;
+        long m = Long.parseLong(hms[0].substring(0, 2)) * 60 * 1000;
+        long s = Long.parseLong(hms[1].substring(0, 2)) * 1000;
         return m + s;
     }
 }

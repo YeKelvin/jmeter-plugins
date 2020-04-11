@@ -111,7 +111,7 @@ public class FailureResultSaver extends ConfigTestElement implements SampleListe
         resultContent
                 .append("【Start Time】: ")
                 .append(LINE_SEP)
-                .append(TimeUtil.timeStampToString(result.getStartTime(), "yyyy.MM.dd HH:mm:ss"));
+                .append(TimeUtil.timestampToString(result.getStartTime(), "yyyy.MM.dd HH:mm:ss"));
 
         String requestHeaders = result.getRequestHeaders();
         if (requestHeaders != null && !requestHeaders.isEmpty()) {

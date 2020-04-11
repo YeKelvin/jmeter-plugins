@@ -68,7 +68,6 @@ public class JMeterScriptSampler extends AbstractSampler implements Interruptibl
             result.setSuccessful(true);
             // 运行JMeter脚本
             String response = runJMeterScript(scriptPath, result);
-            // todo 结果展示新增变量的列表（字符串），不再以json格式展示
             result.setResponseData(response, StandardCharsets.UTF_8.name());
         } catch (Exception e) {
             // 异常后，判断是否已记录开始时间，没有则记录
@@ -183,7 +182,7 @@ public class JMeterScriptSampler extends AbstractSampler implements Interruptibl
         treeModel.addSubTree(tree, root);
 
         // 删除已禁用的组件
-        HashTree testTree = JMeter.convertSubTree(tree, true);
+        HashTree testTree = JMeter.convertSubTree(tree, false);
 
         // 校验脚本中是否仅存在一个线程组
         // 设置该线程组配置，修改如下
@@ -202,7 +201,7 @@ public class JMeterScriptSampler extends AbstractSampler implements Interruptibl
     }
 
     private String formatResponse(Map<String, Object> incrementalVariables) {
-        StringBuffer response = new StringBuffer();
+        StringBuffer response = new StringBuffer("子脚本新增变量：\n");
         incrementalVariables.forEach((key, value) -> {
             if (value == null) {
                 response.append(key).append(": ").append("\n");
@@ -323,10 +322,7 @@ public class JMeterScriptSampler extends AbstractSampler implements Interruptibl
             return;
         }
 
-        incrementalVariables.forEach((key, value) -> {
-            System.out.println("key=" + key + ", value=" + value);
-            props.put(key, value);
-        });
+        incrementalVariables.forEach((key, value) -> props.put(key, value));
     }
 
     private void setNonGui(boolean isNonGui) {

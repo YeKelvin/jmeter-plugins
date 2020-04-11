@@ -144,7 +144,7 @@ public class ReportCollector extends AbstractTestElement
         testCase.putTestCaseStep(testCaseStep);
 
         // 另外把 sample 执行结果打印到控制台
-        printStatusToConsole(result.isSuccessful(), getThreadName());
+        consoleInfo(result.isSuccessful(), getThreadName());
     }
 
     @Override
@@ -201,7 +201,7 @@ public class ReportCollector extends AbstractTestElement
     /**
      * 控制台打印执行状态信息
      */
-    private void printStatusToConsole(boolean isSuccessful, String message) {
+    private void consoleInfo(boolean isSuccessful, String message) {
         if (isSuccessful) {
             System.out.println("[true] - " + message);
         } else {

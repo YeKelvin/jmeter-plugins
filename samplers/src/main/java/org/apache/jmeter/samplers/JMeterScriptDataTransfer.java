@@ -37,7 +37,7 @@ public class JMeterScriptDataTransfer extends AbstractTestElement
 
     private Map<String, Object> clonedVars;
 
-    private Map<String, Object> incrementalVariables;  // todo incrementalVariables
+    private Map<String, Object> incrementalVariables;
 
     private SampleResult parentResult;
 
