@@ -1,5 +1,6 @@
 package org.apache.jmeter.common.utils;
 
+import com.google.gson.JsonSyntaxException;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.jmeter.common.utils.json.JsonUtil;
@@ -29,29 +30,35 @@ public class Signature {
      * @return 报文加签md5密文
      */
     public static String sign(String json, String prefix) {
-        if (StringUtil.isBlank(json)) {
+        try {
+            if (StringUtil.isBlank(json)) {
+                return "";
+            }
+
+            // 排序Json
+            Map<Object, Object> resultMap = sortMapByKey(JsonUtil.fromJson(json, JsonUtil.mapType));
+            StringBuffer orderedSB = new StringBuffer();
+            if (resultMap != null) {
+                resultMap.forEach((key, value) -> traverse(orderedSB, key, value));
+            }
+            String sign = orderedSB.substring(0, orderedSB.length() - 1);
+
+            // 拼接前缀
+            if (StringUtil.isNotBlank(prefix)) {
+                sign = prefix + "&" + sign;
+            }
+            logger.debug("sign={}", sign);
+
+            // md5加密
+            if (StringUtil.isNotBlank(sign)) {
+                sign = md5(sign);
+            }
+            return sign;
+        } catch (JsonSyntaxException e) {
+            logger.error(ExceptionUtil.getStackTrace(e));
+            logger.error("Sign函数目前仅支持Json格式报文");
             return "";
         }
-
-        // 排序Json
-        Map<Object, Object> resultMap = sortMapByKey(JsonUtil.fromJson(json, JsonUtil.mapType));
-        StringBuffer orderedSB = new StringBuffer();
-        if (resultMap != null) {
-            resultMap.forEach((key, value) -> traverse(orderedSB, key, value));
-        }
-        String sign = orderedSB.substring(0, orderedSB.length() - 1);
-
-        // 拼接前缀
-        if (StringUtil.isNotBlank(prefix)) {
-            sign = prefix + "&" + sign;
-        }
-        logger.debug("sign={}", sign);
-
-        // md5加密
-        if (StringUtil.isNotBlank(sign)) {
-            sign = md5(sign);
-        }
-        return sign;
     }
 
     /**

@@ -83,13 +83,13 @@ public class Sign extends AbstractFunction {
             HTTPSamplerProxy httpSamplerProxy = (HTTPSamplerProxy) currentSampler;
             Arguments args = httpSamplerProxy.getArguments();
 
-            logger.debug("current sign http url={}", getUrl(httpSamplerProxy));
+            logger.debug("sign http url={}", getUrl(httpSamplerProxy));
             logger.debug("sign prefix={}", prefixStr);
 
             // 报文加签
             sign = Signature.sign(args.getArgument(0).getValue(), prefixStr);
         } else {
-            logger.error("函数 __Sign目前仅支持在 HTTP Sampler下及其子组件下使用");
+            logger.error("Sign函数目前仅支持在 HTTP Sampler及其子组件下使用");
         }
         return sign;
     }
