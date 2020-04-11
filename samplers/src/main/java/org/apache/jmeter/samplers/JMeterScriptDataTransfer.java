@@ -31,23 +31,20 @@ public class JMeterScriptDataTransfer extends AbstractTestElement
     private static final Logger logger = LogUtil.getLogger(JMeterScriptDataTransfer.class);
 
     public static final String CALLER_VARIABLES = "JMeterScriptDataTransfer.callerVariables";
-    public static final String SCRIPT_RESULT = "JMeterScriptDataTransfer.scriptResult";
+    public static final String INCREMENTAL_VARIABLES = "JMeterScriptDataTransfer.incrementalVariables";
 
     private Properties props = JMeterUtils.getJMeterProperties();
 
-    private HashMap<String, Object> clonedVars;
+    private Map<String, Object> clonedVars;
 
-    private Map<String, Object> scriptData;  // todo incrementalVariables
+    private Map<String, Object> incrementalVariables;  // todo incrementalVariables
 
     private SampleResult parentResult;
 
-    private JMeterScriptResultDTO scriptResult;  // todo 去掉
-
     public JMeterScriptDataTransfer(SampleResult parentResult) {
         super();
-        this.scriptData = new HashMap<>();
+        this.incrementalVariables = new HashMap<>();
         this.clonedVars = new HashMap<>();
-        this.scriptResult = new JMeterScriptResultDTO();
         this.parentResult = parentResult;
     }
 
@@ -65,9 +62,9 @@ public class JMeterScriptDataTransfer extends AbstractTestElement
 
         if (!differenceSet.isEmpty()) {
             // 存储差集
-            differenceSet.forEach(entry -> scriptData.put(entry.getKey(), entry.getValue()));
+            differenceSet.forEach(entry -> incrementalVariables.put(entry.getKey(), entry.getValue()));
             // 删除不必要的key
-            removeUnwantedKey(scriptData);
+            removeUnwantedKey(incrementalVariables);
         }
 
     }
@@ -108,8 +105,7 @@ public class JMeterScriptDataTransfer extends AbstractTestElement
 
     @Override
     public void threadFinished() {
-        scriptResult.setExternalData(scriptData);
-        props.put(SCRIPT_RESULT, scriptResult);
+        props.put(INCREMENTAL_VARIABLES, incrementalVariables);
     }
 
     private Collection<Map.Entry<String, Object>> getThreadVariablesDifferenceSet() {

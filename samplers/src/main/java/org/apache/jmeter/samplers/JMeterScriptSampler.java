@@ -3,6 +3,13 @@ package org.apache.jmeter.samplers;
 
 import org.apache.commons.collections4.MapUtils;
 import org.apache.jmeter.JMeter;
+import org.apache.jmeter.common.CliOption;
+import org.apache.jmeter.common.utils.ExceptionUtil;
+import org.apache.jmeter.common.utils.JMeterVarsUtil;
+import org.apache.jmeter.common.utils.LogUtil;
+import org.apache.jmeter.common.utils.PathUtil;
+import org.apache.jmeter.common.utils.exception.ServiceException;
+import org.apache.jmeter.common.utils.json.JsonUtil;
 import org.apache.jmeter.config.ENVDataSet;
 import org.apache.jmeter.config.SSHConfiguration;
 import org.apache.jmeter.control.LoopController;
@@ -21,18 +28,13 @@ import org.apache.jorphan.collections.HashTree;
 import org.apache.jorphan.collections.ListedHashTree;
 import org.apache.jorphan.collections.SearchByClass;
 import org.slf4j.Logger;
-import org.apache.jmeter.common.utils.JMeterVarsUtil;
-import org.apache.jmeter.common.utils.PathUtil;
-import org.apache.jmeter.common.utils.ExceptionUtil;
-import org.apache.jmeter.common.utils.exception.ServiceException;
-import org.apache.jmeter.common.utils.json.JsonUtil;
-import org.apache.jmeter.common.utils.LogUtil;
-import org.apache.jmeter.common.CliOption;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.nio.charset.StandardCharsets;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Properties;
@@ -67,9 +69,9 @@ public class JMeterScriptSampler extends AbstractSampler implements Interruptibl
             result.sampleStart();
             result.setSuccessful(true);
             // 运行JMeter脚本
-            JMeterScriptResultDTO jmeterScriptResult = runJMeterScript(scriptPath, result);
+            String response = runJMeterScript(scriptPath, result);
             // todo 结果展示新增变量的列表（字符串），不再以json格式展示
-            result.setResponseData(getExecuteResult(jmeterScriptResult), StandardCharsets.UTF_8.name());
+            result.setResponseData(response, StandardCharsets.UTF_8.name());
         } catch (Exception e) {
             // 异常后，判断是否已记录开始时间，没有则记录
             if (!result.isStampedAtStart()) {
@@ -109,8 +111,8 @@ public class JMeterScriptSampler extends AbstractSampler implements Interruptibl
      * @param scriptAbsPath 脚本绝对路径
      * @return 执行结果
      */
-    private JMeterScriptResultDTO runJMeterScript(String scriptAbsPath, SampleResult result)
-            throws IllegalUserActionException, IOException, InterruptedException {
+    private String runJMeterScript(String scriptAbsPath, SampleResult result)
+            throws IllegalUserActionException, IOException, InterruptedException, IllegalAccessException {
         // 加载子脚本
         HashTree testTree = loadScriptTree(scriptAbsPath, result);
 
@@ -146,12 +148,11 @@ public class JMeterScriptSampler extends AbstractSampler implements Interruptibl
         }
 
         // 提取子脚本的执行结果 todo 去掉JMeterScriptResultDTO
-        JMeterScriptResultDTO scriptResult = (JMeterScriptResultDTO) props.get(JMeterScriptDataTransfer.SCRIPT_RESULT);
-        Map<String, Object> externalData = scriptResult.getExternalData();
+        Map<String, Object> incrementalVariables = objectToMap(props.get(JMeterScriptDataTransfer.INCREMENTAL_VARIABLES));
 
         // 把子脚本中的增量局部变量同步至当前线程的局部变量中
         if (isSyncToVars()) {
-            externalData.forEach((key, value) -> {
+            incrementalVariables.forEach((key, value) -> {
                 if (value instanceof String) {
                     getThreadContext().getVariables().put(key, (String) value);
                 } else {
@@ -161,9 +162,9 @@ public class JMeterScriptSampler extends AbstractSampler implements Interruptibl
         }
 
         // 把子脚本中新增的局部变量同步至全局变量中
-        setProps(externalData);
+        setProps(incrementalVariables);
 
-        return scriptResult;
+        return formatResponse(incrementalVariables);
     }
 
     /**
@@ -201,26 +202,18 @@ public class JMeterScriptSampler extends AbstractSampler implements Interruptibl
         return testTree;
     }
 
-    /**
-     * 序列化 JMeterProps的差集
-     *
-     * @param scriptResult JMeterScriptResultDTO
-     * @return json
-     */
-    private String getExecuteResult(JMeterScriptResultDTO scriptResult) {
-        if (MapUtils.isEmpty(scriptResult.getExternalData())) {
-            return "{\"success\":" + scriptResult.getSuccess() + ",\"msg\":\"外部脚本没有设置新的变量\"}";
-        }
-        return fixJson(JsonUtil.toJson(scriptResult));
-    }
-
-    /**
-     * 修正数据
-     */
-    private String fixJson(String json) {
-        return json.replace("\"[", "[")
-                .replace("]\"", "]")
-                .replace("\\\"", "\"");
+    private String formatResponse(Map<String, Object> incrementalVariables) {
+        StringBuffer response = new StringBuffer();
+        incrementalVariables.forEach((key, value) -> {
+            if (value == null) {
+                response.append(key).append(": ").append("\n");
+            } else if (value instanceof String) {
+                response.append(key).append(": ").append((String) value).append("\n");
+            } else {
+                response.append(key).append(": ").append(JsonUtil.toJson(value)).append("\n");
+            }
+        });
+        return response.toString();
     }
 
     /**
@@ -318,7 +311,7 @@ public class JMeterScriptSampler extends AbstractSampler implements Interruptibl
      */
     private void clearScriptProps() {
         props.remove(CliOption.CONFIG_NAME);
-        props.remove(JMeterScriptDataTransfer.SCRIPT_RESULT);
+        props.remove(JMeterScriptDataTransfer.INCREMENTAL_VARIABLES);
         props.remove(JMeterScriptDataTransfer.CALLER_VARIABLES);
     }
 
@@ -380,5 +373,21 @@ public class JMeterScriptSampler extends AbstractSampler implements Interruptibl
         Matcher m = r.matcher(threadName);
         threadName = m.replaceAll("");
         return threadName;
+    }
+
+    private Map<String, Object> objectToMap(Object obj) throws IllegalAccessException {
+        if (obj == null) {
+            return null;
+        }
+
+        Map<String, Object> map = new HashMap<>();
+
+        Field[] declaredFields = obj.getClass().getDeclaredFields();
+        for (Field field : declaredFields) {
+            field.setAccessible(true);
+            map.put(field.getName(), field.get(obj));
+        }
+
+        return map;
     }
 }

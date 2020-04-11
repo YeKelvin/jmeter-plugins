@@ -41,10 +41,9 @@ public class SSHConfiguration extends ConfigTestElement implements TestStateList
      */
     @Override
     public void testStarted(String s) {
-        boolean isSSHPortForwarding = isSSHPortForwarding();
-        logger.debug("isSSHPortForwarding={}", isSSHPortForwarding);
         try {
-            if (isSSHPortForwarding) {
+            if (isSSHPortForwarding()) {
+                logger.info("开始端口转发");
                 String username = getSSHUserName();
                 String password = getSSHPassword();
                 int localForwardingPort = getLocalForwardingPort();
@@ -66,9 +65,9 @@ public class SSHConfiguration extends ConfigTestElement implements TestStateList
                 session.setConfig("StrictHostKeyChecking", "no");
 
                 // 本地端口转发
+                logger.info("本地转发端口={}", localForwardingPort);
                 session.setPortForwardingL(localForwardingPort, remoteHost, remotePort);
                 session.connect();
-                logger.info("本地转发端口={}", localForwardingPort);
             }
         } catch (Exception e) {
             logger.error(ExceptionUtil.getStackTrace(e));
@@ -94,15 +93,14 @@ public class SSHConfiguration extends ConfigTestElement implements TestStateList
     private void disconnect() {
         try {
             int localForwardingPort = getLocalForwardingPort();
-            session.delPortForwardingL(localForwardingPort);
             logger.info("停用端口转发，端口号={}", localForwardingPort);
+            session.delPortForwardingL(localForwardingPort);
         } catch (JSchException e) {
             logger.error(ExceptionUtil.getStackTrace(e));
         } finally {
             if (session != null) {
                 session.disconnect();
             }
-            logger.debug("session连接关闭");
         }
     }
 
