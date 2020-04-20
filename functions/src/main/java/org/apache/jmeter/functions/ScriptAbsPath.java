@@ -1,11 +1,14 @@
 package org.apache.jmeter.functions;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.jmeter.common.utils.ExceptionUtil;
+import org.apache.jmeter.common.utils.LogUtil;
+import org.apache.jmeter.common.utils.PathUtil;
 import org.apache.jmeter.engine.util.CompoundVariable;
 import org.apache.jmeter.samplers.SampleResult;
 import org.apache.jmeter.samplers.Sampler;
 import org.apache.jmeter.services.FileServer;
-import org.apache.jmeter.common.utils.PathUtil;
+import org.slf4j.Logger;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -19,6 +22,9 @@ import java.util.List;
  * Time     17:11
  */
 public class ScriptAbsPath extends AbstractFunction {
+
+    private static final Logger logger = LogUtil.getLogger(ScriptAbsPath.class);
+
     /**
      * 自定义function的描述
      */
@@ -66,7 +72,8 @@ public class ScriptAbsPath extends AbstractFunction {
      * function执行
      */
     @Override
-    public String execute(SampleResult sampleResult, Sampler sampler) throws InvalidVariableException {
+    public String execute(SampleResult sampleResult, Sampler sampler) {
+        String result = "";
         try {
             String scriptAbsPath = FileServer.getFileServer().getBaseDir();
             if (CollectionUtils.isNotEmpty(parameters)) {
@@ -75,12 +82,10 @@ public class ScriptAbsPath extends AbstractFunction {
                     scriptAbsPath = PathUtil.join(scriptAbsPath, childPath);
                 }
             }
-            return scriptAbsPath.replace("\\", "/");
-        } catch (Exception ex) {
-            throw new InvalidVariableException(ex);
+            result = scriptAbsPath.replace("\\", "/");
+        } catch (Exception e) {
+            logger.error(ExceptionUtil.getStackTrace(e));
         }
+        return result;
     }
-
-
-
 }

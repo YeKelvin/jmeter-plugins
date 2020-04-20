@@ -1,19 +1,20 @@
 package org.apache.jmeter.common.utils.json;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.jayway.jsonpath.Configuration;
 import com.jayway.jsonpath.DocumentContext;
 import com.jayway.jsonpath.JsonPath;
 import com.jayway.jsonpath.Option;
 import com.jayway.jsonpath.spi.json.GsonJsonProvider;
 import com.jayway.jsonpath.spi.mapper.GsonMappingProvider;
-import org.slf4j.Logger;
+import net.minidev.json.JSONArray;
+import net.minidev.json.JSONObject;
 import org.apache.jmeter.common.utils.ExceptionUtil;
 import org.apache.jmeter.common.utils.LogUtil;
+import org.slf4j.Logger;
 
 import java.util.EnumSet;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Description
@@ -26,64 +27,62 @@ public class JsonPathUtil {
 
     private static final Logger logger = LogUtil.getLogger(JsonUtil.class);
 
-    private static Gson gson = new GsonBuilder().serializeNulls().create();
-
-    private static Configuration config;
+    private static final Configuration config = Configuration.builder()
+            .jsonProvider(new GsonJsonProvider(JsonUtil.getGsonInstance()))
+            .mappingProvider(new GsonMappingProvider(JsonUtil.getGsonInstance()))
+            .options(EnumSet.noneOf(Option.class))
+            .build();
 
     /**
      * @param json     json报文
      * @param jsonPath json节点路径
      * @return json值
      */
+    @SuppressWarnings("unchecked")
     public static String extractAsString(String json, String jsonPath) {
+        String result = "";
         try {
             Object obj = JsonPath.read(json, jsonPath);
-            return obj == null ? "null" : obj.toString();
+            if (obj instanceof Map) {
+                return new JSONObject((Map<String, ?>) obj).toJSONString();
+            }
+            if (obj instanceof JSONArray) {
+                return ((JSONArray) obj).toJSONString();
+            }
+            result = obj == null ? "null" : String.valueOf(obj);
         } catch (Exception e) {
             logger.error(ExceptionUtil.getStackTrace(e));
-            return "";
         }
+        return result;
     }
 
     public static int extractAsInt(String json, String jsonPath) {
+        int result = 0;
         try {
             Object obj = JsonPath.read(json, jsonPath);
-            return obj == null ? 0 : Integer.valueOf(obj.toString());
+            result = obj == null ? 0 : Integer.parseInt(String.valueOf(obj));
         } catch (Exception e) {
             logger.error(ExceptionUtil.getStackTrace(e));
-            return 0;
         }
+        return result;
     }
 
     public static float extractAsFloat(String json, String jsonPath) {
+        float result = 0;
         try {
             Object obj = JsonPath.read(json, jsonPath);
-            return obj == null ? 0 : Float.valueOf(obj.toString());
+            result = obj == null ? 0 : Float.parseFloat(obj.toString());
         } catch (Exception e) {
             logger.error(ExceptionUtil.getStackTrace(e));
-            return 0;
         }
-    }
-
-    /**
-     * 获取 JsonPath配置对象
-     */
-    public static Configuration getJsonPathConfigWithGson() {
-        if (config == null) {
-            config = Configuration.builder()
-                    .jsonProvider(new GsonJsonProvider(gson))
-                    .mappingProvider(new GsonMappingProvider(gson))
-                    .options(EnumSet.noneOf(Option.class))
-                    .build();
-        }
-        return config;
+        return result;
     }
 
     /**
      * 解析json串
      */
     public static DocumentContext jsonParse(String json) {
-        return JsonPath.using(getJsonPathConfigWithGson()).parse(json);
+        return JsonPath.using(config).parse(json);
     }
 
     /**

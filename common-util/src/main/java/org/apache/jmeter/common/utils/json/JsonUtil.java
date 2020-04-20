@@ -26,7 +26,7 @@ public class JsonUtil {
     public static Type mapType = new TypeToken<Map<Object, Object>>() {
     }.getType();
 
-    private static Gson gson = getGson();
+    private static final Gson gson = getGson();
 
     private static Gson getGson() {
         return new GsonBuilder().serializeNulls()

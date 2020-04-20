@@ -1,15 +1,13 @@
 package org.apache.jmeter.functions;
 
+import org.apache.jmeter.common.utils.ExceptionUtil;
+import org.apache.jmeter.common.utils.GoogleAuthenticator;
+import org.apache.jmeter.common.utils.LogUtil;
 import org.apache.jmeter.engine.util.CompoundVariable;
 import org.apache.jmeter.samplers.SampleResult;
 import org.apache.jmeter.samplers.Sampler;
 import org.slf4j.Logger;
-import org.apache.jmeter.common.utils.GoogleAuthenticator;
-import org.apache.jmeter.common.utils.ExceptionUtil;
-import org.apache.jmeter.common.utils.LogUtil;
 
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
@@ -73,15 +71,14 @@ public class GAuth extends AbstractFunction {
      */
     @Override
     public synchronized String execute(SampleResult sampleResult, Sampler sampler) {
-        String googleAuthCode = "";
+        String result = "";
         String secret = secretKey.execute().trim();
         logger.debug("Google Secret Key={}", secret);
         try {
-            googleAuthCode = GoogleAuthenticator.getCode(secret);
-            logger.debug("Google Auth Code={}", googleAuthCode);
-        } catch (NoSuchAlgorithmException | InvalidKeyException e) {
+            result = GoogleAuthenticator.getCode(secret);
+        } catch (Exception e) {
             logger.error(ExceptionUtil.getStackTrace(e));
         }
-        return googleAuthCode;
+        return result;
     }
 }
