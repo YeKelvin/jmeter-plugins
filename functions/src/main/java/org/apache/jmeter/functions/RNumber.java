@@ -70,13 +70,19 @@ public class RNumber extends AbstractFunction {
         return result;
     }
 
-    private ArrayList<Object> getParams() throws InvalidVariableException {
-        ArrayList<Object> params = new ArrayList<>();
+    private List<Object> getParams() throws InvalidVariableException {
+        List<Object> params = new ArrayList<>();
         String paramPattern = this.pattern.execute().trim();
         String[] paramPatterns = paramPattern.split(":");
+        int parameterSize = paramPatterns.length;
         for (String pattern : paramPatterns) {
+            if (parameterSize == 1) {
+                params.add(Integer.parseInt(pattern));
+                break;
+            }
+
             if (!pattern.startsWith("%s") || !pattern.startsWith("%d")) {
-                throw new InvalidVariableException("");
+                throw new InvalidVariableException("格式错误，例如${__RNumber(%sabc:%d8:%sefg)}");
             }
             if (pattern.startsWith("%s")) {
                 String param = pattern.substring(2);
@@ -90,7 +96,7 @@ public class RNumber extends AbstractFunction {
     }
 
     private String getNumber() throws InvalidVariableException {
-        ArrayList<Object> params = getParams();
+        List<Object> params = getParams();
         return "";
     }
 }
