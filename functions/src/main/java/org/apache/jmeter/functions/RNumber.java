@@ -1,7 +1,9 @@
 package org.apache.jmeter.functions;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.jmeter.common.utils.ExceptionUtil;
 import org.apache.jmeter.common.utils.LogUtil;
+import org.apache.jmeter.common.utils.Randoms;
 import org.apache.jmeter.engine.util.CompoundVariable;
 import org.apache.jmeter.samplers.SampleResult;
 import org.apache.jmeter.samplers.Sampler;
@@ -20,10 +22,15 @@ public class RNumber extends AbstractFunction {
     private static final List<String> DESC = new LinkedList<>();
 
     static {
-        DESC.add("随机柬埔寨手机号");
+        DESC.add("随机数");
     }
 
     private static final String KEY = "__RNumber";
+
+    private static final String ERROR_MSG = (
+            "格式错误，例如: ${__RNumber(8)}, ${__RNumber(str:8)}, ${__RNumber(8:str)}, ${__RNumber(str:8:str)}, " +
+                    "${__RNumber(8:str:8)}, ${__RNumber(\\8:8)}, ${__RNumber(8, variable)}"
+    );
 
     private CompoundVariable pattern = null;
     private CompoundVariable variable = null;
@@ -77,19 +84,22 @@ public class RNumber extends AbstractFunction {
         int parameterSize = paramPatterns.length;
         for (String pattern : paramPatterns) {
             if (parameterSize == 1) {
-                params.add(Integer.parseInt(pattern));
-                break;
+                if (StringUtils.isNumeric(pattern)) {
+                    params.add(Integer.parseInt(pattern));
+                    break;
+                } else {
+                    throw new InvalidVariableException(ERROR_MSG);
+                }
             }
 
-            if (!pattern.startsWith("%s") || !pattern.startsWith("%d")) {
-                throw new InvalidVariableException("格式错误，例如${__RNumber(%sabc:%d8:%sefg)}");
-            }
-            if (pattern.startsWith("%s")) {
-                String param = pattern.substring(2);
-                params.add(param);
-            } else if (pattern.startsWith("%d")) {
-                int param = Integer.parseInt(pattern.substring(2));
-                params.add(param);
+            if (StringUtils.isNumeric(pattern)) {
+                if (pattern.startsWith("\\")) {
+                    params.add(pattern.substring(1));
+                } else {
+                    params.add(Integer.parseInt(pattern));
+                }
+            } else {
+                params.add(pattern);
             }
         }
         return params;
@@ -97,6 +107,38 @@ public class RNumber extends AbstractFunction {
 
     private String getNumber() throws InvalidVariableException {
         List<Object> params = getParams();
-        return "";
+        int parameterSize = params.size();
+
+        if (parameterSize > 3) {
+            throw new InvalidVariableException(ERROR_MSG);
+        }
+
+        int intTypeCount = 0;
+        for (Object param : params) {
+            if (param instanceof Integer) {
+                intTypeCount++;
+            }
+        }
+        if (intTypeCount == 0) {
+            throw new InvalidVariableException(ERROR_MSG);
+        }
+
+        if (parameterSize == 3) {
+            if (params.get(0) instanceof String) {
+                return Randoms.getNumber((String) params.get(0), (int) params.get(1), (String) params.get(2));
+            } else {
+                return Randoms.getNumber((int) params.get(0), (String) params.get(1), (int) params.get(2));
+            }
+        }
+
+        if (parameterSize == 2) {
+            if (params.get(0) instanceof String) {
+                return Randoms.getNumber((String) params.get(0), (int) params.get(1));
+            } else {
+                return Randoms.getNumber((int) params.get(0), (String) params.get(1));
+            }
+        }
+
+        return Randoms.getNumber((int) params.get(0));
     }
 }
