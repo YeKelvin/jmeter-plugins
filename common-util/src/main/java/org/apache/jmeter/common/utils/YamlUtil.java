@@ -13,7 +13,7 @@ public class YamlUtil {
 
     private static final Logger logger = LogUtil.getLogger(YamlUtil.class);
 
-    private static Yaml yaml = new Yaml();
+    private static final Yaml yaml = new Yaml();
 
     public static Object parseYaml(File file) {
         try (
