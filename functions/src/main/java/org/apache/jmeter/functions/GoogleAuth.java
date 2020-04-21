@@ -17,9 +17,9 @@ import java.util.List;
  *
  * @author KelvinYe
  */
-public class GAuth extends AbstractFunction {
+public class GoogleAuth extends AbstractFunction {
 
-    private static final Logger logger = LogUtil.getLogger(GAuth.class);
+    private static final Logger logger = LogUtil.getLogger(GoogleAuth.class);
 
     /**
      * 自定义function的描述
@@ -27,13 +27,13 @@ public class GAuth extends AbstractFunction {
     private static final List<String> DESC = new LinkedList<>();
 
     static {
-        DESC.add("Google Secret Key:");
+        DESC.add("谷歌动态认证码");
     }
 
     /**
      * function名称
      */
-    private static final String KEY = "__GAuth";
+    private static final String KEY = "__GoogleAuth";
 
     /**
      * function传入的参数
