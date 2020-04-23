@@ -3,7 +3,9 @@ package org.apache.jmeter.config;
 import org.apache.jmeter.common.utils.ExceptionUtil;
 import org.apache.jmeter.common.utils.LogUtil;
 import org.apache.jmeter.common.utils.YamlUtil;
+import org.apache.jmeter.protocol.http.control.Header;
 import org.apache.jmeter.protocol.http.control.HeaderManager;
+import org.apache.jmeter.testelement.TestElement;
 import org.apache.jmeter.testelement.property.CollectionProperty;
 import org.apache.jmeter.util.JMeterUtils;
 import org.slf4j.Logger;
@@ -20,10 +22,46 @@ public class HTTPHeaderReader extends HeaderManager {
 
     public static final String FILE_NAME = "HTTPHeaderReader.fileName";
 
+    private boolean init = false;
+
     public HTTPHeaderReader() {
         super();
-        CollectionProperty headers = getHeaders();
-        System.out.println(getFileName());
+    }
+
+    @Override
+    public CollectionProperty getHeaders() {
+        init();
+        return super.getHeaders();
+    }
+
+    @Override
+    public Header getHeader(int row) {
+        init();
+        return super.getHeader(row);
+    }
+
+    @Override
+    public Header get(int i) {
+        init();
+        return super.get(i);
+    }
+
+    @Override
+    public HeaderManager merge(TestElement element) {
+        init();
+        return super.merge(element);
+    }
+
+    private void init() {
+        if (!init) {
+            CollectionProperty headers = getHeaders();
+            Map<String, String> headerMap = getHeaderMap(getFilePath());
+            headerMap.forEach((name, value) -> {
+                Header header = new Header(name, value);
+                headers.addItem(header);
+            });
+            init = true;
+        }
     }
 
     public String getFileName() {

@@ -37,7 +37,7 @@ public class HTTPHeaderReaderGui extends AbstractConfigGui {
         add(makeTitlePanel(), BorderLayout.NORTH);
 
         JPanel bodyPanel = new JPanel(new GridBagLayout());
-        bodyPanel.setBorder(GuiUtil.createTitledBorder("请选择测试环境"));
+        bodyPanel.setBorder(GuiUtil.createTitledBorder("请选择请求头文件"));
         bodyPanel.add(getHTTPFileNameLabel(), GuiUtil.GridBag.labelConstraints);
         bodyPanel.add(getHTTPFileNameComboBox(), GuiUtil.GridBag.editorConstraints);
         bodyPanel.add(createTablePanel(), GuiUtil.GridBag.fillBottomConstraints);
@@ -87,7 +87,7 @@ public class HTTPHeaderReaderGui extends AbstractConfigGui {
             HTTPHeaderReader httpHeaderReader = (HTTPHeaderReader) el;
             Map<String, String> headerMap = httpHeaderReader.getHeaderMap(httpHeaderReader.getFilePath());
             for (Map.Entry<String, String> entry : headerMap.entrySet()) {
-                Header arg = new Header(entry.getKey(), entry.getValue());
+                Argument arg = new Argument(entry.getKey(), entry.getValue());
                 tableModel.addRow(arg);
             }
         }
