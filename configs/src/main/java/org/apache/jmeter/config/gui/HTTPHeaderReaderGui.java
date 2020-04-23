@@ -23,6 +23,7 @@ import java.util.Map;
  */
 public class HTTPHeaderReaderGui extends AbstractConfigGui {
 
+    private JComboBox<String> commonHeadersFileNameComboBox;
     private JComboBox<String> headersFileNameComboBox;
     private JTable table;
     private ObjectTableModel tableModel;
@@ -37,7 +38,7 @@ public class HTTPHeaderReaderGui extends AbstractConfigGui {
         add(makeTitlePanel(), BorderLayout.NORTH);
 
         JPanel bodyPanel = new JPanel(new GridBagLayout());
-        bodyPanel.setBorder(GuiUtil.createTitledBorder("请选择请求头文件"));
+        bodyPanel.setBorder(GuiUtil.createTitledBorder("通过文件配置请求头"));
         bodyPanel.add(getHTTPFileNameLabel(), GuiUtil.GridBag.labelConstraints);
         bodyPanel.add(getHTTPFileNameComboBox(), GuiUtil.GridBag.editorConstraints);
         bodyPanel.add(createTablePanel(), GuiUtil.GridBag.fillBottomConstraints);

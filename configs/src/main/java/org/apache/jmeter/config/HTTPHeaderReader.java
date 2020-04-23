@@ -3,8 +3,13 @@ package org.apache.jmeter.config;
 import org.apache.jmeter.common.utils.ExceptionUtil;
 import org.apache.jmeter.common.utils.LogUtil;
 import org.apache.jmeter.common.utils.YamlUtil;
-import org.apache.jmeter.protocol.http.control.Header;
+import org.apache.jmeter.engine.util.ValueReplacer;
+import org.apache.jmeter.functions.InvalidVariableException;
 import org.apache.jmeter.protocol.http.control.HeaderManager;
+import org.apache.jmeter.protocol.http.sampler.HTTPSamplerProxy;
+import org.apache.jmeter.samplers.SampleMonitor;
+import org.apache.jmeter.samplers.Sampler;
+import org.apache.jmeter.testelement.AbstractTestElement;
 import org.apache.jmeter.util.JMeterUtils;
 import org.slf4j.Logger;
 
@@ -15,25 +20,16 @@ import java.util.Map;
 /**
  * 未完成不可用
  */
-public class HTTPHeaderReader extends HeaderManager {
+public class HTTPHeaderReader extends AbstractTestElement implements SampleMonitor {
 
     private static final Logger logger = LogUtil.getLogger(HTTPHeaderReader.class);
 
+    public static final String COMMON_FILE_NAME = "HTTPHeaderReader.commonFileName";
     public static final String FILE_NAME = "HTTPHeaderReader.fileName";
 
+    private static final ValueReplacer replacer = new ValueReplacer();
+
     public HTTPHeaderReader() {
-        super();
-    }
-
-    @Override
-    public Object clone() {
-        init();
-        return super.clone();
-    }
-
-    private void init() {
-        Map<String, String> headerMap = getHeaderMap(getFilePath());
-        headerMap.forEach((name, value) -> add(new Header(name, value)));
     }
 
     public String getFileName() {
@@ -71,5 +67,18 @@ public class HTTPHeaderReader extends HeaderManager {
             });
         }
         return map;
+    }
+
+    @Override
+    public void sampleStarting(Sampler sampler) {
+        if (sampler instanceof HTTPSamplerProxy) {
+            HTTPSamplerProxy httpSampler = (HTTPSamplerProxy) sampler;
+            HeaderManager headerManager = httpSampler.getHeaderManager();
+        }
+    }
+
+    @Override
+    public void sampleEnded(Sampler sampler) {
+
     }
 }
