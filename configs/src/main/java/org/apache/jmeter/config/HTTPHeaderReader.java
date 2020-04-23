@@ -23,6 +23,7 @@ public class HTTPHeaderReader extends HeaderManager {
     public HTTPHeaderReader() {
         super();
         CollectionProperty headers = getHeaders();
+        System.out.println(getFileName());
     }
 
     public String getFileName() {
