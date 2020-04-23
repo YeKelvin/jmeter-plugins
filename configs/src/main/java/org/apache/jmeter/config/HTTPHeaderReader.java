@@ -32,11 +32,8 @@ public class HTTPHeaderReader extends HeaderManager {
     }
 
     private void init() {
-        clear();
         Map<String, String> headerMap = getHeaderMap(getFilePath());
         headerMap.forEach((name, value) -> add(new Header(name, value)));
-        System.out.println("after init Headers=");
-        System.out.println("Headers=" + getHeaders().toString());
     }
 
     public String getFileName() {
