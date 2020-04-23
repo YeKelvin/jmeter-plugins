@@ -5,7 +5,6 @@ import org.apache.jmeter.common.utils.StringUtil;
 import org.apache.jmeter.config.Argument;
 import org.apache.jmeter.config.HTTPHeaderReader;
 import org.apache.jmeter.gui.util.HeaderAsPropertyRenderer;
-import org.apache.jmeter.protocol.http.control.Header;
 import org.apache.jmeter.testelement.TestElement;
 import org.apache.jmeter.util.JMeterUtils;
 import org.apache.jorphan.gui.GuiUtils;
@@ -19,9 +18,10 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Map;
 
+/**
+ * 未完成不可用
+ */
 public class HTTPHeaderReaderGui extends AbstractConfigGui {
-
-    private static final long serialVersionUID = -7553081114925909925L;
 
     private JComboBox<String> headersFileNameComboBox;
     private JTable table;
