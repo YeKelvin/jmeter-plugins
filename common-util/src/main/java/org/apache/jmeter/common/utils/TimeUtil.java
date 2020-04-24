@@ -4,6 +4,7 @@ import org.apache.commons.lang3.time.DateUtils;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 
 /**
@@ -14,7 +15,7 @@ public class TimeUtil {
     /**
      * Date转String
      */
-    public static String dateToString(Date data, String dateFormatPattern) {
+    public static String dateToStrtime(Date data, String dateFormatPattern) {
         SimpleDateFormat sdf = new SimpleDateFormat(dateFormatPattern);
         return sdf.format(data);
     }
@@ -22,12 +23,12 @@ public class TimeUtil {
     /**
      * long时间戳转String
      */
-    public static String timestampToString(long timeStamp, String dateFormatPattern) {
+    public static String timestampToStrtime(long timeStamp, String dateFormatPattern) {
         SimpleDateFormat sdf = new SimpleDateFormat(dateFormatPattern);
         return sdf.format(timeStamp);
     }
 
-    public static long stringToTimestamp(String time, String dateFormatPattern) {
+    public static long strtimeToTimestamp(String time, String dateFormatPattern) {
         try {
             Date date = DateUtils.parseDateStrictly(time, dateFormatPattern);
             return date.getTime();
@@ -37,7 +38,7 @@ public class TimeUtil {
         }
     }
 
-    public static long stringToTimestamp(String time, SimpleDateFormat dateFormat) {
+    public static long strtimeToTimestamp(String time, SimpleDateFormat dateFormat) {
         try {
             Date date = dateFormat.parse(time);
             return date.getTime();
@@ -68,11 +69,29 @@ public class TimeUtil {
         return new SimpleDateFormat(pattern).format(new Date());
     }
 
+    public static String currentDate(String pattern, int number) {
+        Date currentDate = new Date();
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(currentDate);
+        calendar.add(Calendar.DAY_OF_MONTH, number);
+        Date newTime = calendar.getTime();
+        return new SimpleDateFormat(pattern).format(newTime);
+    }
+
     /**
      * 获取当前日期
      */
     public static String currentDate() {
         return new SimpleDateFormat("yyyy-MM-dd").format(new Date());
+    }
+
+    public static String currentDate(int number) {
+        Date currentDate = new Date();
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(currentDate);
+        calendar.add(Calendar.DAY_OF_MONTH, number);
+        Date newTime = calendar.getTime();
+        return new SimpleDateFormat("yyyy-MM-dd").format(newTime);
     }
 
     /**
@@ -146,8 +165,8 @@ public class TimeUtil {
      */
     public static String formatElapsedTimeAsHMS(String startTime, String endTime, String dateFormatPattern) {
         SimpleDateFormat sdf = new SimpleDateFormat(dateFormatPattern);
-        long startTimestamp = stringToTimestamp(startTime, sdf);
-        long endTimestamp = stringToTimestamp(endTime, sdf);
+        long startTimestamp = strtimeToTimestamp(startTime, sdf);
+        long endTimestamp = strtimeToTimestamp(endTime, sdf);
         long elapsedTime = endTimestamp - startTimestamp;
         return formatElapsedTimeAsHMS(elapsedTime);
     }
@@ -161,8 +180,8 @@ public class TimeUtil {
      */
     public static String formatElapsedTimeAsMS(String startTime, String endTime, String dateFormatPattern) {
         SimpleDateFormat sdf = new SimpleDateFormat(dateFormatPattern);
-        long startTimestamp = stringToTimestamp(startTime, sdf);
-        long endTimestamp = stringToTimestamp(endTime, sdf);
+        long startTimestamp = strtimeToTimestamp(startTime, sdf);
+        long endTimestamp = strtimeToTimestamp(endTime, sdf);
         long elapsedTime = endTimestamp - startTimestamp;
         return formatElapsedTimeAsMS(elapsedTime);
     }
