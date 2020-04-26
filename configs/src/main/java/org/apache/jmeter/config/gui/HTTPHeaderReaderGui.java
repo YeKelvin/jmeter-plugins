@@ -19,11 +19,10 @@ import java.util.ArrayList;
 import java.util.Map;
 
 /**
- * 未完成不可用
+ * HTTP请求头文件读取器
  */
 public class HTTPHeaderReaderGui extends AbstractConfigGui {
 
-    private JComboBox<String> commonHeadersFileNameComboBox;
     private JComboBox<String> headersFileNameComboBox;
     private JTable table;
     private ObjectTableModel tableModel;
@@ -72,7 +71,7 @@ public class HTTPHeaderReaderGui extends AbstractConfigGui {
     @Override
     public void modifyTestElement(TestElement el) {
         super.configureTestElement(el);
-        el.setProperty(HTTPHeaderReader.FILE_NAME, (String) headersFileNameComboBox.getSelectedItem());
+        el.setProperty(HTTPHeaderReader.HEADERS_FILE_NAME, (String) headersFileNameComboBox.getSelectedItem());
     }
 
     /**
@@ -81,12 +80,12 @@ public class HTTPHeaderReaderGui extends AbstractConfigGui {
     @Override
     public void configure(TestElement el) {
         super.configure(el);
-        String fileName = el.getPropertyAsString(HTTPHeaderReader.FILE_NAME);
+        String fileName = el.getPropertyAsString(HTTPHeaderReader.HEADERS_FILE_NAME);
         headersFileNameComboBox.setSelectedItem(fileName);
         tableModel.clearData();
         if (el instanceof HTTPHeaderReader && StringUtil.isNotBlank(fileName)) {
             HTTPHeaderReader httpHeaderReader = (HTTPHeaderReader) el;
-            Map<String, String> headerMap = httpHeaderReader.getHeaderMap(httpHeaderReader.getFilePath());
+            Map<String, String> headerMap = httpHeaderReader.getHeaderMap(httpHeaderReader.getHeadersFilePath());
             for (Map.Entry<String, String> entry : headerMap.entrySet()) {
                 Argument arg = new Argument(entry.getKey(), entry.getValue());
                 tableModel.addRow(arg);
@@ -104,7 +103,7 @@ public class HTTPHeaderReaderGui extends AbstractConfigGui {
 
     private Component getHTTPFileNameComboBox() {
         if (headersFileNameComboBox == null) {
-            headersFileNameComboBox = GuiUtil.createComboBox(HTTPHeaderReader.FILE_NAME);
+            headersFileNameComboBox = GuiUtil.createComboBox(HTTPHeaderReader.HEADERS_FILE_NAME);
             comboBoxAddItem(getHTTPHeaderFileList(getHTTPHeaderDirectoryPath()));
         }
         return headersFileNameComboBox;
@@ -136,7 +135,7 @@ public class HTTPHeaderReaderGui extends AbstractConfigGui {
     }
 
     private JPanel getNotePanel() {
-        String note = "说明：HTTP请求头文件必须是 Yaml格式，文件后缀为 .http.header，且必须放在 ${JMETER_HOME}/header 目录下。";
+        String note = "说明：HTTP请求头文件必须是 Yaml格式，文件后缀为 .yaml，且必须放在 ${JMETER_HOME}/header 目录下。";
         return GuiUtil.createNotePanel(note, this.getBackground());
     }
 
