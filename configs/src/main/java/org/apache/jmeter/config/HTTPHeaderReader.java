@@ -37,17 +37,14 @@ public class HTTPHeaderReader extends HeaderManager implements TestStateListener
     private boolean alreadyRead;
 
     public HTTPHeaderReader() {
-    }
-
-    public void setAlreadyRead(boolean isAlready) {
-        this.alreadyRead = isAlready;
+        super();
     }
 
     public void init() {
         if (!alreadyRead) {
             try {
                 Map<String, String> headerMap = getHeaderMap(getHeadersFilePath());
-                headerMap.forEach((name, value) -> super.add(new Header(name, value)));
+                headerMap.forEach((name, value) -> super.getHeaders().addItem(new Header(name, value)));
                 replacer.replaceValues(this);
                 this.setRunningVersion(true);
                 alreadyRead = true;
@@ -59,9 +56,9 @@ public class HTTPHeaderReader extends HeaderManager implements TestStateListener
 
     @Override
     public Object clone() {
-        HTTPHeaderReader cloneHeaderReader = (HTTPHeaderReader) super.clone();
-        cloneHeaderReader.setAlreadyRead(alreadyRead);
-        return cloneHeaderReader;
+        HTTPHeaderReader clone = (HTTPHeaderReader) super.clone();
+        clone.alreadyRead = alreadyRead;
+        return clone;
     }
 
     @Override
