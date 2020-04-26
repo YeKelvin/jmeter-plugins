@@ -39,11 +39,15 @@ public class HTTPHeaderReader extends HeaderManager implements TestStateListener
     public HTTPHeaderReader() {
     }
 
+    public void setAlreadyRead(boolean isAlready) {
+        this.alreadyRead = isAlready;
+    }
+
     public void init() {
         if (!alreadyRead) {
             try {
                 Map<String, String> headerMap = getHeaderMap(getHeadersFilePath());
-                headerMap.forEach((name, value) -> super.getHeaders().addItem(new Header(name, value)));
+                headerMap.forEach((name, value) -> super.add(new Header(name, value)));
                 replacer.replaceValues(this);
                 this.setRunningVersion(true);
                 alreadyRead = true;
@@ -51,6 +55,13 @@ public class HTTPHeaderReader extends HeaderManager implements TestStateListener
                 logger.error(ExceptionUtil.getStackTrace(e));
             }
         }
+    }
+
+    @Override
+    public Object clone() {
+        HTTPHeaderReader cloneHeaderReader = (HTTPHeaderReader) super.clone();
+        cloneHeaderReader.setAlreadyRead(alreadyRead);
+        return cloneHeaderReader;
     }
 
     @Override
@@ -106,6 +117,7 @@ public class HTTPHeaderReader extends HeaderManager implements TestStateListener
             try {
                 Class<?> clazz = HTTPSamplerBase.class;
                 HTTPSamplerProxy httpSampler = new HTTPSamplerProxy();
+
                 Field appliableConfigClassesField = clazz.getDeclaredField("APPLIABLE_CONFIG_CLASSES");
                 appliableConfigClassesField.setAccessible(true);
 
@@ -133,7 +145,7 @@ public class HTTPHeaderReader extends HeaderManager implements TestStateListener
 
     @Override
     public void testEnded(String host) {
-
+        alreadyAddedGui = false;
     }
 
     @Override
