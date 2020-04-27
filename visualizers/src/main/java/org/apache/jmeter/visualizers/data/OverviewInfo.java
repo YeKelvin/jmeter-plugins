@@ -71,8 +71,8 @@ public class OverviewInfo {
         if (testSuiteAverageElapsedTime == null) {
             testSuiteAverageElapsedTime = elapsedTime;
         } else {
-            long testSuiteAverageElapsedTimeAsLong = TimeUtil.elapsedTimeAsHMSToLong(testSuiteAverageElapsedTime);
-            long addedElapsedTimeAsLong = TimeUtil.elapsedTimeAsHMSToLong(elapsedTime);
+            long testSuiteAverageElapsedTimeAsLong = TimeUtil.hmsElapsedTimeToLong(testSuiteAverageElapsedTime);
+            long addedElapsedTimeAsLong = TimeUtil.hmsElapsedTimeToLong(elapsedTime);
             long averageElapsedTime = (testSuiteAverageElapsedTimeAsLong + addedElapsedTimeAsLong) / 2;
             testSuiteAverageElapsedTime = TimeUtil.formatElapsedTimeAsHMS(averageElapsedTime);
         }
@@ -87,8 +87,8 @@ public class OverviewInfo {
         if (testCaseAverageElapsedTime == null) {
             testCaseAverageElapsedTime = elapsedTime;
         } else {
-            long testCaseAverageElapsedTimeAsLong = TimeUtil.elapsedTimeAsMSToLong(testCaseAverageElapsedTime);
-            long addedElapsedTimeAsLong = TimeUtil.elapsedTimeAsMSToLong(elapsedTime);
+            long testCaseAverageElapsedTimeAsLong = TimeUtil.msElapsedTimeToLong(testCaseAverageElapsedTime);
+            long addedElapsedTimeAsLong = TimeUtil.msElapsedTimeToLong(elapsedTime);
             long averageElapsedTime = (testCaseAverageElapsedTimeAsLong + addedElapsedTimeAsLong) / 2;
             testCaseAverageElapsedTime = TimeUtil.formatElapsedTimeAsMS(averageElapsedTime);
         }

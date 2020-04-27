@@ -85,6 +85,11 @@ public class TimeUtil {
         return new SimpleDateFormat("yyyy-MM-dd").format(new Date());
     }
 
+    /**
+     * 获取当前日期，可加减日期
+     *
+     * @param number 加减日期的天数
+     */
     public static String currentDate(int number) {
         Date currentDate = new Date();
         Calendar calendar = Calendar.getInstance();
@@ -101,14 +106,18 @@ public class TimeUtil {
         return System.currentTimeMillis();
     }
 
+    public static String currentTimestampAsString() {
+        return String.valueOf(System.currentTimeMillis());
+    }
+
     /**
      * 计算时间差（毫秒）
      *
      * @param startTime 开始时间戳
      * @return 耗时ms.
      */
-    public static String elapsedTimeAsMs(long startTime) {
-        return elapsedTime(startTime) + "ms";
+    public static String elapsedTimeAsString(long startTime) {
+        return String.valueOf(elapsedTime(startTime));
     }
 
     /**
@@ -189,11 +198,11 @@ public class TimeUtil {
     /**
      * String型耗时转换为 long型的毫秒级耗时
      *
-     * @param elapsedTimeStr String型耗时（00h:00m:00s + 00ms）
+     * @param elapsedTime String型耗时（00h:00m:00s + 00ms）
      */
-    public static long elapsedTimeAsHMSMsToLong(String elapsedTimeStr) {
-        elapsedTimeStr = elapsedTimeStr.replace(" ", "");
-        String[] timsArray = elapsedTimeStr.split("\\+");
+    public static long hmsMsElapsedTimeToLong(String elapsedTime) {
+        elapsedTime = elapsedTime.replace(" ", "");
+        String[] timsArray = elapsedTime.split("\\+");
         String[] hms = timsArray[0].split(":");
         long h = Long.parseLong(hms[0].substring(0, 2)) * 60 * 60 * 1000;
         long m = Long.parseLong(hms[1].substring(0, 2)) * 60 * 1000;
@@ -205,10 +214,10 @@ public class TimeUtil {
     /**
      * String型耗时转换为 long型的毫秒级耗时
      *
-     * @param elapsedTimeStr String型耗时（00h:00m:00s）
+     * @param elapsedTime String型耗时（00h:00m:00s）
      */
-    public static long elapsedTimeAsHMSToLong(String elapsedTimeStr) {
-        String[] hms = elapsedTimeStr.split(":");
+    public static long hmsElapsedTimeToLong(String elapsedTime) {
+        String[] hms = elapsedTime.split(":");
         long h = Long.parseLong(hms[0].substring(0, 2)) * 60 * 60 * 1000;
         long m = Long.parseLong(hms[1].substring(0, 2)) * 60 * 1000;
         long s = Long.parseLong(hms[2].substring(0, 2)) * 1000;
@@ -218,10 +227,10 @@ public class TimeUtil {
     /**
      * String型耗时转换为 long型的毫秒级耗时
      *
-     * @param elapsedTimeStr String型耗时（00m:00s）
+     * @param elapsedTime String型耗时（00m:00s）
      */
-    public static long elapsedTimeAsMSToLong(String elapsedTimeStr) {
-        String[] hms = elapsedTimeStr.split(":");
+    public static long msElapsedTimeToLong(String elapsedTime) {
+        String[] hms = elapsedTime.split(":");
         long m = Long.parseLong(hms[0].substring(0, 2)) * 60 * 1000;
         long s = Long.parseLong(hms[1].substring(0, 2)) * 1000;
         return m + s;
