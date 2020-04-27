@@ -44,9 +44,12 @@ public class HTTPHeaderReader extends HeaderManager implements TestStateListener
         if (!alreadyRead) {
             try {
                 Map<String, String> headerMap = getHeaderMap(getHeadersFilePath());
-                headerMap.forEach((name, value) -> super.getHeaders().addItem(new Header(name, value)));
-                replacer.replaceValues(this);
-                this.setRunningVersion(true);
+                for (Map.Entry<String, String> entry : headerMap.entrySet()) {
+                    Header header = new Header(entry.getKey(), entry.getValue());
+                    replacer.replaceValues(header);
+                    header.setRunningVersion(true);
+                    super.getHeaders().addItem(header);
+                }
                 alreadyRead = true;
             } catch (Exception e) {
                 logger.error(ExceptionUtil.getStackTrace(e));
