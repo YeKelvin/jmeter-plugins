@@ -38,6 +38,10 @@ public class TimeUtil {
         }
     }
 
+    public static String strtimeToTimestampAsString(String time, String dateFormatPattern) {
+        return String.valueOf(strtimeToTimestamp(time, dateFormatPattern));
+    }
+
     public static long strtimeToTimestamp(String time, SimpleDateFormat dateFormat) {
         try {
             Date date = dateFormat.parse(time);
