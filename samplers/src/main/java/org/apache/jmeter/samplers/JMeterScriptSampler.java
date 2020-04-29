@@ -322,7 +322,17 @@ public class JMeterScriptSampler extends AbstractSampler implements Interruptibl
             return;
         }
 
-        incrementalVariables.forEach((key, value) -> props.put(key, value));
+        for (Map.Entry<String, Object> entry : incrementalVariables.entrySet()) {
+            String key = entry.getKey();
+            Object value = entry.getValue();
+            if (key == null) {
+                continue;
+            }
+            if (value == null) {
+                value = "null";
+            }
+            props.put(key, value);
+        }
     }
 
     private void setNonGui(boolean isNonGui) {
