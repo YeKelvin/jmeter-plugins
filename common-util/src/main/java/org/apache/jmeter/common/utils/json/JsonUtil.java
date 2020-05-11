@@ -26,6 +26,9 @@ public class JsonUtil {
     public static Type mapType = new TypeToken<Map<Object, Object>>() {
     }.getType();
 
+    public static Type mapTypeAsStrObj = new TypeToken<Map<String, Object>>() {
+    }.getType();
+
     private static final Gson gson = getGson();
 
     private static Gson getGson() {
