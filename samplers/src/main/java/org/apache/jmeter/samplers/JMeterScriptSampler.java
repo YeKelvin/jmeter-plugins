@@ -22,6 +22,8 @@ import org.apache.jmeter.save.SaveService;
 import org.apache.jmeter.testelement.TestPlan;
 import org.apache.jmeter.threads.AbstractThreadGroup;
 import org.apache.jmeter.threads.JMeterContextService;
+import org.apache.jmeter.threads.PostThreadGroup;
+import org.apache.jmeter.threads.SetupThreadGroup;
 import org.apache.jmeter.util.JMeterUtils;
 import org.apache.jmeter.visualizers.ReportCollector;
 import org.apache.jorphan.collections.HashTree;
@@ -184,15 +186,15 @@ public class JMeterScriptSampler extends AbstractSampler implements Interruptibl
         // 删除已禁用的组件
         HashTree testTree = JMeter.convertSubTree(tree, false);
 
+        // 删除不必要的组件
+        removeUnwantedComponents(testTree);
+
         // 校验脚本中是否仅存在一个线程组
         // 设置该线程组配置，修改如下
         // 错误动作=ON_SAMPLE_ERROR_START_NEXT_LOOP
         // 线程数=1
         // 循环次数=1
         setThreadGroupParams(testTree);
-
-        // 删除不必要的组件
-        removeUnwantedComponents(testTree);
 
         // 添加必须的组件
         addComponents(testTree, result);
@@ -224,44 +226,59 @@ public class JMeterScriptSampler extends AbstractSampler implements Interruptibl
         HashTree testPlanTree = hashTree.get(hashTree.getArray()[0]);
 
         // 从 HashTree中搜索对应的组件对象
-        SearchByClass<AbstractThreadGroup> tgSearcher = new SearchByClass<>(AbstractThreadGroup.class);
+        SearchByClass<SetupThreadGroup> setupSearcher = new SearchByClass<>(SetupThreadGroup.class);
+        SearchByClass<AbstractThreadGroup> groupSearcher = new SearchByClass<>(AbstractThreadGroup.class);
         SearchByClass<SSHConfiguration> sshSearcher = new SearchByClass<>(SSHConfiguration.class);
         SearchByClass<ReportCollector> reportSearcher = new SearchByClass<>(ReportCollector.class);
-        SearchByClass<ResultCollector> rcSearcher = new SearchByClass<>(ResultCollector.class);
-        testPlanTree.traverse(tgSearcher);
+        SearchByClass<ResultCollector> resultCollectorSearcher = new SearchByClass<>(ResultCollector.class);
+
+        testPlanTree.traverse(setupSearcher);
+        testPlanTree.traverse(groupSearcher);
         testPlanTree.traverse(sshSearcher);
         testPlanTree.traverse(reportSearcher);
-        testPlanTree.traverse(rcSearcher);
-        Iterator<AbstractThreadGroup> tgIter = tgSearcher.getSearchResults().iterator();
+        testPlanTree.traverse(resultCollectorSearcher);
+
+        Iterator<SetupThreadGroup> setupIter = setupSearcher.getSearchResults().iterator();
+        Iterator<AbstractThreadGroup> threadGroupIter = groupSearcher.getSearchResults().iterator();
         Iterator<SSHConfiguration> sshIter = sshSearcher.getSearchResults().iterator();
         Iterator<ReportCollector> reportIter = reportSearcher.getSearchResults().iterator();
-        Iterator<ResultCollector> rcIter = rcSearcher.getSearchResults().iterator();
+        Iterator<ResultCollector> resultCollectorIter = resultCollectorSearcher.getSearchResults().iterator();
 
         // 遍历删除以上搜索的对象
         // 删除 TestPlan下的组件
         while (sshIter.hasNext()) {
-            // 删除 SSH Configuration组件
-            SSHConfiguration sshPortForwarding = sshIter.next();
-            testPlanTree.remove(sshPortForwarding);
+            // 删除 SSH Configuration
+            SSHConfiguration sshConfiguration = sshIter.next();
+            testPlanTree.remove(sshConfiguration);
         }
 
         while (reportIter.hasNext()) {
-            // 删除 HTML Report组件
+            // 删除 HTML Report
             ReportCollector reportCollector = reportIter.next();
             testPlanTree.remove(reportCollector);
         }
 
-        while (rcIter.hasNext()) {
-            // 删除 TestPlan下的查看结果树组件
-            ResultCollector resultCollector = rcIter.next();
+        while (resultCollectorIter.hasNext()) {
+            // 删除查看结果树
+            ResultCollector resultCollector = resultCollectorIter.next();
             testPlanTree.remove(resultCollector);
         }
 
-        // 删除 ThreadGroup下的查看结果树组件
-        while (tgIter.hasNext()) {
-            AbstractThreadGroup threadGroup = tgIter.next();
+        while (setupIter.hasNext()) {
+            // 删除 Setup线程组
+            AbstractThreadGroup setupGroup = setupIter.next();
+            testPlanTree.remove(setupGroup);
+        }
+
+        // 删除 ThreadGroup下的查看结果树
+        while (threadGroupIter.hasNext()) {
+            AbstractThreadGroup threadGroup = threadGroupIter.next();
+            if (threadGroup instanceof SetupThreadGroup || threadGroup instanceof PostThreadGroup) {
+                continue;
+            }
+
             HashTree threadGroupTree = testPlanTree.get(threadGroup);
-            for (ResultCollector resultCollector : rcSearcher.getSearchResults()) {
+            for (ResultCollector resultCollector : resultCollectorSearcher.getSearchResults()) {
                 threadGroupTree.remove(resultCollector);
             }
         }
