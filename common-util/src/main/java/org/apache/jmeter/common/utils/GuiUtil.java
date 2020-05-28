@@ -56,8 +56,18 @@ public class GuiUtil {
         textArea.setEditable(false);
         textArea.setBackground(bg);
 
-        JPanel panel = new JPanel(new BorderLayout(10, 10));
-        panel.add(textArea, BorderLayout.CENTER);
+        GridBagConstraints gbc= new GridBagConstraints();
+        gbc.fill = GridBagConstraints.BOTH;
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.weightx = 1;
+        gbc.weighty = 1;
+        gbc.insets = new Insets(1, 1, 1, 1);
+
+        JPanel panel = new JPanel(new GridBagLayout());
+        panel.setBorder(GuiUtil.createTitledBorder("说明"));
+        panel.add(textArea, gbc);
+
         return panel;
     }
 

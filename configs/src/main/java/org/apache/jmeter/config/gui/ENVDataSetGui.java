@@ -128,7 +128,6 @@ public class ENVDataSetGui extends AbstractConfigGui {
         table.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
         table.revalidate();
         table.setRowSorter(sorter);
-        JMeterUtils.applyHiDPI(table);
 
         JPanel panel = new JPanel(new BorderLayout(10, 10));
         panel.add(makeScrollPane(table), BorderLayout.CENTER);
@@ -137,7 +136,7 @@ public class ENVDataSetGui extends AbstractConfigGui {
     }
 
     private JPanel getNotePanel() {
-        String note = "说明：\n" +
+        String note =
                 "1. 配置文件必须是 Yaml格式 ，且必须放在 ${JMETER_HOME}/config 目录下；\n" +
                 "2. Non-Gui命令说明：存在 -JconfigName 选项时，优先读取 ${__P(configName)} 配置文件。";
         return GuiUtil.createNotePanel(note, this.getBackground());
