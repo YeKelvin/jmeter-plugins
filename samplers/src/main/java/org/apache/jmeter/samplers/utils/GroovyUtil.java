@@ -15,13 +15,13 @@ import java.util.regex.Pattern;
  * Time     17:58
  */
 public class GroovyUtil {
-    private static String AND_OR_NOT_PATTERN = "([^!()]*(\\&\\&|\\|\\|))|[^!()]*";
-    private static Pattern andOrNotregex = Pattern.compile(AND_OR_NOT_PATTERN);
-    private static String AND = "&&";
-    private static String OR = "||";
-    private static String NOT = "!";
-    private static String LEFT_BRACKETS = "(";
-    private static String RIGHT_BRACKETS = ")";
+    private static final String AND_OR_NOT_PATTERN = "([^!()]*(\\&\\&|\\|\\|))|[^!()]*";
+    private static final Pattern andOrNotregex = Pattern.compile(AND_OR_NOT_PATTERN);
+    private static final String AND = "&&";
+    private static final String OR = "||";
+    private static final String NOT = "!";
+    private static final String LEFT_BRACKETS = "(";
+    private static final String RIGHT_BRACKETS = ")";
 
 
     /**

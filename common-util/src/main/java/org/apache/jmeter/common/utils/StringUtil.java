@@ -1,6 +1,6 @@
 package org.apache.jmeter.common.utils;
 
-import org.apache.commons.lang.text.StrSubstitutor;
+import org.apache.commons.lang3.text.StrSubstitutor;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.Map;
