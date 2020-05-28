@@ -81,13 +81,13 @@ public class GuiUtil {
          *    Y ┃
          *      ↓
          *
-         * fill：填充
+         * fill：当格子有剩余空间时，如何填充空间
          *      - NONE          不进行尺寸处理 默认居中
          *      - BOTH          水平和竖直均拉伸到充满
          *      - HORIZONTAL    水平方向拉伸充满
          *      - VERTICAL      竖直方向拉伸充满
          *
-         * anchor：代表在单元格中的绝对值对齐方式
+         * anchor：当组件没有空间大时，设置组件处在空间的位置
          *      - CENTER        居中
          *      - NORTH         布局在上方
          *      - NORTHEAST     布局在右上方
@@ -98,15 +98,15 @@ public class GuiUtil {
          *      - WEST          布局在左方
          *      - NORTHWEST     布局在左上方
          *
-         * gridwidth与gridheight：确定组件在x轴（y轴）所占的单元格数
+         * gridwidth / gridheight：组件占用的单元格数
          *      - RELATIVE      占据其他组件布局后余下的尺寸
          *      - REMAINDER     占据此行或者此列的剩下全部，后置的组件另起一行或一列
          *
-         * gridx与gridy：确定组件在当前坐标系的位置（x,y）
+         * gridx / gridy：组件坐标
          *
-         * weightx与weighty：权重（默认权重是把多的空间放在容器边框和单元格边框之间）；权重值越大，分到空间（组件到它所占网格的距离空间）越多
+         * weightx / weighty：窗口放大时，组件拉伸的比例
          *
-         * ipadx与ipady：内边距
+         * ipadx / ipady：内边距
          *
          * insets：外边距
          */
