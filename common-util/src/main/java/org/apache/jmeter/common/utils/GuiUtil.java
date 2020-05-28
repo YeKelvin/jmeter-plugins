@@ -52,9 +52,11 @@ public class GuiUtil {
 
     public static JPanel createNotePanel(String note, Color bg) {
         JTextArea textArea = new JTextArea(note);
-        textArea.setLineWrap(true);
-        textArea.setEditable(false);
         textArea.setBackground(bg);
+        textArea.setLineWrap(true);
+        textArea.setWrapStyleWord(true);
+        textArea.setEditable(false);
+        textArea.setEnabled(false);
 
         GridBagConstraints gbc= new GridBagConstraints();
         gbc.fill = GridBagConstraints.BOTH;
