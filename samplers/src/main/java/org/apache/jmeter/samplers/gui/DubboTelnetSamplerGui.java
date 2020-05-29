@@ -1,17 +1,17 @@
 package org.apache.jmeter.samplers.gui;
 
+import org.apache.jmeter.common.utils.GuiUtil;
+import org.apache.jmeter.common.utils.LogUtil;
+import org.apache.jmeter.common.utils.StringUtil;
+import org.apache.jmeter.common.utils.exception.ServiceException;
+import org.apache.jmeter.common.utils.json.JsonFileUtil;
+import org.apache.jmeter.common.utils.json.JsonUtil;
 import org.apache.jmeter.gui.util.HorizontalPanel;
 import org.apache.jmeter.gui.util.JSyntaxTextArea;
 import org.apache.jmeter.gui.util.JTextScrollPane;
 import org.apache.jmeter.samplers.DubboTelnetSampler;
 import org.apache.jmeter.testelement.TestElement;
 import org.slf4j.Logger;
-import org.apache.jmeter.common.utils.GuiUtil;
-import org.apache.jmeter.common.utils.StringUtil;
-import org.apache.jmeter.common.utils.exception.ServiceException;
-import org.apache.jmeter.common.utils.json.JsonFileUtil;
-import org.apache.jmeter.common.utils.json.JsonUtil;
-import org.apache.jmeter.common.utils.LogUtil;
 
 import javax.swing.*;
 import java.awt.*;
@@ -55,41 +55,7 @@ public class DubboTelnetSamplerGui extends AbstractSamplerGui implements ActionL
         setLayout(new BorderLayout(0, 10));
         setBorder(makeBorder());
         add(makeTitlePanel(), BorderLayout.NORTH);
-
-        JPanel interfacePanel = new JPanel(new GridBagLayout());
-        interfacePanel.setBorder(GuiUtil.createTitledBorder("配置接口信息"));
-        interfacePanel.add(getAddressLabel(), GuiUtil.GridBag.labelConstraints);
-        interfacePanel.add(getAddressTextField(), GuiUtil.GridBag.editorConstraints);
-        interfacePanel.add(getInterfaceNameLabel(), GuiUtil.GridBag.labelConstraints);
-        interfacePanel.add(getInterfaceNameTextField(), GuiUtil.GridBag.editorConstraints);
-        interfacePanel.add(getExpectationLabel(), GuiUtil.GridBag.labelConstraints);
-        interfacePanel.add(getExpectationTextField(), GuiUtil.GridBag.editorConstraints);
-        interfacePanel.add(getEncodeLabel(), GuiUtil.GridBag.labelConstraints);
-        interfacePanel.add(getEncodeTextField(), GuiUtil.GridBag.editorConstraints);
-        interfacePanel.add(getThroughSSHLabel(), GuiUtil.GridBag.labelConstraints);
-        interfacePanel.add(getThroughSSHComboBox(), GuiUtil.GridBag.editorConstraints);
-        interfacePanel.add(getParamsLabel(), GuiUtil.GridBag.labelConstraints);
-        interfacePanel.add(getButtonPanel(), GuiUtil.GridBag.editorConstraints);
-        interfacePanel.add(getParamsPanel(), GuiUtil.GridBag.fillBottomConstraints);
-
-        JPanel templatePanel = new JPanel(new GridBagLayout());
-        templatePanel.setBorder(GuiUtil.createTitledBorder("配置模板信息"));
-        templatePanel.add(getUseTemplateLabel(), GuiUtil.GridBag.labelConstraints);
-        templatePanel.add(getUseTemplateComboBox(), GuiUtil.GridBag.editorConstraints);
-        templatePanel.add(getInterfacePathLabel(), GuiUtil.GridBag.labelConstraints);
-        templatePanel.add(getInterfacePathTextField(), GuiUtil.GridBag.editorConstraints);
-        templatePanel.add(getJsonPathLabel(), GuiUtil.GridBag.labelConstraints);
-        templatePanel.add(GuiUtil.createBlankPanel(), GuiUtil.GridBag.editorConstraints);
-        templatePanel.add(getJsonPathPanel(), GuiUtil.GridBag.multiLineEditorConstraints);
-        templatePanel.add(getTemplateContentLabel(), GuiUtil.GridBag.labelConstraints);
-        templatePanel.add(GuiUtil.createBlankPanel(), GuiUtil.GridBag.editorConstraints);
-        templatePanel.add(getTemplateContentPanel(), GuiUtil.GridBag.fillBottomConstraints);
-
-        JTabbedPane tabbedPane = new JTabbedPane();
-        tabbedPane.add("接口配置", interfacePanel);
-        tabbedPane.add("模板配置", templatePanel);
-
-        add(tabbedPane, BorderLayout.CENTER);
+        add(createJTabbedPane(), BorderLayout.CENTER);
     }
 
     @Override
@@ -172,51 +138,51 @@ public class DubboTelnetSamplerGui extends AbstractSamplerGui implements ActionL
         }
     }
 
-    private Component getAddressTextField() {
+    private Component createAddressTextField() {
         if (addressTextField == null) {
             addressTextField = GuiUtil.createTextField(DubboTelnetSampler.ADDRESS);
         }
         return addressTextField;
     }
 
-    private Component getAddressLabel() {
-        return GuiUtil.createLabel("服务器地址：", getAddressTextField());
+    private Component createAddressLabel() {
+        return GuiUtil.createLabel("服务器地址：", createAddressTextField());
     }
 
-    private Component getInterfaceNameTextField() {
+    private Component createInterfaceNameTextField() {
         if (interfaceNameTextField == null) {
             interfaceNameTextField = GuiUtil.createTextField(DubboTelnetSampler.INTERFACE_NAME);
         }
         return interfaceNameTextField;
     }
 
-    private Component getInterfaceNameLabel() {
-        return GuiUtil.createLabel("接口名称：", getInterfaceNameTextField());
+    private Component createInterfaceNameLabel() {
+        return GuiUtil.createLabel("接口名称：", createInterfaceNameTextField());
     }
 
-    private Component getExpectationTextField() {
+    private Component createExpectationTextField() {
         if (expectationTextField == null) {
             expectationTextField = GuiUtil.createTextField(DubboTelnetSampler.EXPECTATION);
         }
         return expectationTextField;
     }
 
-    private Component getExpectationLabel() {
-        return GuiUtil.createLabel("预期结果：", getExpectationTextField());
+    private Component createExpectationLabel() {
+        return GuiUtil.createLabel("预期结果：", createExpectationTextField());
     }
 
-    private Component getEncodeTextField() {
+    private Component createEncodeTextField() {
         if (encodeTextField == null) {
             encodeTextField = GuiUtil.createTextField(DubboTelnetSampler.EXPECTATION);
         }
         return encodeTextField;
     }
 
-    private Component getEncodeLabel() {
-        return GuiUtil.createLabel("字符编码：", getEncodeTextField());
+    private Component createEncodeLabel() {
+        return GuiUtil.createLabel("字符编码：", createEncodeTextField());
     }
 
-    private Component getThroughSSHComboBox() {
+    private Component createThroughSSHComboBox() {
         if (throughSSHComboBox == null) {
             throughSSHComboBox = GuiUtil.createComboBox(DubboTelnetSampler.THROUGH_SSH);
             throughSSHComboBox.addItem("false");
@@ -225,26 +191,26 @@ public class DubboTelnetSamplerGui extends AbstractSamplerGui implements ActionL
         return throughSSHComboBox;
     }
 
-    private Component getThroughSSHLabel() {
-        return GuiUtil.createLabel("使用ssh：", getThroughSSHComboBox());
+    private Component createThroughSSHLabel() {
+        return GuiUtil.createLabel("使用ssh：", createThroughSSHComboBox());
     }
 
-    private Component getParamsTextArea() {
+    private Component createParamsTextArea() {
         if (paramsTextArea == null) {
             paramsTextArea = GuiUtil.createTextArea(DubboTelnetSampler.PARAMS, 20);
         }
         return paramsTextArea;
     }
 
-    private Component getParamsLabel() {
-        return GuiUtil.createLabel("请求报文：", getParamsTextArea());
+    private Component createParamsLabel() {
+        return GuiUtil.createLabel("请求报文：", createParamsTextArea());
     }
 
-    private Component getParamsPanel() {
-        return JTextScrollPane.getInstance((JSyntaxTextArea) getParamsTextArea());
+    private Component createParamsPanel() {
+        return JTextScrollPane.getInstance((JSyntaxTextArea) createParamsTextArea());
     }
 
-    private Component getUseTemplateComboBox() {
+    private Component createUseTemplateComboBox() {
         if (useTemplateComboBox == null) {
             useTemplateComboBox = GuiUtil.createComboBox(DubboTelnetSampler.USE_TEMPLATE);
             useTemplateComboBox.addItem("false");
@@ -253,52 +219,52 @@ public class DubboTelnetSamplerGui extends AbstractSamplerGui implements ActionL
         return useTemplateComboBox;
     }
 
-    private Component getUseTemplateLabel() {
-        return GuiUtil.createLabel("使用模板：", getUseTemplateComboBox());
+    private Component createUseTemplateLabel() {
+        return GuiUtil.createLabel("使用模板：", createUseTemplateComboBox());
     }
 
-    private Component getInterfacePathTextField() {
+    private Component createInterfacePathTextField() {
         if (interfacePathTextField == null) {
             interfacePathTextField = GuiUtil.createTextField(DubboTelnetSampler.INTERFACE_PATH);
         }
         return interfacePathTextField;
     }
 
-    private Component getInterfacePathLabel() {
-        return GuiUtil.createLabel("模板目录：", getInterfacePathTextField());
+    private Component createInterfacePathLabel() {
+        return GuiUtil.createLabel("模板目录：", createInterfacePathTextField());
     }
 
-    private Component getJsonPathTextArea() {
+    private Component createJsonPathTextArea() {
         if (jsonPathsTextArea == null) {
             jsonPathsTextArea = GuiUtil.createTextArea(DubboTelnetSampler.JSON_PATHS, 6);
         }
         return jsonPathsTextArea;
     }
 
-    private Component getJsonPathLabel() {
-        return GuiUtil.createLabel("JsonPaths：", getJsonPathTextArea());
+    private Component createJsonPathLabel() {
+        return GuiUtil.createLabel("JsonPaths：", createJsonPathTextArea());
     }
 
-    private Component getJsonPathPanel() {
-        return JTextScrollPane.getInstance((JSyntaxTextArea) getJsonPathTextArea());
+    private Component createJsonPathPanel() {
+        return JTextScrollPane.getInstance((JSyntaxTextArea) createJsonPathTextArea());
     }
 
-    private Component getTemplateContentTextArea() {
+    private Component createTemplateContentTextArea() {
         if (templateContentTextArea == null) {
             templateContentTextArea = GuiUtil.createTextArea(DubboTelnetSampler.TEMPLATE_CONTENT, 20);
         }
         return templateContentTextArea;
     }
 
-    private Component getTemplateContentLabel() {
-        return GuiUtil.createLabel("模板内容：", getTemplateContentTextArea());
+    private Component createTemplateContentLabel() {
+        return GuiUtil.createLabel("模板内容：", createTemplateContentTextArea());
     }
 
-    private Component getTemplateContentPanel() {
-        return JTextScrollPane.getInstance((JSyntaxTextArea) getTemplateContentTextArea());
+    private Component createTemplateContentPanel() {
+        return JTextScrollPane.getInstance((JSyntaxTextArea) createTemplateContentTextArea());
     }
 
-    private Component getButtonPanel() {
+    private Component createButtonPanel() {
         JButton jsonButton = new JButton(JSON_ACTION);
         jsonButton.setActionCommand(JSON_ACTION);
         jsonButton.addActionListener(this);
@@ -310,6 +276,43 @@ public class DubboTelnetSamplerGui extends AbstractSamplerGui implements ActionL
         panel.add(jsonButton);
         panel.add(textButton);
         return panel;
+    }
+
+    private Component createJTabbedPane() {
+        JPanel interfacePanel = new JPanel(new GridBagLayout());
+        interfacePanel.setBorder(GuiUtil.createTitledBorder("配置接口信息"));
+        interfacePanel.add(createAddressLabel(), GuiUtil.GridBag.labelConstraints);
+        interfacePanel.add(createAddressTextField(), GuiUtil.GridBag.editorConstraints);
+        interfacePanel.add(createInterfaceNameLabel(), GuiUtil.GridBag.labelConstraints);
+        interfacePanel.add(createInterfaceNameTextField(), GuiUtil.GridBag.editorConstraints);
+        interfacePanel.add(createExpectationLabel(), GuiUtil.GridBag.labelConstraints);
+        interfacePanel.add(createExpectationTextField(), GuiUtil.GridBag.editorConstraints);
+        interfacePanel.add(createEncodeLabel(), GuiUtil.GridBag.labelConstraints);
+        interfacePanel.add(createEncodeTextField(), GuiUtil.GridBag.editorConstraints);
+        interfacePanel.add(createThroughSSHLabel(), GuiUtil.GridBag.labelConstraints);
+        interfacePanel.add(createThroughSSHComboBox(), GuiUtil.GridBag.editorConstraints);
+        interfacePanel.add(createParamsLabel(), GuiUtil.GridBag.labelConstraints);
+        interfacePanel.add(createButtonPanel(), GuiUtil.GridBag.editorConstraints);
+        interfacePanel.add(createParamsPanel(), GuiUtil.GridBag.fillBottomConstraints);
+
+        JPanel templatePanel = new JPanel(new GridBagLayout());
+        templatePanel.setBorder(GuiUtil.createTitledBorder("配置模板信息"));
+        templatePanel.add(createUseTemplateLabel(), GuiUtil.GridBag.labelConstraints);
+        templatePanel.add(createUseTemplateComboBox(), GuiUtil.GridBag.editorConstraints);
+        templatePanel.add(createInterfacePathLabel(), GuiUtil.GridBag.labelConstraints);
+        templatePanel.add(createInterfacePathTextField(), GuiUtil.GridBag.editorConstraints);
+        templatePanel.add(createJsonPathLabel(), GuiUtil.GridBag.labelConstraints);
+        templatePanel.add(GuiUtil.createBlankPanel(), GuiUtil.GridBag.editorConstraints);
+        templatePanel.add(createJsonPathPanel(), GuiUtil.GridBag.multiLineEditorConstraints);
+        templatePanel.add(createTemplateContentLabel(), GuiUtil.GridBag.labelConstraints);
+        templatePanel.add(GuiUtil.createBlankPanel(), GuiUtil.GridBag.editorConstraints);
+        templatePanel.add(createTemplateContentPanel(), GuiUtil.GridBag.fillBottomConstraints);
+
+        JTabbedPane tabbedPane = new JTabbedPane();
+        tabbedPane.add("接口配置", interfacePanel);
+        tabbedPane.add("模板配置", templatePanel);
+
+        return tabbedPane;
     }
 
     /**

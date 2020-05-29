@@ -45,32 +45,17 @@ public class GuiUtil {
     }
 
     public static JComboBox<String> createComboBox(String name) {
-        JComboBox<String> comboBox=new JComboBox<>();
+        JComboBox<String> comboBox = new JComboBox<>();
         comboBox.setName(name);
         return comboBox;
     }
 
-    public static JPanel createNotePanel(String note, Color bg) {
+    public static JTextArea createNoteArea(String note, Color bg) {
         JTextArea textArea = new JTextArea(note);
-        textArea.setBackground(bg);
-        textArea.setLineWrap(true);
-        textArea.setWrapStyleWord(true);
+        textArea.setBorder(createTitledBorder("说明"));
         textArea.setEditable(false);
-        textArea.setEnabled(false);
-
-        GridBagConstraints gbc= new GridBagConstraints();
-        gbc.fill = GridBagConstraints.BOTH;
-        gbc.gridx = 0;
-        gbc.gridy = 0;
-        gbc.weightx = 1;
-        gbc.weighty = 1;
-        gbc.insets = new Insets(1, 1, 1, 1);
-
-        JPanel panel = new JPanel(new GridBagLayout());
-        panel.setBorder(GuiUtil.createTitledBorder("说明"));
-        panel.add(textArea, gbc);
-
-        return panel;
+        textArea.setBackground(bg);
+        return textArea;
     }
 
     public static class GridBag {

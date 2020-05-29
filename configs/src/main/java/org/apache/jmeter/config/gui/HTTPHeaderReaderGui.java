@@ -35,15 +35,8 @@ public class HTTPHeaderReaderGui extends AbstractConfigGui {
         setLayout(new BorderLayout());
         setBorder(makeBorder());
         add(makeTitlePanel(), BorderLayout.NORTH);
-
-        JPanel bodyPanel = new JPanel(new GridBagLayout());
-        bodyPanel.setBorder(GuiUtil.createTitledBorder("通过文件配置请求头"));
-        bodyPanel.add(getHTTPFileNameLabel(), GuiUtil.GridBag.labelConstraints);
-        bodyPanel.add(getHTTPFileNameComboBox(), GuiUtil.GridBag.editorConstraints);
-        bodyPanel.add(createTablePanel(), GuiUtil.GridBag.fillBottomConstraints);
-
-        add(bodyPanel, BorderLayout.CENTER);
-        add(getNotePanel(), BorderLayout.SOUTH);
+        add(createBodyPanel(), BorderLayout.CENTER);
+        add(createNoteArea(), BorderLayout.SOUTH);
     }
 
     @Override
@@ -101,7 +94,7 @@ public class HTTPHeaderReaderGui extends AbstractConfigGui {
         tableModel.clearData();
     }
 
-    private Component getHTTPFileNameComboBox() {
+    private Component createHTTPFileNameComboBox() {
         if (headersFileNameComboBox == null) {
             headersFileNameComboBox = GuiUtil.createComboBox(HTTPHeaderReader.HEADERS_FILE_NAME);
             comboBoxAddItem(getHTTPHeaderFileList(getHTTPHeaderDirectoryPath()));
@@ -109,8 +102,8 @@ public class HTTPHeaderReaderGui extends AbstractConfigGui {
         return headersFileNameComboBox;
     }
 
-    private Component getHTTPFileNameLabel() {
-        return GuiUtil.createLabel("HTTP请求头文件名称：", getHTTPFileNameComboBox());
+    private Component createHTTPFileNameLabel() {
+        return GuiUtil.createLabel("HTTP请求头文件名称：", createHTTPFileNameComboBox());
     }
 
     private JPanel createTablePanel() {
@@ -126,7 +119,6 @@ public class HTTPHeaderReaderGui extends AbstractConfigGui {
         table.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
         table.revalidate();
         table.setRowSorter(sorter);
-        JMeterUtils.applyHiDPI(table);
 
         JPanel panel = new JPanel(new BorderLayout(10, 10));
         panel.add(makeScrollPane(table), BorderLayout.CENTER);
@@ -134,9 +126,18 @@ public class HTTPHeaderReaderGui extends AbstractConfigGui {
         return panel;
     }
 
-    private JPanel getNotePanel() {
-        String note = "说明：HTTP请求头文件必须是 Yaml格式，文件后缀为 .yaml，且必须放在 ${JMETER_HOME}/header 目录下。";
-        return GuiUtil.createNotePanel(note, this.getBackground());
+    private Component createBodyPanel() {
+        JPanel bodyPanel = new JPanel(new GridBagLayout());
+        bodyPanel.setBorder(GuiUtil.createTitledBorder("通过文件配置请求头"));
+        bodyPanel.add(createHTTPFileNameLabel(), GuiUtil.GridBag.labelConstraints);
+        bodyPanel.add(createHTTPFileNameComboBox(), GuiUtil.GridBag.editorConstraints);
+        bodyPanel.add(createTablePanel(), GuiUtil.GridBag.fillBottomConstraints);
+        return bodyPanel;
+    }
+
+    private Component createNoteArea() {
+        String note = "HTTP请求头文件必须是 Yaml格式，文件后缀为 .yaml，且必须放在 ${JMETER_HOME}/header 目录下。";
+        return GuiUtil.createNoteArea(note, this.getBackground());
     }
 
     private void initializeTableModel() {

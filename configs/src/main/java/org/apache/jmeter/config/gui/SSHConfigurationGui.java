@@ -1,10 +1,10 @@
 package org.apache.jmeter.config.gui;
 
 
+import org.apache.jmeter.common.utils.GuiUtil;
 import org.apache.jmeter.config.SSHConfiguration;
 import org.apache.jmeter.gui.util.VerticalPanel;
 import org.apache.jmeter.testelement.TestElement;
-import org.apache.jmeter.common.utils.GuiUtil;
 
 import javax.swing.*;
 import java.awt.*;
@@ -31,33 +31,8 @@ public class SSHConfigurationGui extends AbstractConfigGui {
         setLayout(new BorderLayout());
         setBorder(makeBorder());
         add(makeTitlePanel(), BorderLayout.NORTH);
-
-        JPanel bodyPanel = new JPanel(new GridBagLayout());
-        bodyPanel.setBorder(GuiUtil.createTitledBorder("配置SSH信息"));
-
-        bodyPanel.add(getSSHAddressLabel(), GuiUtil.GridBag.labelConstraints);
-        bodyPanel.add(getSSHAddressTextField(), GuiUtil.GridBag.editorConstraints);
-
-        bodyPanel.add(getSSHUserNameLabel(), GuiUtil.GridBag.labelConstraints);
-        bodyPanel.add(getSSHUserNameTextField(), GuiUtil.GridBag.editorConstraints);
-
-        bodyPanel.add(getSSHPasswordLabel(), GuiUtil.GridBag.labelConstraints);
-        bodyPanel.add(getSSHPasswordTextField(), GuiUtil.GridBag.editorConstraints);
-
-        bodyPanel.add(getSSHLocalForwardingLabel(), GuiUtil.GridBag.labelConstraints);
-        bodyPanel.add(getSSHLocalForwardingComboBox(), GuiUtil.GridBag.editorConstraints);
-
-        bodyPanel.add(getLocalForwardingPortLabel(), GuiUtil.GridBag.labelConstraints);
-        bodyPanel.add(getLocalForwardingPortTextField(), GuiUtil.GridBag.editorConstraints);
-
-        bodyPanel.add(getRemoteAddressLabel(), GuiUtil.GridBag.labelConstraints);
-        bodyPanel.add(getRemoteAddressTextField(), GuiUtil.GridBag.editorConstraints);
-
-        VerticalPanel mainPanel = new VerticalPanel();
-        mainPanel.add(bodyPanel);
-        mainPanel.add(getNotePanel());
-
-        add(mainPanel, BorderLayout.CENTER);
+        add(createBodyPanel(),BorderLayout.CENTER);
+        add(createNoteArea(), BorderLayout.SOUTH);
     }
 
     @Override
@@ -118,40 +93,40 @@ public class SSHConfigurationGui extends AbstractConfigGui {
         remoteAddressTextField.setText("");
     }
 
-    private Component getSSHAddressTextField() {
+    private Component createSSHAddressTextField() {
         if (sshAddressTextField == null) {
             sshAddressTextField = GuiUtil.createTextField(SSHConfiguration.SSH_ADDRESS);
         }
         return sshAddressTextField;
     }
 
-    private Component getSSHAddressLabel() {
-        return GuiUtil.createLabel("SSH地址：", getSSHAddressTextField());
+    private Component createSSHAddressLabel() {
+        return GuiUtil.createLabel("SSH地址：", createSSHAddressTextField());
     }
 
-    private Component getSSHUserNameTextField() {
+    private Component createSSHUserNameTextField() {
         if (sshUserNameTextField == null) {
             sshUserNameTextField = GuiUtil.createTextField(SSHConfiguration.SSH_USER_NAME);
         }
         return sshUserNameTextField;
     }
 
-    private Component getSSHUserNameLabel() {
-        return GuiUtil.createLabel("SSH用户名称：", getSSHAddressLabel());
+    private Component createSSHUserNameLabel() {
+        return GuiUtil.createLabel("SSH用户名称：", createSSHAddressLabel());
     }
 
-    private Component getSSHPasswordTextField() {
+    private Component createSSHPasswordTextField() {
         if (sshPasswordTextField == null) {
             sshPasswordTextField = GuiUtil.createTextField(SSHConfiguration.SSH_PASSWORD);
         }
         return sshPasswordTextField;
     }
 
-    private Component getSSHPasswordLabel() {
-        return GuiUtil.createLabel("SSH密码：", getSSHPasswordTextField());
+    private Component createSSHPasswordLabel() {
+        return GuiUtil.createLabel("SSH密码：", createSSHPasswordTextField());
     }
 
-    private Component getSSHLocalForwardingComboBox() {
+    private Component createSSHLocalForwardingComboBox() {
         if (sshLocalForwardingComboBox == null) {
             sshLocalForwardingComboBox = GuiUtil.createComboBox(SSHConfiguration.SSH_PORT_FORWARDING);
             sshLocalForwardingComboBox.addItem("true");
@@ -160,35 +135,62 @@ public class SSHConfigurationGui extends AbstractConfigGui {
         return sshLocalForwardingComboBox;
     }
 
-    private Component getSSHLocalForwardingLabel() {
-        return GuiUtil.createLabel("启用本地端口转发：", getSSHLocalForwardingComboBox());
+    private Component createSSHLocalForwardingLabel() {
+        return GuiUtil.createLabel("启用本地端口转发：", createSSHLocalForwardingComboBox());
     }
 
 
-    private Component getLocalForwardingPortTextField() {
+    private Component createLocalForwardingPortTextField() {
         if (localForwardingPortTextField == null) {
             localForwardingPortTextField = GuiUtil.createTextField(SSHConfiguration.LOCAL_FORWARDING_PORT);
         }
         return localForwardingPortTextField;
     }
 
-    private Component getLocalForwardingPortLabel() {
-        return GuiUtil.createLabel("本地转发端口：", getLocalForwardingPortTextField());
+    private Component createLocalForwardingPortLabel() {
+        return GuiUtil.createLabel("本地转发端口：", createLocalForwardingPortTextField());
     }
 
-    private Component getRemoteAddressTextField() {
+    private Component createRemoteAddressTextField() {
         if (remoteAddressTextField == null) {
             remoteAddressTextField = GuiUtil.createTextField(SSHConfiguration.REMOTE_ADDRESS);
         }
         return remoteAddressTextField;
     }
 
-    private Component getRemoteAddressLabel() {
-        return GuiUtil.createLabel("远程地址：", getRemoteAddressTextField());
+    private Component createRemoteAddressLabel() {
+        return GuiUtil.createLabel("远程地址：", createRemoteAddressTextField());
     }
 
-    private Component getNotePanel() {
-        String note = "\n注意：请把此组件放在JDBC组件后面，不然连接关闭时会报IOException。";
-        return GuiUtil.createNotePanel(note, this.getBackground());
+    private Component createBodyPanel() {
+        JPanel bodyPanel = new JPanel(new GridBagLayout());
+        bodyPanel.setBorder(GuiUtil.createTitledBorder("配置SSH信息"));
+
+        bodyPanel.add(createSSHAddressLabel(), GuiUtil.GridBag.labelConstraints);
+        bodyPanel.add(createSSHAddressTextField(), GuiUtil.GridBag.editorConstraints);
+
+        bodyPanel.add(createSSHUserNameLabel(), GuiUtil.GridBag.labelConstraints);
+        bodyPanel.add(createSSHUserNameTextField(), GuiUtil.GridBag.editorConstraints);
+
+        bodyPanel.add(createSSHPasswordLabel(), GuiUtil.GridBag.labelConstraints);
+        bodyPanel.add(createSSHPasswordTextField(), GuiUtil.GridBag.editorConstraints);
+
+        bodyPanel.add(createSSHLocalForwardingLabel(), GuiUtil.GridBag.labelConstraints);
+        bodyPanel.add(createSSHLocalForwardingComboBox(), GuiUtil.GridBag.editorConstraints);
+
+        bodyPanel.add(createLocalForwardingPortLabel(), GuiUtil.GridBag.labelConstraints);
+        bodyPanel.add(createLocalForwardingPortTextField(), GuiUtil.GridBag.editorConstraints);
+
+        bodyPanel.add(createRemoteAddressLabel(), GuiUtil.GridBag.labelConstraints);
+        bodyPanel.add(createRemoteAddressTextField(), GuiUtil.GridBag.editorConstraints);
+
+        VerticalPanel mainPanel = new VerticalPanel();
+        mainPanel.add(bodyPanel);
+        return mainPanel;
+    }
+
+    private Component createNoteArea() {
+        String note = "请把此组件放在JDBC组件后面，不然连接关闭时会报IOException。";
+        return GuiUtil.createNoteArea(note, this.getBackground());
     }
 }
