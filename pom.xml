@@ -47,6 +47,7 @@
         <guava.version>28.0-jre</guava.version>
         <poi.version>4.1.1</poi.version>
         <yaml.version>1.26</yaml.version>
+        <jodd.version>5.1.4</jodd.version>
     </properties>
 
     <dependencyManagement>
@@ -307,7 +308,7 @@
             <dependency>
                 <groupId>org.jodd</groupId>
                 <artifactId>jodd-core</artifactId>
-                <version>5.1.4</version>
+                <version>${jodd.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
