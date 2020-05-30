@@ -9,6 +9,7 @@ import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 
 public class GoogleAuthenticator {
+
     private static final Base32 base32 = new Base32();
 
     /**
