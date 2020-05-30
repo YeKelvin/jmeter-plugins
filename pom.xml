@@ -304,6 +304,11 @@
                 <artifactId>snakeyaml</artifactId>
                 <version>${yaml.version}</version>
             </dependency>
+            <dependency>
+                <groupId>org.jodd</groupId>
+                <artifactId>jodd-core</artifactId>
+                <version>5.1.4</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
