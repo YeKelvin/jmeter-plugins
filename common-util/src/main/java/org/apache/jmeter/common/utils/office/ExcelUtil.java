@@ -1,7 +1,6 @@
 package org.apache.jmeter.common.utils.office;
 
 
-import com.google.common.collect.Maps;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.*;
@@ -12,7 +11,13 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author KelvinYe
@@ -67,7 +72,7 @@ public class ExcelUtil {
         // 创建标题行
         Row row = sheet.createRow(0);
         // 存储标题在Excel文件中的序号
-        Map<String, Integer> titleOrder = Maps.newHashMap();
+        Map<String, Integer> titleOrder = new HashMap();
         for (int i = 0; i < titles.size(); i++) {
             Cell cell = row.createCell(i);
             cell.setCellStyle(styles.get("header"));
@@ -145,7 +150,7 @@ public class ExcelUtil {
      * 设置格式
      */
     private static Map<String, CellStyle> createStyles(Workbook wb) {
-        Map<String, CellStyle> styles = Maps.newHashMap();
+        Map<String, CellStyle> styles = new HashMap();
 
         Font fontSize16 = wb.createFont();
         fontSize16.setFontHeightInPoints((short) 16);

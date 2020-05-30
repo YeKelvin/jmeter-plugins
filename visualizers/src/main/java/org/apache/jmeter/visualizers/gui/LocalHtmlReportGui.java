@@ -1,10 +1,10 @@
 package org.apache.jmeter.visualizers.gui;
 
 
+import org.apache.jmeter.common.utils.GuiUtil;
 import org.apache.jmeter.gui.util.VerticalPanel;
 import org.apache.jmeter.testelement.TestElement;
 import org.apache.jmeter.visualizers.ReportCollector;
-import org.apache.jmeter.common.utils.GuiUtil;
 
 import javax.swing.*;
 import java.awt.*;
@@ -22,21 +22,9 @@ public class LocalHtmlReportGui extends AbstractListenerGui {
         setLayout(new BorderLayout());
         setBorder(makeBorder());
         add(makeTitlePanel(), BorderLayout.NORTH);
+        add(createBodyPanel(), BorderLayout.CENTER);
+        add(createNoteArea(), BorderLayout.SOUTH);
 
-        JPanel bodyPanel = new JPanel(new GridBagLayout());
-        bodyPanel.setBorder(GuiUtil.createTitledBorder("配置HTML报告"));
-
-        bodyPanel.add(getReportNameLabel(), GuiUtil.GridBag.labelConstraints);
-        bodyPanel.add(getReportNameTextField(), GuiUtil.GridBag.editorConstraints);
-
-        bodyPanel.add(getIsAppendLabel(), GuiUtil.GridBag.labelConstraints);
-        bodyPanel.add(getIsAppendComboBox(), GuiUtil.GridBag.editorConstraints);
-
-        VerticalPanel mainPanel = new VerticalPanel();
-        mainPanel.add(bodyPanel);
-        mainPanel.add(getNoteJPanel());
-
-        add(mainPanel, BorderLayout.CENTER);
     }
 
     @Override
@@ -77,18 +65,18 @@ public class LocalHtmlReportGui extends AbstractListenerGui {
         isAppendComboBox.setSelectedItem("");
     }
 
-    private Component getReportNameTextField() {
+    private Component createReportNameTextField() {
         if (reportNameTextField == null) {
             reportNameTextField = GuiUtil.createTextField(ReportCollector.REPORT_NAME);
         }
         return reportNameTextField;
     }
 
-    private Component getReportNameLabel() {
-        return GuiUtil.createLabel("报告名称：", getReportNameTextField());
+    private Component createReportNameLabel() {
+        return GuiUtil.createLabel("报告名称：", createReportNameTextField());
     }
 
-    private Component getIsAppendComboBox() {
+    private Component createIsAppendComboBox() {
         if (isAppendComboBox == null) {
             isAppendComboBox = GuiUtil.createComboBox(ReportCollector.IS_APPEND);
             isAppendComboBox.addItem("false");
@@ -97,17 +85,32 @@ public class LocalHtmlReportGui extends AbstractListenerGui {
         return isAppendComboBox;
     }
 
-    private Component getIsAppendLabel() {
-        return GuiUtil.createLabel("是否追加写报告：", getIsAppendComboBox());
+    private Component createIsAppendLabel() {
+        return GuiUtil.createLabel("是否追加写报告：", createIsAppendComboBox());
     }
 
-    private Component getNoteJPanel() {
-        String note = "\n说明：\n" +
+    private Component createBodyPanel() {
+        JPanel bodyPanel = new JPanel(new GridBagLayout());
+        bodyPanel.setBorder(GuiUtil.createTitledBorder("配置HTML报告"));
+
+        bodyPanel.add(createReportNameLabel(), GuiUtil.GridBag.labelConstraints);
+        bodyPanel.add(createReportNameTextField(), GuiUtil.GridBag.editorConstraints);
+
+        bodyPanel.add(createIsAppendLabel(), GuiUtil.GridBag.labelConstraints);
+        bodyPanel.add(createIsAppendComboBox(), GuiUtil.GridBag.editorConstraints);
+
+        VerticalPanel mainPanel = new VerticalPanel();
+        mainPanel.add(bodyPanel);
+        return mainPanel;
+    }
+
+    private Component createNoteArea() {
+        String note =
                 "1. 测试报告的路径为 ${JMETER_HOME}/htmlreport/${reportName}；\n" +
                 "2. 执行前必须先在 ${JMETER_HOME} 下创建 htmlreport 目录；\n" +
                 "3. Non-Gui命令说明：\n" +
-                "       a. 存在 -JreportName 选项时，优先读取 ${__P(reportName)} HTML报告名称；\n" +
-                "       b. 存在 -JisAppend 选项时，优先读取 ${__P(isAppend)} 追加模式；\n";
-        return GuiUtil.createNotePanel(note, this.getBackground());
+                "      a. 存在 -JreportName 选项时，优先读取 ${__P(reportName)} HTML报告名称；\n" +
+                "      b. 存在 -JisAppend 选项时，优先读取 ${__P(isAppend)} 追加模式；\n";
+        return GuiUtil.createNoteArea(note, this.getBackground());
     }
 }

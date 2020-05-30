@@ -20,11 +20,11 @@ public class TelnetUtil {
 
     private static final Logger logger = LogUtil.getLogger(TelnetUtil.class);
 
-    public static String WINDOWS = "VT220";
-    public static String UNIX = "VT100";
-    public static String LINUX = "VT100";
+    public static final String WINDOWS = "VT220";
+    public static final String UNIX = "VT100";
+    public static final String LINUX = "VT100";
 
-    private TelnetClient telnet = new TelnetClient(WINDOWS);
+    private final TelnetClient telnet = new TelnetClient(WINDOWS);
     private InputStreamReader in;
     private PrintStream out;
     // shell响应等待时间
@@ -77,9 +77,7 @@ public class TelnetUtil {
         }
 
         try {
-            if (telnet != null) {
-                telnet.disconnect();
-            }
+            telnet.disconnect();
         } catch (Exception e) {
             logger.error(ExceptionUtil.getStackTrace(e));
         }

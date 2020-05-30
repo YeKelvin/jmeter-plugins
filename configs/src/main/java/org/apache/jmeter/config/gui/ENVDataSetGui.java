@@ -35,15 +35,8 @@ public class ENVDataSetGui extends AbstractConfigGui {
         setLayout(new BorderLayout());
         setBorder(makeBorder());
         add(makeTitlePanel(), BorderLayout.NORTH);
-
-        JPanel bodyPanel = new JPanel(new GridBagLayout());
-        bodyPanel.setBorder(GuiUtil.createTitledBorder("请选择测试环境"));
-        bodyPanel.add(getConfigNameLabel(), GuiUtil.GridBag.labelConstraints);
-        bodyPanel.add(getConfigNameComboBox(), GuiUtil.GridBag.editorConstraints);
-        bodyPanel.add(createTablePanel(), GuiUtil.GridBag.fillBottomConstraints);
-
-        add(bodyPanel, BorderLayout.CENTER);
-        add(getNotePanel(), BorderLayout.SOUTH);
+        add(createBodyPanel(), BorderLayout.CENTER);
+        add(createNoteArea(), BorderLayout.SOUTH);
     }
 
     @Override
@@ -103,7 +96,7 @@ public class ENVDataSetGui extends AbstractConfigGui {
         tableModel.clearData();
     }
 
-    private Component getConfigNameComboBox() {
+    private Component createConfigNameComboBox() {
         if (configNameComboBox == null) {
             configNameComboBox = GuiUtil.createComboBox(ENVDataSet.CONFIG_NAME);
             comboBoxAddItem(getConfigFileList(getConfigPath()));
@@ -111,11 +104,11 @@ public class ENVDataSetGui extends AbstractConfigGui {
         return configNameComboBox;
     }
 
-    private Component getConfigNameLabel() {
-        return GuiUtil.createLabel("配置文件名称：", getConfigNameComboBox());
+    private Component createConfigNameLabel() {
+        return GuiUtil.createLabel("配置文件名称：", createConfigNameComboBox());
     }
 
-    private JPanel createTablePanel() {
+    private Component createTablePanel() {
         initializeTableModel();
         // 列排序
         TableRowSorter<ObjectTableModel> sorter = new TableRowSorter<>(tableModel);
@@ -128,7 +121,6 @@ public class ENVDataSetGui extends AbstractConfigGui {
         table.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
         table.revalidate();
         table.setRowSorter(sorter);
-        JMeterUtils.applyHiDPI(table);
 
         JPanel panel = new JPanel(new BorderLayout(10, 10));
         panel.add(makeScrollPane(table), BorderLayout.CENTER);
@@ -136,11 +128,20 @@ public class ENVDataSetGui extends AbstractConfigGui {
         return panel;
     }
 
-    private JPanel getNotePanel() {
-        String note = "说明：\n" +
+    private Component createBodyPanel() {
+        JPanel bodyPanel = new JPanel(new GridBagLayout());
+        bodyPanel.setBorder(GuiUtil.createTitledBorder("请选择测试环境"));
+        bodyPanel.add(createConfigNameLabel(), GuiUtil.GridBag.labelConstraints);
+        bodyPanel.add(createConfigNameComboBox(), GuiUtil.GridBag.editorConstraints);
+        bodyPanel.add(createTablePanel(), GuiUtil.GridBag.fillBottomConstraints);
+        return bodyPanel;
+    }
+
+    private Component createNoteArea() {
+        String note =
                 "1. 配置文件必须是 Yaml格式 ，且必须放在 ${JMETER_HOME}/config 目录下；\n" +
                 "2. Non-Gui命令说明：存在 -JconfigName 选项时，优先读取 ${__P(configName)} 配置文件。";
-        return GuiUtil.createNotePanel(note, this.getBackground());
+        return GuiUtil.createNoteArea(note, this.getBackground());
     }
 
     private void initializeTableModel() {
@@ -188,4 +189,3 @@ public class ENVDataSetGui extends AbstractConfigGui {
     }
 
 }
-

@@ -25,7 +25,8 @@
         <encoding>UTF-8</encoding>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
-        <jmeter.version>5.1.1</jmeter.version>
+        <jmeter.version>5.3</jmeter.version>
+        <jmeter-plugins.version>5.1.1</jmeter-plugins.version>
         <log4j.version>2.11.2</log4j.version>
         <slf4j-api.version>1.7.26</slf4j-api.version>
         <gson.version>2.8.0</gson.version>
@@ -47,7 +48,7 @@
         <guava.version>28.0-jre</guava.version>
         <poi.version>4.1.1</poi.version>
         <yaml.version>1.26</yaml.version>
-        <jodd.version>5.1.4</jodd.version>
+        <groovy.version>3.0.4</groovy.version>
     </properties>
 
     <dependencyManagement>
@@ -55,17 +56,17 @@
             <dependency>
                 <groupId>jmeter-plugins</groupId>
                 <artifactId>jmeter-plugins-common-util</artifactId>
-                <version>5.1.1</version>
+                <version>${jmeter-plugins.version}</version>
             </dependency>
             <dependency>
                 <groupId>jmeter-plugins</groupId>
                 <artifactId>jmeter-plugins-configs</artifactId>
-                <version>5.1.1</version>
+                <version>${jmeter-plugins.version}</version>
             </dependency>
             <dependency>
                 <groupId>jmeter-plugins</groupId>
                 <artifactId>jmeter-plugins-visualizers</artifactId>
-                <version>5.1.1</version>
+                <version>${jmeter-plugins.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.jmeter</groupId>
@@ -122,11 +123,6 @@
                 <groupId>com.jayway.jsonpath</groupId>
                 <artifactId>json-path-assert</artifactId>
                 <version>${json-path.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.aventstack</groupId>
-                <artifactId>extentreports</artifactId>
-                <version>3.1.2</version>
             </dependency>
             <dependency>
                 <groupId>org.freemarker</groupId>
@@ -306,9 +302,15 @@
                 <version>${yaml.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.jodd</groupId>
-                <artifactId>jodd-core</artifactId>
-                <version>${jodd.version}</version>
+                <groupId>org.codehaus.groovy</groupId>
+                <artifactId>groovy-all</artifactId>
+                <version>${groovy.version}</version>
+                <type>pom</type>
+            </dependency>
+            <dependency>
+                <groupId>commons-net</groupId>
+                <artifactId>commons-net</artifactId>
+                <version>3.6</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
