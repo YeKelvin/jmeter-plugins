@@ -29,9 +29,9 @@ public class JsonUtil {
     public static Type mapTypeAsStrObj = new TypeToken<Map<String, Object>>() {
     }.getType();
 
-    private static final Gson gson = getGson();
+    private static final Gson gson = newGson();
 
-    private static Gson getGson() {
+    private static Gson newGson() {
         return new GsonBuilder().serializeNulls()
                 .registerTypeAdapter(mapType, new MapTypeAdapter())
                 .registerTypeAdapter(Double.class, new DoubleTypeAdapter())
@@ -45,7 +45,7 @@ public class JsonUtil {
      *
      * @return gson对象
      */
-    public static Gson getGsonInstance() {
+    public static Gson getGson() {
         return gson;
     }
 

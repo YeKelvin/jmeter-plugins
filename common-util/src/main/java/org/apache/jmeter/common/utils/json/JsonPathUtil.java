@@ -28,8 +28,8 @@ public class JsonPathUtil {
     private static final Logger logger = LogUtil.getLogger(JsonUtil.class);
 
     private static final Configuration config = Configuration.builder()
-            .jsonProvider(new GsonJsonProvider(JsonUtil.getGsonInstance()))
-            .mappingProvider(new GsonMappingProvider(JsonUtil.getGsonInstance()))
+            .jsonProvider(new GsonJsonProvider(JsonUtil.getGson()))
+            .mappingProvider(new GsonMappingProvider(JsonUtil.getGson()))
             .options(EnumSet.noneOf(Option.class))
             .build();
 

@@ -119,7 +119,7 @@ public class DubboTelnetSampler extends AbstractSampler {
             try {
                 Type hashMapType = new TypeToken<HashMap<String, Object>>() {
                 }.getType();
-                HashMap<String, Object> jsonPathMap = JsonUtil.getGsonInstance().fromJson(jsonPaths, hashMapType);
+                HashMap<String, Object> jsonPathMap = JsonUtil.getGson().fromJson(jsonPaths, hashMapType);
                 DocumentContext ctx = JsonPathUtil.jsonParse(JsonUtil.toArrayJson(data));
                 for (Map.Entry<String, Object> entry : jsonPathMap.entrySet()) {
                     ctx.set(entry.getKey(), entry.getValue());
