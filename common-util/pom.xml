@@ -54,10 +54,6 @@
                     <groupId>com.helger</groupId>
                 </exclusion>
                 <exclusion>
-                    <artifactId>xml-apis</artifactId>
-                    <groupId>xml-apis</groupId>
-                </exclusion>
-                <exclusion>
                     <artifactId>httpcore-nio</artifactId>
                     <groupId>org.apache.httpcomponents</groupId>
                 </exclusion>
@@ -159,6 +155,11 @@
         <dependency>
             <groupId>org.yaml</groupId>
             <artifactId>snakeyaml</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>commons-codec</groupId>
+            <artifactId>commons-codec</artifactId>
+            <version>1.14</version>
         </dependency>
     </dependencies>
 
