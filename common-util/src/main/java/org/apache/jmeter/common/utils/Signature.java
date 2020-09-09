@@ -110,9 +110,9 @@ public class Signature {
             } else {
                 sb.append(item);
             }
-            sb.append(", ");
+            sb.append(",");
         });
-        return sb.substring(0, sb.length() - 2) + "]";
+        return sb.substring(0, sb.length() - 1) + "]";
     }
 
     /**
