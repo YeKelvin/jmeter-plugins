@@ -121,7 +121,7 @@ public class HTTPHeaderReader extends HeaderManager implements TestStateListener
                 Field appliableConfigClassesField = clazz.getDeclaredField("APPLIABLE_CONFIG_CLASSES");
                 appliableConfigClassesField.setAccessible(true);
 
-                Field modifiers = appliableConfigClassesField.getClass().getDeclaredField("modifiers");
+                Field modifiers = Field.class.getDeclaredField("modifiers");
                 modifiers.setAccessible(true);
                 modifiers.setInt(appliableConfigClassesField, appliableConfigClassesField.getModifiers() & ~Modifier.FINAL);
 
