@@ -40,6 +40,14 @@ public class Redis {
         return value;
     }
 
+    public static String hget(String host, int port, String key, String field) {
+        Jedis redis = new Jedis(host, port);
+        redis.connect();
+        String value = redis.hget(key, field);
+        redis.close();
+        return value;
+    }
+
     public static boolean exists(String host, int port, String key) {
         Jedis redis = new Jedis(host, port);
         redis.connect();
