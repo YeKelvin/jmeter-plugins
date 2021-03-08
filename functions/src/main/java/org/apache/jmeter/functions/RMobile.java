@@ -20,7 +20,7 @@ public class RMobile extends AbstractFunction {
     private static final List<String> DESC = new LinkedList<>();
 
     static {
-        DESC.add("随机柬埔寨手机号");
+        DESC.add("随机生成国内手机号");
     }
 
     private static final String KEY = "__RMobile";

@@ -28,7 +28,7 @@ public class PrevResJson extends AbstractFunction {
     private static final List<String> DESC = new LinkedList<>();
 
     static {
-        DESC.add("根据 jsonpath提取上一个 Sampler Response");
+        DESC.add("根据JsonPath表达式提取上一个SamplerResponse的Json值");
     }
 
     private static final String KEY = "__PrevResJson";

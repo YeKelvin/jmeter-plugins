@@ -20,7 +20,7 @@ public class RIdCard extends AbstractFunction {
     private static final List<String> DESC = new LinkedList<>();
 
     static {
-        DESC.add("随机身份证号");
+        DESC.add("随机生成国内身份证号");
     }
 
     private static final String KEY = "__RIdCard";

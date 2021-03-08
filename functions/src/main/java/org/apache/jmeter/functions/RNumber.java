@@ -22,7 +22,7 @@ public class RNumber extends AbstractFunction {
     private static final List<String> DESC = new LinkedList<>();
 
     static {
-        DESC.add("随机数");
+        DESC.add("随机生成数字");
     }
 
     private static final String KEY = "__RNumber";

@@ -31,7 +31,7 @@ public class ScriptAbsPath extends AbstractFunction {
     private static final List<String> DESC = new LinkedList<>();
 
     static {
-        DESC.add("获取jmx脚本所在目录路径");
+        DESC.add("获取JMeter脚本所在的目录路径");
     }
 
     /**
