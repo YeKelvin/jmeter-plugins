@@ -86,7 +86,7 @@ public class TraversalDataSetGui extends AbstractConfigGui {
     }
 
     private Component createVariableNamesLabel() {
-        return GuiUtil.createLabel("变量名：", createVariableNamesTextField());
+        return GuiUtil.createLabel("变量名称：", createVariableNamesTextField());
     }
 
     private Component createDataTextArea() {

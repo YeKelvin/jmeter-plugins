@@ -68,7 +68,8 @@ public class FailureResultSaver extends ConfigTestElement implements SampleListe
                 // 判断 sampler是否为 Generate parent sample（事务）
                 // 根据 SampleResult下是否存在 subResults
                 SampleResult[] transactionResults = result.getSubResults();
-                if (transactionResults.length != 0) { // Generate parent sample（事务）
+                // Generate parent sample（事务）
+                if (transactionResults.length != 0) {
                     for (SampleResult transactionResult : transactionResults) {
                         if (!transactionResult.isSuccessful()) {
                             content = getResultContent(transactionResult);
@@ -100,7 +101,9 @@ public class FailureResultSaver extends ConfigTestElement implements SampleListe
             String responseData = result.getResponseDataAsString();
             String[] excludes = excludeText.split(",");
             for (String exclude : excludes) {
-                if (responseData.contains(exclude)) return true;
+                if (responseData.contains(exclude)) {
+                    return true;
+                }
             }
         }
         return false;

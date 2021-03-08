@@ -15,7 +15,7 @@ import java.awt.*;
 import java.io.IOException;
 
 /**
- * User: KelvinYe
+ * @author KelvinYe
  * Date: 2018-04-17
  * Time: 11:10
  */

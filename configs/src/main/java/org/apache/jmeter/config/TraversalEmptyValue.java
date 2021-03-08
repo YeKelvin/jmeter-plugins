@@ -18,7 +18,7 @@ import java.util.Iterator;
 
 /**
  * Json报文自动遍历非空校验
- * User: Kelvin.Ye
+ * @author Kelvin.Ye
  * Date: 2018-04-17
  * Time: 11:10
  */

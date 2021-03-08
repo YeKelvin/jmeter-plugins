@@ -22,6 +22,8 @@ import java.util.Map;
 import java.util.Set;
 
 /**
+ * @author KelvinYe
+ *
  * HTTP请求头文件读取器
  */
 public class HTTPHeaderReader extends HeaderManager implements TestStateListener {
@@ -30,7 +32,7 @@ public class HTTPHeaderReader extends HeaderManager implements TestStateListener
 
     public static final String HEADERS_FILE_NAME = "HTTPHeaderReader.headersFileName";
 
-    private static final ValueReplacer replacer = new ValueReplacer();
+    private static final ValueReplacer REPLACER = new ValueReplacer();
 
     private static boolean alreadyAddedGui;
 
@@ -46,7 +48,7 @@ public class HTTPHeaderReader extends HeaderManager implements TestStateListener
                 Map<String, String> headerMap = getHeaderMap(getHeadersFilePath());
                 for (Map.Entry<String, String> entry : headerMap.entrySet()) {
                     Header header = new Header(entry.getKey(), entry.getValue());
-                    replacer.replaceValues(header);
+                    REPLACER.replaceValues(header);
                     header.setRunningVersion(true);
                     super.getHeaders().addItem(header);
                 }
