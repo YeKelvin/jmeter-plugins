@@ -10,7 +10,7 @@
 - 在`config文件夹`下新建`.yaml`配置文件
 - 在`.yaml`配置文件中添加变量键值对，e.g.:
   ```yaml
-  # test-uat.yaml
+  # uat.yaml
   http.host: xxx.xxx 
   http.port: 443
   db.url: jdbc
@@ -21,6 +21,9 @@
 - 在`测试计划`下添加`环境变量配置器`（配置元件，与线程组同级，建议添加至线程组前面）
 - 在`环境变量配置器`中选择对应的配置文件
 - 在需要使用环境变量的地方通过占位符 `${keyName}`引用即可
+
+### 1.3、截图
+![EnvDataSet](https://github.com/YeKelvin/jmeter-plugins/tree/master/docs/image/EnvDataSet_001.png)
 
 
 ## 2、 失败请求保存器(FailureResultSaver)
