@@ -18,8 +18,7 @@ import java.util.List;
  * 获取JmeterHome
  *
  * @author KelvinYe
- * Date     2018-08-22
- * Time     17:11
+ * @date 2018-08-22 17:11
  */
 public class ScriptAbsPath extends AbstractFunction {
 

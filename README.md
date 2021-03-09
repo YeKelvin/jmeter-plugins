@@ -26,15 +26,15 @@
 - **HTML报告(LocalHtmlReport):** 收集所有sampler数据保存至html文件中
 
 ### Functions [→](https://github.com/YeKelvin/jmeter-plugins/tree/master/functions)
-- **{__ExtractSQLColumn()}:** 根据列名提取数据库表第一行的值
+- **{__ExtractPrevResponse()}:** 根据JsonPath表达式提取上一个SamplerResponse的Json值
+- **{__ExtractSQLValue()}:** 根据列名提取数据库表第一行的值
 - **{__GoogleAuth()}:** 谷歌动态认证码
-- **{__JmeterHome()}:** 获取JMeter根目录路径
+- **{__JmeterHome()}:** 获取JMeter根目录的绝对路径
 - **{__MD5()}:** MD5加密
-- **{__PrevResJson()}:** 根据JsonPath表达式提取上一个SamplerResponse的Json值
 - **{__RIdCard()}:** 随机生成国内身份证号
 - **{__RMobile()}:** 随机生成国内手机号
 - **{__RNumber()}:** 随机生成数字
-- **{__ScriptAbsPath()}:** 获取JMeter脚本所在的目录路径
+- **{__ScriptAbsPath()}:** 获取JMeter脚本所在目录的绝对路径
 
 ### Dubbo-Zookeeper [→](https://github.com/YeKelvin/jmeter-plugins/tree/master/dubbo-zookeeper)
 - **DubboZookeeperSampler:** DubboZookeeper插件（年久失修了，直接用Dubbo官方推荐的JMeter插件吧）

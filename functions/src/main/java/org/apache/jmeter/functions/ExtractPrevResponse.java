@@ -17,13 +17,12 @@ import java.util.List;
 /**
  * 根据 jsonpath提取上一个 Sampler Response
  *
- * @author KelvinYe
- * Date     2020-04-20
- * Time     10:08
+ * @author Kelvin.Ye
+ * @date 2020-04-20 10:08
  */
-public class PrevResJson extends AbstractFunction {
+public class ExtractPrevResponse extends AbstractFunction {
 
-    private static final Logger logger = LogUtil.getLogger(PrevResJson.class);
+    private static final Logger logger = LogUtil.getLogger(ExtractPrevResponse.class);
 
     private static final List<String> DESC = new LinkedList<>();
 
@@ -31,7 +30,7 @@ public class PrevResJson extends AbstractFunction {
         DESC.add("根据JsonPath表达式提取上一个SamplerResponse的Json值");
     }
 
-    private static final String KEY = "__PrevResJson";
+    private static final String KEY = "__ExtractPrevResponse";
 
     private CompoundVariable jsonPath = null;
     private CompoundVariable variable = null;

@@ -14,9 +14,13 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-public class ExtractSQLColumn extends AbstractFunction {
+/**
+ * @author Kelvin.Ye
+ * @date 2020-04-20 19:38
+ */
+public class ExtractSQLValue extends AbstractFunction {
 
-    private static final Logger logger = LogUtil.getLogger(ExtractSQLColumn.class);
+    private static final Logger logger = LogUtil.getLogger(ExtractSQLValue.class);
 
     private static final List<String> DESC = new LinkedList<>();
 
@@ -24,7 +28,7 @@ public class ExtractSQLColumn extends AbstractFunction {
         DESC.add("根据列名提取数据库表第一行的值");
     }
 
-    private static final String KEY = "__ExtractSQLColumn";
+    private static final String KEY = "__ExtractSQLValue";
 
     private CompoundVariable tableName = null;
     private CompoundVariable columnName = null;

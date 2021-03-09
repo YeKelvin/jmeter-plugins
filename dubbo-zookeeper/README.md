@@ -1,4 +1,4 @@
-# dubbo-zookeeper
+# dubbo-zookeeper（弃坑了）
 ### 插件说明
 Dubbo性能测试插件。
 

@@ -15,6 +15,10 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
+/**
+ * @author Kelvin.Ye
+ * @date 2020-04-21 17:14
+ */
 public class MD5 extends AbstractFunction {
 
     private static final Logger logger = LogUtil.getLogger(MD5.class);

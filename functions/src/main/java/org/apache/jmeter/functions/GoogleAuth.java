@@ -15,7 +15,8 @@ import java.util.List;
 /**
  * 获取谷歌动态认证码
  *
- * @author KelvinYe
+ * @author Kelvin.Ye
+ * @date 2019-06-19 19:42
  */
 public class GoogleAuth extends AbstractFunction {
 

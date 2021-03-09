@@ -17,9 +17,8 @@ import java.util.List;
 /**
  * 获取JmeterHome
  *
- * @author KelvinYe
- * Date     2018-08-22
- * Time     17:11
+ * @author Kelvin.Ye
+ * @date 2018-08-22 17:11
  */
 public class JmeterHome extends AbstractFunction {
 
