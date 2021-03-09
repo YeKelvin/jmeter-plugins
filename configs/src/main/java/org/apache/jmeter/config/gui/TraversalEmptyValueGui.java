@@ -1,18 +1,13 @@
 package org.apache.jmeter.config.gui;
 
 import org.apache.jmeter.common.utils.GuiUtil;
-import org.apache.jmeter.common.utils.StringUtil;
-import org.apache.jmeter.common.utils.exception.ServiceException;
-import org.apache.jmeter.common.utils.json.JsonFileUtil;
 import org.apache.jmeter.config.TraversalEmptyValue;
 import org.apache.jmeter.gui.util.JSyntaxTextArea;
 import org.apache.jmeter.gui.util.JTextScrollPane;
-import org.apache.jmeter.gui.util.VerticalPanel;
 import org.apache.jmeter.testelement.TestElement;
 
 import javax.swing.*;
 import java.awt.*;
-import java.io.IOException;
 
 /**
  * @author KelvinYe
@@ -24,10 +19,6 @@ public class TraversalEmptyValueGui extends AbstractConfigGui {
     private JComboBox<String> blankTypeComboBox;
     private JSyntaxTextArea paramsTextArea;
     private JSyntaxTextArea emptyCheckExpressionTextArea;
-
-    private JComboBox<String> useTemplateComboBox;
-    private JTextField interfacePathTextField;
-    private JTextField interfaceNameTextField;
 
     public TraversalEmptyValueGui() {
         init();
@@ -66,13 +57,8 @@ public class TraversalEmptyValueGui extends AbstractConfigGui {
     public void modifyTestElement(TestElement el) {
         super.configureTestElement(el);
         el.setProperty(TraversalEmptyValue.BLANK_TYPE, (String) blankTypeComboBox.getSelectedItem());
-        if (!el.getPropertyAsBoolean(TraversalEmptyValue.USE_TEMPLATE, false)) {
-            el.setProperty(TraversalEmptyValue.PATAMS, paramsTextArea.getText());
-        }
+        el.setProperty(TraversalEmptyValue.PATAMS, paramsTextArea.getText());
         el.setProperty(TraversalEmptyValue.EMPTY_CHECK_EXPRESSION, emptyCheckExpressionTextArea.getText());
-        el.setProperty(TraversalEmptyValue.USE_TEMPLATE, (String) useTemplateComboBox.getSelectedItem());
-        el.setProperty(TraversalEmptyValue.INTERFACE_PATH, interfacePathTextField.getText());
-        el.setProperty(TraversalEmptyValue.INTERFACE_NAME, interfaceNameTextField.getText());
     }
 
     /**
@@ -82,17 +68,10 @@ public class TraversalEmptyValueGui extends AbstractConfigGui {
     public void configure(TestElement el) {
         super.configure(el);
         blankTypeComboBox.setSelectedItem(el.getPropertyAsString(TraversalEmptyValue.BLANK_TYPE));
-        if (!el.getPropertyAsBoolean(TraversalEmptyValue.USE_TEMPLATE, false)) {
-            paramsTextArea.setInitialText(el.getPropertyAsString(TraversalEmptyValue.PATAMS));
-        } else {
-            paramsTextArea.setInitialText(getTemplateContent(el.getPropertyAsString(TraversalEmptyValue.INTERFACE_NAME)));
-        }
+        paramsTextArea.setInitialText(el.getPropertyAsString(TraversalEmptyValue.PATAMS));
         paramsTextArea.setCaretPosition(0);
         emptyCheckExpressionTextArea.setInitialText(el.getPropertyAsString(TraversalEmptyValue.EMPTY_CHECK_EXPRESSION));
         emptyCheckExpressionTextArea.setCaretPosition(0);
-        useTemplateComboBox.setSelectedItem(el.getPropertyAsString(TraversalEmptyValue.USE_TEMPLATE));
-        interfacePathTextField.setText(el.getPropertyAsString(TraversalEmptyValue.INTERFACE_PATH));
-        interfacePathTextField.setText(el.getPropertyAsString(TraversalEmptyValue.INTERFACE_NAME));
     }
 
     @Override
@@ -101,9 +80,6 @@ public class TraversalEmptyValueGui extends AbstractConfigGui {
         blankTypeComboBox.setSelectedItem("");
         paramsTextArea.setInitialText("");
         emptyCheckExpressionTextArea.setInitialText("");
-        useTemplateComboBox.setSelectedItem("");
-        interfacePathTextField.setText("");
-        interfaceNameTextField.setText("");
     }
 
     private Component createBlankTypeComboBox() {
@@ -150,41 +126,6 @@ public class TraversalEmptyValueGui extends AbstractConfigGui {
         return JTextScrollPane.getInstance((JSyntaxTextArea) createEmptyCheckExpressionTextArea());
     }
 
-    private Component createUseTemplateComboBox() {
-        if (useTemplateComboBox == null) {
-            useTemplateComboBox = GuiUtil.createComboBox(TraversalEmptyValue.USE_TEMPLATE);
-            useTemplateComboBox.addItem("false");
-            useTemplateComboBox.addItem("true");
-        }
-        return useTemplateComboBox;
-    }
-
-    private Component createUseTemplateLabel() {
-        return GuiUtil.createLabel("使用模板：", createUseTemplateComboBox());
-    }
-
-    private Component createInterfacePathTextField() {
-        if (interfacePathTextField == null) {
-            interfacePathTextField = GuiUtil.createTextField(TraversalEmptyValue.INTERFACE_PATH);
-        }
-        return interfacePathTextField;
-    }
-
-    private Component createInterfacePathLabel() {
-        return GuiUtil.createLabel("接口目录：", createInterfacePathTextField());
-    }
-
-    private Component createInterfaceNameTextField() {
-        if (interfaceNameTextField == null) {
-            interfaceNameTextField = GuiUtil.createTextField(TraversalEmptyValue.INTERFACE_NAME);
-        }
-        return interfaceNameTextField;
-    }
-
-    private Component createInterfaceNameLabel() {
-        return GuiUtil.createLabel("接口名称：", createInterfaceNameTextField());
-    }
-
     private Component createJTabbedPane() {
         JPanel interfacePanel = new JPanel(new GridBagLayout());
         interfacePanel.setBorder(GuiUtil.createTitledBorder("配置非空校验信息"));
@@ -197,20 +138,8 @@ public class TraversalEmptyValueGui extends AbstractConfigGui {
         interfacePanel.add(GuiUtil.createBlankPanel(), GuiUtil.GridBag.editorConstraints);
         interfacePanel.add(createEmptyCheckExpressionPanel(), GuiUtil.GridBag.multiLineEditorConstraints);
 
-        JPanel templateBodyPanel = new JPanel(new GridBagLayout());
-        templateBodyPanel.setBorder(GuiUtil.createTitledBorder("配置模板信息"));
-        templateBodyPanel.add(createUseTemplateLabel(), GuiUtil.GridBag.labelConstraints);
-        templateBodyPanel.add(createUseTemplateComboBox(), GuiUtil.GridBag.editorConstraints);
-        templateBodyPanel.add(createInterfacePathLabel(), GuiUtil.GridBag.labelConstraints);
-        templateBodyPanel.add(createInterfacePathTextField(), GuiUtil.GridBag.editorConstraints);
-        templateBodyPanel.add(createInterfaceNameLabel(), GuiUtil.GridBag.labelConstraints);
-        templateBodyPanel.add(createInterfaceNameTextField(), GuiUtil.GridBag.editorConstraints);
-        VerticalPanel templatePanel = new VerticalPanel();
-        templatePanel.add(templateBodyPanel);
-
         JTabbedPane tabbedPane = new JTabbedPane();
         tabbedPane.add("非空校验配置", interfacePanel);
-        tabbedPane.add("模板配置", templatePanel);
         tabbedPane.add("说明", createNoteArea());
 
         return tabbedPane;
@@ -222,41 +151,6 @@ public class TraversalEmptyValueGui extends AbstractConfigGui {
                         "2. 请求报文变量名=params，预期结果变量名=expression，当前 JsonPath变量名=jsonPath\n" +
                         "3. 该插件中数据引用变量或函数不会替换为具体的值，请在使用的位置利用 ${__eval(${params})} 函数替换";
         return GuiUtil.createNoteArea(note, this.getBackground());
-    }
-
-    /**
-     * 获取json模版内容
-     */
-    private String getTemplateContent(String interfaceName) {
-        if (StringUtil.isBlank(interfaceName)) {
-            return "接口名称不允许为空，请填写接口名称后重试";
-        }
-
-        try {
-            return readJsonFile(interfaceName);
-        } catch (IOException | ServiceException e) {
-            return e.getMessage();
-        }
-    }
-
-    /**
-     * 读取 Json文件的内容
-     *
-     * @param interfaceName 接口名称
-     */
-    private String readJsonFile(String interfaceName) throws IOException, ServiceException {
-        String interfaceDir = interfacePathTextField.getText();
-
-        if (StringUtil.isBlank(interfaceDir)) {
-            throw new ServiceException("接口路径不允许为空");
-        }
-        // 根据入參 interfacePath递归搜索获取绝对路径
-        String path = JsonFileUtil.findInterfacePathByKeywords(interfaceDir, interfaceName);
-        if (path == null) {
-            throw new ServiceException(String.format("\"%s\" 接口模版不存在", interfaceName));
-        }
-        // 根据绝对路径获取json模版内容
-        return JsonFileUtil.readJsonFileToString(path);
     }
 
 }

@@ -2,16 +2,13 @@ package org.apache.jmeter.config;
 
 import com.jayway.jsonpath.DocumentContext;
 import com.jayway.jsonpath.JsonPath;
+import org.apache.jmeter.common.utils.ExceptionUtil;
+import org.apache.jmeter.common.utils.LogUtil;
+import org.apache.jmeter.common.utils.json.JsonPathUtil;
+import org.apache.jmeter.common.utils.json.JsonUtil;
 import org.apache.jmeter.engine.event.LoopIterationEvent;
 import org.apache.jmeter.engine.event.LoopIterationListener;
 import org.slf4j.Logger;
-import org.apache.jmeter.common.utils.StringUtil;
-import org.apache.jmeter.common.utils.ExceptionUtil;
-import org.apache.jmeter.common.utils.exception.ServiceException;
-import org.apache.jmeter.common.utils.json.JsonFileUtil;
-import org.apache.jmeter.common.utils.json.JsonPathUtil;
-import org.apache.jmeter.common.utils.json.JsonUtil;
-import org.apache.jmeter.common.utils.LogUtil;
 
 import java.io.IOException;
 import java.util.Iterator;
@@ -29,9 +26,6 @@ public class TraversalEmptyValue extends ConfigTestElement implements LoopIterat
     public static final String BLANK_TYPE = "TraversalEmptyValue.blankType";
     public static final String PATAMS = "TraversalEmptyValue.patams";
     public static final String EMPTY_CHECK_EXPRESSION = "TraversalEmptyValue.emptyCheckExpression";
-    public static final String USE_TEMPLATE = "TraversalEmptyValue.useTemplate";
-    public static final String INTERFACE_PATH = "TraversalEmptyValue.interfacePath";
-    public static final String INTERFACE_NAME = "TraversalEmptyValue.interfaceName";
 
     private Iterator<String> jsonPathIterator = null;
 
@@ -98,13 +92,6 @@ public class TraversalEmptyValue extends ConfigTestElement implements LoopIterat
     public String getPatams() throws IOException {
         //使testEL元素只读，即不能参数化
         setRunningVersion(false);
-        if (getUseTemplate()) {
-            String templateJson = readJsonFile();
-            if (templateJson == null) {
-                throw new ServiceException(String.format("%s json模版获取失败", getInterfaceName()));
-            }
-            return templateJson;
-        }
         return getPropertyAsString(TraversalEmptyValue.PATAMS);
     }
 
@@ -117,35 +104,8 @@ public class TraversalEmptyValue extends ConfigTestElement implements LoopIterat
         return getPropertyAsString(TraversalEmptyValue.EMPTY_CHECK_EXPRESSION);
     }
 
-    private boolean getUseTemplate() {
-        return getPropertyAsBoolean(USE_TEMPLATE, false);
-    }
-
-    private String getInterfaceName() {
-        return getPropertyAsString(INTERFACE_NAME);
-    }
-
-    private String getInterfacePath() {
-        return getPropertyAsString(INTERFACE_PATH);
-    }
-
     private String getBlankType() {
         return getPropertyAsString(BLANK_TYPE);
     }
 
-    private String readJsonFile() throws IOException {
-        String interfaceDir = getInterfacePath();
-        String interfaceName = getInterfaceName();
-
-        if (StringUtil.isBlank(interfaceDir)) {
-            throw new ServiceException("接口路径不允许为空");
-        }
-        // 根据入參 interfacePath递归搜索获取绝对路径
-        String path = JsonFileUtil.findInterfacePathByKeywords(interfaceDir, interfaceName);
-        if (path == null) {
-            throw new ServiceException(String.format("\"%s\" 接口模版不存在", interfaceName));
-        }
-        // 根据绝对路径获取json模版内容
-        return JsonFileUtil.readJsonFileToString(path);
-    }
 }

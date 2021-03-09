@@ -99,35 +99,35 @@ public class Randoms {
     /**
      * 获取身份证ID
      */
-    public static String getIDCard() {
+    public static String getIdCard() {
         return IDCard.idGenerate();
     }
 
     /**
      * 获取香港身份证ID
      */
-    public static String getHKIDCard() {
+    public static String getHKIdCard() {
         return IDCard.idGenerate("810000");
     }
 
     /**
      * 获取澳门身份证ID
      */
-    public static String getMacaoIDCard() {
+    public static String getMacaoIdCard() {
         return IDCard.idGenerate("820000");
     }
 
     /**
      * 获取台湾身份证ID
      */
-    public static String getTWIDCard() {
+    public static String getTWIdCard() {
         return IDCard.idGenerate("830000");
     }
 
     /**
      * 获取15位身份证ID
      */
-    public static String getIDCard15() {
+    public static String getIdCard15() {
         String idCard = IDCard.idGenerate();
         return idCard.substring(0, 6) + idCard.substring(8, 17);
     }

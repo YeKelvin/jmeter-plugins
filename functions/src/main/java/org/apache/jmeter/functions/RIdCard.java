@@ -58,7 +58,7 @@ public class RIdCard extends AbstractFunction {
     public String execute(SampleResult sampleResult, Sampler sampler) {
         String result = "";
         try {
-            result = Randoms.getIDCard();
+            result = Randoms.getIdCard();
 
             if (this.variable != null) {
                 String variable = this.variable.execute().trim();

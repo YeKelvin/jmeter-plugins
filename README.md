@@ -7,7 +7,7 @@
 2. 将编译好的jar包放至 `jmeterHome/lib/ext`目录下。
 
 ## 三、JMeter版本说明
-该项目所有JMeter插件均在5.1.1版本上开发，理论上5.x版本均可正常使用，如使用过程中出现问题请使用5.1.1版本或联系我
+所有插件均在JMeter-5.1.1版本上开发，理论上5.x版本均可正常使用，如使用过程中出现问题请使用5.1.1版本或联系我
 
 ## 四、插件介绍
 ### Configs [→](https://github.com/YeKelvin/jmeter-plugins/tree/master/configs)

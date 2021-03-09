@@ -1,9 +1,9 @@
 # Functions
-## 1、 ExtractSQLValue
-### 1.1、 函数说明
+## 1、ExtractSQLValue
+### 1.1、函数说明
 - 根据列名提取数据库表第一行的值
 
-### 1.2、 使用说明
+### 1.2、使用说明
 ```
 /**
  * @param tableName 必填，表名
@@ -17,11 +17,11 @@ ${__ExtractSQLValue(tableName, columnName, defaultValue, variable)}
 ```
 
 
-## 2、 GoogleAuth
-### 2.1、 函数说明
+## 2、GoogleAuth
+### 2.1、函数说明
 - 谷歌动态认证码
 
-### 2.2、 使用说明
+### 2.2、使用说明
 ```
 /**
  * @param secretKey 必填，秘钥
@@ -32,12 +32,12 @@ ${__GoogleAuth(secretKey)}
 ```
 
 
-## 3、 JmeterHome
-### 3.1、 函数说明
+## 3、JmeterHome
+### 3.1、函数说明
 - 获取JMeter根目录的绝对路径
 - 如果有入参则把参数拼接在路径后
 
-### 3.2、 使用说明
+### 3.2、使用说明
 ```
 ${__JmeterHome}
 ${__JmeterHome()}
@@ -49,11 +49,11 @@ source("${__JmeterHome(beanshell, xxx.bsh)}");
 ```
 
 
-## 4、 MD5
-### 4.1、 函数说明
+## 4、MD5
+### 4.1、函数说明
 - MD5加密
 
-### 4.2、 使用说明
+### 4.2、使用说明
 ```
 /**
  * @param plaintext 必填，明文
@@ -67,11 +67,11 @@ ${__MD5(plaintext, md5Key, encode, variable)}
 ```
 
 
-## 5、 ExtractPrevResponse
-### 5.1、 函数说明
+## 5、ExtractPrevResponse
+### 5.1、函数说明
 - 根据JsonPath表达式提取上一个SamplerResponse的Json值
 
-### 5.2、 使用说明
+### 5.2、使用说明
 ```
 /**
  * @param jsonPath 必填，JsonPath表达式
@@ -83,11 +83,11 @@ ${__ExtractPrevResponse(jsonPath, variable)}
 ```
 
 
-## 6、 RIdCard
-### 6.1、 函数说明
+## 6、RIdCard
+### 6.1、函数说明
 - 随机生成国内身份证号
 
-### 6.2、 使用说明
+### 6.2、使用说明
 ```
 /**
  * @param variable 选填，存在时把结果存入vars变量中
@@ -98,11 +98,11 @@ ${__RIdCard(variable)}
 ```
 
 
-## 7、 RMobile
-### 7.1、 函数说明
+## 7、RMobile
+### 7.1、函数说明
 - 随机生成国内手机号
 
-### 7.2、 使用说明
+### 7.2、使用说明
 ```
 /**
  * @param variable 选填，存在时把结果存入vars变量中
@@ -113,11 +113,11 @@ ${__RMobile()}
 ```
 
 
-## 8、 RNumber
-### 8.1、 函数说明
+## 8、RNumber
+### 8.1、函数说明
 - 随机生成数字
 
-### 8.2、 使用说明
+### 8.2、使用说明
 ```
 /**
  * @param pattern 必填，随机数长度或随机数生成规则
@@ -135,12 +135,12 @@ ${__RNumber(\8:8)}          // 812345678
 ```
 
 
-## 9、 ScriptAbsPath
-### 9.1、 函数说明
+## 9、ScriptAbsPath
+### 9.1、函数说明
 - 获取JMeter脚本所在目录的绝对路径
 - 如果有入参则把参数拼接在路径后
 
-### 9.2、 使用说明
+### 9.2、使用说明
 ```
 ${__ScriptAbsPath}
 ${__ScriptAbsPath()}
