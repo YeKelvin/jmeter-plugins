@@ -86,7 +86,7 @@ public class LocalHtmlReportGui extends AbstractListenerGui {
     }
 
     private Component createIsAppendLabel() {
-        return GuiUtil.createLabel("是否追加写报告：", createIsAppendComboBox());
+        return GuiUtil.createLabel("追加写报告：", createIsAppendComboBox());
     }
 
     private Component createBodyPanel() {

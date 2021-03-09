@@ -101,9 +101,9 @@
 - `数据集`： 变量值，与CSV格式一致
 
 ### 5.4、截图
-![TraversalDataSet](https://github.com/YeKelvin/jmeter-plugins/blob/master/docs/images/TraversalDataSet_001.png)
-![TraversalDataSet](https://github.com/YeKelvin/jmeter-plugins/blob/master/docs/images/TraversalDataSet_002.png)
-![TraversalDataSet](https://github.com/YeKelvin/jmeter-plugins/blob/master/docs/images/TraversalDataSet_003.png)
+![TraversalDataSet001](https://github.com/YeKelvin/jmeter-plugins/blob/master/docs/images/TraversalDataSet_001.png)
+![TraversalDataSet002](https://github.com/YeKelvin/jmeter-plugins/blob/master/docs/images/TraversalDataSet_002.png)
+![TraversalDataSet003](https://github.com/YeKelvin/jmeter-plugins/blob/master/docs/images/TraversalDataSet_003.png)
 
 
 ## 6、 空值遍历配置器(TraversalEmptyValue)
@@ -124,6 +124,6 @@
 - `接口名称`： 指定接口文件名称
 
 ### 6.4、截图
-![TraversalEmptyValue](https://github.com/YeKelvin/jmeter-plugins/blob/master/docs/images/TraversalEmptyValue_001.png)
-![TraversalEmptyValue](https://github.com/YeKelvin/jmeter-plugins/blob/master/docs/images/TraversalEmptyValue_002.png)
-![TraversalEmptyValue](https://github.com/YeKelvin/jmeter-plugins/blob/master/docs/images/TraversalEmptyValue_003.png)
+![TraversalEmptyValue001](https://github.com/YeKelvin/jmeter-plugins/blob/master/docs/images/TraversalEmptyValue_001.png)
+![TraversalEmptyValue002](https://github.com/YeKelvin/jmeter-plugins/blob/master/docs/images/TraversalEmptyValue_002.png)
+![TraversalEmptyValue003](https://github.com/YeKelvin/jmeter-plugins/blob/master/docs/images/TraversalEmptyValue_003.png)
