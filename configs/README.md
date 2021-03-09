@@ -23,7 +23,7 @@
 - 在需要使用环境变量的地方通过占位符 `${keyName}`引用即可
 
 ### 1.3、截图
-![EnvDataSet](https://github.com/YeKelvin/jmeter-plugins/tree/master/docs/image/EnvDataSet_001.png)
+![EnvDataSet](https://github.com/YeKelvin/jmeter-plugins/blob/master/docs/image/EnvDataSet_001.png)
 
 
 ## 2、 失败请求保存器(FailureResultSaver)
