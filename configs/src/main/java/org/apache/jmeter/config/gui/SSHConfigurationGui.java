@@ -190,7 +190,7 @@ public class SSHConfigurationGui extends AbstractConfigGui {
     }
 
     private Component createNoteArea() {
-        String note = "请把此组件放在JDBC组件后面，不然连接关闭时会报IOException。";
+        String note = "请把此组件放在JDBC组件后面，不然连接关闭时会报IOException";
         return GuiUtil.createNoteArea(note, this.getBackground());
     }
 }

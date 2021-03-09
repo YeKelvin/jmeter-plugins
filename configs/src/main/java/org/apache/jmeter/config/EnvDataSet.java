@@ -22,16 +22,16 @@ import java.util.Map;
  * Date: 2018-04-08
  * Time: 17:11
  */
-public class ENVDataSet extends ConfigTestElement implements TestStateListener, NoThreadClone, NoConfigMerge {
+public class EnvDataSet extends ConfigTestElement implements TestStateListener, NoThreadClone, NoConfigMerge {
 
-    private static final Logger logger = LogUtil.getLogger(ENVDataSet.class);
+    private static final Logger logger = LogUtil.getLogger(EnvDataSet.class);
 
     private static final Type hashMap = new TypeToken<HashMap<String, String>>() {
     }.getType();
 
     public static final String CONFIG_NAME = "ENVDataSet.configName";
 
-    public ENVDataSet() {
+    public EnvDataSet() {
         super();
     }
 

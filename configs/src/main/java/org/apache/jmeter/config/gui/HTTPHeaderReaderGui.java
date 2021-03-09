@@ -136,7 +136,7 @@ public class HTTPHeaderReaderGui extends AbstractConfigGui {
     }
 
     private Component createNoteArea() {
-        String note = "HTTP请求头文件必须是 Yaml格式，文件后缀为 .yaml，且必须放在 ${JMETER_HOME}/header 目录下。";
+        String note = "HTTP请求头文件必须是 Yaml格式，文件后缀为 .yaml，且必须放在 ${JMETER_HOME}/header 目录下";
         return GuiUtil.createNoteArea(note, this.getBackground());
     }
 

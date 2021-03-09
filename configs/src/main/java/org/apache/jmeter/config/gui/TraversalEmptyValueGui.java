@@ -23,7 +23,7 @@ public class TraversalEmptyValueGui extends AbstractConfigGui {
 
     private JComboBox<String> blankTypeComboBox;
     private JSyntaxTextArea paramsTextArea;
-    private JSyntaxTextArea emptyCheckExpectationTextArea;
+    private JSyntaxTextArea emptyCheckExpressionTextArea;
 
     private JComboBox<String> useTemplateComboBox;
     private JTextField interfacePathTextField;
@@ -69,7 +69,7 @@ public class TraversalEmptyValueGui extends AbstractConfigGui {
         if (!el.getPropertyAsBoolean(TraversalEmptyValue.USE_TEMPLATE, false)) {
             el.setProperty(TraversalEmptyValue.PATAMS, paramsTextArea.getText());
         }
-        el.setProperty(TraversalEmptyValue.EMPTY_CHECK_EXPECTATION, emptyCheckExpectationTextArea.getText());
+        el.setProperty(TraversalEmptyValue.EMPTY_CHECK_EXPRESSION, emptyCheckExpressionTextArea.getText());
         el.setProperty(TraversalEmptyValue.USE_TEMPLATE, (String) useTemplateComboBox.getSelectedItem());
         el.setProperty(TraversalEmptyValue.INTERFACE_PATH, interfacePathTextField.getText());
         el.setProperty(TraversalEmptyValue.INTERFACE_NAME, interfaceNameTextField.getText());
@@ -82,13 +82,14 @@ public class TraversalEmptyValueGui extends AbstractConfigGui {
     public void configure(TestElement el) {
         super.configure(el);
         blankTypeComboBox.setSelectedItem(el.getPropertyAsString(TraversalEmptyValue.BLANK_TYPE));
-        paramsTextArea.setInitialText(el.getPropertyAsString(TraversalEmptyValue.PATAMS));
+        if (!el.getPropertyAsBoolean(TraversalEmptyValue.USE_TEMPLATE, false)) {
+            paramsTextArea.setInitialText(el.getPropertyAsString(TraversalEmptyValue.PATAMS));
+        } else {
+            paramsTextArea.setInitialText(getTemplateContent(el.getPropertyAsString(TraversalEmptyValue.INTERFACE_NAME)));
+        }
         paramsTextArea.setCaretPosition(0);
-        emptyCheckExpectationTextArea.setInitialText(el.getPropertyAsString(TraversalEmptyValue.EMPTY_CHECK_EXPECTATION));
-        emptyCheckExpectationTextArea.setInitialText(getTemplateContent(
-                el.getPropertyAsBoolean(TraversalEmptyValue.USE_TEMPLATE, false),
-                el.getPropertyAsString(TraversalEmptyValue.INTERFACE_NAME)));
-        emptyCheckExpectationTextArea.setCaretPosition(0);
+        emptyCheckExpressionTextArea.setInitialText(el.getPropertyAsString(TraversalEmptyValue.EMPTY_CHECK_EXPRESSION));
+        emptyCheckExpressionTextArea.setCaretPosition(0);
         useTemplateComboBox.setSelectedItem(el.getPropertyAsString(TraversalEmptyValue.USE_TEMPLATE));
         interfacePathTextField.setText(el.getPropertyAsString(TraversalEmptyValue.INTERFACE_PATH));
         interfacePathTextField.setText(el.getPropertyAsString(TraversalEmptyValue.INTERFACE_NAME));
@@ -99,7 +100,7 @@ public class TraversalEmptyValueGui extends AbstractConfigGui {
         super.clearGui();
         blankTypeComboBox.setSelectedItem("");
         paramsTextArea.setInitialText("");
-        emptyCheckExpectationTextArea.setInitialText("");
+        emptyCheckExpressionTextArea.setInitialText("");
         useTemplateComboBox.setSelectedItem("");
         interfacePathTextField.setText("");
         interfaceNameTextField.setText("");
@@ -133,20 +134,20 @@ public class TraversalEmptyValueGui extends AbstractConfigGui {
         return JTextScrollPane.getInstance((JSyntaxTextArea) createParamsTextArea());
     }
 
-    private Component createEmptyCheckExpectationTextArea() {
-        if (emptyCheckExpectationTextArea == null) {
-            emptyCheckExpectationTextArea = GuiUtil.createTextArea(TraversalEmptyValue.EMPTY_CHECK_EXPECTATION, 20);
+    private Component createEmptyCheckExpressionTextArea() {
+        if (emptyCheckExpressionTextArea == null) {
+            emptyCheckExpressionTextArea = GuiUtil.createTextArea(TraversalEmptyValue.EMPTY_CHECK_EXPRESSION, 20);
         }
-        return emptyCheckExpectationTextArea;
+        return emptyCheckExpressionTextArea;
 
     }
 
-    private Component createEmptyCheckExpectationLabel() {
-        return GuiUtil.createLabel("预期结果：", createEmptyCheckExpectationTextArea());
+    private Component createEmptyCheckExpressionLabel() {
+        return GuiUtil.createLabel("预期结果：", createEmptyCheckExpressionTextArea());
     }
 
-    private Component createEmptyCheckExpectationPanel() {
-        return JTextScrollPane.getInstance((JSyntaxTextArea) createEmptyCheckExpectationTextArea());
+    private Component createEmptyCheckExpressionPanel() {
+        return JTextScrollPane.getInstance((JSyntaxTextArea) createEmptyCheckExpressionTextArea());
     }
 
     private Component createUseTemplateComboBox() {
@@ -192,9 +193,9 @@ public class TraversalEmptyValueGui extends AbstractConfigGui {
         interfacePanel.add(createParamsLabel(), GuiUtil.GridBag.labelConstraints);
         interfacePanel.add(GuiUtil.createBlankPanel(), GuiUtil.GridBag.editorConstraints);
         interfacePanel.add(createParamsPanel(), GuiUtil.GridBag.multiLineEditorConstraints);
-        interfacePanel.add(createEmptyCheckExpectationLabel(), GuiUtil.GridBag.labelConstraints);
+        interfacePanel.add(createEmptyCheckExpressionLabel(), GuiUtil.GridBag.labelConstraints);
         interfacePanel.add(GuiUtil.createBlankPanel(), GuiUtil.GridBag.editorConstraints);
-        interfacePanel.add(createEmptyCheckExpectationPanel(), GuiUtil.GridBag.multiLineEditorConstraints);
+        interfacePanel.add(createEmptyCheckExpressionPanel(), GuiUtil.GridBag.multiLineEditorConstraints);
 
         JPanel templateBodyPanel = new JPanel(new GridBagLayout());
         templateBodyPanel.setBorder(GuiUtil.createTitledBorder("配置模板信息"));
@@ -217,24 +218,25 @@ public class TraversalEmptyValueGui extends AbstractConfigGui {
 
     private Component createNoteArea() {
         String note =
-                "1. 请将线程组设置为无限循环，数据遍历完毕时线程组将自动停止循环；\n" +
-                "2. 请求报文变量名=params，预期结果变量名=expectation，当前 JsonPath变量名=jsonPath；\n" +
-                "3. 该插件中数据引用变量或函数不会替换为具体的值，请在使用的位置利用 ${__eval(${params})} 函数替换。";
+                "1. 请将线程组设置为无限循环，数据遍历完毕时线程组将自动停止循环\n" +
+                        "2. 请求报文变量名=params，预期结果变量名=expression，当前 JsonPath变量名=jsonPath\n" +
+                        "3. 该插件中数据引用变量或函数不会替换为具体的值，请在使用的位置利用 ${__eval(${params})} 函数替换";
         return GuiUtil.createNoteArea(note, this.getBackground());
     }
 
     /**
      * 获取json模版内容
      */
-    private String getTemplateContent(boolean useTemplate, String interfaceName) {
-        if (useTemplate && StringUtil.isNotBlank(interfaceName)) {
-            try {
-                return readJsonFile(interfaceName);
-            } catch (IOException | ServiceException e) {
-                return e.getMessage();
-            }
+    private String getTemplateContent(String interfaceName) {
+        if (StringUtil.isBlank(interfaceName)) {
+            return "接口名称不允许为空，请填写接口名称后重试";
         }
-        return "";
+
+        try {
+            return readJsonFile(interfaceName);
+        } catch (IOException | ServiceException e) {
+            return e.getMessage();
+        }
     }
 
     /**

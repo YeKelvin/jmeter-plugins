@@ -1,7 +1,7 @@
 package org.apache.jmeter.config.gui;
 
 import org.apache.jmeter.config.Argument;
-import org.apache.jmeter.config.ENVDataSet;
+import org.apache.jmeter.config.EnvDataSet;
 import org.apache.jmeter.gui.util.HeaderAsPropertyRenderer;
 import org.apache.jmeter.testelement.TestElement;
 import org.apache.jmeter.util.JMeterUtils;
@@ -21,13 +21,13 @@ import java.util.Map;
 /**
  * @author KelvinYe
  */
-public class ENVDataSetGui extends AbstractConfigGui {
+public class EnvDataSetGui extends AbstractConfigGui {
 
     private JComboBox<String> configNameComboBox;
     private JTable table;
     private ObjectTableModel tableModel;
 
-    public ENVDataSetGui() {
+    public EnvDataSetGui() {
         init();
     }
 
@@ -53,7 +53,7 @@ public class ENVDataSetGui extends AbstractConfigGui {
 
     @Override
     public TestElement createTestElement() {
-        ENVDataSet envDataSet = new ENVDataSet();
+        EnvDataSet envDataSet = new EnvDataSet();
         modifyTestElement(envDataSet);
         return envDataSet;
     }
@@ -64,7 +64,7 @@ public class ENVDataSetGui extends AbstractConfigGui {
     @Override
     public void modifyTestElement(TestElement el) {
         super.configureTestElement(el);
-        el.setProperty(ENVDataSet.CONFIG_NAME, (String) configNameComboBox.getSelectedItem());
+        el.setProperty(EnvDataSet.CONFIG_NAME, (String) configNameComboBox.getSelectedItem());
     }
 
     /**
@@ -73,11 +73,11 @@ public class ENVDataSetGui extends AbstractConfigGui {
     @Override
     public void configure(TestElement el) {
         super.configure(el);
-        String fileName = el.getPropertyAsString(ENVDataSet.CONFIG_NAME);
+        String fileName = el.getPropertyAsString(EnvDataSet.CONFIG_NAME);
         configNameComboBox.setSelectedItem(fileName);
         tableModel.clearData();
-        if (el instanceof ENVDataSet && StringUtil.isNotBlank(fileName)) {
-            ENVDataSet envDataSet = (ENVDataSet) el;
+        if (el instanceof EnvDataSet && StringUtil.isNotBlank(fileName)) {
+            EnvDataSet envDataSet = (EnvDataSet) el;
             Map<String, String> envMap = envDataSet.getEnvMap(envDataSet.getFilePath());
             for (Map.Entry<String, String> entry : envMap.entrySet()) {
                 Argument arg = new Argument();
@@ -98,7 +98,7 @@ public class ENVDataSetGui extends AbstractConfigGui {
 
     private Component createConfigNameComboBox() {
         if (configNameComboBox == null) {
-            configNameComboBox = GuiUtil.createComboBox(ENVDataSet.CONFIG_NAME);
+            configNameComboBox = GuiUtil.createComboBox(EnvDataSet.CONFIG_NAME);
             comboBoxAddItem(getConfigFileList(getConfigPath()));
         }
         return configNameComboBox;
@@ -139,8 +139,8 @@ public class ENVDataSetGui extends AbstractConfigGui {
 
     private Component createNoteArea() {
         String note =
-                "1. 配置文件必须是 Yaml格式 ，且必须放在 ${JMETER_HOME}/config 目录下；\n" +
-                "2. Non-Gui命令说明：存在 -JconfigName 选项时，优先读取 ${__P(configName)} 配置文件。";
+                "1. 配置文件必须是 Yaml格式 ，且必须放在 ${JMETER_HOME}/config 目录下\n" +
+                "2. Non-Gui命令说明：存在 -JconfigName 选项时，优先读取 ${__P(configName)} 配置文件";
         return GuiUtil.createNoteArea(note, this.getBackground());
     }
 

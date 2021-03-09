@@ -10,7 +10,7 @@ import org.apache.jmeter.common.utils.LogUtil;
 import org.apache.jmeter.common.utils.PathUtil;
 import org.apache.jmeter.common.utils.exception.ServiceException;
 import org.apache.jmeter.common.utils.json.JsonUtil;
-import org.apache.jmeter.config.ENVDataSet;
+import org.apache.jmeter.config.EnvDataSet;
 import org.apache.jmeter.config.SSHConfiguration;
 import org.apache.jmeter.control.LoopController;
 import org.apache.jmeter.engine.StandardJMeterEngine;
@@ -116,7 +116,7 @@ public class JMeterScriptSampler extends AbstractSampler implements Interruptibl
         HashTree testTree = loadScriptTree(scriptAbsPath, result);
 
         // 设置全局变量，用于传递给子脚本使用
-        props.put(CliOption.CONFIG_NAME, JMeterVarsUtil.getDefault(ENVDataSet.CONFIG_NAME));
+        props.put(CliOption.CONFIG_NAME, JMeterVarsUtil.getDefault(EnvDataSet.CONFIG_NAME));
 
         // 判断是否需要把当前线程的局部变量同步至子脚本
         if (isSyncToVars()) {

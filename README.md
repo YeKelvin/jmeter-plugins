@@ -11,7 +11,7 @@
 
 ## 四、插件介绍
 ### Configs [→](https://github.com/YeKelvin/jmeter-plugins/tree/master/configs)
-- **环境变量配置器(EnvDataSet):** 根据`.yaml`配置文件加载测试环境变量，脚本中通过${key}占位符引用
+- **环境变量配置器(EnvDataSet):** 根据`.yaml`配置文件加载测试环境变量，脚本中通过`${keyName}`占位符引用
 - **失败请求保存器(FailureResultSaver):** 用于性能测试时，把失败的请求数据单独保存下来，方便定位问题
 - **HTTP请求头读取器(HTTPHeaderReader):** HTTP信息头管理器的文件版，根据`.yaml`配置文件加载请求头
 - **SSH配置器(SSHConfiguration):** 配置ssh，多用于内网跳板机端口转发，目的是本地直连跳板机后的内部服务
@@ -23,7 +23,7 @@
 - **JMeterScript取样器(JMeterScriptSampler):** 可在当前脚本中执行外部JMeter脚本并获取执行结果，当前脚本和外部脚本可传递变量，该插件是提高脚本复用性的大杀器
 
 ### Visualizers [→](https://github.com/YeKelvin/jmeter-plugins/tree/master/visualizers)
-- **LocalHtmlReport(HTML报告):** 收集所有sampler数据保存至html文件中
+- **HTML报告(LocalHtmlReport):** 收集所有sampler数据保存至html文件中
 
 ### Functions [→](https://github.com/YeKelvin/jmeter-plugins/tree/master/functions)
 - **{__ExtractSQLColumn()}:** 根据列名提取数据库表第一行的值

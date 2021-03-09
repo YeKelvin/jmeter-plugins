@@ -23,7 +23,7 @@
 - 在需要使用环境变量的地方通过占位符 `${keyName}`引用即可
 
 ### 1.3、截图
-![EnvDataSet](https://github.com/YeKelvin/jmeter-plugins/blob/master/docs/image/EnvDataSet_001.png)
+![EnvDataSet](https://github.com/YeKelvin/jmeter-plugins/blob/master/docs/images/EnvDataSet_001.png)
 
 
 ## 2、 失败请求保存器(FailureResultSaver)
@@ -38,6 +38,9 @@
 - `日志路径`： 自定义日志文件路径
 - `错误分类`： 仅适用于Json报文，通过JsonPath表达式获取ResponseData的错误码，把错误码分组为不同的日志文件，日志文件名称以错误码命名，目的是方便统计和分类错误类型，为空时不做分类
 - `排除指定错误`： 指定需要排除的错误码，如果ResponseData包含该错误码，则不输出至日志文件中
+
+### 2.4、截图
+![FailureResultSaver](https://github.com/YeKelvin/jmeter-plugins/blob/master/docs/images/FailureResultSaver_001.png)
 
 
 ## 3、 HTTP请求头读取器(HTTPHeaderReader)
@@ -61,6 +64,9 @@
 - 在`HTTP请求头读取器`中选择对应的请求头配置文件
 - 在执行HTTP请求前会把所有请求头合并后添加至当前HTTP的请求头中
 
+### 3.3、截图
+![HTTPHeaderReader](https://github.com/YeKelvin/jmeter-plugins/blob/master/docs/images/HTTPHeaderReader_001.png)
+
 
 ## 4、 SSH配置器(SSHConfiguration)
 ### 4.1、 插件说明
@@ -77,6 +83,10 @@
 - `本地转发端口`： local port
 - `远程地址`： remote host:port
 
+### 4.4、截图
+![SSHConfiguration](https://github.com/YeKelvin/jmeter-plugins/blob/master/docs/images/SSHConfiguration_001.png)
+
+
 ## 5、 数据遍历配置器(TraversalDataSet)
 ### 5.1、 插件说明
 - 用于枚举遍历测试，完成遍历后线程自动停止线程
@@ -90,6 +100,11 @@
 - `变量名称`： 变量名称，有多个时用“,”逗号分隔
 - `数据集`： 变量值，与CSV格式一致
 
+### 5.4、截图
+![TraversalDataSet](https://github.com/YeKelvin/jmeter-plugins/blob/master/docs/images/TraversalDataSet_001.png)
+![TraversalDataSet](https://github.com/YeKelvin/jmeter-plugins/blob/master/docs/images/TraversalDataSet_002.png)
+![TraversalDataSet](https://github.com/YeKelvin/jmeter-plugins/blob/master/docs/images/TraversalDataSet_003.png)
+
 
 ## 6、 空值遍历配置器(TraversalEmptyValue)
 ### 6.1、 插件说明
@@ -98,12 +113,17 @@
 ### 6.2、 使用说明
 - 将线程组的循环次数设置为永远，当完成遍历后会自动停止，无需手动计算循环次数
 - 在`线程组`下添加`空值遍历配置器`（配置元件，建议排在线程组下的第一位）
-- params，expectation，${__eval(${params})}
+- 请求执行前会把当次请求报文赋值给`params`变量，单次空值校验预期结果赋值给`expression`变量，在脚本请求报文的位置使用函数`${__eval(${params})}`替换原来的请求内容，在请求断言处使用占位符`${expression}`替换原来的断言
 
 ### 6.3、参数说明
-- `空类型`： null or ""
+- `空类型`： 空值是`null`还是`""`
 - `请求报文`： 请求报文
 - `预期结果`： 结果表达式
-- `使用模板`： true or false
-- `接口目录`： 自定义接口文件所在目录
+- `使用模板`： 是否使用模板
+- `接口目录`： 指定接口文件所在目录
 - `接口名称`： 指定接口文件名称
+
+### 6.4、截图
+![TraversalEmptyValue](https://github.com/YeKelvin/jmeter-plugins/blob/master/docs/images/TraversalEmptyValue_001.png)
+![TraversalEmptyValue](https://github.com/YeKelvin/jmeter-plugins/blob/master/docs/images/TraversalEmptyValue_002.png)
+![TraversalEmptyValue](https://github.com/YeKelvin/jmeter-plugins/blob/master/docs/images/TraversalEmptyValue_003.png)

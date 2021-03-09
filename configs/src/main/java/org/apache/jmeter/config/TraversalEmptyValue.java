@@ -28,7 +28,7 @@ public class TraversalEmptyValue extends ConfigTestElement implements LoopIterat
 
     public static final String BLANK_TYPE = "TraversalEmptyValue.blankType";
     public static final String PATAMS = "TraversalEmptyValue.patams";
-    public static final String EMPTY_CHECK_EXPECTATION = "TraversalEmptyValue.emptyCheckExpectation";
+    public static final String EMPTY_CHECK_EXPRESSION = "TraversalEmptyValue.emptyCheckExpression";
     public static final String USE_TEMPLATE = "TraversalEmptyValue.useTemplate";
     public static final String INTERFACE_PATH = "TraversalEmptyValue.interfacePath";
     public static final String INTERFACE_NAME = "TraversalEmptyValue.interfaceName";
@@ -43,7 +43,7 @@ public class TraversalEmptyValue extends ConfigTestElement implements LoopIterat
 
 
     /**
-     * 循环获取jsonPath、expectation 和 params，并放入vars变量中
+     * 循环获取jsonPath、expression 和 params，并放入vars变量中
      */
     private void setVariables() {
         Iterator<String> iter = getJsonPathIterator();
@@ -53,7 +53,7 @@ public class TraversalEmptyValue extends ConfigTestElement implements LoopIterat
             if (isSuccess instanceof Boolean) {
                 String expection = String.valueOf(isSuccess);
                 getThreadContext().getVariables().put("jsonPath", jsonPath);
-                getThreadContext().getVariables().put("expectation", expection);
+                getThreadContext().getVariables().put("expression", expection);
                 putParams(jsonPath);
             } else {
                 setVariables();
@@ -114,7 +114,7 @@ public class TraversalEmptyValue extends ConfigTestElement implements LoopIterat
     public String getEmptyCheckExpection() {
         //使testEL元素只读，即不能参数化
         setRunningVersion(false);
-        return getPropertyAsString(TraversalEmptyValue.EMPTY_CHECK_EXPECTATION);
+        return getPropertyAsString(TraversalEmptyValue.EMPTY_CHECK_EXPRESSION);
     }
 
     private boolean getUseTemplate() {
