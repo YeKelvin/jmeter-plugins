@@ -41,3 +41,8 @@
 
 ### common-util [→](https://github.com/YeKelvin/jmeter-plugins/tree/master/common-util)
 - 平时写脚本时常用的方法
+
+### beanshell [→](https://github.com/YeKelvin/jmeter-plugins/tree/master/beanshell)
+- 平时写脚本时常用的bsh脚本
+- **assert.bsh:** 常用断言方法
+- **sql.bsh:** 对获取数据库表结果的方法封装

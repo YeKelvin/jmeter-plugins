@@ -1,42 +1,33 @@
-import org.apache.jmeter.common.utils.StringUtil;
+import pers.kelvin.util.StringUtil;
 
-
-/**
- * 获取 String类型的SQL值
- * columnValue为 null时返回默认值
- * quotes为 true时 columnValue前后带双引号返回
- */
-String getColumnValue(String tableName, String columnName, String defaultValue, boolean quotes) {
-	String columnValue = String.valueOf(vars.getObject(tableName).get(0).get(columnName));
-	if(columnValue == null || columnValue.isEmpty()) {
-		return defaultValue;
-	}
-	if(quotes) {
-		return "\"" + columnValue + "\"";
-	}
-	return columnValue;
-}
-
-/**
- * 获取 String类型的SQL值，columnValue为 null时返回默认值
- */
-String getColumnValue(String tableName, String columnName, String defaultValue) {
-	return getColumnValue(tableName, columnName, defaultValue, false);
-}
 
 /**
  * 获取String类型的SQL值
  */
-String getColumnValue(String tableName, String columnName) {
-	return getColumnValue(tableName, columnName, "");
+String getTableValue(String tableName, String columnName) {
+	return String.valueOf(vars.getObject(tableName).get(0).get(columnName));
+}
+
+/**
+ * 获取String类型的SQL值，如null则赋默认值defaultValue，withQuotes为true时，columnValue带双引号返回
+ */
+String getTableValue(String tableName, String columnName, String defaultValue, boolean withQuotes) {
+	String columnValue = vars.getObject(tableName).get(0).get(columnName);
+	if(columnValue == null || columnValue.isEmpty()) {
+		return defaultValue;
+	}
+	if(withQuotes) {
+		return "\"" + String.valueOf(columnValue) + "\"";
+	}
+	return String.valueOf(columnValue);
 }
 
 /**
  * select count(*) from tableName;
  * 获取String类型的数据统计
  */
-String getTableResultCount(String tableName) {
-	return String.valueOf(vars.getObject(tableName).get(0).get("COUNT(*)"));
+String getTableCount(String tableName) {
+	return vars.getObject(tableName).get(0).get("COUNT(*)").toString();
 }
 
 

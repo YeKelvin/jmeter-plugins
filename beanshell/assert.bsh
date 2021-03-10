@@ -1,21 +1,21 @@
-import org.apache.jmeter.common.utils.StringUtil;
+import pers.kelvin.util.StringUtil;
 
 
 /**
- * 根据判断条件，当 condition=true时，停止当前 sample，输出错误信息（不知道为啥中文乱码，暂时用英文提示）
+ * 根据判断条件，condition=true时，停止当前 sample，输出错误信息（不知道为啥中文乱码，暂时用英文提示）
  */
-void stopThread(boolean condition, String samplerResult, String expectionResult) {
+void stopThreadWithCondition(boolean condition, String testResult, String expectionResult) {
 	if( condition ) {
 		Failure = true;
-		FailureMessage = "Test failed!! SamplerResult=" + samplerResult + ", ExpectionResult=" + expectionResult;
+		FailureMessage = "Test failed!! TestResult=" + testResult + ", ExpectionResult=" + expectionResult;
 		Response.setStopThread(true);
 	}
 }
 
 /**
- * 根据判断条件，当 condition=true时，停止当前 sample，输出自定义错误信息
+ * 根据判断条件，condition=true时，停止当前 sample，输出自定义错误信息
  */
-void stopThread(boolean condition, String errorMsg) {
+void stopThreadWithCondition(boolean condition, String errorMsg) {
 	if( condition ) {
 		Failure = true;
 		FailureMessage = errorMsg;
@@ -26,199 +26,186 @@ void stopThread(boolean condition, String errorMsg) {
 /**
  * 断言 SQL结果数
  */
-void assertSqlResultSize(String tableName, int resultSize) {
+void assertSQLResultsSize(String tableName, int resultsSize) {
 	Object tableObj = vars.getObject(tableName);
 	// 判断JDBC Request中是否有正确设置表结果变量
 	if(tableObj != null) {
 		int tableResultSize = tableObj.size();
-		String samplerResult = String.valueOf(tableResultSize);
-		String expectionResult = String.valueOf(resultSize);
-		boolean condition = (tableResultSize != resultSize);
-		stopThread(condition, samplerResult, expectionResult);
+		String testResult = String.valueOf(tableResultSize);
+		String expectionResult = String.valueOf(resultsSize);
+		stopThreadWithCondition(tableResultSize != resultsSize, testResult, expectionResult);
 	}else {
-		String errorMsg = "TableName variable does not exist.";
-		log.error(errorMsg);
-		stopThread(true, errorMsg);
+		String errorMsg = "tableName variable does not exist.";
+		log.info(errorMsg);
+		stopThreadWithCondition(true, errorMsg);
 	}
 }
 
 /**
  * 断言 SQL结果数，带自定义错误信息
  */
-void assertSqlResultSize(String tableName, int resultSize, String errorMsg) {
+void assertSQLResultsSize(String tableName, int resultsSize, String errorMsg) {
 	Object tableObj = vars.getObject(tableName);
 	// 判断JDBC Request中是否有正确设置表结果变量
 	if(tableObj != null) {
 		int tableResultSize = tableObj.size();
 		String testResult = String.valueOf(tableResultSize);
-		String expectionResult = String.valueOf(resultSize);
-		stopThread(tableResultSize != resultSize, errorMsg);
+		String expectionResult = String.valueOf(resultsSize);
+		stopThreadWithCondition(tableResultSize != resultsSize, errorMsg);
 	}else {
 		String errorMsg = "tableName variable does not exist.";
 		log.info(errorMsg);
-		stopThread(true, errorMsg);
+		stopThreadWithCondition(true, errorMsg);
 	}
 }
 
 /**
  * 断言 String是否相等
  */
-void assertEquals(String actual, String expected) {
-	boolean condition = !actual.equals(expected);
-	stopThread(condition, actual, expected);
+void assertEquals(String source, String expection) {
+	stopThreadWithCondition(!source.equals(expection), source, expection);
 }
 
 /**
  * 断言 String是否相等，带自定义错误信息
  */
-void assertEquals(String actual, String expected, String errorMsg) {
-	boolean condition = !actual.equals(expected);
-	stopThread(condition, errorMsg);
+void assertEquals(String source, String expection, String errorMsg) {
+	stopThreadWithCondition(!source.equals(expection), errorMsg);
 }
 
 /**
  * 断言 int是否相等
  */
-void assertEquals(int actual, int expected) {
-	boolean condition = !(actual==expected);
-	stopThread(condition, String.valueOf(actual), String.valueOf(expected));
+void assertEquals(int source, int expection) {
+	stopThreadWithCondition(!(source==expection),
+							String.valueOf(source),
+							String.valueOf(expection));
 }
 
 /**
  * 断言 int是否相等，带自定义错误信息
  */
-void assertEquals(int actual, int expected, String errorMsg) {
-	boolean condition = !(actual==expected);
-	stopThread(condition, errorMsg);
+void assertEquals(int source, int expection, String errorMsg) {
+	stopThreadWithCondition(!(source==expection), errorMsg);
 }
 
 /**
  * 断言 float是否相等
  */
-void assertEquals(float actual, float expected) {
-	boolean condition = !(actual==expected);
-	stopThread(condition, String.valueOf(actual), String.valueOf(expected));
+void assertEquals(float source, float expection) {
+	stopThreadWithCondition(!(source==expection),
+							String.valueOf(source),
+							String.valueOf(expection));
 }
 
 /**
  * 断言 float是否相等，带自定义错误信息
  */
-void assertEquals(float actual, float expected, String errorMsg) {
-	boolean condition = !(actual==expected);
-	stopThread(condition, errorMsg);
+void assertEquals(float source, float expection, String errorMsg) {
+	stopThreadWithCondition(!(source==expection), errorMsg);
 }
 
 /**
  * 断言 String是否不相等
  */
-void assertNotEquals(String actual, String expected) {
-	boolean condition = actual.equals(expected);
-	stopThread(condition, actual, expected);
+void assertNotEquals(String source, String expection) {
+	stopThreadWithCondition(source.equals(expection), source, expection);
 }
 
 /**
  * 断言 String是否不相等，带自定义错误信息
  */
-void assertNotEquals(String actual, String expected, String errorMsg) {
-	boolean condition = actual.equals(expected);
-	stopThread(condition, errorMsg);
+void assertNotEquals(String source, String expection, String errorMsg) {
+	stopThreadWithCondition(source.equals(expection), errorMsg);
 }
 
 /**
  * 断言 int是否不相等
  */
-void assertNotEquals(int actual, int expected) {
-	boolean condition = (actual==expected);
-	stopThread(condition, String.valueOf(actual), String.valueOf(expected));
+void assertNotEquals(int source, int expection) {
+	stopThreadWithCondition((source==expection),
+							String.valueOf(source),
+							String.valueOf(expection));
 }
 
 /**
  * 断言 int是否不相等，带自定义错误信息
  */
-void assertNotEquals(int actual, int expected, String errorMsg) {
-	boolean condition = (actual==expected);
-	stopThread(condition, errorMsg);
+void assertNotEquals(int source, int expection, String errorMsg) {
+	stopThreadWithCondition((source==expection), errorMsg);
 }
 
 /**
  * 断言 float是否不相等
  */
-void assertNotEquals(float actual, float expected) {
-	boolean condition = (actual==expected);
-	stopThread(condition, String.valueOf(actual), String.valueOf(expected));
+void assertNotEquals(float source, float expection) {
+	stopThreadWithCondition((source==expection),
+							String.valueOf(source),
+							String.valueOf(expection));
 }
 
 /**
  * 断言 float是否不相等，带自定义错误信息
  */
-void assertNotEquals(float actual, float expected, String errorMsg) {
-	boolean condition = (actual==expected);
-	stopThread(condition, errorMsg);
+void assertNotEquals(float source, float expection, String errorMsg) {
+	stopThreadWithCondition((source==expection), errorMsg);
 }
 
 /**
  * 断言是否为 true
  */
-void assertTrue(boolean actual) {
-	boolean condition = !(actual && true);
-	stopThread(condition, String.valueOf(actual), "true");
+void assertTrue(boolean source) {
+	stopThreadWithCondition(!(source && true), String.valueOf(source), "true");
 }
 
 /**
  * 断言是否为 false
  */
-void assertFalse(boolean actual) {
-	boolean condition = !(!actual && true);
-	stopThread(condition, String.valueOf(actual), "false");
+void assertFalse(boolean source) {
+	stopThreadWithCondition(!(!source && true), String.valueOf(source), "false");
 }
 
 /**
  * 断言是否为 true，带自定义错误信息
  */
-void assertTrue(boolean actual, String errorMsg) {
-	boolean condition = !(actual && true);
-	stopThread(condition, errorMsg);
+void assertTrue(boolean source, String errorMsg) {
+	stopThreadWithCondition(!(source && true), errorMsg);
 }
 
 /**
  * 断言是否为 false，带自定义错误信息
  */
-void assertFalse(boolean actual, String errorMsg) {
-	boolean condition = !(!actual && true);
-	stopThread(condition, errorMsg);
+void assertFalse(boolean source, String errorMsg) {
+	stopThreadWithCondition(!(!source && true), errorMsg);
 }
 
 /**
  * 断言 String是否非 null
  */
-void assertNotNull(String actual) {
-	boolean condition = (actual == null);
-	String actualString = actual == null ? "null" : actual;
-	stopThread(condition, actualString, "null");
+void assertNotNull(String source) {
+	String sourceStr = source == null ? "null" : source;
+	stopThreadWithCondition((source == null), sourceStr, "null");
 }
 
 /**
  * 断言 String是否非 null，带自定义错误信息
  */
-void assertNotNull(String actual, String errorMsg) {
-	boolean condition = (actual == null);
-	stopThread(condition, errorMsg);
+void assertNotNull(String source, String errorMsg) {
+	stopThreadWithCondition((source == null), errorMsg);
 }
 
 /**
  * 断言 String是否为 null
  */
-void assertNull(String actual) {
-	boolean condition = (actual != null);
-	String actualString = actual == null ? "null" : actual;
-	stopThread(condition, actualString, "not null");
+void assertNull(String source) {
+	String sourceStr = source == null ? "null" : source;
+	stopThreadWithCondition((source != null), sourceStr, "not null");
 }
 
 /**
  * 断言 String是否为 null，带自定义错误信息
  */
-void assertNull(String actual, String errorMsg) {
-	boolean condition = (actual != null);
-	stopThread(condition, errorMsg);
+void assertNull(String source, String errorMsg) {
+	stopThreadWithCondition((source != null), errorMsg);
 }
 
