@@ -148,7 +148,8 @@ public class JMeterScriptSampler extends AbstractSampler implements Interruptibl
 
         // 提取子脚本的执行结果
         @SuppressWarnings("unchecked")
-        Map<String, Object> incrementalVariables = (Map<String, Object>) props.get(JMeterScriptDataTransfer.INCREMENTAL_VARIABLES);
+        Map<String, Object> incrementalVariables =
+                (Map<String, Object>) props.get(JMeterScriptDataTransfer.INCREMENTAL_VARIABLES);
 
         // 把子脚本中的增量局部变量同步至当前线程的局部变量中
         if (isSyncToVars()) {

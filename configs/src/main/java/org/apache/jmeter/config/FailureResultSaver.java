@@ -1,13 +1,13 @@
 package org.apache.jmeter.config;
 
+import org.apache.commons.lang3.StringUtils;
+import org.apache.jmeter.common.utils.FileUtil;
+import org.apache.jmeter.common.utils.LogUtil;
+import org.apache.jmeter.common.utils.TimeUtil;
 import org.apache.jmeter.samplers.SampleEvent;
 import org.apache.jmeter.samplers.SampleListener;
 import org.apache.jmeter.samplers.SampleResult;
 import org.slf4j.Logger;
-import org.apache.jmeter.common.utils.FileUtil;
-import org.apache.jmeter.common.utils.StringUtil;
-import org.apache.jmeter.common.utils.TimeUtil;
-import org.apache.jmeter.common.utils.LogUtil;
 
 import java.io.File;
 
@@ -97,7 +97,7 @@ public class FailureResultSaver extends ConfigTestElement implements SampleListe
      */
     private boolean isExclude(SampleResult result) {
         String excludeText = getExclude();
-        if (StringUtil.isNotBlank(excludeText)) {
+        if (StringUtils.isNotBlank(excludeText)) {
             String responseData = result.getResponseDataAsString();
             String[] excludes = excludeText.split(",");
             for (String exclude : excludes) {
@@ -137,7 +137,7 @@ public class FailureResultSaver extends ConfigTestElement implements SampleListe
     private void outputFile(String content) {
         // 根据错误码分类错误日志文件
         String errorClassification = getErrorClassification();
-        if (StringUtil.isNotBlank(errorClassification)) {
+        if (StringUtils.isNotBlank(errorClassification)) {
             File failureLog = getFailureLog();
             String[] failureLogs = failureLog.getName().split("\\.");
             String logName = failureLogs[0] + "-" + errorClassification + "." + failureLogs[1];

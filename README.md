@@ -20,7 +20,7 @@
 
 ### Samplers [→](https://github.com/YeKelvin/jmeter-plugins/tree/master/samplers)
 - **DubboTelnet取样器(DubboTelnetSampler):** Dubbo接口插件，通过Telnet方式调用Dubbo接口
-- **JMeterScript取样器(JMeterScriptSampler):** 可在当前脚本中执行外部JMeter脚本并获取执行结果，当前脚本和外部脚本可传递变量，该插件是提高脚本复用性的大杀器
+- **JMeterScript取样器(JMeterScriptSampler):** 可在当前脚本中执行指定位置的JMeter脚本并获取执行结果，当前脚本和目标脚本可传递变量，该插件是提高脚本复用性的大杀器
 
 ### Visualizers [→](https://github.com/YeKelvin/jmeter-plugins/tree/master/visualizers)
 - **HTML报告(LocalHtmlReport):** 收集所有sampler数据保存至html文件中

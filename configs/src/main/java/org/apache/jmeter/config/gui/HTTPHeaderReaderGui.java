@@ -1,7 +1,7 @@
 package org.apache.jmeter.config.gui;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.jmeter.common.utils.GuiUtil;
-import org.apache.jmeter.common.utils.StringUtil;
 import org.apache.jmeter.config.Argument;
 import org.apache.jmeter.config.HTTPHeaderReader;
 import org.apache.jmeter.gui.util.HeaderAsPropertyRenderer;
@@ -76,7 +76,7 @@ public class HTTPHeaderReaderGui extends AbstractConfigGui {
         String fileName = el.getPropertyAsString(HTTPHeaderReader.HEADERS_FILE_NAME);
         headersFileNameComboBox.setSelectedItem(fileName);
         tableModel.clearData();
-        if (el instanceof HTTPHeaderReader && StringUtil.isNotBlank(fileName)) {
+        if (el instanceof HTTPHeaderReader && StringUtils.isNotBlank(fileName)) {
             HTTPHeaderReader httpHeaderReader = (HTTPHeaderReader) el;
             Map<String, String> headerMap = httpHeaderReader.getHeaderMap(httpHeaderReader.getHeadersFilePath());
             for (Map.Entry<String, String> entry : headerMap.entrySet()) {

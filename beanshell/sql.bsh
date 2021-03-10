@@ -1,5 +1,3 @@
-import pers.kelvin.util.StringUtil;
-
 
 /**
  * 获取String类型的SQL值

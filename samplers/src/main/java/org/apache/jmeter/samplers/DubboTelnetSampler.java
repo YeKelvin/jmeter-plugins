@@ -1,10 +1,10 @@
 package org.apache.jmeter.samplers;
 
 import com.jcraft.jsch.JSchException;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.jmeter.common.utils.ExceptionUtil;
 import org.apache.jmeter.common.utils.JMeterVarsUtil;
 import org.apache.jmeter.common.utils.LogUtil;
-import org.apache.jmeter.common.utils.StringUtil;
 import org.apache.jmeter.common.utils.exception.ServiceException;
 import org.apache.jmeter.common.utils.ssh.SSHTelnetClient;
 import org.apache.jmeter.config.SSHConfiguration;
@@ -195,6 +195,9 @@ public class DubboTelnetSampler extends AbstractSampler {
      * @return ture | false
      */
     private boolean getSuccessful(String responseData, String expectation) {
+        if (StringUtils.isBlank(expectation)) {
+            return true;
+        }
         return responseData.contains(expectation);
     }
 
@@ -202,10 +205,10 @@ public class DubboTelnetSampler extends AbstractSampler {
      * 数据验证
      */
     private void verifyData() {
-        if (StringUtil.isBlank(getAddress())) {
+        if (StringUtils.isBlank(getAddress())) {
             throw new ServiceException("服务器地址不能为空");
         }
-        if (StringUtil.isBlank(getInterfaceName())) {
+        if (StringUtils.isBlank(getInterfaceName())) {
             throw new ServiceException("接口名称不能为空");
         }
     }
@@ -223,7 +226,7 @@ public class DubboTelnetSampler extends AbstractSampler {
     }
 
     private String getExpectation() {
-        return getPropertyAsString(EXPECTATION);
+        return getPropertyAsString(EXPECTATION, "");
     }
 
     private String getEncode() {

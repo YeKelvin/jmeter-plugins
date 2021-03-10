@@ -3,6 +3,7 @@ package org.apache.jmeter.common.utils;
 import com.google.gson.JsonSyntaxException;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.jmeter.common.utils.json.JsonUtil;
 import org.slf4j.Logger;
 
@@ -31,7 +32,7 @@ public class Signature {
      */
     public static String sign(String json, String prefix) {
         try {
-            if (StringUtil.isBlank(json)) {
+            if (StringUtils.isBlank(json)) {
                 return "";
             }
 
@@ -44,13 +45,13 @@ public class Signature {
             String sign = orderedSB.substring(0, orderedSB.length() - 1);
 
             // 拼接前缀
-            if (StringUtil.isNotBlank(prefix)) {
+            if (StringUtils.isNotBlank(prefix)) {
                 sign = prefix + "&" + sign;
             }
             logger.debug("sign={}", sign);
 
             // md5加密
-            if (StringUtil.isNotBlank(sign)) {
+            if (StringUtils.isNotBlank(sign)) {
                 sign = md5(sign);
             }
             return sign;

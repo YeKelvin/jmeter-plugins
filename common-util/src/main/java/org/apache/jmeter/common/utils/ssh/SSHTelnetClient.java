@@ -1,11 +1,14 @@
 package org.apache.jmeter.common.utils.ssh;
 
-import com.jcraft.jsch.*;
-import org.slf4j.Logger;
-import org.apache.jmeter.common.utils.StringUtil;
+import com.jcraft.jsch.ChannelShell;
+import com.jcraft.jsch.JSch;
+import com.jcraft.jsch.JSchException;
+import com.jcraft.jsch.Session;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.jmeter.common.utils.ExceptionUtil;
-import org.apache.jmeter.common.utils.exception.ServiceException;
 import org.apache.jmeter.common.utils.LogUtil;
+import org.apache.jmeter.common.utils.exception.ServiceException;
+import org.slf4j.Logger;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -140,7 +143,7 @@ public class SSHTelnetClient {
      * 提取响应内容本身，去掉尾部的dubbo>标识符和elapsed:耗时
      */
     private String extractResponse(String responseData) {
-        if (StringUtil.isBlank(responseData) || responseData.length() < 7) {
+        if (StringUtils.isBlank(responseData) || responseData.length() < 7) {
             return responseData;
         }
         responseData = responseData.trim();

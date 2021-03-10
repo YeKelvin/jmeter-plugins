@@ -1,5 +1,7 @@
 package org.apache.jmeter.config.gui;
 
+import org.apache.commons.lang3.StringUtils;
+import org.apache.jmeter.common.utils.GuiUtil;
 import org.apache.jmeter.config.Argument;
 import org.apache.jmeter.config.EnvDataSet;
 import org.apache.jmeter.gui.util.HeaderAsPropertyRenderer;
@@ -8,8 +10,6 @@ import org.apache.jmeter.util.JMeterUtils;
 import org.apache.jorphan.gui.GuiUtils;
 import org.apache.jorphan.gui.ObjectTableModel;
 import org.apache.jorphan.reflect.Functor;
-import org.apache.jmeter.common.utils.GuiUtil;
-import org.apache.jmeter.common.utils.StringUtil;
 
 import javax.swing.*;
 import javax.swing.table.TableRowSorter;
@@ -76,7 +76,7 @@ public class EnvDataSetGui extends AbstractConfigGui {
         String fileName = el.getPropertyAsString(EnvDataSet.CONFIG_NAME);
         configNameComboBox.setSelectedItem(fileName);
         tableModel.clearData();
-        if (el instanceof EnvDataSet && StringUtil.isNotBlank(fileName)) {
+        if (el instanceof EnvDataSet && StringUtils.isNotBlank(fileName)) {
             EnvDataSet envDataSet = (EnvDataSet) el;
             Map<String, String> envMap = envDataSet.getEnvMap(envDataSet.getFilePath());
             for (Map.Entry<String, String> entry : envMap.entrySet()) {
@@ -140,7 +140,7 @@ public class EnvDataSetGui extends AbstractConfigGui {
     private Component createNoteArea() {
         String note =
                 "1. 配置文件必须是 Yaml格式 ，且必须放在 ${JMETER_HOME}/config 目录下\n" +
-                "2. Non-Gui命令说明：存在 -JconfigName 选项时，优先读取 ${__P(configName)} 配置文件";
+                        "2. Non-Gui命令说明：存在 -JconfigName 选项时，优先读取 ${__P(configName)} 配置文件";
         return GuiUtil.createNoteArea(note, this.getBackground());
     }
 

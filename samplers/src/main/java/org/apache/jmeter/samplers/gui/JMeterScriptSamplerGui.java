@@ -33,7 +33,7 @@ public class JMeterScriptSamplerGui extends AbstractSamplerGui {
 
     @Override
     public String getStaticLabel() {
-        return "JMeterScript 取样器";
+        return "JMeterScript取样器";
     }
 
 
@@ -116,7 +116,7 @@ public class JMeterScriptSamplerGui extends AbstractSamplerGui {
 
     private Component createSyncToPropsLabel() {
         return GuiUtil.createLabel(
-                "增量同步vars至props：", syncToProps);
+                "同步增量vars至props：", syncToProps);
     }
 
     private Component createSyncToVarsComboBox() {
@@ -130,7 +130,7 @@ public class JMeterScriptSamplerGui extends AbstractSamplerGui {
 
     private Component createSyncToVarsLabel() {
         return GuiUtil.createLabel(
-                "同步vars至子脚本：", syncToVars);
+                "同步vars至目标脚本：", syncToVars);
     }
 
     private Component createBodyPanel() {
@@ -156,10 +156,11 @@ public class JMeterScriptSamplerGui extends AbstractSamplerGui {
 
     private Component createNoteArea() {
         String note =
-                "1. 【脚本目录】：请使用环境变量\n" +
-                "2. 【脚本名称】：需要包含.jmx\n" +
-                "3. 【增量同步vars至props】：将子脚本中新增的局部变量同步至全局变量中\n" +
-                "4. 【同步vars至子脚本】：将调用者的局部变量同步至子脚本中（不会覆盖外部脚本中已存在的key），执行结束时将子脚本新增的局部变量返回给调用者\n";
+                "1.【脚本目录】: 请使用环境变量\n" +
+                        "2.【脚本名称】: 需要包含.jmx\n" +
+                        "3.【增量同步vars至props】: 将目标脚本中新增的局部变量同步至全局变量中\n" +
+                        "4.【同步vars至子脚本】: 将调用者的局部变量同步至目标脚本中（不会覆盖目标脚本中已存在的key），" +
+                        "                     执行结束时将目标脚本新增的局部变量返回给调用者\n";
         return GuiUtil.createNoteArea(note, this.getBackground());
     }
 
