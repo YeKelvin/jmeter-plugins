@@ -36,9 +36,6 @@
 - **{__RNumber()}:** 随机生成数字
 - **{__ScriptAbsPath()}:** 获取JMeter脚本所在目录的绝对路径
 
-### Dubbo-Zookeeper [→](https://github.com/YeKelvin/jmeter-plugins/tree/master/dubbo-zookeeper)
-- **DubboZookeeperSampler:** DubboZookeeper插件（年久失修了，直接用Dubbo官方推荐的JMeter插件吧）
-
 ### common-util [→](https://github.com/YeKelvin/jmeter-plugins/tree/master/common-util)
 - 平时写脚本时常用的方法
 

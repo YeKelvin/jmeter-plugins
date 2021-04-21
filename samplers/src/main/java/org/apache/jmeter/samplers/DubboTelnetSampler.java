@@ -187,7 +187,6 @@ public class DubboTelnetSampler extends AbstractSampler {
 
     /**
      * 判断expection预期结果是否为逻辑表达式，
-     * 如是则转换为groovy表达式，交由groovy执行并返回boolean结果，
      * 否则预期结果判断逻辑为responseData响应报文中是否包含expection预期结果的值，包含为true，不包含为false。
      *
      * @param responseData 响应报文

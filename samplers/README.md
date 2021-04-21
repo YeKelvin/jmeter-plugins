@@ -2,6 +2,7 @@
 ## 1、DubboTelnet取样器(DubboTelnetSampler)
 ### 1.1、插件说明
 - Dubbo接口插件，通过Telnet方式调用Dubbo接口
+- Dubbo泛化调用推荐官方插件： `https://github.com/thubbo/jmeter-plugins-for-apache-dubbo`
 
 ### 1.2、使用说明
 - 在`线程组`下添加`DubboTelnet取样器`

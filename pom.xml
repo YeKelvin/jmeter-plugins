@@ -7,10 +7,9 @@
     <groupId>jmeter-plugins</groupId>
     <artifactId>jmeter-plugins</artifactId>
     <packaging>pom</packaging>
-    <version>5.1.1</version>
+    <version>5.1.1-1</version>
     <modules>
         <module>common-util</module>
-        <module>dubbo-zookeeper</module>
         <module>functions</module>
         <module>configs</module>
         <module>visualizers</module>
@@ -25,18 +24,14 @@
         <encoding>UTF-8</encoding>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
-        <jmeter.version>5.3</jmeter.version>
-        <jmeter-plugins.version>5.1.1</jmeter-plugins.version>
+        <jmeter.version>5.1.1</jmeter.version>
+        <jmeter-plugins.version>5.1.1-1</jmeter-plugins.version>
         <log4j.version>2.11.2</log4j.version>
         <slf4j-api.version>1.7.26</slf4j-api.version>
         <gson.version>2.8.0</gson.version>
         <json-path.version>2.4.0</json-path.version>
         <jedis.version>2.9.0</jedis.version>
         <jsch.version>0.1.54</jsch.version>
-        <dubbo.version>2.5.3</dubbo.version>
-        <org.springframework.version>4.3.17.RELEASE</org.springframework.version>
-        <zookeeper.version>3.4.6</zookeeper.version>
-        <zkclient.version>0.10</zkclient.version>
         <lombok.version>1.16.16</lombok.version>
         <testng.version>6.14.2</testng.version>
         <freemarker.version>2.3.28</freemarker.version>
@@ -45,10 +40,9 @@
         <httpclient.version>4.5.9</httpclient.version>
         <httpcore.version>4.4.11</httpcore.version>
         <commons-text.version>1.6</commons-text.version>
-        <guava.version>28.0-jre</guava.version>
+        <guava.version>29.0-jre</guava.version>
         <poi.version>4.1.1</poi.version>
         <yaml.version>1.26</yaml.version>
-        <groovy.version>3.0.4</groovy.version>
     </properties>
 
     <dependencyManagement>
@@ -140,118 +134,6 @@
                 <version>${testng.version}</version>
             </dependency>
             <dependency>
-                <groupId>com.alibaba</groupId>
-                <artifactId>dubbo</artifactId>
-                <version>${dubbo.version}</version>
-                <exclusions>
-                    <exclusion>
-                        <groupId>log4j</groupId>
-                        <artifactId>log4j</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>commons-logging</groupId>
-                        <artifactId>commons-logging</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>org.springframework</groupId>
-                        <artifactId>spring</artifactId>
-                    </exclusion>
-                </exclusions>
-            </dependency>
-            <dependency>
-                <groupId>org.springframework</groupId>
-                <artifactId>spring-web</artifactId>
-                <version>${org.springframework.version}</version>
-                <exclusions>
-                    <exclusion>
-                        <artifactId>commons-logging</artifactId>
-                        <groupId>commons-logging</groupId>
-                    </exclusion>
-                </exclusions>
-            </dependency>
-            <dependency>
-                <groupId>org.springframework</groupId>
-                <artifactId>spring-webmvc</artifactId>
-                <version>${org.springframework.version}</version>
-                <exclusions>
-                    <exclusion>
-                        <artifactId>commons-logging</artifactId>
-                        <groupId>commons-logging</groupId>
-                    </exclusion>
-                </exclusions>
-            </dependency>
-            <dependency>
-                <groupId>org.springframework</groupId>
-                <artifactId>spring-context</artifactId>
-                <version>${org.springframework.version}</version>
-                <exclusions>
-                    <exclusion>
-                        <artifactId>commons-logging</artifactId>
-                        <groupId>commons-logging</groupId>
-                    </exclusion>
-                </exclusions>
-            </dependency>
-            <dependency>
-                <groupId>org.springframework</groupId>
-                <artifactId>spring-jdbc</artifactId>
-                <version>${org.springframework.version}</version>
-                <exclusions>
-                    <exclusion>
-                        <artifactId>commons-logging</artifactId>
-                        <groupId>commons-logging</groupId>
-                    </exclusion>
-                </exclusions>
-            </dependency>
-            <dependency>
-                <groupId>org.springframework</groupId>
-                <artifactId>spring-context-support</artifactId>
-                <version>${org.springframework.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.springframework</groupId>
-                <artifactId>spring-test</artifactId>
-                <version>${org.springframework.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.springframework</groupId>
-                <artifactId>spring-beans</artifactId>
-                <version>${org.springframework.version}</version>
-            </dependency>
-            <dependency>
-                <artifactId>zookeeper</artifactId>
-                <groupId>org.apache.zookeeper</groupId>
-                <version>${zookeeper.version}</version>
-                <exclusions>
-                    <exclusion>
-                        <groupId>log4j</groupId>
-                        <artifactId>log4j</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>org.slf4j</groupId>
-                        <artifactId>slf4j-api</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>commons-lang</groupId>
-                        <artifactId>commons-lang</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>org.slf4j</groupId>
-                        <artifactId>slf4j-log4j12</artifactId>
-                    </exclusion>
-                </exclusions>
-            </dependency>
-            <dependency>
-                <groupId>com.101tec</groupId>
-                <artifactId>zkclient</artifactId>
-                <version>${zkclient.version}</version>
-                <exclusions>
-                    <exclusion>
-                        <groupId>org.slf4j</groupId>
-                        <artifactId>slf4j-log4j12</artifactId>
-                    </exclusion>
-                </exclusions>
-            </dependency>
-            <dependency>
                 <groupId>org.projectlombok</groupId>
                 <artifactId>lombok</artifactId>
                 <version>${lombok.version}</version>
@@ -302,12 +184,6 @@
                 <version>${yaml.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.codehaus.groovy</groupId>
-                <artifactId>groovy-all</artifactId>
-                <version>${groovy.version}</version>
-                <type>pom</type>
-            </dependency>
-            <dependency>
                 <groupId>commons-net</groupId>
                 <artifactId>commons-net</artifactId>
                 <version>3.6</version>
@@ -319,7 +195,7 @@
         <repository>
             <id>alimaven</id>
             <name>aliyun maven</name>
-            <url>http://maven.aliyun.com/nexus/content/groups/public/</url>
+            <url>https://maven.aliyun.com/nexus/content/groups/public/</url>
             <releases>
                 <enabled>true</enabled>
             </releases>
@@ -354,6 +230,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-assembly-plugin</artifactId>
+<!--                <version>3.3.0</version>-->
                 <executions>
                     <execution>
                         <phase>install</phase>

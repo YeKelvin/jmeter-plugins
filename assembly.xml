@@ -1,7 +1,6 @@
 <assembly xmlns="http://maven.apache.org/ASSEMBLY/2.0.0"
           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-          xsi:schemaLocation="http://maven.apache.org/ASSEMBLY/2.0.0
-                              http://maven.apache.org/xsd/assembly-2.0.0.xsd">
+          xsi:schemaLocation="http://maven.apache.org/ASSEMBLY/2.0.0 http://maven.apache.org/xsd/assembly-2.0.0.xsd">
 
     <!--打包的文件格式-->
     <formats>
@@ -20,10 +19,6 @@
             <directory>configs/target</directory>
             <outputDirectory>/</outputDirectory>
         </fileSet>
-<!--        <fileSet>-->
-<!--            <directory>dubbo-zookeeper/target</directory>-->
-<!--            <outputDirectory>/</outputDirectory>-->
-<!--        </fileSet>-->
         <fileSet>
             <directory>functions/target</directory>
             <outputDirectory>/</outputDirectory>
@@ -37,13 +32,4 @@
             <outputDirectory>/</outputDirectory>
         </fileSet>
     </fileSets>
-
-    <!--依赖包打包到outputDirectory目录下-->
-    <!--<dependencySets>-->
-        <!--<dependencySet>-->
-            <!--<unpack>false</unpack>-->
-            <!--<scope>runtime</scope>-->
-            <!--<outputDirectory>/</outputDirectory>-->
-        <!--</dependencySet>-->
-    <!--</dependencySets>-->
 </assembly>
