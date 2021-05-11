@@ -5,6 +5,9 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 
+/**
+ * @author Kaiwen.Ye
+ */
 public class NetworkUtil {
 
     /**

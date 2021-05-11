@@ -2,13 +2,13 @@ package org.apache.jmeter.functions;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.jmeter.common.utils.ExceptionUtil;
-import org.apache.jmeter.common.utils.LogUtil;
 import org.apache.jmeter.common.utils.PathUtil;
 import org.apache.jmeter.engine.util.CompoundVariable;
 import org.apache.jmeter.samplers.SampleResult;
 import org.apache.jmeter.samplers.Sampler;
 import org.apache.jmeter.services.FileServer;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -22,7 +22,7 @@ import java.util.List;
  */
 public class ScriptAbsPath extends AbstractFunction {
 
-    private static final Logger logger = LogUtil.getLogger(ScriptAbsPath.class);
+    private static final Logger log = LoggerFactory.getLogger(ScriptAbsPath.class);
 
     /**
      * 自定义function的描述
@@ -83,7 +83,7 @@ public class ScriptAbsPath extends AbstractFunction {
             }
             result = scriptAbsPath.replace("\\", "/");
         } catch (Exception e) {
-            logger.error(ExceptionUtil.getStackTrace(e));
+            log.error(ExceptionUtil.getStackTrace(e));
         }
         return result;
     }

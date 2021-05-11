@@ -2,11 +2,11 @@ package org.apache.jmeter.functions;
 
 import org.apache.jmeter.common.utils.ExceptionUtil;
 import org.apache.jmeter.common.utils.GoogleAuthenticator;
-import org.apache.jmeter.common.utils.LogUtil;
 import org.apache.jmeter.engine.util.CompoundVariable;
 import org.apache.jmeter.samplers.SampleResult;
 import org.apache.jmeter.samplers.Sampler;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -20,7 +20,7 @@ import java.util.List;
  */
 public class GoogleAuth extends AbstractFunction {
 
-    private static final Logger logger = LogUtil.getLogger(GoogleAuth.class);
+    private static final Logger log = LoggerFactory.getLogger(GoogleAuth.class);
 
     /**
      * 自定义function的描述
@@ -74,11 +74,11 @@ public class GoogleAuth extends AbstractFunction {
     public synchronized String execute(SampleResult sampleResult, Sampler sampler) {
         String result = "";
         String secret = secretKey.execute().trim();
-        logger.debug("Google Secret Key={}", secret);
+        log.debug("Google Secret Key={}", secret);
         try {
             result = GoogleAuthenticator.getCode(secret);
         } catch (Exception e) {
-            logger.error(ExceptionUtil.getStackTrace(e));
+            log.error(ExceptionUtil.getStackTrace(e));
         }
         return result;
     }

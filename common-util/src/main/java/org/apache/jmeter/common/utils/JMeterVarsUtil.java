@@ -3,6 +3,9 @@ package org.apache.jmeter.common.utils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.jmeter.threads.JMeterContextService;
 
+/**
+ * @author Kaiwen.Ye
+ */
 public class JMeterVarsUtil {
 
     public static String get(String varName) {

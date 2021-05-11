@@ -9,6 +9,9 @@ import org.apache.jmeter.visualizers.ReportCollector;
 import javax.swing.*;
 import java.awt.*;
 
+/**
+ * @author Kaiwen.Ye
+ */
 public class LocalHtmlReportGui extends AbstractListenerGui {
 
     private JTextField reportNameTextField;

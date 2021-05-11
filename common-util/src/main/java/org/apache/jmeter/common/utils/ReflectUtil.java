@@ -1,6 +1,7 @@
 package org.apache.jmeter.common.utils;
 
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -11,7 +12,7 @@ import java.util.Map;
 
 public class ReflectUtil {
 
-    private static final Logger logger = LogUtil.getLogger(ReflectUtil.class);
+    private static final Logger log = LoggerFactory.getLogger(ReflectUtil.class);
 
     /**
      * 获取对象的属性名数组

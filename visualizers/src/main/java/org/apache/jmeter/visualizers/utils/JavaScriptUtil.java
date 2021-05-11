@@ -1,9 +1,9 @@
 package org.apache.jmeter.visualizers.utils;
 
 import com.jayway.jsonpath.DocumentContext;
-import org.apache.jmeter.visualizers.data.OverviewInfo;
 import org.apache.jmeter.common.utils.json.JsonPathUtil;
 import org.apache.jmeter.common.utils.json.JsonUtil;
+import org.apache.jmeter.visualizers.data.OverviewInfo;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -17,14 +17,14 @@ import java.util.regex.Pattern;
  */
 public class JavaScriptUtil {
 
-    private static String TEST_SUITE_LIST_NAME = "testSuiteList: ";
-    private static String TEST_SUITE_LIST_VALUE_PATTERN = "testSuiteList: .*";
+    private static final String TEST_SUITE_LIST_NAME = "testSuiteList: ";
+    private static final String TEST_SUITE_LIST_VALUE_PATTERN = "testSuiteList: .*";
 
-    private static String REPORT_INFO_NAME = "reportInfo: ";
-    private static String REPORT_INFO_VALUE_PATTERN = "reportInfo: .*";
+    private static final String REPORT_INFO_NAME = "reportInfo: ";
+    private static final String REPORT_INFO_VALUE_PATTERN = "reportInfo: .*";
 
-    private static String OVERVIEW_INFO_NAME = "overviewInfo: ";
-    private static String OVERVIEW_INFO_VALUE_PATTERN = "overviewInfo: .*";
+    private static final String OVERVIEW_INFO_NAME = "overviewInfo: ";
+    private static final String OVERVIEW_INFO_VALUE_PATTERN = "overviewInfo: .*";
 
     private static Pattern testSuiteListRegex = Pattern.compile(TEST_SUITE_LIST_VALUE_PATTERN);
     private static Pattern reportInfoRegex = Pattern.compile(REPORT_INFO_VALUE_PATTERN);

@@ -4,13 +4,13 @@ package org.apache.jmeter.config;
 import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;
+import org.apache.jmeter.common.utils.ExceptionUtil;
+import org.apache.jmeter.common.utils.JMeterVarsUtil;
 import org.apache.jmeter.samplers.Interruptible;
 import org.apache.jmeter.testelement.TestStateListener;
 import org.apache.jmeter.util.JMeterUtils;
 import org.slf4j.Logger;
-import org.apache.jmeter.common.utils.JMeterVarsUtil;
-import org.apache.jmeter.common.utils.ExceptionUtil;
-import org.apache.jmeter.common.utils.LogUtil;
+import org.slf4j.LoggerFactory;
 
 /**
  * SSH配置器
@@ -19,7 +19,7 @@ import org.apache.jmeter.common.utils.LogUtil;
  */
 public class SSHConfiguration extends ConfigTestElement implements TestStateListener, Interruptible {
 
-    private static final Logger logger = LogUtil.getLogger(SSHConfiguration.class);
+    private static final Logger log = LoggerFactory.getLogger(SSHConfiguration.class);
 
     public static final String SSH_ADDRESS = "SSHConfiguration.address";
     public static final String SSH_USER_NAME = "SSHConfiguration.userName";
@@ -43,7 +43,7 @@ public class SSHConfiguration extends ConfigTestElement implements TestStateList
     public void testStarted(String s) {
         try {
             if (isSSHPortForwarding()) {
-                logger.info("开始端口转发");
+                log.info("开始端口转发");
                 String username = getSSHUserName();
                 String password = getSSHPassword();
                 int localForwardingPort = getLocalForwardingPort();
@@ -65,12 +65,12 @@ public class SSHConfiguration extends ConfigTestElement implements TestStateList
                 session.setConfig("StrictHostKeyChecking", "no");
 
                 // 本地端口转发
-                logger.info("本地转发端口={}", localForwardingPort);
+                log.info("本地转发端口={}", localForwardingPort);
                 session.setPortForwardingL(localForwardingPort, remoteHost, remotePort);
                 session.connect();
             }
         } catch (Exception e) {
-            logger.error(ExceptionUtil.getStackTrace(e));
+            log.error(ExceptionUtil.getStackTrace(e));
         }
 
     }
@@ -93,10 +93,10 @@ public class SSHConfiguration extends ConfigTestElement implements TestStateList
     private void disconnect() {
         try {
             int localForwardingPort = getLocalForwardingPort();
-            logger.info("停用端口转发，端口号={}", localForwardingPort);
+            log.info("停用端口转发，端口号={}", localForwardingPort);
             session.delPortForwardingL(localForwardingPort);
         } catch (JSchException e) {
-            logger.error(ExceptionUtil.getStackTrace(e));
+            log.error(ExceptionUtil.getStackTrace(e));
         } finally {
             if (session != null) {
                 session.disconnect();

@@ -4,12 +4,16 @@ package org.apache.jmeter.visualizers.utils;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
-import org.slf4j.Logger;
-import org.apache.jmeter.common.utils.FileUtil;
 import org.apache.jmeter.common.utils.ExceptionUtil;
-import org.apache.jmeter.common.utils.LogUtil;
+import org.apache.jmeter.common.utils.FileUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import java.io.*;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
@@ -22,7 +26,7 @@ import java.util.Map;
  */
 public class FreemarkerUtil {
 
-    private static final Logger logger = LogUtil.getLogger(FreemarkerUtil.class);
+    private static final Logger log = LoggerFactory.getLogger(FreemarkerUtil.class);
 
     private static final String TEMPLATE_LOCATION = "template";
 
@@ -57,7 +61,7 @@ public class FreemarkerUtil {
             bw.flush();
             bw.close();
         } catch (IOException | TemplateException e) {
-            logger.error(ExceptionUtil.getStackTrace(e));
+            log.error(ExceptionUtil.getStackTrace(e));
         }
     }
 

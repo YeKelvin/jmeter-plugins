@@ -4,6 +4,9 @@ import lombok.Getter;
 import lombok.ToString;
 import org.apache.jmeter.common.utils.TimeUtil;
 
+/**
+ * @author Kaiwen.Ye
+ */
 @Getter
 @ToString
 public class OverviewInfo {

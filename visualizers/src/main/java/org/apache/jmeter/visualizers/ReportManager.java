@@ -1,15 +1,20 @@
 package org.apache.jmeter.visualizers;
 
+import org.apache.jmeter.common.utils.TimeUtil;
+import org.apache.jmeter.common.utils.json.JsonUtil;
 import org.apache.jmeter.util.JMeterUtils;
-import org.apache.jmeter.visualizers.data.*;
+import org.apache.jmeter.visualizers.data.OverviewInfo;
+import org.apache.jmeter.visualizers.data.ReportDataSet;
+import org.apache.jmeter.visualizers.data.ReportInfo;
+import org.apache.jmeter.visualizers.data.TestCaseData;
+import org.apache.jmeter.visualizers.data.TestCaseStepData;
+import org.apache.jmeter.visualizers.data.TestSuiteData;
 import org.apache.jmeter.visualizers.utils.FreemarkerUtil;
 import org.apache.jmeter.visualizers.utils.JavaScriptUtil;
 import org.apache.jmeter.visualizers.utils.JsoupUtil;
 import org.jsoup.nodes.DataNode;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
-import org.apache.jmeter.common.utils.TimeUtil;
-import org.apache.jmeter.common.utils.json.JsonUtil;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -26,7 +31,7 @@ public class ReportManager {
 
     public static final String DATE_FORMAT_PATTERN = "yyyy.MM.dd HH:mm:ss";
 
-    public static String HTML_SUFFIX = ".html";
+    public static final String HTML_SUFFIX = ".html";
 
     private static ReportDataSet reportDataSet;
 

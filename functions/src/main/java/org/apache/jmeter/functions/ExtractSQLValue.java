@@ -1,13 +1,13 @@
 package org.apache.jmeter.functions;
 
 import org.apache.jmeter.common.utils.ExceptionUtil;
-import org.apache.jmeter.common.utils.LogUtil;
 import org.apache.jmeter.engine.util.CompoundVariable;
 import org.apache.jmeter.samplers.SampleResult;
 import org.apache.jmeter.samplers.Sampler;
 import org.apache.jmeter.threads.JMeterContextService;
 import org.apache.jmeter.threads.JMeterVariables;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -20,7 +20,7 @@ import java.util.Map;
  */
 public class ExtractSQLValue extends AbstractFunction {
 
-    private static final Logger logger = LogUtil.getLogger(ExtractSQLValue.class);
+    private static final Logger log = LoggerFactory.getLogger(ExtractSQLValue.class);
 
     private static final List<String> DESC = new LinkedList<>();
 
@@ -85,7 +85,7 @@ public class ExtractSQLValue extends AbstractFunction {
                 variables.put(variable, result);
             }
         } catch (Exception e) {
-            logger.error(ExceptionUtil.getStackTrace(e));
+            log.error(ExceptionUtil.getStackTrace(e));
         }
         return result;
     }

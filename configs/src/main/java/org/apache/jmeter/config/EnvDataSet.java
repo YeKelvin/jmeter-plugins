@@ -1,9 +1,7 @@
 package org.apache.jmeter.config;
 
-import com.google.gson.reflect.TypeToken;
-import org.apache.jmeter.common.CliOption;
+import org.apache.jmeter.common.CliOptions;
 import org.apache.jmeter.common.utils.ExceptionUtil;
-import org.apache.jmeter.common.utils.LogUtil;
 import org.apache.jmeter.common.utils.YamlUtil;
 import org.apache.jmeter.engine.util.NoConfigMerge;
 import org.apache.jmeter.engine.util.NoThreadClone;
@@ -11,9 +9,9 @@ import org.apache.jmeter.testelement.TestStateListener;
 import org.apache.jmeter.threads.JMeterContextService;
 import org.apache.jmeter.util.JMeterUtils;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
-import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -24,12 +22,9 @@ import java.util.Map;
  */
 public class EnvDataSet extends ConfigTestElement implements TestStateListener, NoThreadClone, NoConfigMerge {
 
-    private static final Logger logger = LogUtil.getLogger(EnvDataSet.class);
+    private static final Logger log = LoggerFactory.getLogger(EnvDataSet.class);
 
-    private static final Type hashMap = new TypeToken<HashMap<String, String>>() {
-    }.getType();
-
-    public static final String CONFIG_NAME = "ENVDataSet.configName";
+    public static final String CONFIG_NAME = "EnvDataSet.configName";
 
     public EnvDataSet() {
         super();
@@ -39,7 +34,7 @@ public class EnvDataSet extends ConfigTestElement implements TestStateListener, 
      * 获取环境变量配置文件名称
      */
     public String getFileName() {
-        return JMeterUtils.getPropDefault(CliOption.CONFIG_NAME, getPropertyAsString(CONFIG_NAME));
+        return JMeterUtils.getPropDefault(CliOptions.CONFIG_NAME, getPropertyAsString(CONFIG_NAME));
     }
 
     /**
@@ -62,10 +57,10 @@ public class EnvDataSet extends ConfigTestElement implements TestStateListener, 
             try {
                 envMap = parseYaml(file);
             } catch (Exception e) {
-                logger.error(ExceptionUtil.getStackTrace(e));
+                log.error(ExceptionUtil.getStackTrace(e));
             }
         } else {
-            logger.error("{} 非 yaml文件", filePath);
+            log.error("{} 非 yaml文件", filePath);
         }
         return envMap;
     }

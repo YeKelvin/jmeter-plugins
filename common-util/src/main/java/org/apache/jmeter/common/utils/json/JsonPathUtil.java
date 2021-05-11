@@ -9,8 +9,8 @@ import com.jayway.jsonpath.spi.mapper.GsonMappingProvider;
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
 import org.apache.jmeter.common.utils.ExceptionUtil;
-import org.apache.jmeter.common.utils.LogUtil;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.EnumSet;
 import java.util.List;
@@ -25,7 +25,7 @@ import java.util.Map;
  */
 public class JsonPathUtil {
 
-    private static final Logger logger = LogUtil.getLogger(JsonUtil.class);
+    private static final Logger log = LoggerFactory.getLogger(JsonUtil.class);
 
     private static final Configuration config = Configuration.builder()
             .jsonProvider(new GsonJsonProvider(JsonUtil.getGson()))
@@ -51,7 +51,7 @@ public class JsonPathUtil {
             }
             result = obj == null ? "null" : String.valueOf(obj);
         } catch (Exception e) {
-            logger.error(ExceptionUtil.getStackTrace(e));
+            log.error(ExceptionUtil.getStackTrace(e));
         }
         return result;
     }
@@ -62,7 +62,7 @@ public class JsonPathUtil {
             Object obj = JsonPath.read(json, jsonPath);
             result = obj == null ? 0 : Integer.parseInt(String.valueOf(obj));
         } catch (Exception e) {
-            logger.error(ExceptionUtil.getStackTrace(e));
+            log.error(ExceptionUtil.getStackTrace(e));
         }
         return result;
     }
@@ -73,7 +73,7 @@ public class JsonPathUtil {
             Object obj = JsonPath.read(json, jsonPath);
             result = obj == null ? 0 : Float.parseFloat(obj.toString());
         } catch (Exception e) {
-            logger.error(ExceptionUtil.getStackTrace(e));
+            log.error(ExceptionUtil.getStackTrace(e));
         }
         return result;
     }
@@ -105,7 +105,7 @@ public class JsonPathUtil {
             List<Integer> size = JsonPath.read(json, jsonPath);
             return size.get(0);
         } catch (Exception e) {
-            logger.error(ExceptionUtil.getStackTrace(e));
+            log.error(ExceptionUtil.getStackTrace(e));
             return 0;
         }
     }

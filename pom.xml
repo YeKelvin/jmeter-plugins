@@ -7,7 +7,7 @@
     <groupId>jmeter-plugins</groupId>
     <artifactId>jmeter-plugins</artifactId>
     <packaging>pom</packaging>
-    <version>5.1.1-v1</version>
+    <version>5.1.1-v2</version>
     <modules>
         <module>common-util</module>
         <module>functions</module>
@@ -25,21 +25,23 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
         <jmeter.version>5.1.1</jmeter.version>
-        <jmeter-plugins.version>5.1.1-v1</jmeter-plugins.version>
-        <log4j.version>2.11.2</log4j.version>
-        <slf4j-api.version>1.7.26</slf4j-api.version>
-        <gson.version>2.8.0</gson.version>
+        <jmeter-plugins.version>5.1.1-v2</jmeter-plugins.version>
+        <log4j-core.version>2.14.1</log4j-core.version>
+        <slf4j-api.version>1.7.30</slf4j-api.version>
+        <gson.version>2.8.6</gson.version>
         <json-path.version>2.4.0</json-path.version>
         <jedis.version>2.9.0</jedis.version>
-        <jsch.version>0.1.54</jsch.version>
+        <jsch.version>0.1.55</jsch.version>
         <lombok.version>1.16.16</lombok.version>
         <testng.version>6.14.2</testng.version>
         <freemarker.version>2.3.28</freemarker.version>
         <jsoup.version>1.11.3</jsoup.version>
-        <commons-lang3.version>3.9</commons-lang3.version>
         <httpclient.version>4.5.9</httpclient.version>
         <httpcore.version>4.4.11</httpcore.version>
+        <commons-lang3.version>3.9</commons-lang3.version>
         <commons-text.version>1.6</commons-text.version>
+        <commons-codec.version>1.14</commons-codec.version>
+        <commons-net.version>3.6</commons-net.version>
         <guava.version>30.0-jre</guava.version>
         <poi.version>4.1.1</poi.version>
         <yaml.version>1.26</yaml.version>
@@ -47,6 +49,7 @@
 
     <dependencyManagement>
         <dependencies>
+            <!--        JMeter       -->
             <dependency>
                 <groupId>jmeter-plugins</groupId>
                 <artifactId>jmeter-plugins-common-util</artifactId>
@@ -93,16 +96,22 @@
                 <artifactId>ApacheJMeter_jdbc</artifactId>
                 <version>${jmeter.version}</version>
             </dependency>
+
+            <!--        redis        -->
             <dependency>
                 <groupId>redis.clients</groupId>
                 <artifactId>jedis</artifactId>
                 <version>${jedis.version}</version>
             </dependency>
+
+            <!--        ssh         -->
             <dependency>
                 <groupId>com.jcraft</groupId>
                 <artifactId>jsch</artifactId>
                 <version>${jsch.version}</version>
             </dependency>
+
+            <!--        json        -->
             <dependency>
                 <groupId>com.google.code.gson</groupId>
                 <artifactId>gson</artifactId>
@@ -118,6 +127,8 @@
                 <artifactId>json-path-assert</artifactId>
                 <version>${json-path.version}</version>
             </dependency>
+
+            <!--        html        -->
             <dependency>
                 <groupId>org.freemarker</groupId>
                 <artifactId>freemarker</artifactId>
@@ -128,26 +139,48 @@
                 <artifactId>jsoup</artifactId>
                 <version>${jsoup.version}</version>
             </dependency>
+
+            <!--        testing         -->
             <dependency>
                 <groupId>org.testng</groupId>
                 <artifactId>testng</artifactId>
                 <version>${testng.version}</version>
             </dependency>
-            <dependency>
-                <groupId>org.projectlombok</groupId>
-                <artifactId>lombok</artifactId>
-                <version>${lombok.version}</version>
-            </dependency>
+
+            <!--        commons         -->
             <dependency>
                 <groupId>org.apache.commons</groupId>
                 <artifactId>commons-lang3</artifactId>
                 <version>${commons-lang3.version}</version>
             </dependency>
             <dependency>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-text</artifactId>
+                <version>${commons-text.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>commons-net</groupId>
+                <artifactId>commons-net</artifactId>
+                <version>${commons-net.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>commons-codec</groupId>
+                <artifactId>commons-codec</artifactId>
+                <version>${commons-codec.version}</version>
+            </dependency>
+
+            <!--        logger      -->
+            <dependency>
+                <groupId>org.apache.logging.log4j</groupId>
+                <artifactId>log4j-core</artifactId>
+                <version>${log4j-core.version}</version>
+            </dependency>
+            <dependency>
                 <groupId>org.slf4j</groupId>
                 <artifactId>slf4j-api</artifactId>
                 <version>${slf4j-api.version}</version>
             </dependency>
+
             <dependency>
                 <groupId>org.apache.httpcomponents</groupId>
                 <artifactId>httpclient</artifactId>
@@ -158,16 +191,20 @@
                 <artifactId>httpcore</artifactId>
                 <version>${httpcore.version}</version>
             </dependency>
+
+            <!--        utils       -->
             <dependency>
-                <groupId>org.apache.commons</groupId>
-                <artifactId>commons-text</artifactId>
-                <version>${commons-text.version}</version>
+                <groupId>org.projectlombok</groupId>
+                <artifactId>lombok</artifactId>
+                <version>${lombok.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.google.guava</groupId>
                 <artifactId>guava</artifactId>
                 <version>${guava.version}</version>
             </dependency>
+
+            <!--        excel       -->
             <dependency>
                 <groupId>org.apache.poi</groupId>
                 <artifactId>poi</artifactId>
@@ -178,16 +215,14 @@
                 <artifactId>poi-ooxml</artifactId>
                 <version>${poi.version}</version>
             </dependency>
+
+            <!--        yaml        -->
             <dependency>
                 <groupId>org.yaml</groupId>
                 <artifactId>snakeyaml</artifactId>
                 <version>${yaml.version}</version>
             </dependency>
-            <dependency>
-                <groupId>commons-net</groupId>
-                <artifactId>commons-net</artifactId>
-                <version>3.6</version>
-            </dependency>
+
         </dependencies>
     </dependencyManagement>
 
@@ -219,26 +254,18 @@
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-dependency-plugin</artifactId>
-                <version>3.1.2</version>
-                <configuration>
-                    <outputDirectory>${project.build.directory}/lib</outputDirectory>
-                    <excludeTransitive>false</excludeTransitive>
-                    <stripVersion>true</stripVersion>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-assembly-plugin</artifactId>
-<!--                <version>3.3.0</version>-->
                 <executions>
                     <execution>
-                        <phase>install</phase>
+                        <phase>install</phase><!-- 绑定到install生命周期阶段上 -->
+                        <goals>
+                            <goal>single</goal><!-- 只运行一次 -->
+                        </goals>
                     </execution>
                 </executions>
                 <configuration>
                     <descriptors>
-                        <descriptor>assembly.xml</descriptor>
+                        <descriptor>assembly.xml</descriptor><!--描述文件路径-->
                     </descriptors>
                 </configuration>
             </plugin>

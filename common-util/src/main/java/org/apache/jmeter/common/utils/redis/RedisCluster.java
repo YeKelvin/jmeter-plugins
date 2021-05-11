@@ -3,7 +3,7 @@ package org.apache.jmeter.common.utils.redis;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import org.slf4j.Logger;
-import org.apache.jmeter.common.utils.LogUtil;
+import org.slf4j.LoggerFactory;
 import redis.clients.jedis.HostAndPort;
 import redis.clients.jedis.JedisCluster;
 
@@ -13,13 +13,15 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.lang.reflect.Type;
 import java.nio.charset.StandardCharsets;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
 
 /**
  * @author KelvinYe
  */
 public class RedisCluster {
-    private static final Logger logger = LogUtil.getLogger(RedisCluster.class);
+    private static final Logger log = LoggerFactory.getLogger(RedisCluster.class);
 
     private static JedisCluster redisConnect(String nodesFilePath) throws FileNotFoundException {
         HashSet<HostAndPort> jedisClusterNodes = new HashSet<>();
@@ -52,7 +54,7 @@ public class RedisCluster {
             setResult = redis.set(key, value);
             redis.close();
         } catch (IOException e) {
-            logger.error("{}\n{}", e.getMessage(), Arrays.toString(e.getStackTrace()));
+            log.error("{}\n{}", e.getMessage(), Arrays.toString(e.getStackTrace()));
         }
         return setResult;
     }
@@ -64,7 +66,7 @@ public class RedisCluster {
             isExisted = redis.exists(key);
             redis.close();
         } catch (IOException e) {
-            logger.error("{}\n{}", e.getMessage(), Arrays.toString(e.getStackTrace()));
+            log.error("{}\n{}", e.getMessage(), Arrays.toString(e.getStackTrace()));
         }
         return isExisted;
     }
@@ -76,7 +78,7 @@ public class RedisCluster {
             delResult = redis.del(key);
             redis.close();
         } catch (IOException e) {
-            logger.error("{}\n{}", e.getMessage(), Arrays.toString(e.getStackTrace()));
+            log.error("{}\n{}", e.getMessage(), Arrays.toString(e.getStackTrace()));
         }
         return String.valueOf(delResult);
 
@@ -89,7 +91,7 @@ public class RedisCluster {
             redis.append(key, value);
             redis.close();
         } catch (IOException e) {
-            logger.error("{}\n{}", e.getMessage(), Arrays.toString(e.getStackTrace()));
+            log.error("{}\n{}", e.getMessage(), Arrays.toString(e.getStackTrace()));
         }
         return String.valueOf(appendResult);
     }

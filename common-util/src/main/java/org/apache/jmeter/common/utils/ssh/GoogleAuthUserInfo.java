@@ -2,18 +2,22 @@ package org.apache.jmeter.common.utils.ssh;
 
 import com.jcraft.jsch.UIKeyboardInteractive;
 import com.jcraft.jsch.UserInfo;
-import org.slf4j.Logger;
-import org.apache.jmeter.common.utils.GoogleAuthenticator;
 import org.apache.jmeter.common.utils.ExceptionUtil;
-import org.apache.jmeter.common.utils.LogUtil;
+import org.apache.jmeter.common.utils.GoogleAuthenticator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 
 
+/**
+ * @author Kaiwen.Ye
+ */
 public class GoogleAuthUserInfo implements UserInfo, UIKeyboardInteractive {
-    private static final Logger logger = LogUtil.getLogger(GoogleAuthUserInfo.class);
+
+    private static final Logger log = LoggerFactory.getLogger(GoogleAuthUserInfo.class);
 
     private String password;
     private String googleSecretKey;
@@ -61,11 +65,11 @@ public class GoogleAuthUserInfo implements UserInfo, UIKeyboardInteractive {
                                               String instruction,
                                               String[] prompt,
                                               boolean[] echo) {
-        logger.debug("destination={}", destination);
-        logger.debug("name={}", name);
-        logger.debug("instruction={}", instruction);
-        logger.debug("prompt={}", Arrays.toString(prompt));
-        logger.debug("echo={}", Arrays.toString(echo));
+        log.debug("destination={}", destination);
+        log.debug("name={}", name);
+        log.debug("instruction={}", instruction);
+        log.debug("prompt={}", Arrays.toString(prompt));
+        log.debug("echo={}", Arrays.toString(echo));
 
         String[] response = new String[prompt.length];
         if (prompt[0].contains("Verification code:")) {
@@ -73,7 +77,7 @@ public class GoogleAuthUserInfo implements UserInfo, UIKeyboardInteractive {
         } else if (prompt[0].contains("Password:")) {
             response[0] = getPassword();
         } else {
-            logger.error("超出预期的密码校验");
+            log.error("超出预期的密码校验");
             response[0] = "";
         }
         return response;
@@ -87,7 +91,7 @@ public class GoogleAuthUserInfo implements UserInfo, UIKeyboardInteractive {
         try {
             code = GoogleAuthenticator.getCode(googleSecretKey);
         } catch (NoSuchAlgorithmException | InvalidKeyException e) {
-            logger.error(ExceptionUtil.getStackTrace(e));
+            log.error(ExceptionUtil.getStackTrace(e));
         }
         return code;
     }

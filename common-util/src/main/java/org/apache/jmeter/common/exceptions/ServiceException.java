@@ -1,4 +1,4 @@
-package org.apache.jmeter.common.utils.exception;
+package org.apache.jmeter.common.exceptions;
 
 /**
  * Description
@@ -8,6 +8,7 @@ package org.apache.jmeter.common.utils.exception;
  * Time     14:53
  */
 public class ServiceException extends RuntimeException {
+
     private String errorMessage;
 
     public ServiceException(String errorMessage) {

@@ -4,7 +4,7 @@ import org.apache.jmeter.engine.event.LoopIterationEvent;
 import org.apache.jmeter.engine.event.LoopIterationListener;
 import org.apache.jmeter.engine.util.NoConfigMerge;
 import org.slf4j.Logger;
-import org.apache.jmeter.common.utils.LogUtil;
+import org.slf4j.LoggerFactory;
 
 import java.util.Arrays;
 import java.util.Iterator;
@@ -17,7 +17,7 @@ import java.util.List;
  */
 public class TraversalDataSet extends ConfigTestElement implements LoopIterationListener, NoConfigMerge {
 
-    private static final Logger logger = LogUtil.getLogger(TraversalDataSet.class);
+    private static final Logger log = LoggerFactory.getLogger(TraversalDataSet.class);
 
     public static final String VARIABLE_NAMES = "TraversalDataSet.variableNames";
 
@@ -36,7 +36,7 @@ public class TraversalDataSet extends ConfigTestElement implements LoopIteration
         if (iter.hasNext()) {
             putVarsFromLine(iter.next());
         } else {
-            logger.info("CSV Data循环结束，线程组停止循环");
+            log.info("CSV Data循环结束，线程组停止循环");
             getThreadContext().getThreadGroup().stop();
         }
 

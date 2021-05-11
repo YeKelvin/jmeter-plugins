@@ -1,13 +1,13 @@
 package org.apache.jmeter.functions;
 
 import org.apache.jmeter.common.utils.ExceptionUtil;
-import org.apache.jmeter.common.utils.LogUtil;
 import org.apache.jmeter.common.utils.Randoms;
 import org.apache.jmeter.engine.util.CompoundVariable;
 import org.apache.jmeter.samplers.SampleResult;
 import org.apache.jmeter.samplers.Sampler;
 import org.apache.jmeter.threads.JMeterContextService;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -19,7 +19,7 @@ import java.util.List;
  */
 public class RCambodiaMobile extends AbstractFunction {
 
-    private static final Logger logger = LogUtil.getLogger(RCambodiaMobile.class);
+    private static final Logger log = LoggerFactory.getLogger(RCambodiaMobile.class);
 
     private static final List<String> DESC = new LinkedList<>();
 
@@ -65,7 +65,7 @@ public class RCambodiaMobile extends AbstractFunction {
                 JMeterContextService.getContext().getVariables().put(variable, result);
             }
         } catch (Exception e) {
-            logger.error(ExceptionUtil.getStackTrace(e));
+            log.error(ExceptionUtil.getStackTrace(e));
         }
         return result;
     }

@@ -3,6 +3,9 @@ package org.apache.jmeter.common.utils;
 import java.io.File;
 import java.util.regex.Pattern;
 
+/**
+ * @author Kaiwen.Ye
+ */
 public class PathUtil {
     private static final String WIN_SEP = "\\";
     private static final String UNIX_SEP = "/";

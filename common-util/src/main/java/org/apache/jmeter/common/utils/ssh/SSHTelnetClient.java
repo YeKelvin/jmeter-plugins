@@ -6,17 +6,20 @@ import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.jmeter.common.utils.ExceptionUtil;
-import org.apache.jmeter.common.utils.LogUtil;
-import org.apache.jmeter.common.utils.exception.ServiceException;
+import org.apache.jmeter.common.exceptions.ServiceException;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
 import java.nio.charset.Charset;
 
+/**
+ * @author Kaiwen.Ye
+ */
 public class SSHTelnetClient {
-    private static final Logger logger = LogUtil.getLogger(SSHTelnetClient.class);
+    private static final Logger log = LoggerFactory.getLogger(SSHTelnetClient.class);
     private static final String DUBBO_FLAG = "dubbo>";
 
     private Session session;
@@ -94,7 +97,7 @@ public class SSHTelnetClient {
         out = new PrintStream(channelShell.getOutputStream(), true, charsetName);
         // 及时读取消息
         String connectMsg = readUntil("]$");
-        logger.debug("connectMsg={}", connectMsg);
+        log.debug("connectMsg={}", connectMsg);
     }
 
     /**
@@ -106,7 +109,7 @@ public class SSHTelnetClient {
     public void telnetDubbo(String dubboHost, String dubboPort) throws IOException {
         write("telnet " + dubboHost + " " + dubboPort);
         String telnetResult = readUntil("Escape character is '^]'.", "]$");
-        logger.debug("telnetResult={}", telnetResult);
+        log.debug("telnetResult={}", telnetResult);
         if (!telnetResult.contains("Escape character is '^]'.")) {
             throw new ServiceException("telnetDubbo 连接失败\n" + telnetResult);
         }
@@ -124,17 +127,17 @@ public class SSHTelnetClient {
         write("invoke " + interfaceName + "(" + requestData + ")");
         // 读取invoke的命令消息
         String invokeCommand = readUntil("\n");
-        logger.debug("invokeCommand={}", invokeCommand);
+        log.debug("invokeCommand={}", invokeCommand);
         // 读取空行
         readUntil("\n");
         String result = readUntil(DUBBO_FLAG);
-        logger.debug("result={}", result);
+        log.debug("result={}", result);
         // 第一次invoke命令后会返回一个dubbo>标识符，接收响应后还会再返回一个dubbo>标识符
         // 判断第一次读取是否只读到一个dubbo>标识符，如果是则再读取一次
         if (result.equals("dubbo>")) {
-            logger.debug("再读一次dubbo响应");
+            log.debug("再读一次dubbo响应");
             result = readUntil(DUBBO_FLAG);
-            logger.debug("result={}", result);
+            log.debug("result={}", result);
         }
         return extractResponse(result);
     }
@@ -211,7 +214,7 @@ public class SSHTelnetClient {
             // 超时判断
             long currentTime = System.currentTimeMillis();
             if (currentTime - startTime > timeout) {
-                logger.debug("readUntil 等待超时");
+                log.debug("readUntil 等待超时");
                 break;
             }
             char ch = (char) charCode;
@@ -253,7 +256,7 @@ public class SSHTelnetClient {
                 in.close();
             }
         } catch (IOException e) {
-            logger.error(ExceptionUtil.getStackTrace(e));
+            log.error(ExceptionUtil.getStackTrace(e));
         }
         if (channelShell != null) {
             channelShell.disconnect();

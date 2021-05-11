@@ -2,12 +2,12 @@ package org.apache.jmeter.config;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.jmeter.common.utils.FileUtil;
-import org.apache.jmeter.common.utils.LogUtil;
 import org.apache.jmeter.common.utils.TimeUtil;
 import org.apache.jmeter.samplers.SampleEvent;
 import org.apache.jmeter.samplers.SampleListener;
 import org.apache.jmeter.samplers.SampleResult;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 
@@ -17,7 +17,7 @@ import java.io.File;
  */
 public class FailureResultSaver extends ConfigTestElement implements SampleListener {
 
-    private static final Logger logger = LogUtil.getLogger(FailureResultSaver.class);
+    private static final Logger log = LoggerFactory.getLogger(FailureResultSaver.class);
 
     private static final String LINE_SEP = FileUtil.LINE_SEPARATOR;
 
@@ -43,7 +43,7 @@ public class FailureResultSaver extends ConfigTestElement implements SampleListe
 
     private File getFailureLog() {
         String logPath = getLogPath();
-        logger.debug("LogPath={}", logPath);
+        log.debug("LogPath={}", logPath);
         if (failureLog == null) {
             failureLog = new File(logPath);
         }

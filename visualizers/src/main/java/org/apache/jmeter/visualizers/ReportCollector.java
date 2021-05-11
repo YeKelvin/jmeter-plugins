@@ -1,7 +1,7 @@
 package org.apache.jmeter.visualizers;
 
 
-import org.apache.jmeter.common.CliOption;
+import org.apache.jmeter.common.CliOptions;
 import org.apache.jmeter.common.utils.FileUtil;
 import org.apache.jmeter.common.utils.TimeUtil;
 import org.apache.jmeter.engine.util.NoThreadClone;
@@ -172,12 +172,12 @@ public class ReportCollector extends AbstractTestElement
 
     private String getReportName() {
         // Non-Gui下，命令行存在 -JreportName 选项时，优先读取 reportName
-        return JMeterUtils.getPropDefault(CliOption.REPORT_NAME, getPropertyAsString(REPORT_NAME));
+        return JMeterUtils.getPropDefault(CliOptions.REPORT_NAME, getPropertyAsString(REPORT_NAME));
     }
 
     private String getIsAppend() {
         // Non-Gui下，命令行存在 -JisAppend 选项时，优先读取 isAppend
-        return JMeterUtils.getPropDefault(CliOption.IS_APPEND, getPropertyAsString(IS_APPEND));
+        return JMeterUtils.getPropDefault(CliOptions.IS_APPEND, getPropertyAsString(IS_APPEND));
     }
 
     /**

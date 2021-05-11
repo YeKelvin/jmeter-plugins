@@ -8,6 +8,9 @@ import javax.crypto.spec.SecretKeySpec;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 
+/**
+ * @author Kaiwen.Ye
+ */
 public class GoogleAuthenticator {
 
     private static final Base32 base32 = new Base32();

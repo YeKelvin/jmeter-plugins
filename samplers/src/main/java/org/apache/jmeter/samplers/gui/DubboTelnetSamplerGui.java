@@ -1,7 +1,6 @@
 package org.apache.jmeter.samplers.gui;
 
 import org.apache.jmeter.common.utils.GuiUtil;
-import org.apache.jmeter.common.utils.LogUtil;
 import org.apache.jmeter.common.utils.json.JsonUtil;
 import org.apache.jmeter.gui.util.HorizontalPanel;
 import org.apache.jmeter.gui.util.JSyntaxTextArea;
@@ -9,6 +8,7 @@ import org.apache.jmeter.gui.util.JTextScrollPane;
 import org.apache.jmeter.samplers.DubboTelnetSampler;
 import org.apache.jmeter.testelement.TestElement;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 import java.awt.*;
@@ -24,7 +24,7 @@ import java.awt.event.ActionListener;
  */
 public class DubboTelnetSamplerGui extends AbstractSamplerGui implements ActionListener {
 
-    private static final Logger logger = LogUtil.getLogger(DubboTelnetSamplerGui.class);
+    private static final Logger log = LoggerFactory.getLogger(DubboTelnetSamplerGui.class);
 
     private static final String JSON_ACTION = "json";
     private static final String TEXT_ACTION = "text";

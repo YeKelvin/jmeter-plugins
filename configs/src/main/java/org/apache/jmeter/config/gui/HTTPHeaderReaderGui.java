@@ -20,6 +20,8 @@ import java.util.Map;
 
 /**
  * HTTP请求头文件读取器
+ *
+ * @author Kaiwen.Ye
  */
 public class HTTPHeaderReaderGui extends AbstractConfigGui {
 

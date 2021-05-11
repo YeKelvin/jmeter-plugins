@@ -1,12 +1,16 @@
 package org.apache.jmeter.common.utils.json;
 
 
-import org.slf4j.Logger;
 import org.apache.jmeter.common.utils.JsonConfigUtil;
-import org.apache.jmeter.common.utils.exception.ServiceException;
-import org.apache.jmeter.common.utils.LogUtil;
+import org.apache.jmeter.common.exceptions.ServiceException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 
@@ -14,7 +18,8 @@ import java.util.ArrayList;
  * @author KelvinYe
  */
 public class JsonFileUtil {
-    private static final Logger logger = LogUtil.getLogger(JsonFileUtil.class);
+    
+    private static final Logger log = LoggerFactory.getLogger(JsonFileUtil.class);
 
     /**
      * 读取json文件内容
@@ -75,14 +80,14 @@ public class JsonFileUtil {
 
 
     public static String findInterfacePathByKeywords(String rootDir, String interfaceName) {
-        logger.debug("接口搜索路径={}", rootDir);
+        log.debug("接口搜索路径={}", rootDir);
         ArrayList<File> fileList = getJsonFileList(rootDir);
         for (File file : fileList) {
             if (file.getName().contains(interfaceName + ".json")) {
                 return file.getAbsolutePath();
             }
         }
-        logger.warn(String.format(
+        log.warn(String.format(
                 "%s%s...%s%s.json 接口模板不存在", rootDir, File.separator, File.separator, interfaceName));
         // 搜索不到路径时返回null
         return null;

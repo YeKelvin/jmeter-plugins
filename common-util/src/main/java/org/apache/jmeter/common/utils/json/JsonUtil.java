@@ -3,10 +3,10 @@ package org.apache.jmeter.common.utils.json;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
-import org.slf4j.Logger;
-import org.apache.jmeter.common.utils.StringUtil;
 import org.apache.jmeter.common.utils.ExceptionUtil;
-import org.apache.jmeter.common.utils.LogUtil;
+import org.apache.jmeter.common.utils.StringUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -21,7 +21,7 @@ import java.util.regex.Pattern;
  */
 public class JsonUtil {
 
-    private static final Logger logger = LogUtil.getLogger(JsonUtil.class);
+    private static final Logger log = LoggerFactory.getLogger(JsonUtil.class);
 
     public static Type mapType = new TypeToken<Map<Object, Object>>() {
     }.getType();
@@ -116,7 +116,7 @@ public class JsonUtil {
         ) {
             return gson.fromJson(reader, type);
         } catch (Exception e) {
-            logger.error(ExceptionUtil.getStackTrace(e));
+            log.error(ExceptionUtil.getStackTrace(e));
             return null;
         }
     }

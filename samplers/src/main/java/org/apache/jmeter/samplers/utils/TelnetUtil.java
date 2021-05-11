@@ -4,7 +4,8 @@ package org.apache.jmeter.samplers.utils;
 import org.apache.commons.net.telnet.TelnetClient;
 import org.slf4j.Logger;
 import org.apache.jmeter.common.utils.ExceptionUtil;
-import org.apache.jmeter.common.utils.LogUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -18,7 +19,7 @@ import java.nio.charset.StandardCharsets;
  */
 public class TelnetUtil {
 
-    private static final Logger logger = LogUtil.getLogger(TelnetUtil.class);
+    private static final Logger log = LoggerFactory.getLogger(TelnetUtil.class);
 
     public static final String WINDOWS = "VT220";
     public static final String UNIX = "VT100";
@@ -60,7 +61,7 @@ public class TelnetUtil {
      */
     public String invokeDubbo(String interfaceName, String request) throws IOException {
         String result = sendCommand("invoke " + interfaceName + "(" + request + ")");
-        logger.debug("invoke result={}", result);
+        log.debug("invoke result={}", result);
         return result;
     }
 
@@ -73,13 +74,13 @@ public class TelnetUtil {
                 in.close();
             }
         } catch (Exception e) {
-            logger.error(ExceptionUtil.getStackTrace(e));
+            log.error(ExceptionUtil.getStackTrace(e));
         }
 
         try {
             telnet.disconnect();
         } catch (Exception e) {
-            logger.error(ExceptionUtil.getStackTrace(e));
+            log.error(ExceptionUtil.getStackTrace(e));
         }
     }
 
@@ -126,7 +127,7 @@ public class TelnetUtil {
             // 超时判断
             long currentTime = System.currentTimeMillis();
             if (currentTime - startTime > timeout) {
-                logger.debug("readUntil 等待超时");
+                log.debug("readUntil 等待超时");
                 break;
             }
             char ch = (char) charCode;

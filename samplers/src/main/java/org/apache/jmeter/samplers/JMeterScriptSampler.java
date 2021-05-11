@@ -3,12 +3,11 @@ package org.apache.jmeter.samplers;
 
 import org.apache.commons.collections4.MapUtils;
 import org.apache.jmeter.JMeter;
-import org.apache.jmeter.common.CliOption;
+import org.apache.jmeter.common.CliOptions;
 import org.apache.jmeter.common.utils.ExceptionUtil;
 import org.apache.jmeter.common.utils.JMeterVarsUtil;
-import org.apache.jmeter.common.utils.LogUtil;
 import org.apache.jmeter.common.utils.PathUtil;
-import org.apache.jmeter.common.utils.exception.ServiceException;
+import org.apache.jmeter.common.exceptions.ServiceException;
 import org.apache.jmeter.common.utils.json.JsonUtil;
 import org.apache.jmeter.config.EnvDataSet;
 import org.apache.jmeter.config.SSHConfiguration;
@@ -30,6 +29,7 @@ import org.apache.jorphan.collections.HashTree;
 import org.apache.jorphan.collections.ListedHashTree;
 import org.apache.jorphan.collections.SearchByClass;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
@@ -46,7 +46,7 @@ import java.util.regex.Pattern;
  */
 public class JMeterScriptSampler extends AbstractSampler implements Interruptible {
 
-    private static final Logger logger = LogUtil.getLogger(JMeterScriptSampler.class);
+    private static final Logger log = LoggerFactory.getLogger(JMeterScriptSampler.class);
 
     private Properties props = JMeterUtils.getJMeterProperties();
 
@@ -116,7 +116,7 @@ public class JMeterScriptSampler extends AbstractSampler implements Interruptibl
         HashTree testTree = loadScriptTree(scriptAbsPath, result);
 
         // 设置全局变量，用于传递给子脚本使用
-        props.put(CliOption.CONFIG_NAME, JMeterVarsUtil.getDefault(EnvDataSet.CONFIG_NAME));
+        props.put(CliOptions.CONFIG_NAME, JMeterVarsUtil.getDefault(EnvDataSet.CONFIG_NAME));
 
         // 判断是否需要把当前线程的局部变量同步至子脚本
         if (isSyncToVars()) {
@@ -307,16 +307,16 @@ public class JMeterScriptSampler extends AbstractSampler implements Interruptibl
             threadGroup.setName(getRawThreadName());
 
             if (!threadGroup.getOnErrorStartNextLoop()) {
-                logger.info("JMeter脚本中的线程组仅支持错误时启动下一进程循环，已强制修改为错误时启动下一进程循环");
+                log.info("JMeter脚本中的线程组仅支持错误时启动下一进程循环，已强制修改为错误时启动下一进程循环");
                 threadGroup.setProperty(AbstractThreadGroup.ON_SAMPLE_ERROR, AbstractThreadGroup.ON_SAMPLE_ERROR_START_NEXT_LOOP);
             }
             if (threadGroup.getNumThreads() != 1) {
-                logger.info("JMeter脚本的线程组仅支持单次执行，已强制修改线程数为1");
+                log.info("JMeter脚本的线程组仅支持单次执行，已强制修改线程数为1");
                 threadGroup.setNumThreads(1);
             }
             LoopController loopController = (LoopController) threadGroup.getSamplerController();
             if (loopController.getLoops() != 1) {
-                logger.info("JMeter脚本的线程组仅支持单次执行，已强制修改循环次数为1");
+                log.info("JMeter脚本的线程组仅支持单次执行，已强制修改循环次数为1");
                 loopController.setLoops(1);
             }
         }
@@ -326,7 +326,7 @@ public class JMeterScriptSampler extends AbstractSampler implements Interruptibl
      * 清空外部脚本的执行结果
      */
     private void clearScriptProps() {
-        props.remove(CliOption.CONFIG_NAME);
+        props.remove(CliOptions.CONFIG_NAME);
         props.remove(JMeterScriptDataTransfer.INCREMENTAL_VARIABLES);
         props.remove(JMeterScriptDataTransfer.CALLER_VARIABLES);
     }

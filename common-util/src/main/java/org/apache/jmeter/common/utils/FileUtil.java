@@ -1,9 +1,18 @@
 package org.apache.jmeter.common.utils;
 
-import org.apache.jmeter.common.utils.exception.ServiceException;
+import org.apache.jmeter.common.exceptions.ServiceException;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.nio.charset.StandardCharsets;
 
 /**
@@ -15,7 +24,7 @@ import java.nio.charset.StandardCharsets;
  */
 public class FileUtil {
 
-    private static final Logger logger = LogUtil.getLogger(FileUtil.class);
+    private static final Logger log = LoggerFactory.getLogger(FileUtil.class);
 
     /**
      * 获取当前系统换行符
@@ -85,7 +94,7 @@ public class FileUtil {
             writer.flush();
             writer.close();
         } catch (IOException e) {
-            logger.error(ExceptionUtil.getStackTrace(e));
+            log.error(ExceptionUtil.getStackTrace(e));
         }
     }
 
@@ -115,7 +124,7 @@ public class FileUtil {
             writer.flush();
             writer.close();
         } catch (IOException e) {
-            logger.error(ExceptionUtil.getStackTrace(e));
+            log.error(ExceptionUtil.getStackTrace(e));
         }
     }
 
@@ -136,7 +145,7 @@ public class FileUtil {
                 content.append(line);
             }
         } catch (IOException e) {
-            logger.error(ExceptionUtil.getStackTrace(e));
+            log.error(ExceptionUtil.getStackTrace(e));
         }
         return content.toString();
     }

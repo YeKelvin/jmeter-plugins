@@ -2,6 +2,8 @@
           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
           xsi:schemaLocation="http://maven.apache.org/ASSEMBLY/2.0.0 http://maven.apache.org/xsd/assembly-2.0.0.xsd">
 
+    <id>jar</id>
+
     <!--打包的文件格式-->
     <formats>
         <format>dir</format>
@@ -12,23 +14,38 @@
     <!--需要打包的路径-->
     <fileSets>
         <fileSet>
-            <directory>common-util/target</directory>
+            <directory>${basedir}/common-util/target</directory>
+            <includes>
+                <include>*.jar</include>
+            </includes>
             <outputDirectory>/</outputDirectory>
         </fileSet>
         <fileSet>
-            <directory>configs/target</directory>
+            <directory>${basedir}/configs/target</directory>
+            <includes>
+                <include>*.jar</include>
+            </includes>
             <outputDirectory>/</outputDirectory>
         </fileSet>
         <fileSet>
-            <directory>functions/target</directory>
+            <directory>${basedir}/functions/target</directory>
+            <includes>
+                <include>*.jar</include>
+            </includes>
             <outputDirectory>/</outputDirectory>
         </fileSet>
         <fileSet>
-            <directory>samplers/target</directory>
+            <directory>${basedir}/samplers/target</directory>
+            <includes>
+                <include>*.jar</include>
+            </includes>
             <outputDirectory>/</outputDirectory>
         </fileSet>
         <fileSet>
-            <directory>visualizers/target</directory>
+            <directory>${basedir}/visualizers/target</directory>
+            <includes>
+                <include>*.jar</include>
+            </includes>
             <outputDirectory>/</outputDirectory>
         </fileSet>
     </fileSets>

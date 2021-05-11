@@ -1,7 +1,6 @@
 package org.apache.jmeter.samplers;
 
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.jmeter.common.utils.LogUtil;
 import org.apache.jmeter.engine.util.NoThreadClone;
 import org.apache.jmeter.protocol.jdbc.config.DataSourceElement;
 import org.apache.jmeter.protocol.jdbc.sampler.JDBCSampler;
@@ -12,6 +11,7 @@ import org.apache.jmeter.util.JMeterUtils;
 import org.apache.jorphan.collections.ListedHashTree;
 import org.apache.jorphan.collections.SearchByClass;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -28,7 +28,7 @@ import java.util.Properties;
 public class JMeterScriptDataTransfer extends AbstractTestElement
         implements ThreadListener, SampleListener, NoThreadClone {
 
-    private static final Logger logger = LogUtil.getLogger(JMeterScriptDataTransfer.class);
+    private static final Logger log = LoggerFactory.getLogger(JMeterScriptDataTransfer.class);
 
     public static final String CALLER_VARIABLES = "JMeterScriptDataTransfer.callerVariables";
     public static final String INCREMENTAL_VARIABLES = "JMeterScriptDataTransfer.incrementalVariables";

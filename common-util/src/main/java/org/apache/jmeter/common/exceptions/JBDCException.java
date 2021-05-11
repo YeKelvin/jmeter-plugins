@@ -1,10 +1,11 @@
-package org.apache.jmeter.common.utils.exception;
+package org.apache.jmeter.common.exceptions;
 
 
 /**
  * @author KelvinYe
  */
 public class JBDCException extends RuntimeException {
+
     private String errorMessage;
 
     public JBDCException(String errorMessage) {

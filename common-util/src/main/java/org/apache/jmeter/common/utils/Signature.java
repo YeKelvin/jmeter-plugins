@@ -6,6 +6,7 @@ import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.jmeter.common.utils.json.JsonUtil;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
@@ -21,7 +22,7 @@ import java.util.TreeMap;
  * @author Kelvin.Ye
  */
 public class Signature {
-    private static final Logger logger = LogUtil.getLogger(Signature.class);
+    private static final Logger log = LoggerFactory.getLogger(Signature.class);
 
     /**
      * 报文加签
@@ -48,7 +49,7 @@ public class Signature {
             if (StringUtils.isNotBlank(prefix)) {
                 sign = prefix + "&" + sign;
             }
-            logger.debug("sign={}", sign);
+            log.debug("sign={}", sign);
 
             // md5加密
             if (StringUtils.isNotBlank(sign)) {
@@ -56,8 +57,8 @@ public class Signature {
             }
             return sign;
         } catch (JsonSyntaxException e) {
-            logger.error(ExceptionUtil.getStackTrace(e));
-            logger.error("Sign函数目前仅支持Json格式报文");
+            log.error(ExceptionUtil.getStackTrace(e));
+            log.error("Sign函数目前仅支持Json格式报文");
             return "";
         }
     }
@@ -140,7 +141,7 @@ public class Signature {
             data = md5.digest(str.getBytes(StandardCharsets.UTF_8));
             strDigest = bytesToHexString(data).toLowerCase();
         } catch (Exception e) {
-            logger.error(ExceptionUtil.getStackTrace(e));
+            log.error(ExceptionUtil.getStackTrace(e));
         }
         return strDigest;
     }

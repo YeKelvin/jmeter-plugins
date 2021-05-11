@@ -3,12 +3,12 @@ package org.apache.jmeter.config;
 import com.jayway.jsonpath.DocumentContext;
 import com.jayway.jsonpath.JsonPath;
 import org.apache.jmeter.common.utils.ExceptionUtil;
-import org.apache.jmeter.common.utils.LogUtil;
 import org.apache.jmeter.common.utils.json.JsonPathUtil;
 import org.apache.jmeter.common.utils.json.JsonUtil;
 import org.apache.jmeter.engine.event.LoopIterationEvent;
 import org.apache.jmeter.engine.event.LoopIterationListener;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.Iterator;
@@ -21,7 +21,7 @@ import java.util.Iterator;
  */
 public class TraversalEmptyValue extends ConfigTestElement implements LoopIterationListener {
 
-    private static final Logger logger = LogUtil.getLogger(TraversalEmptyValue.class);
+    private static final Logger log = LoggerFactory.getLogger(TraversalEmptyValue.class);
 
     public static final String BLANK_TYPE = "TraversalEmptyValue.blankType";
     public static final String PATAMS = "TraversalEmptyValue.patams";
@@ -53,7 +53,7 @@ public class TraversalEmptyValue extends ConfigTestElement implements LoopIterat
                 setVariables();
             }
         } else {
-            logger.info("Traverse Empty Check循环结束，线程组停止");
+            log.info("Traverse Empty Check循环结束，线程组停止");
             getThreadContext().getThreadGroup().stop();
         }
     }
@@ -72,7 +72,7 @@ public class TraversalEmptyValue extends ConfigTestElement implements LoopIterat
             String jsonStr = ctx.jsonString();
             getThreadContext().getVariables().put("params", jsonStr.substring(1, jsonStr.length() - 1));
         } catch (Exception e) {
-            logger.error(ExceptionUtil.getStackTrace(e));
+            log.error(ExceptionUtil.getStackTrace(e));
         }
     }
 

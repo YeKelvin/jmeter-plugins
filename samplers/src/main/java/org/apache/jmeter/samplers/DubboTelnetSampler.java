@@ -4,8 +4,7 @@ import com.jcraft.jsch.JSchException;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.jmeter.common.utils.ExceptionUtil;
 import org.apache.jmeter.common.utils.JMeterVarsUtil;
-import org.apache.jmeter.common.utils.LogUtil;
-import org.apache.jmeter.common.utils.exception.ServiceException;
+import org.apache.jmeter.common.exceptions.ServiceException;
 import org.apache.jmeter.common.utils.ssh.SSHTelnetClient;
 import org.apache.jmeter.config.SSHConfiguration;
 import org.apache.jmeter.engine.util.ValueReplacer;
@@ -15,6 +14,7 @@ import org.apache.jmeter.threads.JMeterContextService;
 import org.apache.jmeter.threads.JMeterVariables;
 import org.apache.jmeter.util.JMeterUtils;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -31,7 +31,7 @@ import java.util.Properties;
  */
 public class DubboTelnetSampler extends AbstractSampler {
 
-    private static final Logger logger = LogUtil.getLogger(DubboTelnetSampler.class);
+    private static final Logger log = LoggerFactory.getLogger(DubboTelnetSampler.class);
 
     public static final String ADDRESS = "DubboTelnetSampler.address";
     public static final String INTERFACE_NAME = "DubboTelnetSampler.interfaceName";
@@ -114,7 +114,7 @@ public class DubboTelnetSampler extends AbstractSampler {
             setRunningVersion(true);
             return getPropertyAsString(REPLACE_VALUE);
         } catch (InvalidVariableException e) {
-            logger.error(ExceptionUtil.getStackTrace(e));
+            log.error(ExceptionUtil.getStackTrace(e));
         }
         return value;
     }

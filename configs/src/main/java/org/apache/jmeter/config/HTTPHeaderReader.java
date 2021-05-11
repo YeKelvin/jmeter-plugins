@@ -1,7 +1,6 @@
 package org.apache.jmeter.config;
 
 import org.apache.jmeter.common.utils.ExceptionUtil;
-import org.apache.jmeter.common.utils.LogUtil;
 import org.apache.jmeter.common.utils.YamlUtil;
 import org.apache.jmeter.config.gui.HTTPHeaderReaderGui;
 import org.apache.jmeter.engine.util.ValueReplacer;
@@ -13,6 +12,7 @@ import org.apache.jmeter.testelement.TestStateListener;
 import org.apache.jmeter.testelement.property.CollectionProperty;
 import org.apache.jmeter.util.JMeterUtils;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.lang.reflect.Field;
@@ -28,7 +28,7 @@ import java.util.Set;
  */
 public class HTTPHeaderReader extends HeaderManager implements TestStateListener {
 
-    private static final Logger logger = LogUtil.getLogger(HTTPHeaderReader.class);
+    private static final Logger log = LoggerFactory.getLogger(HTTPHeaderReader.class);
 
     public static final String HEADERS_FILE_NAME = "HTTPHeaderReader.headersFileName";
 
@@ -54,7 +54,7 @@ public class HTTPHeaderReader extends HeaderManager implements TestStateListener
                 }
                 alreadyRead = true;
             } catch (Exception e) {
-                logger.error(ExceptionUtil.getStackTrace(e));
+                log.error(ExceptionUtil.getStackTrace(e));
             }
         }
     }
@@ -89,10 +89,10 @@ public class HTTPHeaderReader extends HeaderManager implements TestStateListener
             try {
                 headerMap = parseYaml(file);
             } catch (Exception e) {
-                logger.error(ExceptionUtil.getStackTrace(e));
+                log.error(ExceptionUtil.getStackTrace(e));
             }
         } else {
-            logger.error("{} 非 yaml文件", filePath);
+            log.error("{} 非 yaml文件", filePath);
         }
         return headerMap;
     }
@@ -135,7 +135,7 @@ public class HTTPHeaderReader extends HeaderManager implements TestStateListener
 
                 alreadyAddedGui = true;
             } catch (Exception e) {
-                logger.error(ExceptionUtil.getStackTrace(e));
+                log.error(ExceptionUtil.getStackTrace(e));
             }
         }
     }
