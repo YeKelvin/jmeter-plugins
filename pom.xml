@@ -10,10 +10,10 @@
     <version>5.1.1-v2</version>
     <modules>
         <module>common-util</module>
-        <module>functions</module>
         <module>configs</module>
-        <module>visualizers</module>
+        <module>functions</module>
         <module>samplers</module>
+        <module>visualizers</module>
     </modules>
 
     <properties>
@@ -277,6 +277,30 @@
                     <skipTests>true</skipTests>
                 </configuration>
             </plugin>
+<!--            <plugin>-->
+<!--                <groupId>org.apache.maven.plugins</groupId>-->
+<!--                <artifactId>maven-shade-plugin</artifactId>-->
+<!--                <version>3.2.4</version>-->
+<!--                <executions>-->
+<!--                    <execution>-->
+<!--                        <phase>package</phase>-->
+<!--                        <goals>-->
+<!--                            <goal>shade</goal>-->
+<!--                        </goals>-->
+<!--                        <configuration>-->
+<!--                            <artifactSet>-->
+<!--                                <includes>-->
+<!--                                    <include>jmeter-plugins:jmeter-plugins-common-util</include>-->
+<!--                                    <include>jmeter-plugins:jmeter-plugins-configs</include>-->
+<!--                                    <include>jmeter-plugins:jmeter-plugins-functions</include>-->
+<!--                                    <include>jmeter-plugins:jmeter-plugins-samplers</include>-->
+<!--                                    <include>jmeter-plugins:jmeter-plugins-visualizers</include>-->
+<!--                                </includes>-->
+<!--                            </artifactSet>-->
+<!--                        </configuration>-->
+<!--                    </execution>-->
+<!--                </executions>-->
+<!--            </plugin>-->
         </plugins>
     </build>
 </project>

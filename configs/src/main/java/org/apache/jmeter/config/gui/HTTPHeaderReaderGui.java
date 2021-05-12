@@ -37,9 +37,11 @@ public class HTTPHeaderReaderGui extends AbstractConfigGui implements ActionList
 
     private static final String OPEN_ACTION = "OPEN";
 
-    private JComboBox<String> headersFileNameComboBox;
+    private JComboBox<String> headerFileNameComboBox;
     private JTable table;
     private ObjectTableModel tableModel;
+
+    private String headerDirectory = null;
 
     public HTTPHeaderReaderGui() {
         init();
@@ -78,7 +80,7 @@ public class HTTPHeaderReaderGui extends AbstractConfigGui implements ActionList
     @Override
     public void modifyTestElement(TestElement el) {
         super.configureTestElement(el);
-        el.setProperty(HTTPHeaderReader.HEADERS_FILE_NAME, (String) headersFileNameComboBox.getSelectedItem());
+        el.setProperty(HTTPHeaderReader.HEADER_FILE_NAME, (String) headerFileNameComboBox.getSelectedItem());
     }
 
     /**
@@ -87,8 +89,8 @@ public class HTTPHeaderReaderGui extends AbstractConfigGui implements ActionList
     @Override
     public void configure(TestElement el) {
         super.configure(el);
-        String fileName = el.getPropertyAsString(HTTPHeaderReader.HEADERS_FILE_NAME);
-        headersFileNameComboBox.setSelectedItem(fileName);
+        String fileName = el.getPropertyAsString(HTTPHeaderReader.HEADER_FILE_NAME);
+        headerFileNameComboBox.setSelectedItem(fileName);
         tableModel.clearData();
         if (el instanceof HTTPHeaderReader && StringUtils.isNotBlank(fileName)) {
             HTTPHeaderReader httpHeaderReader = (HTTPHeaderReader) el;
@@ -103,7 +105,7 @@ public class HTTPHeaderReaderGui extends AbstractConfigGui implements ActionList
     @Override
     public void clearGui() {
         super.clearGui();
-        headersFileNameComboBox.setSelectedItem("");
+        headerFileNameComboBox.setSelectedItem("");
         GuiUtils.stopTableEditing(table);
         tableModel.clearData();
     }
@@ -116,12 +118,12 @@ public class HTTPHeaderReaderGui extends AbstractConfigGui implements ActionList
         String action = e.getActionCommand();
         if (action.equals(OPEN_ACTION)) {
             try {
-                String headersFileName = String.valueOf(headersFileNameComboBox.getSelectedItem());
+                String headersFileName = String.valueOf(headerFileNameComboBox.getSelectedItem());
                 String openFilePath;
                 if (StringUtils.isNotBlank(headersFileName)) {
-                    openFilePath = getHeadersFilePath(headersFileName);
+                    openFilePath = getHeaderFilePath(headersFileName);
                 } else {
-                    openFilePath = getHeadersFileDirectory();
+                    openFilePath = getHeaderFileDirectory();
                 }
                 Desktop.getDesktop().open(new File(openFilePath));
             } catch (IOException ioException) {
@@ -131,11 +133,11 @@ public class HTTPHeaderReaderGui extends AbstractConfigGui implements ActionList
     }
 
     private Component createHeadersFileNameComboBox() {
-        if (headersFileNameComboBox == null) {
-            headersFileNameComboBox = GuiUtil.createComboBox(HTTPHeaderReader.HEADERS_FILE_NAME);
-            comboBoxAddItem(getHeadersFileList(getHeadersFileDirectory()));
+        if (headerFileNameComboBox == null) {
+            headerFileNameComboBox = GuiUtil.createComboBox(HTTPHeaderReader.HEADER_FILE_NAME);
+            comboBoxAddItem(getHeaderFileList(getHeaderFileDirectory()));
         }
-        return headersFileNameComboBox;
+        return headerFileNameComboBox;
     }
 
     private Component createHeadersFileNameLabel() {
@@ -201,9 +203,9 @@ public class HTTPHeaderReaderGui extends AbstractConfigGui implements ActionList
     }
 
     private void comboBoxAddItem(ArrayList<File> fileList) {
-        headersFileNameComboBox.addItem("");
+        headerFileNameComboBox.addItem("");
         for (File file : fileList) {
-            headersFileNameComboBox.addItem(file.getName());
+            headerFileNameComboBox.addItem(file.getName());
         }
     }
 
@@ -212,14 +214,14 @@ public class HTTPHeaderReaderGui extends AbstractConfigGui implements ActionList
      *
      * @param dirPath 配置文件所在目录
      */
-    private ArrayList<File> getHeadersFileList(String dirPath) {
+    private ArrayList<File> getHeaderFileList(String dirPath) {
         ArrayList<File> fileList = new ArrayList<>();
         File dir = new File(dirPath);
         File[] files = dir.listFiles();
         if (files != null) {
             for (File file : files) {
                 if (file.isDirectory()) {
-                    fileList.addAll(getHeadersFileList(file.getAbsolutePath()));
+                    fileList.addAll(getHeaderFileList(file.getAbsolutePath()));
                 } else if (file.getName().endsWith("yaml")) {
                     fileList.add(file);
                 }
@@ -231,14 +233,17 @@ public class HTTPHeaderReaderGui extends AbstractConfigGui implements ActionList
     /**
      * 获取httpHeader文件目录路径
      */
-    private String getHeadersFileDirectory() {
-        return JMeterUtils.getJMeterHome() + File.separator + "header";
+    private String getHeaderFileDirectory() {
+        if (headerDirectory == null) {
+            headerDirectory = JMeterUtils.getJMeterHome() + File.separator + "header";
+        }
+        return headerDirectory;
     }
 
     /**
      * 根据httpHeader文件名称获取文件路径
      */
-    private String getHeadersFilePath(String headersFileName) {
-        return getHeadersFileDirectory() + File.separator + headersFileName;
+    private String getHeaderFilePath(String headerFileName) {
+        return getHeaderFileDirectory() + File.separator + headerFileName;
     }
 }

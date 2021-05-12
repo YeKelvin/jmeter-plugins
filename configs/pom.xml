@@ -46,5 +46,7 @@
         </dependency>
     </dependencies>
 
-
+    <build>
+        <finalName>${project.groupId}-${project.artifactId}-${project.version}</finalName>
+    </build>
 </project>
