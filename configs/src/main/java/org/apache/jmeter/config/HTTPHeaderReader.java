@@ -30,7 +30,7 @@ public class HTTPHeaderReader extends HeaderManager implements TestStateListener
 
     private static final Logger log = LoggerFactory.getLogger(HTTPHeaderReader.class);
 
-    public static final String HEADERS_FILE_NAME = "HTTPHeaderReader.headersFileName";
+    public static final String HEADER_FILE_NAME = "HTTPHeaderReader.headerFileName";
 
     private static final ValueReplacer REPLACER = new ValueReplacer();
 
@@ -73,7 +73,7 @@ public class HTTPHeaderReader extends HeaderManager implements TestStateListener
     }
 
     public String getHeadersFileName() {
-        return getPropertyAsString(HEADERS_FILE_NAME);
+        return getPropertyAsString(HEADER_FILE_NAME);
     }
 
     public String getHeadersFilePath() {
