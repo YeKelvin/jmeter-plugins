@@ -34,8 +34,8 @@ public class EnvDataSetGui extends AbstractConfigGui implements ActionListener {
     private static final String OPEN_ACTION = "OPEN";
 
     private static final String NOTE =
-            "1. 配置文件为yaml格式 ，目前仅支持放置在 ${JMETER_HOME}/config 目录下\n" +
-                    "2. Non-Gui命令说明：存在 -JconfigName 选项时，优先读取 ${__P(configName)} 配置文件";
+            "1、配置文件为yaml格式 ，目前仅支持放置在 ${JMETER_HOME}/config 目录下\n" +
+                    "2、Non-Gui命令说明：存在 -JconfigName 选项时，优先读取 ${__P(configName)} 配置文件";
 
     private JComboBox<String> configNameComboBox;
     private JTable table;

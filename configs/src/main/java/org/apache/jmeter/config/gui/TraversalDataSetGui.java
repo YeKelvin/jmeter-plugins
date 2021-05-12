@@ -18,6 +18,10 @@ import java.awt.*;
  */
 public class TraversalDataSetGui extends AbstractConfigGui {
 
+    private static final String NOTE =
+            "1、以 “,” 逗号作为引用名和数据的分隔符\n" +
+                    "2、请将线程组设置为无限循环，数据遍历完毕时线程组将自动停止循环";
+
     private JTextField variableNamesTextField;
     private JSyntaxTextArea dataTextArea;
 
@@ -121,10 +125,7 @@ public class TraversalDataSetGui extends AbstractConfigGui {
     }
 
     private Component createNoteArea() {
-        String note =
-                "1. 以 “,” 逗号作为引用名和数据的分隔符\n" +
-                "2. 请将线程组设置为无限循环，数据遍历完毕时线程组将自动停止循环";
-        return GuiUtil.createNoteArea(note, this.getBackground());
+        return GuiUtil.createNoteArea(NOTE, this.getBackground());
     }
 
 }

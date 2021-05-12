@@ -16,6 +16,8 @@ import java.awt.*;
  */
 public class SSHConfigurationGui extends AbstractConfigGui {
 
+    private static final String NOTE = "请把此组件放在JDBC组件后面，不然连接关闭时会报IOException";
+
     private JTextField sshAddressTextField;
     private JTextField sshUserNameTextField;
     private JTextField sshPasswordTextField;
@@ -190,7 +192,6 @@ public class SSHConfigurationGui extends AbstractConfigGui {
     }
 
     private Component createNoteArea() {
-        String note = "请把此组件放在JDBC组件后面，不然连接关闭时会报IOException";
-        return GuiUtil.createNoteArea(note, this.getBackground());
+        return GuiUtil.createNoteArea(NOTE, this.getBackground());
     }
 }

@@ -19,11 +19,12 @@ public class JMeterScriptSamplerGui extends AbstractSamplerGui {
     private static final Logger log = LoggerFactory.getLogger(JMeterScriptSamplerGui.class);
 
     private static final String NOTE =
-            "1.【脚本目录】: 请使用环境变量\n" +
-                    "2.【脚本名称】: 需要包含.jmx\n" +
-                    "3.【增量同步vars至props】: 将目标脚本中新增的局部变量同步至全局变量中\n" +
-                    "4.【同步vars至子脚本】: 将调用者的局部变量同步至目标脚本中（不会覆盖目标脚本中已存在的key），\n" +
-                    "                     执行结束时将目标脚本新增的局部变量返回给调用者\n";
+            "1、【脚本目录】: 脚本所在目录路径，建议使用变量\n" +
+                    "2、【脚本名称】: 脚本文件名称，需要包含jmx后缀\n" +
+                    "3、【同步vars至props】: 将目标脚本中新增的线程变量同步至全局变量中\n" +
+                    "4、【传递vars至目标脚本】:" +
+                    "       4.1、将调用方的线程变量同步至目标脚本中（不会覆盖目标脚本中已存在的Key）\n" +
+                    "       4.2、执行结束时将目标脚本新增的线程变量返回给调用方\n";
 
     private JTextField scriptPathField;
     private JTextField scriptNameField;
@@ -127,7 +128,7 @@ public class JMeterScriptSamplerGui extends AbstractSamplerGui {
 
     private Component createSyncToPropsLabel() {
         return GuiUtil.createLabel(
-                "同步增量vars至props：", syncToProps);
+                "同步vars至props：", syncToProps);
     }
 
     private Component createSyncToVarsComboBox() {
@@ -141,7 +142,7 @@ public class JMeterScriptSamplerGui extends AbstractSamplerGui {
 
     private Component createSyncToVarsLabel() {
         return GuiUtil.createLabel(
-                "同步vars至目标脚本：", syncToVars);
+                "传递vars至目标脚本：", syncToVars);
     }
 
     private Component createBodyPanel() {
