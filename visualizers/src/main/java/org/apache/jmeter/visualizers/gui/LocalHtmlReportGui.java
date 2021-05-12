@@ -14,6 +14,13 @@ import java.awt.*;
  */
 public class LocalHtmlReportGui extends AbstractListenerGui {
 
+    private static final String NOTE =
+            "1. 测试报告生成路径为 ${JMETER_HOME}/htmlreport/${reportName}；\n" +
+                    "2. 执行前必须先在 ${JMETER_HOME} 下创建 htmlreport 目录；\n" +
+                    "3. Non-Gui命令说明：\n" +
+                    "      a. 存在 -JreportName 选项时，优先读取 ${__P(reportName)} HTML报告名称；\n" +
+                    "      b. 存在 -JisAppend 选项时，优先读取 ${__P(isAppend)} 追加模式；\n";
+
     private JTextField reportNameTextField;
     private JComboBox<String> isAppendComboBox;
 
@@ -108,12 +115,6 @@ public class LocalHtmlReportGui extends AbstractListenerGui {
     }
 
     private Component createNoteArea() {
-        String note =
-                "1. 测试报告的路径为 ${JMETER_HOME}/htmlreport/${reportName}；\n" +
-                "2. 执行前必须先在 ${JMETER_HOME} 下创建 htmlreport 目录；\n" +
-                "3. Non-Gui命令说明：\n" +
-                "      a. 存在 -JreportName 选项时，优先读取 ${__P(reportName)} HTML报告名称；\n" +
-                "      b. 存在 -JisAppend 选项时，优先读取 ${__P(isAppend)} 追加模式；\n";
-        return GuiUtil.createNoteArea(note, this.getBackground());
+        return GuiUtil.createNoteArea(NOTE, this.getBackground());
     }
 }

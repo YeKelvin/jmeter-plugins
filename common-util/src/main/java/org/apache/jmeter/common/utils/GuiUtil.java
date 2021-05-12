@@ -112,6 +112,10 @@ public class GuiUtil {
         public static GridBagConstraints multiLineEditorConstraints;  // for multi line editors
         public static GridBagConstraints fillBottomConstraints;  // for fill the bottom editors
 
+        public static GridBagConstraints mostLeftConstraints;  // 最左边
+        public static GridBagConstraints middleConstraints;  // 中间
+        public static GridBagConstraints mostRightConstraints;  // 最右边
+
         static {
             labelConstraints = new GridBagConstraints();
             labelConstraints.gridx = 0;
@@ -143,6 +147,24 @@ public class GuiUtil {
             fillBottomConstraints.weightx = 1;
             fillBottomConstraints.weighty = 1;
             fillBottomConstraints.insets = new Insets(1, 1, 1, 1);
+
+            mostLeftConstraints = new GridBagConstraints();
+            mostLeftConstraints.gridx = 0;
+            mostLeftConstraints.anchor = GridBagConstraints.EAST;
+            mostLeftConstraints.insets = new Insets(1, 1, 1, 1);
+
+            middleConstraints = new GridBagConstraints();
+            middleConstraints.fill = GridBagConstraints.HORIZONTAL;
+            middleConstraints.gridx = 1;
+            middleConstraints.gridy = GridBagConstraints.RELATIVE;
+            middleConstraints.gridwidth = 1;
+            middleConstraints.weightx = 1;
+            middleConstraints.insets = new Insets(1, 1, 1, 1);
+
+            mostRightConstraints = new GridBagConstraints();
+            mostRightConstraints.gridx = 2;
+            mostRightConstraints.anchor = GridBagConstraints.WEST;
+            mostRightConstraints.insets = new Insets(1, 1, 1, 1);
         }
     }
 }

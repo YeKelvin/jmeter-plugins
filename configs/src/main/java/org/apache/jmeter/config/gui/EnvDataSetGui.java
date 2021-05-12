@@ -1,6 +1,7 @@
 package org.apache.jmeter.config.gui;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.jmeter.common.utils.ExceptionUtil;
 import org.apache.jmeter.common.utils.GuiUtil;
 import org.apache.jmeter.config.Argument;
 import org.apache.jmeter.config.EnvDataSet;
@@ -10,22 +11,37 @@ import org.apache.jmeter.util.JMeterUtils;
 import org.apache.jorphan.gui.GuiUtils;
 import org.apache.jorphan.gui.ObjectTableModel;
 import org.apache.jorphan.reflect.Functor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 import javax.swing.table.TableRowSorter;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Map;
 
 /**
  * @author KelvinYe
  */
-public class EnvDataSetGui extends AbstractConfigGui {
+public class EnvDataSetGui extends AbstractConfigGui implements ActionListener {
+
+    private static final Logger log = LoggerFactory.getLogger(EnvDataSetGui.class);
+
+    private static final String OPEN_ACTION = "OPEN";
+
+    private static final String NOTE =
+            "1. 配置文件为yaml格式 ，目前仅支持放置在 ${JMETER_HOME}/config 目录下\n" +
+                    "2. Non-Gui命令说明：存在 -JconfigName 选项时，优先读取 ${__P(configName)} 配置文件";
 
     private JComboBox<String> configNameComboBox;
     private JTable table;
     private ObjectTableModel tableModel;
+
+    private String configDirectory = null;
 
     public EnvDataSetGui() {
         init();
@@ -96,10 +112,32 @@ public class EnvDataSetGui extends AbstractConfigGui {
         tableModel.clearData();
     }
 
+    /**
+     * 打开配置文件或配置文件目录
+     */
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        String action = e.getActionCommand();
+        if (action.equals(OPEN_ACTION)) {
+            try {
+                String configName = String.valueOf(configNameComboBox.getSelectedItem());
+                String openFilePath;
+                if (StringUtils.isNotBlank(configName)) {
+                    openFilePath = getConfigPath(configName);
+                } else {
+                    openFilePath = getConfigDirectory();
+                }
+                Desktop.getDesktop().open(new File(openFilePath));
+            } catch (IOException ioException) {
+                log.error(ExceptionUtil.getStackTrace(ioException));
+            }
+        }
+    }
+
     private Component createConfigNameComboBox() {
         if (configNameComboBox == null) {
             configNameComboBox = GuiUtil.createComboBox(EnvDataSet.CONFIG_NAME);
-            comboBoxAddItem(getConfigFileList(getConfigPath()));
+            comboBoxAddItem(getConfigList(getConfigDirectory()));
         }
         return configNameComboBox;
     }
@@ -109,6 +147,7 @@ public class EnvDataSetGui extends AbstractConfigGui {
     }
 
     private Component createTablePanel() {
+        // 初始化表格模型
         initializeTableModel();
         // 列排序
         TableRowSorter<ObjectTableModel> sorter = new TableRowSorter<>(tableModel);
@@ -131,19 +170,28 @@ public class EnvDataSetGui extends AbstractConfigGui {
     private Component createBodyPanel() {
         JPanel bodyPanel = new JPanel(new GridBagLayout());
         bodyPanel.setBorder(GuiUtil.createTitledBorder("请选择测试环境"));
-        bodyPanel.add(createConfigNameLabel(), GuiUtil.GridBag.labelConstraints);
-        bodyPanel.add(createConfigNameComboBox(), GuiUtil.GridBag.editorConstraints);
+        bodyPanel.add(createConfigNameLabel(), GuiUtil.GridBag.mostLeftConstraints);
+        bodyPanel.add(createConfigNameComboBox(), GuiUtil.GridBag.middleConstraints);
+        bodyPanel.add(createButton(), GuiUtil.GridBag.mostRightConstraints);
         bodyPanel.add(createTablePanel(), GuiUtil.GridBag.fillBottomConstraints);
         return bodyPanel;
     }
 
     private Component createNoteArea() {
-        String note =
-                "1. 配置文件必须是 Yaml格式 ，且必须放在 ${JMETER_HOME}/config 目录下\n" +
-                        "2. Non-Gui命令说明：存在 -JconfigName 选项时，优先读取 ${__P(configName)} 配置文件";
-        return GuiUtil.createNoteArea(note, this.getBackground());
+        return GuiUtil.createNoteArea(NOTE, this.getBackground());
     }
 
+    private Component createButton() {
+        JButton button = new JButton(OPEN_ACTION);
+        button.setActionCommand(OPEN_ACTION);
+        button.addActionListener(this);
+
+        return button;
+    }
+
+    /**
+     * 初始化表格模型
+     */
     private void initializeTableModel() {
         tableModel = new ObjectTableModel(new String[]{"name", "value"},
                 Argument.class,
@@ -166,16 +214,16 @@ public class EnvDataSetGui extends AbstractConfigGui {
     /**
      * 获取配置文件的列表
      *
-     * @param dirPath 配置文件所在目录
+     * @param dirPath 配置目录
      */
-    private ArrayList<File> getConfigFileList(String dirPath) {
+    private ArrayList<File> getConfigList(String dirPath) {
         ArrayList<File> fileList = new ArrayList<>();
         File dir = new File(dirPath);
         File[] files = dir.listFiles();
         if (files != null) {
             for (File file : files) {
                 if (file.isDirectory()) {
-                    fileList.addAll(getConfigFileList(file.getAbsolutePath()));
+                    fileList.addAll(getConfigList(file.getAbsolutePath()));
                 } else if (file.getName().endsWith("yaml")) {
                     fileList.add(file);
                 }
@@ -184,8 +232,20 @@ public class EnvDataSetGui extends AbstractConfigGui {
         return fileList;
     }
 
-    private String getConfigPath() {
-        return JMeterUtils.getJMeterHome() + File.separator + "config";
+    /**
+     * 获取配置文件目录路径
+     */
+    private String getConfigDirectory() {
+        if (configDirectory == null) {
+            configDirectory = JMeterUtils.getJMeterHome() + File.separator + "config";
+        }
+        return configDirectory;
     }
 
+    /**
+     * 根据配置文件名称获取文件路径
+     */
+    private String getConfigPath(String configName) {
+        return getConfigDirectory() + File.separator + configName;
+    }
 }

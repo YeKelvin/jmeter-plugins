@@ -5,6 +5,8 @@ import org.apache.jmeter.common.utils.GuiUtil;
 import org.apache.jmeter.gui.util.VerticalPanel;
 import org.apache.jmeter.samplers.JMeterScriptSampler;
 import org.apache.jmeter.testelement.TestElement;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 import java.awt.*;
@@ -13,6 +15,15 @@ import java.awt.*;
  * @author KelvinYe
  */
 public class JMeterScriptSamplerGui extends AbstractSamplerGui {
+
+    private static final Logger log = LoggerFactory.getLogger(JMeterScriptSamplerGui.class);
+
+    private static final String NOTE =
+            "1.【脚本目录】: 请使用环境变量\n" +
+                    "2.【脚本名称】: 需要包含.jmx\n" +
+                    "3.【增量同步vars至props】: 将目标脚本中新增的局部变量同步至全局变量中\n" +
+                    "4.【同步vars至子脚本】: 将调用者的局部变量同步至目标脚本中（不会覆盖目标脚本中已存在的key），\n" +
+                    "                     执行结束时将目标脚本新增的局部变量返回给调用者\n";
 
     private JTextField scriptPathField;
     private JTextField scriptNameField;
@@ -155,13 +166,7 @@ public class JMeterScriptSamplerGui extends AbstractSamplerGui {
     }
 
     private Component createNoteArea() {
-        String note =
-                "1.【脚本目录】: 请使用环境变量\n" +
-                        "2.【脚本名称】: 需要包含.jmx\n" +
-                        "3.【增量同步vars至props】: 将目标脚本中新增的局部变量同步至全局变量中\n" +
-                        "4.【同步vars至子脚本】: 将调用者的局部变量同步至目标脚本中（不会覆盖目标脚本中已存在的key），\n" +
-                        "                     执行结束时将目标脚本新增的局部变量返回给调用者\n";
-        return GuiUtil.createNoteArea(note, this.getBackground());
+        return GuiUtil.createNoteArea(NOTE, this.getBackground());
     }
 
 }
