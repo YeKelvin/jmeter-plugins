@@ -22,9 +22,9 @@ public class JMeterScriptSamplerGui extends AbstractSamplerGui {
             "1、【脚本目录】: 脚本所在目录路径，建议使用变量\n" +
                     "2、【脚本名称】: 脚本文件名称，需要包含jmx后缀\n" +
                     "3、【同步vars至props】: 将目标脚本中新增的线程变量同步至全局变量中\n" +
-                    "4、【传递vars至目标脚本】:" +
+                    "4、【传递vars至目标脚本】:\n" +
                     "       4.1、将调用方的线程变量同步至目标脚本中（不会覆盖目标脚本中已存在的Key）\n" +
-                    "       4.2、执行结束时将目标脚本新增的线程变量返回给调用方\n";
+                    "       4.2、执行结束时将目标脚本新增的线程变量返回给调用方";
 
     private JTextField scriptPathField;
     private JTextField scriptNameField;
