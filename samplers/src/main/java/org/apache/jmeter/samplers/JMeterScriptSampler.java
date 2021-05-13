@@ -9,6 +9,7 @@ import org.apache.jmeter.common.utils.JMeterVarsUtil;
 import org.apache.jmeter.common.utils.PathUtil;
 import org.apache.jmeter.common.exceptions.ServiceException;
 import org.apache.jmeter.common.utils.json.JsonUtil;
+import org.apache.jmeter.config.Arguments;
 import org.apache.jmeter.config.EnvDataSet;
 import org.apache.jmeter.config.SSHConfiguration;
 import org.apache.jmeter.control.LoopController;
@@ -20,6 +21,8 @@ import org.apache.jmeter.reporters.ResultCollector;
 import org.apache.jmeter.save.SaveService;
 import org.apache.jmeter.testelement.TestPlan;
 import org.apache.jmeter.testelement.property.CollectionProperty;
+import org.apache.jmeter.testelement.property.JMeterProperty;
+import org.apache.jmeter.testelement.property.TestElementProperty;
 import org.apache.jmeter.threads.AbstractThreadGroup;
 import org.apache.jmeter.threads.JMeterContextService;
 import org.apache.jmeter.threads.PostThreadGroup;
@@ -104,13 +107,25 @@ public class JMeterScriptSampler extends AbstractSampler implements Interruptibl
         return getPropertyAsBoolean(SYNC_TO_VARS);
     }
 
-    private CollectionProperty getArguments() {
-        return (CollectionProperty) getProperty(ARGUMENTS);
-    }
-
     private String getScriptPath() {
         String scriptPath = PathUtil.join(getScriptDirectory(), getScriptName());
         return scriptPath.replace("\\", "/");
+    }
+
+    public void setArguments(Arguments args) {
+        setProperty(new TestElementProperty(ARGUMENTS, args));
+    }
+
+    public Arguments getArguments(){
+        Arguments args = (Arguments) getProperty(ARGUMENTS).getObjectValue();
+        if (args == null) {
+            args = new Arguments();
+        }
+        return args;
+    }
+
+    public JMeterProperty getArgumentsAsProperty() {
+        return getProperty(ARGUMENTS);
     }
 
     /**
@@ -121,18 +136,18 @@ public class JMeterScriptSampler extends AbstractSampler implements Interruptibl
      */
     private String runJMeterScript(String scriptAbsPath, SampleResult result)
             throws IllegalUserActionException, IOException, InterruptedException {
-        // 加载子脚本
+        // 加载脚本
         HashTree testTree = loadScriptTree(scriptAbsPath, result);
 
-        // 设置全局变量，用于传递给子脚本使用
+        // 设置全局变量，用于传递给脚本使用
         props.put(CliOptions.CONFIG_NAME, JMeterVarsUtil.getDefault(EnvDataSet.CONFIG_NAME));
 
-        // 判断是否需要把当前线程的局部变量同步至子脚本
+        // 判断是否需要把当前线程的局部变量同步至脚本
         if (isSyncToVars()) {
             props.put(JMeterScriptDataTransfer.CALLER_VARIABLES, getThreadContext().getVariables());
         }
 
-        // 开始执行子脚本
+        // 开始执行脚本
         StandardJMeterEngine engine = new StandardJMeterEngine();
         engine.setProperties(props);
         engine.configure(testTree);
@@ -155,12 +170,12 @@ public class JMeterScriptSampler extends AbstractSampler implements Interruptibl
             setNonGui(true);
         }
 
-        // 提取子脚本的执行结果
+        // 提取脚本的执行结果
         @SuppressWarnings("unchecked")
         Map<String, Object> incrementalVariables =
                 (Map<String, Object>) props.get(JMeterScriptDataTransfer.INCREMENTAL_VARIABLES);
 
-        // 把子脚本中的增量局部变量同步至当前线程的局部变量中
+        // 把脚本中的增量局部变量同步至当前线程的局部变量中
         if (isSyncToVars()) {
             incrementalVariables.forEach((key, value) -> {
                 if (value instanceof String) {
@@ -171,7 +186,7 @@ public class JMeterScriptSampler extends AbstractSampler implements Interruptibl
             });
         }
 
-        // 把子脚本中新增的局部变量同步至全局变量中
+        // 把脚本中新增的局部变量同步至全局变量中
         setProps(incrementalVariables);
 
         return formatResponse(incrementalVariables);

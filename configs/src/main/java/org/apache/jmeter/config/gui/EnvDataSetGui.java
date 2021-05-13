@@ -1,11 +1,13 @@
 package org.apache.jmeter.config.gui;
 
+import org.apache.commons.collections.map.HashedMap;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.jmeter.common.utils.ExceptionUtil;
 import org.apache.jmeter.common.utils.GuiUtil;
 import org.apache.jmeter.config.Argument;
 import org.apache.jmeter.config.EnvDataSet;
 import org.apache.jmeter.gui.util.HeaderAsPropertyRenderer;
+import org.apache.jmeter.services.FileServer;
 import org.apache.jmeter.testelement.TestElement;
 import org.apache.jmeter.util.JMeterUtils;
 import org.apache.jorphan.gui.GuiUtils;
@@ -31,19 +33,24 @@ public class EnvDataSetGui extends AbstractConfigGui implements ActionListener {
 
     private static final Logger log = LoggerFactory.getLogger(EnvDataSetGui.class);
 
-    private static final String OPEN_ACTION = "OPEN";
-
     private static final String NOTE =
             "1、配置文件为yaml格式 ，目前仅支持放置在 ${JMETER_HOME}/config 目录下\n" +
                     "2、Non-Gui命令说明：存在 -JconfigName 选项时，优先读取 ${__P(configName)} 配置文件";
+
+    private static final String OPEN_ACTION = "OPEN";
 
     private JComboBox<String> configNameComboBox;
     private JTable table;
     private ObjectTableModel tableModel;
 
-    private String configDirectory = null;
+    private final String scriptName;
+    private final String configDirectory;
+
+    public static final HashedMap CONFIG_NAME_WITH_SCRIPT = new HashedMap();
 
     public EnvDataSetGui() {
+        scriptName = FileServer.getFileServer().getScriptName();
+        configDirectory = JMeterUtils.getJMeterHome() + File.separator + "config";
         init();
     }
 
@@ -80,7 +87,9 @@ public class EnvDataSetGui extends AbstractConfigGui implements ActionListener {
     @Override
     public void modifyTestElement(TestElement el) {
         super.configureTestElement(el);
-        el.setProperty(EnvDataSet.CONFIG_NAME, (String) configNameComboBox.getSelectedItem());
+        String configName = (String) configNameComboBox.getSelectedItem();
+        el.setProperty(EnvDataSet.CONFIG_NAME, configName);
+        CONFIG_NAME_WITH_SCRIPT.put(scriptName, configName);
     }
 
     /**
@@ -89,10 +98,10 @@ public class EnvDataSetGui extends AbstractConfigGui implements ActionListener {
     @Override
     public void configure(TestElement el) {
         super.configure(el);
-        String fileName = el.getPropertyAsString(EnvDataSet.CONFIG_NAME);
-        configNameComboBox.setSelectedItem(fileName);
+        String configName = el.getPropertyAsString(EnvDataSet.CONFIG_NAME);
+        configNameComboBox.setSelectedItem(configName);
         tableModel.clearData();
-        if (el instanceof EnvDataSet && StringUtils.isNotBlank(fileName)) {
+        if (el instanceof EnvDataSet && StringUtils.isNotBlank(configName)) {
             EnvDataSet envDataSet = (EnvDataSet) el;
             Map<String, String> envMap = envDataSet.getEnvMap(envDataSet.getFilePath());
             for (Map.Entry<String, String> entry : envMap.entrySet()) {
@@ -125,7 +134,7 @@ public class EnvDataSetGui extends AbstractConfigGui implements ActionListener {
                 if (StringUtils.isNotBlank(configName)) {
                     openFilePath = getConfigPath(configName);
                 } else {
-                    openFilePath = getConfigDirectory();
+                    openFilePath = configDirectory;
                 }
                 Desktop.getDesktop().open(new File(openFilePath));
             } catch (IOException ioException) {
@@ -137,7 +146,7 @@ public class EnvDataSetGui extends AbstractConfigGui implements ActionListener {
     private Component createConfigNameComboBox() {
         if (configNameComboBox == null) {
             configNameComboBox = GuiUtil.createComboBox(EnvDataSet.CONFIG_NAME);
-            comboBoxAddItem(getConfigList(getConfigDirectory()));
+            comboBoxAddItem(getConfigList(configDirectory));
         }
         return configNameComboBox;
     }
@@ -233,19 +242,9 @@ public class EnvDataSetGui extends AbstractConfigGui implements ActionListener {
     }
 
     /**
-     * 获取配置文件目录路径
-     */
-    private String getConfigDirectory() {
-        if (configDirectory == null) {
-            configDirectory = JMeterUtils.getJMeterHome() + File.separator + "config";
-        }
-        return configDirectory;
-    }
-
-    /**
      * 根据配置文件名称获取文件路径
      */
     private String getConfigPath(String configName) {
-        return getConfigDirectory() + File.separator + configName;
+        return configDirectory + File.separator + configName;
     }
 }

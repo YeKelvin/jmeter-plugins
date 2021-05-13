@@ -1,20 +1,36 @@
 package org.apache.jmeter.samplers.gui;
 
 
+import org.apache.commons.lang3.StringUtils;
+import org.apache.jmeter.common.utils.ExceptionUtil;
 import org.apache.jmeter.common.utils.GuiUtil;
-import org.apache.jmeter.gui.util.VerticalPanel;
+import org.apache.jmeter.common.utils.YamlUtil;
+import org.apache.jmeter.config.Argument;
+import org.apache.jmeter.config.Arguments;
+import org.apache.jmeter.config.gui.ArgumentsPanel;
+import org.apache.jmeter.config.gui.EnvDataSetGui;
 import org.apache.jmeter.samplers.JMeterScriptSampler;
+import org.apache.jmeter.services.FileServer;
 import org.apache.jmeter.testelement.TestElement;
+import org.apache.jmeter.testelement.property.JMeterProperty;
+import org.apache.jmeter.util.JMeterUtils;
+import org.apache.jorphan.gui.ObjectTableModel;
+import org.apache.jorphan.reflect.Functor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.File;
+import java.io.IOException;
+import java.util.Map;
 
 /**
  * @author KelvinYe
  */
-public class JMeterScriptSamplerGui extends AbstractSamplerGui {
+public class JMeterScriptSamplerGui extends AbstractSamplerGui implements ActionListener {
 
     private static final Logger log = LoggerFactory.getLogger(JMeterScriptSamplerGui.class);
 
@@ -26,12 +42,42 @@ public class JMeterScriptSamplerGui extends AbstractSamplerGui {
                     "       4.1、将调用方的线程变量同步至目标脚本中（不会覆盖目标脚本中已存在的Key）\n" +
                     "       4.2、执行结束时将目标脚本新增的线程变量返回给调用方";
 
-    private JTextField scriptPathField;
-    private JTextField scriptNameField;
-    private JComboBox<String> syncToProps;
-    private JComboBox<String> syncToVars;
+    private static final String OPEN_DIRECTORY_ACTION = "OPEN_DIRECTORY";
+
+    private final JTextField scriptDirectoryField;
+    private final JLabel scriptDirectoryLabel;
+
+    private final JTextField scriptNameField;
+    private final JLabel scriptNameLabel;
+
+    private final JComboBox<String> syncToPropsComboBox;
+    private final JLabel syncToPropsLabel;
+
+    private final JComboBox<String> syncToVarsComboBox;
+    private final JLabel syncToVarsLabel;
+
+    private final ArgumentsPanel argsPanel;
+
+    private final String scriptName;
+    private final String configDirectory;
 
     public JMeterScriptSamplerGui() {
+        scriptName = FileServer.getFileServer().getScriptName();
+        configDirectory = JMeterUtils.getJMeterHome() + File.separator + "config";
+
+        scriptDirectoryField = createScriptDirectoryTextField();
+        scriptDirectoryLabel = createScriptDirectoryLabel();
+
+        scriptNameField = createScriptNameTextField();
+        scriptNameLabel = createScriptNameLabel();
+
+        syncToPropsComboBox = createSyncToPropsComboBox();
+        syncToPropsLabel = createSyncToPropsLabel();
+
+        syncToVarsComboBox = createSyncToVarsComboBox();
+        syncToVarsLabel = createSyncToVarsLabel();
+
+        argsPanel = createArgumentsPanel();
         init();
     }
 
@@ -68,10 +114,14 @@ public class JMeterScriptSamplerGui extends AbstractSamplerGui {
     @Override
     public void modifyTestElement(TestElement el) {
         super.configureTestElement(el);
-        el.setProperty(JMeterScriptSampler.SCRIPT_DIRECTORY, scriptPathField.getText());
-        el.setProperty(JMeterScriptSampler.SCRIPT_NAME, scriptNameField.getText());
-        el.setProperty(JMeterScriptSampler.SYNC_TO_PROPS, (String) syncToProps.getSelectedItem());
-        el.setProperty(JMeterScriptSampler.SYNC_TO_VARS, (String) syncToVars.getSelectedItem());
+        if (el instanceof JMeterScriptSampler) {
+            JMeterScriptSampler script = (JMeterScriptSampler) el;
+            el.setProperty(JMeterScriptSampler.SCRIPT_DIRECTORY, scriptDirectoryField.getText());
+            el.setProperty(JMeterScriptSampler.SCRIPT_NAME, scriptNameField.getText());
+            el.setProperty(JMeterScriptSampler.SYNC_TO_PROPS, (String) syncToPropsComboBox.getSelectedItem());
+            el.setProperty(JMeterScriptSampler.SYNC_TO_VARS, (String) syncToVarsComboBox.getSelectedItem());
+            script.setArguments((Arguments) argsPanel.createTestElement());
+        }
     }
 
     /**
@@ -80,96 +130,140 @@ public class JMeterScriptSamplerGui extends AbstractSamplerGui {
     @Override
     public void configure(TestElement el) {
         super.configure(el);
-        scriptPathField.setText(el.getPropertyAsString(JMeterScriptSampler.SCRIPT_DIRECTORY));
-        scriptNameField.setText(el.getPropertyAsString(JMeterScriptSampler.SCRIPT_NAME));
-        syncToProps.setSelectedItem(el.getPropertyAsString(JMeterScriptSampler.SYNC_TO_PROPS));
-        syncToVars.setSelectedItem(el.getPropertyAsString(JMeterScriptSampler.SYNC_TO_VARS));
+        if (el instanceof JMeterScriptSampler) {
+            JMeterScriptSampler script = (JMeterScriptSampler) el;
+            scriptDirectoryField.setText(el.getPropertyAsString(JMeterScriptSampler.SCRIPT_DIRECTORY));
+            scriptNameField.setText(el.getPropertyAsString(JMeterScriptSampler.SCRIPT_NAME));
+            syncToPropsComboBox.setSelectedItem(el.getPropertyAsString(JMeterScriptSampler.SYNC_TO_PROPS));
+            syncToVarsComboBox.setSelectedItem(el.getPropertyAsString(JMeterScriptSampler.SYNC_TO_VARS));
+            final JMeterProperty argsProp = script.getArgumentsAsProperty();
+            if (argsProp != null) {
+                argsPanel.configure((Arguments) argsProp.getObjectValue());
+            }
+        }
     }
 
     @Override
     public void clearGui() {
         super.clearGui();
-        scriptPathField.setText("");
+        scriptDirectoryField.setText("");
         scriptNameField.setText("");
-        syncToProps.setSelectedItem("true");
-        syncToVars.setSelectedItem("false");
+        syncToPropsComboBox.setSelectedItem("false");
+        syncToVarsComboBox.setSelectedItem("true");
+        argsPanel.clear();
     }
 
-    private Component createScriptPathTextField() {
-        if (scriptPathField == null) {
-            scriptPathField = GuiUtil.createTextField(JMeterScriptSampler.SCRIPT_DIRECTORY);
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        String action = e.getActionCommand();
+        if (action.equals(OPEN_DIRECTORY_ACTION)) {
+            try {
+                String configName = (String)EnvDataSetGui.CONFIG_NAME_WITH_SCRIPT.get(scriptName);
+                if (StringUtils.isNotBlank(configName)) {
+                    String directoryPath = getScriptDirectoryPath(configName);
+                    Desktop.getDesktop().open(new File(directoryPath));
+                }
+            } catch (IOException ioException) {
+                log.error(ExceptionUtil.getStackTrace(ioException));
+            }
         }
-        return scriptPathField;
     }
 
-    private Component createScriptPathLabel() {
-        return GuiUtil.createLabel("脚本目录：", createScriptPathTextField());
+    private String getScriptDirectoryPath(String configName){
+        String configPath = configDirectory + File.separator + configName;
+        return (String)(YamlUtil.parseYamlAsMap(configPath).get(JMeterScriptSampler.SCRIPT_DIRECTORY));
     }
 
-    private Component createScriptNameTextField() {
-        if (scriptNameField == null) {
-            scriptNameField = GuiUtil.createTextField(JMeterScriptSampler.SCRIPT_NAME);
-        }
-        return scriptNameField;
+    private ObjectTableModel createTableModel() {
+        return new ObjectTableModel(new String[]{"name", "value", "description"},
+                Argument.class,
+                new Functor[]{
+                        new Functor("getName"),
+                        new Functor("getValue"),
+                        new Functor("getDescription")},
+                new Functor[]{
+                        new Functor("setName"),
+                        new Functor("setValue"),
+                        new Functor("setDescription")},
+                new Class[]{String.class, String.class, String.class});
     }
 
-    private Component createScriptNameLabel() {
-        return GuiUtil.createLabel("脚本名称：", createScriptNameTextField());
+    private JTextField createScriptDirectoryTextField() {
+        return GuiUtil.createTextField(JMeterScriptSampler.SCRIPT_DIRECTORY);
     }
 
-    private Component createSyncToPropsComboBox() {
-        if (syncToProps == null) {
-            syncToProps = GuiUtil.createComboBox(JMeterScriptSampler.SYNC_TO_PROPS);
-            syncToProps.addItem("true");
-            syncToProps.addItem("false");
-        }
-        return syncToProps;
+    private JLabel createScriptDirectoryLabel() {
+        return GuiUtil.createLabel("脚本目录：", scriptDirectoryField);
     }
 
-    private Component createSyncToPropsLabel() {
-        return GuiUtil.createLabel(
-                "同步vars至props：", syncToProps);
+    private JTextField createScriptNameTextField() {
+        return GuiUtil.createTextField(JMeterScriptSampler.SCRIPT_NAME);
     }
 
-    private Component createSyncToVarsComboBox() {
-        if (syncToVars == null) {
-            syncToVars = GuiUtil.createComboBox(JMeterScriptSampler.SYNC_TO_VARS);
-            syncToVars.addItem("false");
-            syncToVars.addItem("true");
-        }
-        return syncToVars;
+    private JLabel createScriptNameLabel() {
+        return GuiUtil.createLabel("脚本名称：", scriptNameField);
     }
 
-    private Component createSyncToVarsLabel() {
-        return GuiUtil.createLabel(
-                "传递vars至脚本：", syncToVars);
+    private JComboBox<String> createSyncToPropsComboBox() {
+        JComboBox<String> comboBox = GuiUtil.createComboBox(JMeterScriptSampler.SYNC_TO_PROPS);
+        comboBox.addItem("false");
+        comboBox.addItem("true");
+        return comboBox;
+    }
+
+    private JLabel createSyncToPropsLabel() {
+        return GuiUtil.createLabel("同步vars至props：", syncToPropsComboBox);
+    }
+
+    private JComboBox<String> createSyncToVarsComboBox() {
+        JComboBox<String> comboBox = GuiUtil.createComboBox(JMeterScriptSampler.SYNC_TO_VARS);
+        comboBox.addItem("true");
+        comboBox.addItem("false");
+        return comboBox;
+    }
+
+    private JLabel createSyncToVarsLabel() {
+        return GuiUtil.createLabel("传递vars至脚本：", syncToVarsComboBox);
     }
 
     private Component createBodyPanel() {
-        JPanel bodyPanel = new JPanel(new GridBagLayout());
-        bodyPanel.setBorder(GuiUtil.createTitledBorder("配置外部脚本信息"));
-
-        bodyPanel.add(createScriptPathLabel(), GuiUtil.GridBag.labelConstraints);
-        bodyPanel.add(createScriptPathTextField(), GuiUtil.GridBag.editorConstraints);
-
-        bodyPanel.add(createScriptNameLabel(), GuiUtil.GridBag.labelConstraints);
-        bodyPanel.add(createScriptNameTextField(), GuiUtil.GridBag.editorConstraints);
-
-        bodyPanel.add(createSyncToPropsLabel(), GuiUtil.GridBag.labelConstraints);
-        bodyPanel.add(createSyncToPropsComboBox(), GuiUtil.GridBag.editorConstraints);
-
-        bodyPanel.add(createSyncToVarsLabel(), GuiUtil.GridBag.labelConstraints);
-        bodyPanel.add(createSyncToVarsComboBox(), GuiUtil.GridBag.editorConstraints);
-
-        VerticalPanel mainPanel = new VerticalPanel();
-        mainPanel.add(bodyPanel);
-        return mainPanel;
+        JPanel bodyPanel = new JPanel(new BorderLayout());
+        bodyPanel.add(createScriptPanel(), BorderLayout.NORTH);
+        bodyPanel.add(argsPanel, BorderLayout.CENTER);
+        return bodyPanel;
     }
 
-//    private Component createArgumentsPanel() {
-//        JPanel argumentsPanel = new ArgumentsPanel("脚本入参", this.getBackground(), true, false, null, false);
-//        return argumentsPanel;
-//    }
+    private JPanel createScriptPanel() {
+        JPanel scriptPanel = new JPanel(new GridBagLayout());
+        scriptPanel.setBorder(GuiUtil.createTitledBorder("配置执行脚本信息"));
+
+        scriptPanel.add(scriptDirectoryLabel, GuiUtil.GridBag.labelConstraints);
+        scriptPanel.add(scriptDirectoryField, GuiUtil.GridBag.editorConstraints);
+
+        scriptPanel.add(scriptNameLabel, GuiUtil.GridBag.labelConstraints);
+        scriptPanel.add(scriptNameField, GuiUtil.GridBag.editorConstraints);
+
+        scriptPanel.add(syncToPropsLabel, GuiUtil.GridBag.labelConstraints);
+        scriptPanel.add(syncToPropsComboBox, GuiUtil.GridBag.editorConstraints);
+
+        scriptPanel.add(syncToVarsLabel, GuiUtil.GridBag.labelConstraints);
+        scriptPanel.add(syncToVarsComboBox, GuiUtil.GridBag.editorConstraints);
+
+        return scriptPanel;
+    }
+
+    private ArgumentsPanel createArgumentsPanel() {
+        ArgumentsPanel argumentsPanel = new ArgumentsPanel(
+                null,
+                this.getBackground(),
+                true,
+                false,
+                createTableModel(),
+                false
+        );
+        argumentsPanel.setBorder(GuiUtil.createTitledBorder("脚本入参"));
+        return argumentsPanel;
+    }
 
     private Component createNoteArea() {
         return GuiUtil.createNoteArea(NOTE, this.getBackground());
