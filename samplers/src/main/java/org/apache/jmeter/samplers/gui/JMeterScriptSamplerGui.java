@@ -68,7 +68,7 @@ public class JMeterScriptSamplerGui extends AbstractSamplerGui {
     @Override
     public void modifyTestElement(TestElement el) {
         super.configureTestElement(el);
-        el.setProperty(JMeterScriptSampler.SCRIPT_PATH, scriptPathField.getText());
+        el.setProperty(JMeterScriptSampler.SCRIPT_DIRECTORY, scriptPathField.getText());
         el.setProperty(JMeterScriptSampler.SCRIPT_NAME, scriptNameField.getText());
         el.setProperty(JMeterScriptSampler.SYNC_TO_PROPS, (String) syncToProps.getSelectedItem());
         el.setProperty(JMeterScriptSampler.SYNC_TO_VARS, (String) syncToVars.getSelectedItem());
@@ -80,7 +80,7 @@ public class JMeterScriptSamplerGui extends AbstractSamplerGui {
     @Override
     public void configure(TestElement el) {
         super.configure(el);
-        scriptPathField.setText(el.getPropertyAsString(JMeterScriptSampler.SCRIPT_PATH));
+        scriptPathField.setText(el.getPropertyAsString(JMeterScriptSampler.SCRIPT_DIRECTORY));
         scriptNameField.setText(el.getPropertyAsString(JMeterScriptSampler.SCRIPT_NAME));
         syncToProps.setSelectedItem(el.getPropertyAsString(JMeterScriptSampler.SYNC_TO_PROPS));
         syncToVars.setSelectedItem(el.getPropertyAsString(JMeterScriptSampler.SYNC_TO_VARS));
@@ -97,7 +97,7 @@ public class JMeterScriptSamplerGui extends AbstractSamplerGui {
 
     private Component createScriptPathTextField() {
         if (scriptPathField == null) {
-            scriptPathField = GuiUtil.createTextField(JMeterScriptSampler.SCRIPT_PATH);
+            scriptPathField = GuiUtil.createTextField(JMeterScriptSampler.SCRIPT_DIRECTORY);
         }
         return scriptPathField;
     }
@@ -165,6 +165,11 @@ public class JMeterScriptSamplerGui extends AbstractSamplerGui {
         mainPanel.add(bodyPanel);
         return mainPanel;
     }
+
+//    private Component createArgumentsPanel() {
+//        JPanel argumentsPanel = new ArgumentsPanel("脚本入参", this.getBackground(), true, false, null, false);
+//        return argumentsPanel;
+//    }
 
     private Component createNoteArea() {
         return GuiUtil.createNoteArea(NOTE, this.getBackground());

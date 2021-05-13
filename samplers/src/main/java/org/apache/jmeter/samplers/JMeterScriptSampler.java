@@ -19,6 +19,7 @@ import org.apache.jmeter.gui.tree.JMeterTreeNode;
 import org.apache.jmeter.reporters.ResultCollector;
 import org.apache.jmeter.save.SaveService;
 import org.apache.jmeter.testelement.TestPlan;
+import org.apache.jmeter.testelement.property.CollectionProperty;
 import org.apache.jmeter.threads.AbstractThreadGroup;
 import org.apache.jmeter.threads.JMeterContextService;
 import org.apache.jmeter.threads.PostThreadGroup;
@@ -48,12 +49,13 @@ public class JMeterScriptSampler extends AbstractSampler implements Interruptibl
 
     private static final Logger log = LoggerFactory.getLogger(JMeterScriptSampler.class);
 
-    private Properties props = JMeterUtils.getJMeterProperties();
+    private final Properties props = JMeterUtils.getJMeterProperties();
 
-    public static final String SCRIPT_PATH = "JMeterScriptSampler.scriptPath";
+    public static final String SCRIPT_DIRECTORY = "JMeterScriptSampler.scriptDirectory";
     public static final String SCRIPT_NAME = "JMeterScriptSampler.scriptName";
     public static final String SYNC_TO_PROPS = "JMeterScriptSampler.syncToProps";
     public static final String SYNC_TO_VARS = "JMeterScriptSampler.syncToVars";
+    public static final String ARGUMENTS = "JMeterScriptSampler.arguments";
 
     private Thread runningThread;
 
@@ -86,6 +88,10 @@ public class JMeterScriptSampler extends AbstractSampler implements Interruptibl
         return result;
     }
 
+    private String getScriptDirectory() {
+        return getPropertyAsString(SCRIPT_DIRECTORY);
+    }
+
     private String getScriptName() {
         return getPropertyAsString(SCRIPT_NAME);
     }
@@ -98,10 +104,13 @@ public class JMeterScriptSampler extends AbstractSampler implements Interruptibl
         return getPropertyAsBoolean(SYNC_TO_VARS);
     }
 
+    private CollectionProperty getArguments() {
+        return (CollectionProperty) getProperty(ARGUMENTS);
+    }
+
     private String getScriptPath() {
-        String scriptPath = getPropertyAsString(SCRIPT_PATH);
-        String path = PathUtil.join(scriptPath, getScriptName());
-        return path.replace("\\", "/");
+        String scriptPath = PathUtil.join(getScriptDirectory(), getScriptName());
+        return scriptPath.replace("\\", "/");
     }
 
     /**
