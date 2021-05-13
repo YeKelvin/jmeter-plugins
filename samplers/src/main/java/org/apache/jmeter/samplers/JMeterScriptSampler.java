@@ -213,7 +213,7 @@ public class JMeterScriptSampler extends AbstractSampler implements Interruptibl
     }
 
     private String formatResponse(Map<String, Object> incrementalVariables) {
-        StringBuffer response = new StringBuffer("子脚本新增变量：\n");
+        StringBuffer response = new StringBuffer("新增变量：\n");
         incrementalVariables.forEach((key, value) -> {
             if (value == null) {
                 response.append(key).append(": ").append("\n");
