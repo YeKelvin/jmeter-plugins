@@ -175,7 +175,7 @@ public class JMeterScriptSamplerGui extends AbstractSamplerGui implements Action
     }
 
     private ObjectTableModel createTableModel() {
-        return new ObjectTableModel(new String[]{"name", "value", "description"},
+        return new ObjectTableModel(new String[]{"参数", "值", "描述"},
                 Argument.class,
                 new Functor[]{
                         new Functor("getName"),
@@ -237,8 +237,9 @@ public class JMeterScriptSamplerGui extends AbstractSamplerGui implements Action
         JPanel scriptPanel = new JPanel(new GridBagLayout());
         scriptPanel.setBorder(GuiUtil.createTitledBorder("配置执行脚本信息"));
 
-        scriptPanel.add(scriptDirectoryLabel, GuiUtil.GridBag.labelConstraints);
-        scriptPanel.add(scriptDirectoryField, GuiUtil.GridBag.editorConstraints);
+        scriptPanel.add(scriptDirectoryLabel, GuiUtil.GridBag.mostLeftConstraints);
+        scriptPanel.add(scriptDirectoryField, GuiUtil.GridBag.middleConstraints);
+        scriptPanel.add(createButton(), GuiUtil.GridBag.mostRightConstraints);
 
         scriptPanel.add(scriptNameLabel, GuiUtil.GridBag.labelConstraints);
         scriptPanel.add(scriptNameField, GuiUtil.GridBag.editorConstraints);
@@ -267,6 +268,13 @@ public class JMeterScriptSamplerGui extends AbstractSamplerGui implements Action
 
     private Component createNoteArea() {
         return GuiUtil.createNoteArea(NOTE, this.getBackground());
+    }
+
+    private Component createButton() {
+        JButton button = new JButton("OPEN");
+        button.setActionCommand(OPEN_DIRECTORY_ACTION);
+        button.addActionListener(this);
+        return button;
     }
 
 }

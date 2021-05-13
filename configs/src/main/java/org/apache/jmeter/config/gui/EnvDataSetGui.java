@@ -191,10 +191,9 @@ public class EnvDataSetGui extends AbstractConfigGui implements ActionListener {
     }
 
     private Component createButton() {
-        JButton button = new JButton(OPEN_ACTION);
+        JButton button = new JButton("OPEN");
         button.setActionCommand(OPEN_ACTION);
         button.addActionListener(this);
-
         return button;
     }
 
@@ -202,7 +201,7 @@ public class EnvDataSetGui extends AbstractConfigGui implements ActionListener {
      * 初始化表格模型
      */
     private void initializeTableModel() {
-        tableModel = new ObjectTableModel(new String[]{"name", "value"},
+        tableModel = new ObjectTableModel(new String[]{"配置名称", "配置值"},
                 Argument.class,
                 new Functor[]{
                         new Functor("getName"),
