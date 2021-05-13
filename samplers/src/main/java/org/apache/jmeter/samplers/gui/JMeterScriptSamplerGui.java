@@ -25,7 +25,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
-import java.util.Map;
 
 /**
  * @author KelvinYe
@@ -91,7 +90,7 @@ public class JMeterScriptSamplerGui extends AbstractSamplerGui implements Action
 
     @Override
     public String getStaticLabel() {
-        return "JMeterScript取样器";
+        return "JMeter脚本取样器";
     }
 
 
@@ -157,11 +156,23 @@ public class JMeterScriptSamplerGui extends AbstractSamplerGui implements Action
     public void actionPerformed(ActionEvent e) {
         String action = e.getActionCommand();
         if (action.equals(OPEN_DIRECTORY_ACTION)) {
+            String scriptDirectory = scriptDirectoryField.getText();
+            File file = new File(scriptDirectory);
             try {
-                String configName = (String)EnvDataSetGui.CONFIG_NAME_WITH_SCRIPT.get(scriptName);
-                if (StringUtils.isNotBlank(configName)) {
-                    String directoryPath = getScriptDirectoryPath(configName);
-                    Desktop.getDesktop().open(new File(directoryPath));
+                if (!file.exists()) {
+                    String configName = EnvDataSetGui.CONFIG_NAME_WITH_SCRIPT.get(scriptName);
+                    if (StringUtils.isNotBlank(configName)) {
+                        String directoryPath = getScriptDirectoryPath(configName);
+                        Desktop.getDesktop().open(new File(directoryPath));
+                    } else {
+                        log.warn("目录不存在");
+                    }
+                } else {
+                    if (file.isDirectory()) {
+                        Desktop.getDesktop().open(file);
+                    } else {
+                        log.warn("目录不存在");
+                    }
                 }
             } catch (IOException ioException) {
                 log.error(ExceptionUtil.getStackTrace(ioException));
@@ -169,13 +180,13 @@ public class JMeterScriptSamplerGui extends AbstractSamplerGui implements Action
         }
     }
 
-    private String getScriptDirectoryPath(String configName){
+    private String getScriptDirectoryPath(String configName) {
         String configPath = configDirectory + File.separator + configName;
-        return (String)(YamlUtil.parseYamlAsMap(configPath).get(JMeterScriptSampler.SCRIPT_DIRECTORY));
+        return (String) (YamlUtil.parseYamlAsMap(configPath).get(JMeterScriptSampler.SCRIPT_DIRECTORY));
     }
 
     private ObjectTableModel createTableModel() {
-        return new ObjectTableModel(new String[]{"参数", "值", "描述"},
+        return new ObjectTableModel(new String[]{"参数名称", "参数值", "参数描述"},
                 Argument.class,
                 new Functor[]{
                         new Functor("getName"),
@@ -254,7 +265,7 @@ public class JMeterScriptSamplerGui extends AbstractSamplerGui implements Action
     }
 
     private ArgumentsPanel createArgumentsPanel() {
-        ArgumentsPanel argumentsPanel = new ArgumentsPanel(
+        ArgumentsPanel argsPanel = new ArgumentsPanel(
                 null,
                 this.getBackground(),
                 true,
@@ -262,8 +273,8 @@ public class JMeterScriptSamplerGui extends AbstractSamplerGui implements Action
                 createTableModel(),
                 false
         );
-        argumentsPanel.setBorder(GuiUtil.createTitledBorder("脚本入参"));
-        return argumentsPanel;
+        argsPanel.setBorder(GuiUtil.createTitledBorder("脚本入参"));
+        return argsPanel;
     }
 
     private Component createNoteArea() {

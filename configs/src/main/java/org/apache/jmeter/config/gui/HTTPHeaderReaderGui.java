@@ -3,6 +3,7 @@ package org.apache.jmeter.config.gui;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.jmeter.common.utils.ExceptionUtil;
 import org.apache.jmeter.common.utils.GuiUtil;
+import org.apache.jmeter.common.utils.YamlUtil;
 import org.apache.jmeter.config.Argument;
 import org.apache.jmeter.config.HTTPHeaderReader;
 import org.apache.jmeter.gui.util.HeaderAsPropertyRenderer;
@@ -191,7 +192,7 @@ public class HTTPHeaderReaderGui extends AbstractConfigGui implements ActionList
      * 初始化表格模型
      */
     private void initializeTableModel() {
-        tableModel = new ObjectTableModel(new String[]{"name", "value"},
+        tableModel = new ObjectTableModel(new String[]{"HeaderName", "HeaderValue"},
                 Argument.class,
                 new Functor[]{
                         new Functor("getName"),
@@ -222,7 +223,7 @@ public class HTTPHeaderReaderGui extends AbstractConfigGui implements ActionList
             for (File file : files) {
                 if (file.isDirectory()) {
                     fileList.addAll(getHeaderFileList(file.getAbsolutePath()));
-                } else if (file.getName().endsWith("yaml")) {
+                } else if (file.getName().endsWith(YamlUtil.YAML_SUFFIX)) {
                     fileList.add(file);
                 }
             }

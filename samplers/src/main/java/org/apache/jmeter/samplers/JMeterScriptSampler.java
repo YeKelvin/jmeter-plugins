@@ -4,11 +4,12 @@ package org.apache.jmeter.samplers;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.jmeter.JMeter;
 import org.apache.jmeter.common.CliOptions;
+import org.apache.jmeter.common.exceptions.ServiceException;
 import org.apache.jmeter.common.utils.ExceptionUtil;
 import org.apache.jmeter.common.utils.JMeterVarsUtil;
 import org.apache.jmeter.common.utils.PathUtil;
-import org.apache.jmeter.common.exceptions.ServiceException;
 import org.apache.jmeter.common.utils.json.JsonUtil;
+import org.apache.jmeter.config.Argument;
 import org.apache.jmeter.config.Arguments;
 import org.apache.jmeter.config.EnvDataSet;
 import org.apache.jmeter.config.SSHConfiguration;
@@ -20,7 +21,6 @@ import org.apache.jmeter.gui.tree.JMeterTreeNode;
 import org.apache.jmeter.reporters.ResultCollector;
 import org.apache.jmeter.save.SaveService;
 import org.apache.jmeter.testelement.TestPlan;
-import org.apache.jmeter.testelement.property.CollectionProperty;
 import org.apache.jmeter.testelement.property.JMeterProperty;
 import org.apache.jmeter.testelement.property.TestElementProperty;
 import org.apache.jmeter.threads.AbstractThreadGroup;
@@ -52,14 +52,13 @@ public class JMeterScriptSampler extends AbstractSampler implements Interruptibl
 
     private static final Logger log = LoggerFactory.getLogger(JMeterScriptSampler.class);
 
-    private final Properties props = JMeterUtils.getJMeterProperties();
-
     public static final String SCRIPT_DIRECTORY = "JMeterScriptSampler.scriptDirectory";
     public static final String SCRIPT_NAME = "JMeterScriptSampler.scriptName";
     public static final String SYNC_TO_PROPS = "JMeterScriptSampler.syncToProps";
     public static final String SYNC_TO_VARS = "JMeterScriptSampler.syncToVars";
     public static final String ARGUMENTS = "JMeterScriptSampler.arguments";
 
+    private final Properties props = JMeterUtils.getJMeterProperties();
     private Thread runningThread;
 
     @Override
@@ -70,6 +69,7 @@ public class JMeterScriptSampler extends AbstractSampler implements Interruptibl
         result.setSampleLabel(getName());
         result.setEncodingAndType(StandardCharsets.UTF_8.name());
         try {
+            setArgumentsToVariables();// TODO: 增加返回
             result.setSamplerData("脚本路径: " + scriptPath);
             result.sampleStart();
             result.setSuccessful(true);
@@ -110,6 +110,15 @@ public class JMeterScriptSampler extends AbstractSampler implements Interruptibl
     private String getScriptPath() {
         String scriptPath = PathUtil.join(getScriptDirectory(), getScriptName());
         return scriptPath.replace("\\", "/");
+    }
+
+    private void setArgumentsToVariables() {
+        Arguments args = getArguments();
+        args.setRunningVersion(true);
+        for (JMeterProperty jMeterProperty : args) {
+            Argument arg = (Argument) jMeterProperty.getObjectValue();
+            getThreadContext().getVariables().put(arg.getName(), arg.getValue());
+        }
     }
 
     public void setArguments(Arguments args) {

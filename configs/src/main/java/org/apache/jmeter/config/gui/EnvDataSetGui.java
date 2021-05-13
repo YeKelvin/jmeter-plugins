@@ -1,9 +1,9 @@
 package org.apache.jmeter.config.gui;
 
-import org.apache.commons.collections.map.HashedMap;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.jmeter.common.utils.ExceptionUtil;
 import org.apache.jmeter.common.utils.GuiUtil;
+import org.apache.jmeter.common.utils.YamlUtil;
 import org.apache.jmeter.config.Argument;
 import org.apache.jmeter.config.EnvDataSet;
 import org.apache.jmeter.gui.util.HeaderAsPropertyRenderer;
@@ -24,6 +24,7 @@ import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -46,7 +47,7 @@ public class EnvDataSetGui extends AbstractConfigGui implements ActionListener {
     private final String scriptName;
     private final String configDirectory;
 
-    public static final HashedMap CONFIG_NAME_WITH_SCRIPT = new HashedMap();
+    public static final HashMap<String, String> CONFIG_NAME_WITH_SCRIPT = new HashMap<>();
 
     public EnvDataSetGui() {
         scriptName = FileServer.getFileServer().getScriptName();
@@ -232,7 +233,7 @@ public class EnvDataSetGui extends AbstractConfigGui implements ActionListener {
             for (File file : files) {
                 if (file.isDirectory()) {
                     fileList.addAll(getConfigList(file.getAbsolutePath()));
-                } else if (file.getName().endsWith("yaml")) {
+                } else if (file.getName().endsWith(YamlUtil.YAML_SUFFIX)) {
                     fileList.add(file);
                 }
             }
