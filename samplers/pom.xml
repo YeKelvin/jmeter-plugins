@@ -10,20 +10,20 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>jmeter-plugins-samplers</artifactId>
+    <artifactId>samplers</artifactId>
 
     <dependencies>
         <dependency>
             <groupId>jmeter-plugins</groupId>
-            <artifactId>jmeter-plugins-common-util</artifactId>
+            <artifactId>common-util</artifactId>
         </dependency>
         <dependency>
             <groupId>jmeter-plugins</groupId>
-            <artifactId>jmeter-plugins-configs</artifactId>
+            <artifactId>configs</artifactId>
         </dependency>
         <dependency>
             <groupId>jmeter-plugins</groupId>
-            <artifactId>jmeter-plugins-visualizers</artifactId>
+            <artifactId>visualizers</artifactId>
         </dependency>
         <dependency>
             <groupId>org.apache.jmeter</groupId>
@@ -48,6 +48,7 @@
     </dependencies>
 
     <build>
+        <finalName>${project.groupId}-${project.artifactId}-${project.version}</finalName>
         <resources>
             <resource>
                 <directory>src/main/resources</directory>

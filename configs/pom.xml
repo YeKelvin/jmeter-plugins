@@ -10,12 +10,12 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>jmeter-plugins-configs</artifactId>
+    <artifactId>configs</artifactId>
 
     <dependencies>
         <dependency>
             <groupId>jmeter-plugins</groupId>
-            <artifactId>jmeter-plugins-common-util</artifactId>
+            <artifactId>common-util</artifactId>
             <exclusions>
             </exclusions>
         </dependency>

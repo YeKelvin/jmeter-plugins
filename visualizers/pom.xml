@@ -10,12 +10,12 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>jmeter-plugins-visualizers</artifactId>
+    <artifactId>visualizers</artifactId>
 
     <dependencies>
         <dependency>
             <groupId>jmeter-plugins</groupId>
-            <artifactId>jmeter-plugins-common-util</artifactId>
+            <artifactId>common-util</artifactId>
         </dependency>
         <dependency>
             <groupId>org.apache.jmeter</groupId>
@@ -48,4 +48,7 @@
         </dependency>
     </dependencies>
 
+    <build>
+        <finalName>${project.groupId}-${project.artifactId}-${project.version}</finalName>
+    </build>
 </project>

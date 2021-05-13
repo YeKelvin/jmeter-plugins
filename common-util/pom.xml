@@ -10,7 +10,7 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>jmeter-plugins-common-util</artifactId>
+    <artifactId>common-util</artifactId>
 
     <dependencies>
         <dependency>
@@ -85,4 +85,7 @@
         </dependency>
     </dependencies>
 
+    <build>
+        <finalName>${project.groupId}-${project.artifactId}-${project.version}</finalName>
+    </build>
 </project>

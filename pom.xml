@@ -52,17 +52,17 @@
             <!--        JMeter       -->
             <dependency>
                 <groupId>jmeter-plugins</groupId>
-                <artifactId>jmeter-plugins-common-util</artifactId>
+                <artifactId>common-util</artifactId>
                 <version>${jmeter-plugins.version}</version>
             </dependency>
             <dependency>
                 <groupId>jmeter-plugins</groupId>
-                <artifactId>jmeter-plugins-configs</artifactId>
+                <artifactId>configs</artifactId>
                 <version>${jmeter-plugins.version}</version>
             </dependency>
             <dependency>
                 <groupId>jmeter-plugins</groupId>
-                <artifactId>jmeter-plugins-visualizers</artifactId>
+                <artifactId>visualizers</artifactId>
                 <version>${jmeter-plugins.version}</version>
             </dependency>
             <dependency>
