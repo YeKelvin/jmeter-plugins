@@ -16,7 +16,7 @@ import org.apache.jorphan.reflect.Functor;
 public class ScriptArgumentsDescriptorGui extends ArgumentsPanel {
 
     public ScriptArgumentsDescriptorGui() {
-        super("定义脚本入参");
+        super("定义脚本入参", null, true, true, null, false);
     }
 
     @Override

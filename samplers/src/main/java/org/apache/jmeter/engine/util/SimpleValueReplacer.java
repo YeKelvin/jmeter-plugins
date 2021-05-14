@@ -10,9 +10,9 @@ import java.util.Map;
 /**
  * @author Kaiwen.Ye
  */
-public class ValueReplacerInGui {
+public class SimpleValueReplacer {
 
-    private static final Logger log = LoggerFactory.getLogger(ValueReplacerInGui.class);
+    private static final Logger log = LoggerFactory.getLogger(SimpleValueReplacer.class);
 
     private static final FunctionParser FUNCTION_PARSER = new FunctionParser();
 
@@ -20,7 +20,7 @@ public class ValueReplacerInGui {
 
     private LinkedList<Object> compiledComponents;
 
-    public ValueReplacerInGui(Map<String, String> variables) {
+    public SimpleValueReplacer(Map<String, String> variables) {
         this.variables = variables;
     }
 
@@ -46,7 +46,7 @@ public class ValueReplacerInGui {
         for (Object item : compiledComponents) {
             if (item instanceof SimpleVariable) {
                 SimpleVariable simpleVar = (SimpleVariable) item;
-                SimpleVariableInGui newSimpleVar = new SimpleVariableInGui(this.variables);
+                SimpleVariableNoContext newSimpleVar = new SimpleVariableNoContext(this.variables);
                 newSimpleVar.setName(simpleVar.getName());
                 newCompiledComponents.add(newSimpleVar);
             } else {

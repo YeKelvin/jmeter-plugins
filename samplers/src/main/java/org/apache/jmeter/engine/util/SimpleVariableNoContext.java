@@ -5,11 +5,11 @@ import java.util.Map;
 /**
  * @author Kaiwen.Ye
  */
-public class SimpleVariableInGui extends SimpleVariable {
+public class SimpleVariableNoContext extends SimpleVariable {
 
     private final Map<String, String> variables;
 
-    public SimpleVariableInGui(Map<String, String> variables) {
+    public SimpleVariableNoContext(Map<String, String> variables) {
         this.variables = variables;
     }
 
