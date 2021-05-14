@@ -69,8 +69,8 @@ public class JMeterScriptSampler extends AbstractSampler implements Interruptibl
         result.setSampleLabel(getName());
         result.setEncodingAndType(StandardCharsets.UTF_8.name());
         try {
-            setArgumentsToVariables();// TODO: 增加返回
-            result.setSamplerData("脚本路径: " + scriptPath);
+            String argsData = setArgumentsToVariables();
+            result.setSamplerData(getSamplerData(scriptPath, argsData));
             result.sampleStart();
             result.setSuccessful(true);
             // 运行JMeter脚本
@@ -112,20 +112,32 @@ public class JMeterScriptSampler extends AbstractSampler implements Interruptibl
         return scriptPath.replace("\\", "/");
     }
 
-    private void setArgumentsToVariables() {
+    private String getSamplerData(String scriptPath, String argsData) {
+        StringBuffer sb = new StringBuffer();
+        return sb.append("ScriptPath:\n")
+                .append(scriptPath).append("\n\n")
+                .append("Arguments List:\n")
+                .append(argsData)
+                .toString();
+    }
+
+    private String setArgumentsToVariables() {
+        StringBuffer sb = new StringBuffer();
         Arguments args = getArguments();
         args.setRunningVersion(true);
         for (JMeterProperty jMeterProperty : args) {
             Argument arg = (Argument) jMeterProperty.getObjectValue();
             getThreadContext().getVariables().put(arg.getName(), arg.getValue());
+            sb.append(arg.getName()).append(": ").append(arg.getValue()).append("\n");
         }
+        return sb.toString();
     }
 
     public void setArguments(Arguments args) {
         setProperty(new TestElementProperty(ARGUMENTS, args));
     }
 
-    public Arguments getArguments(){
+    public Arguments getArguments() {
         Arguments args = (Arguments) getProperty(ARGUMENTS).getObjectValue();
         if (args == null) {
             args = new Arguments();

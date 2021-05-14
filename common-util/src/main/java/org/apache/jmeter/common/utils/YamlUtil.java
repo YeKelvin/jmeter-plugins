@@ -35,7 +35,7 @@ public class YamlUtil {
         }
     }
 
-    public static Map parseYamlAsMap(String filePath) {
+    public static Map<String, Object> parseYamlAsMap(String filePath) {
         File file = new File(filePath);
         if (file.isFile() && filePath.endsWith(YAML_SUFFIX)) {
             try (
@@ -49,6 +49,6 @@ public class YamlUtil {
         } else {
             log.error("非yaml文件，路径:[ {} ]", filePath);
         }
-        return new HashMap<String, String>(16);
+        return new HashMap<>();
     }
 }

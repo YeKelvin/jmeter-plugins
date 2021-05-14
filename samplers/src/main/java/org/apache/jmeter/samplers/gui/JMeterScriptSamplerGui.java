@@ -9,6 +9,8 @@ import org.apache.jmeter.config.Argument;
 import org.apache.jmeter.config.Arguments;
 import org.apache.jmeter.config.gui.ArgumentsPanel;
 import org.apache.jmeter.config.gui.EnvDataSetGui;
+import org.apache.jmeter.engine.util.ValueReplacerInGui;
+import org.apache.jmeter.functions.InvalidVariableException;
 import org.apache.jmeter.samplers.JMeterScriptSampler;
 import org.apache.jmeter.services.FileServer;
 import org.apache.jmeter.testelement.TestElement;
@@ -25,6 +27,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author KelvinYe
@@ -156,33 +160,40 @@ public class JMeterScriptSamplerGui extends AbstractSamplerGui implements Action
     public void actionPerformed(ActionEvent e) {
         String action = e.getActionCommand();
         if (action.equals(OPEN_DIRECTORY_ACTION)) {
-            String scriptDirectory = scriptDirectoryField.getText();
-            File file = new File(scriptDirectory);
-            try {
-                if (!file.exists()) {
-                    String configName = EnvDataSetGui.CONFIG_NAME_WITH_SCRIPT.get(scriptName);
-                    if (StringUtils.isNotBlank(configName)) {
-                        String directoryPath = getScriptDirectoryPath(configName);
-                        Desktop.getDesktop().open(new File(directoryPath));
-                    } else {
-                        log.warn("目录不存在");
-                    }
-                } else {
-                    if (file.isDirectory()) {
-                        Desktop.getDesktop().open(file);
-                    } else {
-                        log.warn("目录不存在");
-                    }
-                }
-            } catch (IOException ioException) {
-                log.error(ExceptionUtil.getStackTrace(ioException));
-            }
+            openScriptDirectory();
         }
     }
 
-    private String getScriptDirectoryPath(String configName) {
-        String configPath = configDirectory + File.separator + configName;
-        return (String) (YamlUtil.parseYamlAsMap(configPath).get(JMeterScriptSampler.SCRIPT_DIRECTORY));
+    private void openScriptDirectory() {
+        try {
+            String scriptDirectory = getScriptDirectoryPath();
+            if (StringUtils.isNotBlank(scriptDirectory)) {
+                File file = new File(scriptDirectory);
+                if (file.exists() && file.isDirectory()) {
+                    Desktop.getDesktop().open(file);
+                } else {
+                    log.warn("打开目录失败，目录不存在，路径:[ {} ]", scriptDirectory);
+                }
+            }
+        } catch (IOException | InvalidVariableException exception) {
+            log.error(ExceptionUtil.getStackTrace(exception));
+        }
+    }
+
+    private String getScriptDirectoryPath() throws InvalidVariableException {
+        String scriptDirectory = scriptDirectoryField.getText();
+        String configName = EnvDataSetGui.CONFIG_NAME_WITH_SCRIPT.get(scriptName);
+        if (StringUtils.isNotBlank(scriptDirectory) && StringUtils.isNotBlank(configName)) {
+            String configPath = configDirectory + File.separator + configName;
+            Map<String, String> variables = new HashMap<>();
+            YamlUtil.parseYamlAsMap(configPath).forEach((key, value) -> {
+                variables.put(key, value.toString());
+            });
+            ValueReplacerInGui replacer = new ValueReplacerInGui(variables);
+            replacer.setParameters(scriptDirectory);
+            return replacer.replace();
+        }
+        return scriptDirectory;
     }
 
     private ObjectTableModel createTableModel() {
