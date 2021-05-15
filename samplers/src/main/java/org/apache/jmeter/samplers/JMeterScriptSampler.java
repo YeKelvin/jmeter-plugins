@@ -46,7 +46,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * @author KelvinYe
+ * @author Kelvin.Ye
  */
 public class JMeterScriptSampler extends AbstractSampler implements Interruptible {
 
@@ -143,10 +143,6 @@ public class JMeterScriptSampler extends AbstractSampler implements Interruptibl
             args = new Arguments();
         }
         return args;
-    }
-
-    public JMeterProperty getArgumentsAsProperty() {
-        return getProperty(ARGUMENTS);
     }
 
     /**

@@ -4,17 +4,17 @@ package org.apache.jmeter.samplers.gui;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.jmeter.JMeter;
-import org.apache.jmeter.common.utils.ExceptionUtil;
 import org.apache.jmeter.common.jmeter.JMeterGuiUtil;
+import org.apache.jmeter.common.jmeter.ValueReplaceUtil;
+import org.apache.jmeter.common.utils.DesktopUtil;
+import org.apache.jmeter.common.utils.ExceptionUtil;
 import org.apache.jmeter.common.utils.YamlUtil;
 import org.apache.jmeter.config.Argument;
 import org.apache.jmeter.config.Arguments;
 import org.apache.jmeter.config.ScriptArgumentsDescriptor;
 import org.apache.jmeter.config.gui.ArgumentsPanel;
 import org.apache.jmeter.config.gui.EnvDataSetGui;
-import org.apache.jmeter.engine.util.SimpleValueReplacer;
 import org.apache.jmeter.exceptions.IllegalUserActionException;
-import org.apache.jmeter.functions.InvalidVariableException;
 import org.apache.jmeter.gui.tree.JMeterTreeModel;
 import org.apache.jmeter.gui.tree.JMeterTreeNode;
 import org.apache.jmeter.samplers.JMeterScriptSampler;
@@ -42,7 +42,7 @@ import java.util.Iterator;
 import java.util.Map;
 
 /**
- * @author KelvinYe
+ * @author Kelvin.Ye
  */
 public class JMeterScriptSamplerGui extends AbstractSamplerGui implements ActionListener {
 
@@ -60,6 +60,7 @@ public class JMeterScriptSamplerGui extends AbstractSamplerGui implements Action
      */
     private static final String JMX_SUFFIX = ".jmx";
 
+    private static final String INVALID_ARGUMENTS_MSG = "无效参数，请删除";
 
     /**
      * swing组件
@@ -155,7 +156,7 @@ public class JMeterScriptSamplerGui extends AbstractSamplerGui implements Action
     }
 
     /**
-     * 将数据从GUI元素移动到TestElement
+     * GUI -> TestElement
      */
     @Override
     public void modifyTestElement(TestElement el) {
@@ -166,12 +167,18 @@ public class JMeterScriptSamplerGui extends AbstractSamplerGui implements Action
             el.setProperty(JMeterScriptSampler.SCRIPT_NAME, scriptNameField.getText());
             el.setProperty(JMeterScriptSampler.SYNC_TO_PROPS, (String) syncToPropsComboBox.getSelectedItem());
             el.setProperty(JMeterScriptSampler.SYNC_TO_VARS, (String) syncToVarsComboBox.getSelectedItem());
-            script.setArguments((Arguments) argsPanel.createTestElement());
+            Arguments selfArguments = (Arguments) argsPanel.createTestElement();
+            Arguments mergedArguments = mergeArguments(selfArguments);
+            for (JMeterProperty mergedProp : mergedArguments) {
+                Argument arg = (Argument) mergedProp.getObjectValue();
+                arg.setDescription("");
+            }
+            script.setArguments(mergedArguments);
         }
     }
 
     /**
-     * 将数据设置到GUI元素中
+     * TestElement -> GUI
      */
     @Override
     public void configure(TestElement el) {
@@ -182,10 +189,7 @@ public class JMeterScriptSamplerGui extends AbstractSamplerGui implements Action
             scriptNameField.setText(el.getPropertyAsString(JMeterScriptSampler.SCRIPT_NAME));
             syncToPropsComboBox.setSelectedItem(el.getPropertyAsString(JMeterScriptSampler.SYNC_TO_PROPS));
             syncToVarsComboBox.setSelectedItem(el.getPropertyAsString(JMeterScriptSampler.SYNC_TO_VARS));
-            JMeterProperty argsProp = script.getArgumentsAsProperty();
-            if (argsProp != null) {
-                argsPanel.configure((Arguments) argsProp.getObjectValue());
-            }
+            argsPanel.configure(mergeArguments(script.getArguments()));
         }
     }
 
@@ -220,43 +224,107 @@ public class JMeterScriptSamplerGui extends AbstractSamplerGui implements Action
     private void openScript() {
     }
 
+    /**
+     * 从脚本中拉取Arguments对象，合并后返回给Gui
+     */
     private void pullArguments() {
-        ScriptArgumentsDescriptor argsDesc = getArgumentsDescriptor();
+        Arguments argsDesc = getArgumentsDescriptor();
         if (argsDesc != null) {
             argsDesc.getArgumentsAsMap().forEach((key, value) -> {
                 log.info("key={}, value={}", key, value);
             });
-        } else {
-            log.info("no ScriptArgumentsDescriptor");
         }
+
+        log.info("no ScriptArgumentsDescriptor");
     }
 
-    private void openScriptDirectory() {
-        try {
-            String scriptDirectory = getScriptDirectoryPath();
-            if (StringUtils.isNotBlank(scriptDirectory)) {
-                File file = new File(scriptDirectory);
-                if (file.exists() && file.isDirectory()) {
-                    Desktop.getDesktop().open(file);
-                } else {
-                    log.warn("打开目录失败，目录不存在，路径:[ {} ]", scriptDirectory);
+    private Arguments mergeArguments(Arguments selfArgs) {
+        Arguments targetArgs = getScriptArguments();
+
+        if (targetArgs.getArgumentCount() == 0 && selfArgs.getArgumentCount() == 0) {
+            return selfArgs;
+        }
+
+        if (targetArgs.getArgumentCount() == 0 && selfArgs.getArgumentCount() > 0) {
+            for (JMeterProperty selfProp : selfArgs) {
+                Argument selfArg = (Argument) selfProp.getObjectValue();
+                selfArg.setDescription(INVALID_ARGUMENTS_MSG);
+            }
+            return selfArgs;
+        }
+
+        if (targetArgs.getArgumentCount() > 0 && selfArgs.getArgumentCount() == 0) {
+            for (JMeterProperty targetProp : targetArgs) {
+                Argument targetArg = (Argument) targetProp.getObjectValue();
+                selfArgs.addArgument(
+                        targetArg.getName(),
+                        targetArg.getValue(),
+                        targetArg.getDescription(),
+                        targetArg.getMetaData()
+                );
+            }
+            return selfArgs;
+        }
+
+        for (JMeterProperty targetProp : targetArgs) {
+            Argument targetArg = (Argument) targetProp.getObjectValue();
+            String targetArgName = targetArg.getName();
+
+            boolean exist = false;
+            for (JMeterProperty selfProp : selfArgs) {
+                Argument selfArg = (Argument) selfProp.getObjectValue();
+                if (selfArg.getName().equals(targetArgName)) {
+                    selfArg.setDescription(targetArg.getDescription());
+                    exist = true;
+                    break;
                 }
             }
-        } catch (IOException ex) {
-            log.error(ExceptionUtil.getStackTrace(ex));
+
+            if (!exist) {
+                selfArgs.addArgument(
+                        targetArg.getName(),
+                        targetArg.getValue(),
+                        targetArg.getDescription()
+                );
+            }
         }
+
+        for (JMeterProperty selfProp : selfArgs) {
+            Argument selfArg = (Argument) selfProp.getObjectValue();
+            String selfArgName = selfArg.getName();
+
+            boolean exist = false;
+            for (JMeterProperty targetProp : targetArgs) {
+                Argument targetArg = (Argument) targetProp.getObjectValue();
+                if (targetArg.getName().equals(selfArgName)) {
+                    exist = true;
+                    break;
+                }
+            }
+
+            if (!exist) {
+                selfArg.setDescription(INVALID_ARGUMENTS_MSG);
+            }
+        }
+
+        return selfArgs;
     }
 
+    /**
+     * 打开脚本目录
+     */
+    private void openScriptDirectory() {
+        String scriptDirectory = getScriptDirectoryPath();
+        DesktopUtil.openFile(scriptDirectory);
+    }
+
+    /**
+     * 获取脚本目录路径
+     */
     private String getScriptDirectoryPath() {
         String scriptDirectory = scriptDirectoryField.getText();
-        try {
-            if (StringUtils.isNotBlank(scriptDirectory)) {
-                SimpleValueReplacer replacer = new SimpleValueReplacer(getConfigVariables());
-                replacer.setParameters(scriptDirectory);
-                return replacer.replace();
-            }
-        } catch (InvalidVariableException ex) {
-            log.error(ExceptionUtil.getStackTrace(ex));
+        if (StringUtils.isNotBlank(scriptDirectory)) {
+            return ValueReplaceUtil.replace(scriptDirectory, getConfigVariables());
         }
         return scriptDirectory;
     }
@@ -275,6 +343,8 @@ public class JMeterScriptSamplerGui extends AbstractSamplerGui implements Action
                 });
                 cachedConfigName = configName;
                 cachedConfigVariables = variables;
+                log.debug("缓存configName");
+                log.debug("缓存configVariables");
             }
         }
         return cachedConfigVariables;
@@ -416,23 +486,27 @@ public class JMeterScriptSamplerGui extends AbstractSamplerGui implements Action
         return scriptPath;
     }
 
-    /**
-     * 获取脚本的HashTree对象，脚本不存在时返回null
-     */
-    private HashTree getScriptTree() throws IOException, IllegalUserActionException {
+    private File getScriptFile() {
         String scriptPath = getScriptPath();
-        File file = new File(scriptPath);
 
+        File file = new File(scriptPath);
         if (!file.exists() || !file.isFile()) {
             log.debug("脚本不存在, scriptPath:[ {} ]", scriptPath);
-            return null;
+            return file;
         }
 
         // 缓存脚本路径
         cachedScriptPath = scriptPath;
+        log.debug("缓存scriptPath");
+        return file;
+    }
 
+    /**
+     * 获取脚本的HashTree对象，脚本不存在时返回null
+     */
+    private HashTree getScriptTree() throws IOException, IllegalUserActionException {
         // 加载脚本
-        HashTree tree = SaveService.loadTree(file);
+        HashTree tree = SaveService.loadTree(getScriptFile());
 
         // 对脚本做一些处理
         JMeterTreeModel treeModel = new JMeterTreeModel(new TestPlan());
@@ -446,37 +520,37 @@ public class JMeterScriptSamplerGui extends AbstractSamplerGui implements Action
     /**
      * 获取脚本HashTree对象中的ScriptArgumentsDescriptor对象，不存在时返回null
      */
-    private ScriptArgumentsDescriptor getArgumentsDescriptor() {
+    private Arguments getArgumentsDescriptor() {
         try {
+            // 获取HashTree对象
             HashTree hashTree = getScriptTree();
-            if (hashTree == null) {
-                return null;
-            }
-
-            // 获取 TestPlan的HashTree对象
+            // 获取TestPlan对象
             HashTree testPlanTree = hashTree.get(hashTree.getArray()[0]);
-            // 从 HashTree中搜索对应的组件对象
+            // 搜索ScriptArgumentsDescriptor对象
             SearchByClass<ScriptArgumentsDescriptor> argsDescSearcher = new SearchByClass<>(ScriptArgumentsDescriptor.class);
             testPlanTree.traverse(argsDescSearcher);
             Iterator<ScriptArgumentsDescriptor> argsDescIter = argsDescSearcher.getSearchResults().iterator();
             if (!argsDescIter.hasNext()) {
-                return null;
+                return new Arguments();
             }
-            ScriptArgumentsDescriptor argsDesc = argsDescIter.next();
+            Arguments argsDesc = argsDescIter.next();
             // 缓存脚本参数
             cachedArguments = argsDesc;
+            log.debug("缓存argsDesc");
             return argsDesc;
         } catch (IOException | IllegalUserActionException ex) {
-            log.error(ExceptionUtil.getStackTrace(ex));
+            log.warn(ExceptionUtil.getStackTrace(ex));
         }
-        return null;
+        return new Arguments();
     }
 
+    /**
+     * 获取脚本Arguments对象
+     */
     private Arguments getScriptArguments() {
         if (cachedScriptPath == null || !cachedScriptPath.equals(getScriptPath())) {
             cachedArguments = getArgumentsDescriptor();
         }
         return cachedArguments;
     }
-
 }
