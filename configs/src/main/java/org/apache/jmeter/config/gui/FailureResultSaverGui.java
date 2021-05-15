@@ -1,6 +1,6 @@
 package org.apache.jmeter.config.gui;
 
-import org.apache.jmeter.common.utils.GuiUtil;
+import org.apache.jmeter.common.jmeter.JMeterGuiUtil;
 import org.apache.jmeter.config.FailureResultSaver;
 import org.apache.jmeter.gui.util.VerticalPanel;
 import org.apache.jmeter.testelement.TestElement;
@@ -80,46 +80,46 @@ public class FailureResultSaverGui extends AbstractConfigGui {
 
     private Component createLogPathTextField() {
         if (logPathTextField == null) {
-            logPathTextField = GuiUtil.createTextField(FailureResultSaver.LOG_PATH);
+            logPathTextField = JMeterGuiUtil.createTextField(FailureResultSaver.LOG_PATH);
         }
         return logPathTextField;
     }
 
     private Component createLogPathLabel() {
-        return GuiUtil.createLabel("日志路径：", createLogPathTextField());
+        return JMeterGuiUtil.createLabel("日志路径：", createLogPathTextField());
     }
 
     private Component createErrorClassificationTextField() {
         if (errorClassificationTextField == null) {
-            errorClassificationTextField = GuiUtil.createTextField(FailureResultSaver.ERROR_CLASSIFICATION);
+            errorClassificationTextField = JMeterGuiUtil.createTextField(FailureResultSaver.ERROR_CLASSIFICATION);
         }
         return errorClassificationTextField;
     }
 
     private Component createErrorClassificationLabel() {
-        return GuiUtil.createLabel("错误分类：", createErrorClassificationTextField());
+        return JMeterGuiUtil.createLabel("错误分类：", createErrorClassificationTextField());
     }
 
     private Component createExcludeTextField() {
         if (excludeTextField == null) {
-            excludeTextField = GuiUtil.createTextField(FailureResultSaver.EXCLUDE);
+            excludeTextField = JMeterGuiUtil.createTextField(FailureResultSaver.EXCLUDE);
         }
         return excludeTextField;
     }
 
     private Component createExcludeLabel() {
-        return GuiUtil.createLabel("排除指定错误（逗号分隔）：", createExcludeTextField());
+        return JMeterGuiUtil.createLabel("排除指定错误（逗号分隔）：", createExcludeTextField());
     }
 
     private Component createBodyPanel() {
         JPanel bodyPanel = new JPanel(new GridBagLayout());
-        bodyPanel.setBorder(GuiUtil.createTitledBorder("配置错误日志信息"));
-        bodyPanel.add(createLogPathLabel(), GuiUtil.GridBag.labelConstraints);
-        bodyPanel.add(createLogPathTextField(), GuiUtil.GridBag.editorConstraints);
-        bodyPanel.add(createErrorClassificationLabel(), GuiUtil.GridBag.labelConstraints);
-        bodyPanel.add(createErrorClassificationTextField(), GuiUtil.GridBag.editorConstraints);
-        bodyPanel.add(createExcludeLabel(), GuiUtil.GridBag.labelConstraints);
-        bodyPanel.add(createExcludeTextField(), GuiUtil.GridBag.editorConstraints);
+        bodyPanel.setBorder(JMeterGuiUtil.createTitledBorder("配置错误日志信息"));
+        bodyPanel.add(createLogPathLabel(), JMeterGuiUtil.GridBag.labelConstraints);
+        bodyPanel.add(createLogPathTextField(), JMeterGuiUtil.GridBag.editorConstraints);
+        bodyPanel.add(createErrorClassificationLabel(), JMeterGuiUtil.GridBag.labelConstraints);
+        bodyPanel.add(createErrorClassificationTextField(), JMeterGuiUtil.GridBag.editorConstraints);
+        bodyPanel.add(createExcludeLabel(), JMeterGuiUtil.GridBag.labelConstraints);
+        bodyPanel.add(createExcludeTextField(), JMeterGuiUtil.GridBag.editorConstraints);
 
         VerticalPanel mainPanel = new VerticalPanel();
         mainPanel.add(bodyPanel);

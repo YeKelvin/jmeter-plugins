@@ -1,7 +1,7 @@
 package org.apache.jmeter.visualizers;
 
 
-import org.apache.jmeter.common.CliOptions;
+import org.apache.jmeter.common.cli.CliOptions;
 import org.apache.jmeter.common.utils.FileUtil;
 import org.apache.jmeter.common.utils.TimeUtil;
 import org.apache.jmeter.engine.util.NoThreadClone;

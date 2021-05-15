@@ -2,7 +2,7 @@ package org.apache.jmeter.config.gui;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.jmeter.common.utils.ExceptionUtil;
-import org.apache.jmeter.common.utils.GuiUtil;
+import org.apache.jmeter.common.jmeter.JMeterGuiUtil;
 import org.apache.jmeter.common.utils.YamlUtil;
 import org.apache.jmeter.config.Argument;
 import org.apache.jmeter.config.EnvDataSet;
@@ -47,7 +47,7 @@ public class EnvDataSetGui extends AbstractConfigGui implements ActionListener {
     private final String scriptName;
     private final String configDirectory;
 
-    public static final HashMap<String, String> CONFIG_NAME_WITH_SCRIPT = new HashMap<>();
+    public static final HashMap<String, String> CACHED_CONFIG_NAME_WITH_SCRIPT = new HashMap<>();
 
     public EnvDataSetGui() {
         scriptName = FileServer.getFileServer().getScriptName();
@@ -90,7 +90,7 @@ public class EnvDataSetGui extends AbstractConfigGui implements ActionListener {
         super.configureTestElement(el);
         String configName = (String) configNameComboBox.getSelectedItem();
         el.setProperty(EnvDataSet.CONFIG_NAME, configName);
-        CONFIG_NAME_WITH_SCRIPT.put(scriptName, configName);
+        CACHED_CONFIG_NAME_WITH_SCRIPT.put(scriptName, configName);
     }
 
     /**
@@ -146,14 +146,14 @@ public class EnvDataSetGui extends AbstractConfigGui implements ActionListener {
 
     private Component createConfigNameComboBox() {
         if (configNameComboBox == null) {
-            configNameComboBox = GuiUtil.createComboBox(EnvDataSet.CONFIG_NAME);
+            configNameComboBox = JMeterGuiUtil.createComboBox(EnvDataSet.CONFIG_NAME);
             comboBoxAddItem(getConfigList(configDirectory));
         }
         return configNameComboBox;
     }
 
     private Component createConfigNameLabel() {
-        return GuiUtil.createLabel("配置文件名称：", createConfigNameComboBox());
+        return JMeterGuiUtil.createLabel("配置文件名称：", createConfigNameComboBox());
     }
 
     private Component createTablePanel() {
@@ -179,16 +179,16 @@ public class EnvDataSetGui extends AbstractConfigGui implements ActionListener {
 
     private Component createBodyPanel() {
         JPanel bodyPanel = new JPanel(new GridBagLayout());
-        bodyPanel.setBorder(GuiUtil.createTitledBorder("请选择测试环境"));
-        bodyPanel.add(createConfigNameLabel(), GuiUtil.GridBag.mostLeftConstraints);
-        bodyPanel.add(createConfigNameComboBox(), GuiUtil.GridBag.middleConstraints);
-        bodyPanel.add(createButton(), GuiUtil.GridBag.mostRightConstraints);
-        bodyPanel.add(createTablePanel(), GuiUtil.GridBag.fillBottomConstraints);
+        bodyPanel.setBorder(JMeterGuiUtil.createTitledBorder("请选择测试环境"));
+        bodyPanel.add(createConfigNameLabel(), JMeterGuiUtil.GridBag.mostLeftConstraints);
+        bodyPanel.add(createConfigNameComboBox(), JMeterGuiUtil.GridBag.middleConstraints);
+        bodyPanel.add(createButton(), JMeterGuiUtil.GridBag.mostRightConstraints);
+        bodyPanel.add(createTablePanel(), JMeterGuiUtil.GridBag.fillBottomConstraints);
         return bodyPanel;
     }
 
     private Component createNoteArea() {
-        return GuiUtil.createNoteArea(NOTE, this.getBackground());
+        return JMeterGuiUtil.createNoteArea(NOTE, this.getBackground());
     }
 
     private Component createButton() {

@@ -1,7 +1,7 @@
 package org.apache.jmeter.samplers.gui;
 
-import org.apache.jmeter.common.utils.GuiUtil;
-import org.apache.jmeter.common.utils.json.JsonUtil;
+import org.apache.jmeter.common.jmeter.JMeterGuiUtil;
+import org.apache.jmeter.common.json.JsonUtil;
 import org.apache.jmeter.gui.util.HorizontalPanel;
 import org.apache.jmeter.gui.util.JSyntaxTextArea;
 import org.apache.jmeter.gui.util.JTextScrollPane;
@@ -51,23 +51,23 @@ public class DubboTelnetSamplerGui extends AbstractSamplerGui implements ActionL
 
     private Component createMainPanel() {
         JPanel interfacePanel = new JPanel(new GridBagLayout());
-        interfacePanel.setBorder(GuiUtil.createTitledBorder("配置接口信息"));
-        interfacePanel.add(createAddressLabel(), GuiUtil.GridBag.labelConstraints);
-        interfacePanel.add(createAddressTextField(), GuiUtil.GridBag.editorConstraints);
-        interfacePanel.add(createInterfaceNameLabel(), GuiUtil.GridBag.labelConstraints);
-        interfacePanel.add(createInterfaceNameTextField(), GuiUtil.GridBag.editorConstraints);
-        interfacePanel.add(createExpectationLabel(), GuiUtil.GridBag.labelConstraints);
-        interfacePanel.add(createExpectationTextField(), GuiUtil.GridBag.editorConstraints);
-        interfacePanel.add(createEncodeLabel(), GuiUtil.GridBag.labelConstraints);
-        interfacePanel.add(createEncodeTextField(), GuiUtil.GridBag.editorConstraints);
-        interfacePanel.add(createParamsLabel(), GuiUtil.GridBag.labelConstraints);
-        interfacePanel.add(createButtonPanel(), GuiUtil.GridBag.editorConstraints);
-        interfacePanel.add(createParamsPanel(), GuiUtil.GridBag.fillBottomConstraints);
+        interfacePanel.setBorder(JMeterGuiUtil.createTitledBorder("配置接口信息"));
+        interfacePanel.add(createAddressLabel(), JMeterGuiUtil.GridBag.labelConstraints);
+        interfacePanel.add(createAddressTextField(), JMeterGuiUtil.GridBag.editorConstraints);
+        interfacePanel.add(createInterfaceNameLabel(), JMeterGuiUtil.GridBag.labelConstraints);
+        interfacePanel.add(createInterfaceNameTextField(), JMeterGuiUtil.GridBag.editorConstraints);
+        interfacePanel.add(createExpectationLabel(), JMeterGuiUtil.GridBag.labelConstraints);
+        interfacePanel.add(createExpectationTextField(), JMeterGuiUtil.GridBag.editorConstraints);
+        interfacePanel.add(createEncodeLabel(), JMeterGuiUtil.GridBag.labelConstraints);
+        interfacePanel.add(createEncodeTextField(), JMeterGuiUtil.GridBag.editorConstraints);
+        interfacePanel.add(createParamsLabel(), JMeterGuiUtil.GridBag.labelConstraints);
+        interfacePanel.add(createButtonPanel(), JMeterGuiUtil.GridBag.editorConstraints);
+        interfacePanel.add(createParamsPanel(), JMeterGuiUtil.GridBag.fillBottomConstraints);
 
         JPanel sshPanel = new JPanel(new GridBagLayout());
-        sshPanel.setBorder(GuiUtil.createTitledBorder("配置SSH"));
-        sshPanel.add(createThroughSSHLabel(), GuiUtil.GridBag.labelConstraints);
-        sshPanel.add(createThroughSSHComboBox(), GuiUtil.GridBag.editorConstraints);
+        sshPanel.setBorder(JMeterGuiUtil.createTitledBorder("配置SSH"));
+        sshPanel.add(createThroughSSHLabel(), JMeterGuiUtil.GridBag.labelConstraints);
+        sshPanel.add(createThroughSSHComboBox(), JMeterGuiUtil.GridBag.editorConstraints);
 
         JTabbedPane tabbedPane = new JTabbedPane();
         tabbedPane.add("接口配置", interfacePanel);
@@ -143,51 +143,51 @@ public class DubboTelnetSamplerGui extends AbstractSamplerGui implements ActionL
 
     private Component createAddressTextField() {
         if (addressTextField == null) {
-            addressTextField = GuiUtil.createTextField(DubboTelnetSampler.ADDRESS);
+            addressTextField = JMeterGuiUtil.createTextField(DubboTelnetSampler.ADDRESS);
         }
         return addressTextField;
     }
 
     private Component createAddressLabel() {
-        return GuiUtil.createLabel("服务器地址：", createAddressTextField());
+        return JMeterGuiUtil.createLabel("服务器地址：", createAddressTextField());
     }
 
     private Component createInterfaceNameTextField() {
         if (interfaceNameTextField == null) {
-            interfaceNameTextField = GuiUtil.createTextField(DubboTelnetSampler.INTERFACE_NAME);
+            interfaceNameTextField = JMeterGuiUtil.createTextField(DubboTelnetSampler.INTERFACE_NAME);
         }
         return interfaceNameTextField;
     }
 
     private Component createInterfaceNameLabel() {
-        return GuiUtil.createLabel("接口名称：", createInterfaceNameTextField());
+        return JMeterGuiUtil.createLabel("接口名称：", createInterfaceNameTextField());
     }
 
     private Component createExpectationTextField() {
         if (expectationTextField == null) {
-            expectationTextField = GuiUtil.createTextField(DubboTelnetSampler.EXPECTATION);
+            expectationTextField = JMeterGuiUtil.createTextField(DubboTelnetSampler.EXPECTATION);
         }
         return expectationTextField;
     }
 
     private Component createExpectationLabel() {
-        return GuiUtil.createLabel("预期结果：", createExpectationTextField());
+        return JMeterGuiUtil.createLabel("预期结果：", createExpectationTextField());
     }
 
     private Component createEncodeTextField() {
         if (encodeTextField == null) {
-            encodeTextField = GuiUtil.createTextField(DubboTelnetSampler.EXPECTATION);
+            encodeTextField = JMeterGuiUtil.createTextField(DubboTelnetSampler.EXPECTATION);
         }
         return encodeTextField;
     }
 
     private Component createEncodeLabel() {
-        return GuiUtil.createLabel("字符编码：", createEncodeTextField());
+        return JMeterGuiUtil.createLabel("字符编码：", createEncodeTextField());
     }
 
     private Component createThroughSSHComboBox() {
         if (throughSSHComboBox == null) {
-            throughSSHComboBox = GuiUtil.createComboBox(DubboTelnetSampler.THROUGH_SSH);
+            throughSSHComboBox = JMeterGuiUtil.createComboBox(DubboTelnetSampler.THROUGH_SSH);
             throughSSHComboBox.addItem("false");
             throughSSHComboBox.addItem("true");
         }
@@ -195,18 +195,18 @@ public class DubboTelnetSamplerGui extends AbstractSamplerGui implements ActionL
     }
 
     private Component createThroughSSHLabel() {
-        return GuiUtil.createLabel("SSH：", createThroughSSHComboBox());
+        return JMeterGuiUtil.createLabel("SSH：", createThroughSSHComboBox());
     }
 
     private Component createParamsTextArea() {
         if (paramsTextArea == null) {
-            paramsTextArea = GuiUtil.createTextArea(DubboTelnetSampler.PARAMS, 20);
+            paramsTextArea = JMeterGuiUtil.createTextArea(DubboTelnetSampler.PARAMS, 20);
         }
         return paramsTextArea;
     }
 
     private Component createParamsLabel() {
-        return GuiUtil.createLabel("请求报文：", createParamsTextArea());
+        return JMeterGuiUtil.createLabel("请求报文：", createParamsTextArea());
     }
 
     private Component createParamsPanel() {

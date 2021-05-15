@@ -1,7 +1,7 @@
 package org.apache.jmeter.functions;
 
 import org.apache.jmeter.common.utils.ExceptionUtil;
-import org.apache.jmeter.common.utils.json.JsonPathUtil;
+import org.apache.jmeter.common.json.JsonPathUtil;
 import org.apache.jmeter.engine.util.CompoundVariable;
 import org.apache.jmeter.samplers.SampleResult;
 import org.apache.jmeter.samplers.Sampler;

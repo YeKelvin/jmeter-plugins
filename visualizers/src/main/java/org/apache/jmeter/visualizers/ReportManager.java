@@ -1,7 +1,7 @@
 package org.apache.jmeter.visualizers;
 
 import org.apache.jmeter.common.utils.TimeUtil;
-import org.apache.jmeter.common.utils.json.JsonUtil;
+import org.apache.jmeter.common.json.JsonUtil;
 import org.apache.jmeter.util.JMeterUtils;
 import org.apache.jmeter.visualizers.data.OverviewInfo;
 import org.apache.jmeter.visualizers.data.ReportDataSet;

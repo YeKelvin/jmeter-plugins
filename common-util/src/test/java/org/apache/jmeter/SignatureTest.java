@@ -1,6 +1,6 @@
 package org.apache.jmeter;
 
-import org.apache.jmeter.common.utils.Signature;
+import org.apache.jmeter.common.encryption.Signature;
 import org.testng.annotations.Test;
 
 public class SignatureTest {

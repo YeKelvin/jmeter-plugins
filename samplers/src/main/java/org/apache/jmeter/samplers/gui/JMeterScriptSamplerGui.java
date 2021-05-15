@@ -1,10 +1,11 @@
 package org.apache.jmeter.samplers.gui;
 
 
+import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.jmeter.JMeter;
 import org.apache.jmeter.common.utils.ExceptionUtil;
-import org.apache.jmeter.common.utils.GuiUtil;
+import org.apache.jmeter.common.jmeter.JMeterGuiUtil;
 import org.apache.jmeter.common.utils.YamlUtil;
 import org.apache.jmeter.config.Argument;
 import org.apache.jmeter.config.Arguments;
@@ -47,21 +48,22 @@ public class JMeterScriptSamplerGui extends AbstractSamplerGui implements Action
 
     private static final Logger log = LoggerFactory.getLogger(JMeterScriptSamplerGui.class);
 
+    /**
+     * Action命令
+     */
     private static final String OPEN_SCRIPT_ACTION = "OPEN_SCRIPT";
     private static final String OPEN_DIRECTORY_ACTION = "OPEN_DIRECTORY";
     private static final String PULL_ARGUMENTS_ACTION = "PULL_ARGUMENTS";
 
+    /**
+     * 脚本后缀名称
+     */
     private static final String JMX_SUFFIX = ".jmx";
 
-    private static final String NOTE =
-            "1、【脚本目录】: 脚本所在目录路径，建议使用变量\n" +
-                    "2、【脚本名称】: 脚本文件名称，需要包含jmx后缀\n" +
-                    "3、【同步vars至props】: 将目标脚本中新增的线程变量同步至全局变量中\n" +
-                    "4、【传递vars至脚本】:\n" +
-                    "       4.1、将调用方的线程变量同步至目标脚本中（不会覆盖目标脚本中已存在的Key）\n" +
-                    "       4.2、执行结束时将目标脚本新增的线程变量返回给调用方";
 
-
+    /**
+     * swing组件
+     */
     private final JTextField scriptDirectoryField;
     private final JLabel scriptDirectoryLabel;
 
@@ -76,8 +78,34 @@ public class JMeterScriptSamplerGui extends AbstractSamplerGui implements Action
 
     private final ArgumentsPanel argsPanel;
 
+    /**
+     * 当前脚本名称
+     */
     private final String scriptName;
+
+    /**
+     * 配置目录路径
+     */
     private final String configDirectory;
+
+    /**
+     * 缓存数据
+     */
+    private String cachedConfigName;
+    private Map<String, String> cachedConfigVariables = new HashMap<>();
+    private String cachedScriptPath;
+    private Arguments cachedArguments;
+
+    /**
+     * 插件说明
+     */
+    private static final String NOTE =
+            "1、【脚本目录】: 脚本所在目录路径，建议使用变量\n" +
+                    "2、【脚本名称】: 脚本文件名称，需要包含jmx后缀\n" +
+                    "3、【同步vars至props】: 将目标脚本中新增的线程变量同步至全局变量中\n" +
+                    "4、【传递vars至脚本】:\n" +
+                    "       4.1、将调用方的线程变量同步至目标脚本中（不会覆盖目标脚本中已存在的Key）\n" +
+                    "       4.2、执行结束时将目标脚本新增的线程变量返回给调用方";
 
     public JMeterScriptSamplerGui() {
         scriptName = FileServer.getFileServer().getScriptName();
@@ -154,7 +182,7 @@ public class JMeterScriptSamplerGui extends AbstractSamplerGui implements Action
             scriptNameField.setText(el.getPropertyAsString(JMeterScriptSampler.SCRIPT_NAME));
             syncToPropsComboBox.setSelectedItem(el.getPropertyAsString(JMeterScriptSampler.SYNC_TO_PROPS));
             syncToVarsComboBox.setSelectedItem(el.getPropertyAsString(JMeterScriptSampler.SYNC_TO_VARS));
-            final JMeterProperty argsProp = script.getArgumentsAsProperty();
+            JMeterProperty argsProp = script.getArgumentsAsProperty();
             if (argsProp != null) {
                 argsPanel.configure((Arguments) argsProp.getObjectValue());
             }
@@ -214,27 +242,47 @@ public class JMeterScriptSamplerGui extends AbstractSamplerGui implements Action
                     log.warn("打开目录失败，目录不存在，路径:[ {} ]", scriptDirectory);
                 }
             }
-        } catch (IOException | InvalidVariableException exception) {
-            log.error(ExceptionUtil.getStackTrace(exception));
+        } catch (IOException ex) {
+            log.error(ExceptionUtil.getStackTrace(ex));
         }
     }
 
-    private String getScriptDirectoryPath() throws InvalidVariableException {
+    private String getScriptDirectoryPath() {
         String scriptDirectory = scriptDirectoryField.getText();
-        String configName = EnvDataSetGui.CONFIG_NAME_WITH_SCRIPT.get(scriptName);
-        if (StringUtils.isNotBlank(scriptDirectory) && StringUtils.isNotBlank(configName)) {
-            String configPath = configDirectory + File.separator + configName;
-            Map<String, String> variables = new HashMap<>();
-            YamlUtil.parseYamlAsMap(configPath).forEach((key, value) -> {
-                variables.put(key, value.toString());
-            });
-            SimpleValueReplacer replacer = new SimpleValueReplacer(variables);
-            replacer.setParameters(scriptDirectory);
-            return replacer.replace();
+        try {
+            if (StringUtils.isNotBlank(scriptDirectory)) {
+                SimpleValueReplacer replacer = new SimpleValueReplacer(getConfigVariables());
+                replacer.setParameters(scriptDirectory);
+                return replacer.replace();
+            }
+        } catch (InvalidVariableException ex) {
+            log.error(ExceptionUtil.getStackTrace(ex));
         }
         return scriptDirectory;
     }
 
+    /**
+     * 根据配置文件名称反序列化yaml文件并返回，
+     */
+    private Map<String, String> getConfigVariables() {
+        String configName = EnvDataSetGui.CACHED_CONFIG_NAME_WITH_SCRIPT.getOrDefault(scriptName, "");
+        if (MapUtils.isEmpty(cachedConfigVariables) || !cachedConfigName.equals(configName)) {
+            if (StringUtils.isNotBlank(configName)) {
+                String configPath = configDirectory + File.separator + configName;
+                Map<String, String> variables = new HashMap<>();
+                YamlUtil.parseYamlAsMap(configPath).forEach((key, value) -> {
+                    variables.put(key, value.toString());
+                });
+                cachedConfigName = configName;
+                cachedConfigVariables = variables;
+            }
+        }
+        return cachedConfigVariables;
+    }
+
+    /**
+     * 创建表格模型
+     */
     private ObjectTableModel createTableModel() {
         return new ObjectTableModel(new String[]{"参数名称", "参数值", "参数描述"},
                 Argument.class,
@@ -250,41 +298,41 @@ public class JMeterScriptSamplerGui extends AbstractSamplerGui implements Action
     }
 
     private JTextField createScriptDirectoryTextField() {
-        return GuiUtil.createTextField(JMeterScriptSampler.SCRIPT_DIRECTORY);
+        return JMeterGuiUtil.createTextField(JMeterScriptSampler.SCRIPT_DIRECTORY);
     }
 
     private JLabel createScriptDirectoryLabel() {
-        return GuiUtil.createLabel("脚本目录：", scriptDirectoryField);
+        return JMeterGuiUtil.createLabel("脚本目录：", scriptDirectoryField);
     }
 
     private JTextField createScriptNameTextField() {
-        return GuiUtil.createTextField(JMeterScriptSampler.SCRIPT_NAME);
+        return JMeterGuiUtil.createTextField(JMeterScriptSampler.SCRIPT_NAME);
     }
 
     private JLabel createScriptNameLabel() {
-        return GuiUtil.createLabel("脚本名称：", scriptNameField);
+        return JMeterGuiUtil.createLabel("脚本名称：", scriptNameField);
     }
 
     private JComboBox<String> createSyncToPropsComboBox() {
-        JComboBox<String> comboBox = GuiUtil.createComboBox(JMeterScriptSampler.SYNC_TO_PROPS);
+        JComboBox<String> comboBox = JMeterGuiUtil.createComboBox(JMeterScriptSampler.SYNC_TO_PROPS);
         comboBox.addItem("false");
         comboBox.addItem("true");
         return comboBox;
     }
 
     private JLabel createSyncToPropsLabel() {
-        return GuiUtil.createLabel("同步vars至props：", syncToPropsComboBox);
+        return JMeterGuiUtil.createLabel("同步vars至props：", syncToPropsComboBox);
     }
 
     private JComboBox<String> createSyncToVarsComboBox() {
-        JComboBox<String> comboBox = GuiUtil.createComboBox(JMeterScriptSampler.SYNC_TO_VARS);
+        JComboBox<String> comboBox = JMeterGuiUtil.createComboBox(JMeterScriptSampler.SYNC_TO_VARS);
         comboBox.addItem("true");
         comboBox.addItem("false");
         return comboBox;
     }
 
     private JLabel createSyncToVarsLabel() {
-        return GuiUtil.createLabel("传递vars至脚本：", syncToVarsComboBox);
+        return JMeterGuiUtil.createLabel("传递vars至脚本：", syncToVarsComboBox);
     }
 
     private Component createBodyPanel() {
@@ -296,21 +344,21 @@ public class JMeterScriptSamplerGui extends AbstractSamplerGui implements Action
 
     private JPanel createScriptPanel() {
         JPanel scriptPanel = new JPanel(new GridBagLayout());
-        scriptPanel.setBorder(GuiUtil.createTitledBorder("配置执行脚本信息"));
+        scriptPanel.setBorder(JMeterGuiUtil.createTitledBorder("配置执行脚本信息"));
 
-        scriptPanel.add(scriptDirectoryLabel, GuiUtil.GridBag.mostLeftConstraints);
-        scriptPanel.add(scriptDirectoryField, GuiUtil.GridBag.middleConstraints);
-        scriptPanel.add(createOpenDirectoryButton(), GuiUtil.GridBag.mostRightConstraints);
+        scriptPanel.add(scriptDirectoryLabel, JMeterGuiUtil.GridBag.mostLeftConstraints);
+        scriptPanel.add(scriptDirectoryField, JMeterGuiUtil.GridBag.middleConstraints);
+        scriptPanel.add(createOpenDirectoryButton(), JMeterGuiUtil.GridBag.mostRightConstraints);
 
-        scriptPanel.add(scriptNameLabel, GuiUtil.GridBag.mostLeftConstraints);
-        scriptPanel.add(scriptNameField, GuiUtil.GridBag.middleConstraints);
-        scriptPanel.add(createPullArgumentsButton(), GuiUtil.GridBag.mostRightConstraints);
+        scriptPanel.add(scriptNameLabel, JMeterGuiUtil.GridBag.mostLeftConstraints);
+        scriptPanel.add(scriptNameField, JMeterGuiUtil.GridBag.middleConstraints);
+        scriptPanel.add(createPullArgumentsButton(), JMeterGuiUtil.GridBag.mostRightConstraints);
 
-        scriptPanel.add(syncToPropsLabel, GuiUtil.GridBag.labelConstraints);
-        scriptPanel.add(syncToPropsComboBox, GuiUtil.GridBag.editorConstraints);
+        scriptPanel.add(syncToPropsLabel, JMeterGuiUtil.GridBag.labelConstraints);
+        scriptPanel.add(syncToPropsComboBox, JMeterGuiUtil.GridBag.editorConstraints);
 
-        scriptPanel.add(syncToVarsLabel, GuiUtil.GridBag.labelConstraints);
-        scriptPanel.add(syncToVarsComboBox, GuiUtil.GridBag.editorConstraints);
+        scriptPanel.add(syncToVarsLabel, JMeterGuiUtil.GridBag.labelConstraints);
+        scriptPanel.add(syncToVarsComboBox, JMeterGuiUtil.GridBag.editorConstraints);
 
         return scriptPanel;
     }
@@ -324,12 +372,12 @@ public class JMeterScriptSamplerGui extends AbstractSamplerGui implements Action
                 createTableModel(),
                 false
         );
-        argsPanel.setBorder(GuiUtil.createTitledBorder("脚本入参"));
+        argsPanel.setBorder(JMeterGuiUtil.createTitledBorder("脚本入参"));
         return argsPanel;
     }
 
     private Component createNoteArea() {
-        return GuiUtil.createNoteArea(NOTE, this.getBackground());
+        return JMeterGuiUtil.createNoteArea(NOTE, this.getBackground());
     }
 
     private Component createOpenDirectoryButton() {
@@ -346,26 +394,42 @@ public class JMeterScriptSamplerGui extends AbstractSamplerGui implements Action
         return button;
     }
 
-    private HashTree getScriptTree() throws IOException, IllegalUserActionException, InvalidVariableException {
+    /**
+     * 获取脚本绝对路径路径，文件或路径非法时返回空字符
+     */
+    private String getScriptPath() {
         String scriptName = scriptNameField.getText();
         String scriptDirectory = getScriptDirectoryPath();
 
         if (StringUtils.isBlank(scriptDirectory) || StringUtils.isBlank(scriptName)) {
             log.debug("脚本路径为空, scriptDirectory:[ {} ] scriptName:[ {} ]", scriptDirectory, scriptName);
-            return null;
+            return "";
         }
 
         if (!scriptName.endsWith(JMX_SUFFIX)) {
             log.debug("脚本名称必须包含jmx后缀, scriptName:[ {} ]", scriptName);
-            return null;
+            return "";
         }
 
         String scriptPath = scriptDirectory + File.separator + scriptName;
+        log.debug("scriptPath:[ {} ]", scriptPath);
+        return scriptPath;
+    }
+
+    /**
+     * 获取脚本的HashTree对象，脚本不存在时返回null
+     */
+    private HashTree getScriptTree() throws IOException, IllegalUserActionException {
+        String scriptPath = getScriptPath();
         File file = new File(scriptPath);
+
         if (!file.exists() || !file.isFile()) {
             log.debug("脚本不存在, scriptPath:[ {} ]", scriptPath);
             return null;
         }
+
+        // 缓存脚本路径
+        cachedScriptPath = scriptPath;
 
         // 加载脚本
         HashTree tree = SaveService.loadTree(file);
@@ -379,6 +443,9 @@ public class JMeterScriptSamplerGui extends AbstractSamplerGui implements Action
         return JMeter.convertSubTree(tree, false);
     }
 
+    /**
+     * 获取脚本HashTree对象中的ScriptArgumentsDescriptor对象，不存在时返回null
+     */
     private ScriptArgumentsDescriptor getArgumentsDescriptor() {
         try {
             HashTree hashTree = getScriptTree();
@@ -395,11 +462,21 @@ public class JMeterScriptSamplerGui extends AbstractSamplerGui implements Action
             if (!argsDescIter.hasNext()) {
                 return null;
             }
-            return argsDescIter.next();
-        } catch (IOException | IllegalUserActionException | InvalidVariableException e) {
-            e.printStackTrace();
+            ScriptArgumentsDescriptor argsDesc = argsDescIter.next();
+            // 缓存脚本参数
+            cachedArguments = argsDesc;
+            return argsDesc;
+        } catch (IOException | IllegalUserActionException ex) {
+            log.error(ExceptionUtil.getStackTrace(ex));
         }
         return null;
+    }
+
+    private Arguments getScriptArguments() {
+        if (cachedScriptPath == null || !cachedScriptPath.equals(getScriptPath())) {
+            cachedArguments = getArgumentsDescriptor();
+        }
+        return cachedArguments;
     }
 
 }

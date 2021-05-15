@@ -1,8 +1,8 @@
 package org.apache.jmeter.visualizers.utils;
 
 import com.jayway.jsonpath.DocumentContext;
-import org.apache.jmeter.common.utils.json.JsonPathUtil;
-import org.apache.jmeter.common.utils.json.JsonUtil;
+import org.apache.jmeter.common.json.JsonPathUtil;
+import org.apache.jmeter.common.json.JsonUtil;
 import org.apache.jmeter.visualizers.data.OverviewInfo;
 
 import java.util.regex.Matcher;

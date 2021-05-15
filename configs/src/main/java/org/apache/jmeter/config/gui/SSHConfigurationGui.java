@@ -1,7 +1,7 @@
 package org.apache.jmeter.config.gui;
 
 
-import org.apache.jmeter.common.utils.GuiUtil;
+import org.apache.jmeter.common.jmeter.JMeterGuiUtil;
 import org.apache.jmeter.config.SSHConfiguration;
 import org.apache.jmeter.gui.util.VerticalPanel;
 import org.apache.jmeter.testelement.TestElement;
@@ -97,40 +97,40 @@ public class SSHConfigurationGui extends AbstractConfigGui {
 
     private Component createSSHAddressTextField() {
         if (sshAddressTextField == null) {
-            sshAddressTextField = GuiUtil.createTextField(SSHConfiguration.SSH_ADDRESS);
+            sshAddressTextField = JMeterGuiUtil.createTextField(SSHConfiguration.SSH_ADDRESS);
         }
         return sshAddressTextField;
     }
 
     private Component createSSHAddressLabel() {
-        return GuiUtil.createLabel("SSH地址：", createSSHAddressTextField());
+        return JMeterGuiUtil.createLabel("SSH地址：", createSSHAddressTextField());
     }
 
     private Component createSSHUserNameTextField() {
         if (sshUserNameTextField == null) {
-            sshUserNameTextField = GuiUtil.createTextField(SSHConfiguration.SSH_USER_NAME);
+            sshUserNameTextField = JMeterGuiUtil.createTextField(SSHConfiguration.SSH_USER_NAME);
         }
         return sshUserNameTextField;
     }
 
     private Component createSSHUserNameLabel() {
-        return GuiUtil.createLabel("SSH用户名称：", createSSHAddressLabel());
+        return JMeterGuiUtil.createLabel("SSH用户名称：", createSSHAddressLabel());
     }
 
     private Component createSSHPasswordTextField() {
         if (sshPasswordTextField == null) {
-            sshPasswordTextField = GuiUtil.createTextField(SSHConfiguration.SSH_PASSWORD);
+            sshPasswordTextField = JMeterGuiUtil.createTextField(SSHConfiguration.SSH_PASSWORD);
         }
         return sshPasswordTextField;
     }
 
     private Component createSSHPasswordLabel() {
-        return GuiUtil.createLabel("SSH密码：", createSSHPasswordTextField());
+        return JMeterGuiUtil.createLabel("SSH密码：", createSSHPasswordTextField());
     }
 
     private Component createSSHLocalForwardingComboBox() {
         if (sshLocalForwardingComboBox == null) {
-            sshLocalForwardingComboBox = GuiUtil.createComboBox(SSHConfiguration.SSH_PORT_FORWARDING);
+            sshLocalForwardingComboBox = JMeterGuiUtil.createComboBox(SSHConfiguration.SSH_PORT_FORWARDING);
             sshLocalForwardingComboBox.addItem("true");
             sshLocalForwardingComboBox.addItem("false");
         }
@@ -138,53 +138,53 @@ public class SSHConfigurationGui extends AbstractConfigGui {
     }
 
     private Component createSSHLocalForwardingLabel() {
-        return GuiUtil.createLabel("启用本地端口转发：", createSSHLocalForwardingComboBox());
+        return JMeterGuiUtil.createLabel("启用本地端口转发：", createSSHLocalForwardingComboBox());
     }
 
 
     private Component createLocalForwardingPortTextField() {
         if (localForwardingPortTextField == null) {
-            localForwardingPortTextField = GuiUtil.createTextField(SSHConfiguration.LOCAL_FORWARDING_PORT);
+            localForwardingPortTextField = JMeterGuiUtil.createTextField(SSHConfiguration.LOCAL_FORWARDING_PORT);
         }
         return localForwardingPortTextField;
     }
 
     private Component createLocalForwardingPortLabel() {
-        return GuiUtil.createLabel("本地转发端口：", createLocalForwardingPortTextField());
+        return JMeterGuiUtil.createLabel("本地转发端口：", createLocalForwardingPortTextField());
     }
 
     private Component createRemoteAddressTextField() {
         if (remoteAddressTextField == null) {
-            remoteAddressTextField = GuiUtil.createTextField(SSHConfiguration.REMOTE_ADDRESS);
+            remoteAddressTextField = JMeterGuiUtil.createTextField(SSHConfiguration.REMOTE_ADDRESS);
         }
         return remoteAddressTextField;
     }
 
     private Component createRemoteAddressLabel() {
-        return GuiUtil.createLabel("远程地址：", createRemoteAddressTextField());
+        return JMeterGuiUtil.createLabel("远程地址：", createRemoteAddressTextField());
     }
 
     private Component createBodyPanel() {
         JPanel bodyPanel = new JPanel(new GridBagLayout());
-        bodyPanel.setBorder(GuiUtil.createTitledBorder("配置SSH信息"));
+        bodyPanel.setBorder(JMeterGuiUtil.createTitledBorder("配置SSH信息"));
 
-        bodyPanel.add(createSSHAddressLabel(), GuiUtil.GridBag.labelConstraints);
-        bodyPanel.add(createSSHAddressTextField(), GuiUtil.GridBag.editorConstraints);
+        bodyPanel.add(createSSHAddressLabel(), JMeterGuiUtil.GridBag.labelConstraints);
+        bodyPanel.add(createSSHAddressTextField(), JMeterGuiUtil.GridBag.editorConstraints);
 
-        bodyPanel.add(createSSHUserNameLabel(), GuiUtil.GridBag.labelConstraints);
-        bodyPanel.add(createSSHUserNameTextField(), GuiUtil.GridBag.editorConstraints);
+        bodyPanel.add(createSSHUserNameLabel(), JMeterGuiUtil.GridBag.labelConstraints);
+        bodyPanel.add(createSSHUserNameTextField(), JMeterGuiUtil.GridBag.editorConstraints);
 
-        bodyPanel.add(createSSHPasswordLabel(), GuiUtil.GridBag.labelConstraints);
-        bodyPanel.add(createSSHPasswordTextField(), GuiUtil.GridBag.editorConstraints);
+        bodyPanel.add(createSSHPasswordLabel(), JMeterGuiUtil.GridBag.labelConstraints);
+        bodyPanel.add(createSSHPasswordTextField(), JMeterGuiUtil.GridBag.editorConstraints);
 
-        bodyPanel.add(createSSHLocalForwardingLabel(), GuiUtil.GridBag.labelConstraints);
-        bodyPanel.add(createSSHLocalForwardingComboBox(), GuiUtil.GridBag.editorConstraints);
+        bodyPanel.add(createSSHLocalForwardingLabel(), JMeterGuiUtil.GridBag.labelConstraints);
+        bodyPanel.add(createSSHLocalForwardingComboBox(), JMeterGuiUtil.GridBag.editorConstraints);
 
-        bodyPanel.add(createLocalForwardingPortLabel(), GuiUtil.GridBag.labelConstraints);
-        bodyPanel.add(createLocalForwardingPortTextField(), GuiUtil.GridBag.editorConstraints);
+        bodyPanel.add(createLocalForwardingPortLabel(), JMeterGuiUtil.GridBag.labelConstraints);
+        bodyPanel.add(createLocalForwardingPortTextField(), JMeterGuiUtil.GridBag.editorConstraints);
 
-        bodyPanel.add(createRemoteAddressLabel(), GuiUtil.GridBag.labelConstraints);
-        bodyPanel.add(createRemoteAddressTextField(), GuiUtil.GridBag.editorConstraints);
+        bodyPanel.add(createRemoteAddressLabel(), JMeterGuiUtil.GridBag.labelConstraints);
+        bodyPanel.add(createRemoteAddressTextField(), JMeterGuiUtil.GridBag.editorConstraints);
 
         VerticalPanel mainPanel = new VerticalPanel();
         mainPanel.add(bodyPanel);
@@ -192,6 +192,6 @@ public class SSHConfigurationGui extends AbstractConfigGui {
     }
 
     private Component createNoteArea() {
-        return GuiUtil.createNoteArea(NOTE, this.getBackground());
+        return JMeterGuiUtil.createNoteArea(NOTE, this.getBackground());
     }
 }

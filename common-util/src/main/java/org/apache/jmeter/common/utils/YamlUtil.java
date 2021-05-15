@@ -38,16 +38,20 @@ public class YamlUtil {
     public static Map<String, Object> parseYamlAsMap(String filePath) {
         File file = new File(filePath);
         if (file.isFile() && filePath.endsWith(YAML_SUFFIX)) {
-            try (
-                    FileInputStream input = new FileInputStream(file);
-                    InputStreamReader reader = new InputStreamReader(input, StandardCharsets.UTF_8.name())
-            ) {
-                return YAML.loadAs(reader, Map.class);
-            } catch (Exception e) {
-                log.error(ExceptionUtil.getStackTrace(e));
-            }
-        } else {
-            log.error("非yaml文件，路径:[ {} ]", filePath);
+            return parseYamlAsMap(file);
+        }
+        log.error("非yaml文件，路径:[ {} ]", filePath);
+        return new HashMap<>();
+    }
+
+    public static Map<String, Object> parseYamlAsMap(File file) {
+        try (
+                FileInputStream input = new FileInputStream(file);
+                InputStreamReader reader = new InputStreamReader(input, StandardCharsets.UTF_8.name())
+        ) {
+            return YAML.loadAs(reader, Map.class);
+        } catch (Exception e) {
+            log.error(ExceptionUtil.getStackTrace(e));
         }
         return new HashMap<>();
     }

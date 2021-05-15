@@ -1,6 +1,6 @@
 package org.apache.jmeter.config;
 
-import org.apache.jmeter.common.CliOptions;
+import org.apache.jmeter.common.cli.CliOptions;
 import org.apache.jmeter.common.utils.ExceptionUtil;
 import org.apache.jmeter.common.utils.YamlUtil;
 import org.apache.jmeter.engine.util.NoConfigMerge;

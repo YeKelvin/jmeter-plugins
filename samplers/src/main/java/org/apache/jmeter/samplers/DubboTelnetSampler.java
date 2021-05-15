@@ -3,9 +3,9 @@ package org.apache.jmeter.samplers;
 import com.jcraft.jsch.JSchException;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.jmeter.common.utils.ExceptionUtil;
-import org.apache.jmeter.common.utils.JMeterVarsUtil;
+import org.apache.jmeter.common.jmeter.JMeterVariablesUtil;
 import org.apache.jmeter.common.exceptions.ServiceException;
-import org.apache.jmeter.common.utils.ssh.SSHTelnetClient;
+import org.apache.jmeter.common.ssh.SSHTelnetClient;
 import org.apache.jmeter.config.SSHConfiguration;
 import org.apache.jmeter.engine.util.ValueReplacer;
 import org.apache.jmeter.functions.InvalidVariableException;
@@ -229,23 +229,23 @@ public class DubboTelnetSampler extends AbstractSampler {
     }
 
     private String getEncode() {
-        return JMeterVarsUtil.getDefault(ENCODE, StandardCharsets.UTF_8.name());
+        return JMeterVariablesUtil.getDefault(ENCODE, StandardCharsets.UTF_8.name());
     }
 
     private String getSSHAddress() {
-        return JMeterVarsUtil.getDefault(SSHConfiguration.SSH_ADDRESS, "");
+        return JMeterVariablesUtil.getDefault(SSHConfiguration.SSH_ADDRESS, "");
     }
 
     private String getSSHUserName() {
-        return JMeterVarsUtil.getDefault(SSHConfiguration.SSH_USER_NAME, "");
+        return JMeterVariablesUtil.getDefault(SSHConfiguration.SSH_USER_NAME, "");
     }
 
     private String getSSHPassword() {
-        return JMeterVarsUtil.getDefault(SSHConfiguration.SSH_PASSWORD, "");
+        return JMeterVariablesUtil.getDefault(SSHConfiguration.SSH_PASSWORD, "");
     }
 
     private boolean throughSSH() {
         return JMeterUtils.getPropDefault(
-                "throughSSH", JMeterVarsUtil.getDefaultAsBoolean(THROUGH_SSH, false));
+                "throughSSH", JMeterVariablesUtil.getDefaultAsBoolean(THROUGH_SSH, false));
     }
 }

@@ -1,6 +1,6 @@
 package org.apache.jmeter;
 
-import org.apache.jmeter.common.utils.GoogleAuthenticator;
+import org.apache.jmeter.common.google.GoogleAuthenticator;
 
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;

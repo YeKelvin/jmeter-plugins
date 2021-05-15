@@ -2,7 +2,7 @@ package org.apache.jmeter.functions;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.jmeter.common.utils.ExceptionUtil;
-import org.apache.jmeter.common.utils.Randoms;
+import org.apache.jmeter.common.random.Randoms;
 import org.apache.jmeter.engine.util.CompoundVariable;
 import org.apache.jmeter.samplers.SampleResult;
 import org.apache.jmeter.samplers.Sampler;

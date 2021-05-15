@@ -3,7 +3,7 @@
 - 平时写脚本时常用的方法
 
 ## 方法说明
-### `org.apache.jmeter.common.utils.Randoms`
+### `org.apache.jmeter.common.random.Randoms`
 #### `getNumber(int length)`
 #### `getNumber(String str, int length)`
 #### `getNumber(int length, String str)`

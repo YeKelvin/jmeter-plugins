@@ -2,7 +2,7 @@ package org.apache.jmeter.config.gui;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.jmeter.common.utils.ExceptionUtil;
-import org.apache.jmeter.common.utils.GuiUtil;
+import org.apache.jmeter.common.jmeter.JMeterGuiUtil;
 import org.apache.jmeter.common.utils.YamlUtil;
 import org.apache.jmeter.config.Argument;
 import org.apache.jmeter.config.HTTPHeaderReader;
@@ -42,9 +42,10 @@ public class HTTPHeaderReaderGui extends AbstractConfigGui implements ActionList
     private JTable table;
     private ObjectTableModel tableModel;
 
-    private String headerDirectory = null;
+    private final String headerDirectory;
 
     public HTTPHeaderReaderGui() {
+        headerDirectory = JMeterUtils.getJMeterHome() + File.separator + "header";
         init();
     }
 
@@ -124,7 +125,7 @@ public class HTTPHeaderReaderGui extends AbstractConfigGui implements ActionList
                 if (StringUtils.isNotBlank(headersFileName)) {
                     openFilePath = getHeaderFilePath(headersFileName);
                 } else {
-                    openFilePath = getHeaderFileDirectory();
+                    openFilePath = headerDirectory;
                 }
                 Desktop.getDesktop().open(new File(openFilePath));
             } catch (IOException ioException) {
@@ -135,14 +136,14 @@ public class HTTPHeaderReaderGui extends AbstractConfigGui implements ActionList
 
     private Component createHeadersFileNameComboBox() {
         if (headerFileNameComboBox == null) {
-            headerFileNameComboBox = GuiUtil.createComboBox(HTTPHeaderReader.HEADER_FILE_NAME);
-            comboBoxAddItem(getHeaderFileList(getHeaderFileDirectory()));
+            headerFileNameComboBox = JMeterGuiUtil.createComboBox(HTTPHeaderReader.HEADER_FILE_NAME);
+            comboBoxAddItem(getHeaderFileList(headerDirectory));
         }
         return headerFileNameComboBox;
     }
 
     private Component createHeadersFileNameLabel() {
-        return GuiUtil.createLabel("HTTP请求头文件名称：", createHeadersFileNameComboBox());
+        return JMeterGuiUtil.createLabel("HTTP请求头文件名称：", createHeadersFileNameComboBox());
     }
 
     private JPanel createTablePanel() {
@@ -168,16 +169,16 @@ public class HTTPHeaderReaderGui extends AbstractConfigGui implements ActionList
 
     private Component createBodyPanel() {
         JPanel bodyPanel = new JPanel(new GridBagLayout());
-        bodyPanel.setBorder(GuiUtil.createTitledBorder("通过文件配置请求头"));
-        bodyPanel.add(createHeadersFileNameLabel(), GuiUtil.GridBag.mostLeftConstraints);
-        bodyPanel.add(createHeadersFileNameComboBox(), GuiUtil.GridBag.middleConstraints);
-        bodyPanel.add(createButton(), GuiUtil.GridBag.mostRightConstraints);
-        bodyPanel.add(createTablePanel(), GuiUtil.GridBag.fillBottomConstraints);
+        bodyPanel.setBorder(JMeterGuiUtil.createTitledBorder("通过文件配置请求头"));
+        bodyPanel.add(createHeadersFileNameLabel(), JMeterGuiUtil.GridBag.mostLeftConstraints);
+        bodyPanel.add(createHeadersFileNameComboBox(), JMeterGuiUtil.GridBag.middleConstraints);
+        bodyPanel.add(createButton(), JMeterGuiUtil.GridBag.mostRightConstraints);
+        bodyPanel.add(createTablePanel(), JMeterGuiUtil.GridBag.fillBottomConstraints);
         return bodyPanel;
     }
 
     private Component createNoteArea() {
-        return GuiUtil.createNoteArea(NOTE, this.getBackground());
+        return JMeterGuiUtil.createNoteArea(NOTE, this.getBackground());
     }
 
     private Component createButton() {
@@ -232,19 +233,9 @@ public class HTTPHeaderReaderGui extends AbstractConfigGui implements ActionList
     }
 
     /**
-     * 获取httpHeader文件目录路径
-     */
-    private String getHeaderFileDirectory() {
-        if (headerDirectory == null) {
-            headerDirectory = JMeterUtils.getJMeterHome() + File.separator + "header";
-        }
-        return headerDirectory;
-    }
-
-    /**
      * 根据httpHeader文件名称获取文件路径
      */
     private String getHeaderFilePath(String headerFileName) {
-        return getHeaderFileDirectory() + File.separator + headerFileName;
+        return headerDirectory + File.separator + headerFileName;
     }
 }

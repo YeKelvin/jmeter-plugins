@@ -1,7 +1,7 @@
 package org.apache.jmeter.visualizers.gui;
 
 
-import org.apache.jmeter.common.utils.GuiUtil;
+import org.apache.jmeter.common.jmeter.JMeterGuiUtil;
 import org.apache.jmeter.gui.util.VerticalPanel;
 import org.apache.jmeter.testelement.TestElement;
 import org.apache.jmeter.visualizers.ReportCollector;
@@ -77,18 +77,18 @@ public class LocalHtmlReportGui extends AbstractListenerGui {
 
     private Component createReportNameTextField() {
         if (reportNameTextField == null) {
-            reportNameTextField = GuiUtil.createTextField(ReportCollector.REPORT_NAME);
+            reportNameTextField = JMeterGuiUtil.createTextField(ReportCollector.REPORT_NAME);
         }
         return reportNameTextField;
     }
 
     private Component createReportNameLabel() {
-        return GuiUtil.createLabel("报告名称：", createReportNameTextField());
+        return JMeterGuiUtil.createLabel("报告名称：", createReportNameTextField());
     }
 
     private Component createIsAppendComboBox() {
         if (isAppendComboBox == null) {
-            isAppendComboBox = GuiUtil.createComboBox(ReportCollector.IS_APPEND);
+            isAppendComboBox = JMeterGuiUtil.createComboBox(ReportCollector.IS_APPEND);
             isAppendComboBox.addItem("false");
             isAppendComboBox.addItem("true");
         }
@@ -96,18 +96,18 @@ public class LocalHtmlReportGui extends AbstractListenerGui {
     }
 
     private Component createIsAppendLabel() {
-        return GuiUtil.createLabel("追加写报告：", createIsAppendComboBox());
+        return JMeterGuiUtil.createLabel("追加写报告：", createIsAppendComboBox());
     }
 
     private Component createBodyPanel() {
         JPanel bodyPanel = new JPanel(new GridBagLayout());
-        bodyPanel.setBorder(GuiUtil.createTitledBorder("配置HTML报告"));
+        bodyPanel.setBorder(JMeterGuiUtil.createTitledBorder("配置HTML报告"));
 
-        bodyPanel.add(createReportNameLabel(), GuiUtil.GridBag.labelConstraints);
-        bodyPanel.add(createReportNameTextField(), GuiUtil.GridBag.editorConstraints);
+        bodyPanel.add(createReportNameLabel(), JMeterGuiUtil.GridBag.labelConstraints);
+        bodyPanel.add(createReportNameTextField(), JMeterGuiUtil.GridBag.editorConstraints);
 
-        bodyPanel.add(createIsAppendLabel(), GuiUtil.GridBag.labelConstraints);
-        bodyPanel.add(createIsAppendComboBox(), GuiUtil.GridBag.editorConstraints);
+        bodyPanel.add(createIsAppendLabel(), JMeterGuiUtil.GridBag.labelConstraints);
+        bodyPanel.add(createIsAppendComboBox(), JMeterGuiUtil.GridBag.editorConstraints);
 
         VerticalPanel mainPanel = new VerticalPanel();
         mainPanel.add(bodyPanel);
@@ -115,6 +115,6 @@ public class LocalHtmlReportGui extends AbstractListenerGui {
     }
 
     private Component createNoteArea() {
-        return GuiUtil.createNoteArea(NOTE, this.getBackground());
+        return JMeterGuiUtil.createNoteArea(NOTE, this.getBackground());
     }
 }

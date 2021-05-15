@@ -1,6 +1,6 @@
 package org.apache.jmeter.config.gui;
 
-import org.apache.jmeter.common.utils.GuiUtil;
+import org.apache.jmeter.common.jmeter.JMeterGuiUtil;
 import org.apache.jmeter.config.TraversalDataSet;
 import org.apache.jmeter.gui.util.JSyntaxTextArea;
 import org.apache.jmeter.gui.util.JTextScrollPane;
@@ -86,24 +86,24 @@ public class TraversalDataSetGui extends AbstractConfigGui {
 
     private Component createVariableNamesTextField() {
         if (variableNamesTextField == null) {
-            variableNamesTextField = GuiUtil.createTextField(TraversalDataSet.VARIABLE_NAMES);
+            variableNamesTextField = JMeterGuiUtil.createTextField(TraversalDataSet.VARIABLE_NAMES);
         }
         return variableNamesTextField;
     }
 
     private Component createVariableNamesLabel() {
-        return GuiUtil.createLabel("变量名称：", createVariableNamesTextField());
+        return JMeterGuiUtil.createLabel("变量名称：", createVariableNamesTextField());
     }
 
     private Component createDataTextArea() {
         if (dataTextArea == null) {
-            dataTextArea = GuiUtil.createTextArea(TraversalDataSet.DATA_SET, 20);
+            dataTextArea = JMeterGuiUtil.createTextArea(TraversalDataSet.DATA_SET, 20);
         }
         return dataTextArea;
     }
 
     private Component createDataLabel() {
-        return GuiUtil.createLabel("数据集：", createDataTextArea());
+        return JMeterGuiUtil.createLabel("数据集：", createDataTextArea());
     }
 
 
@@ -113,19 +113,19 @@ public class TraversalDataSetGui extends AbstractConfigGui {
 
     private Component createBodyPanel() {
         JPanel bodyPanel = new JPanel(new GridBagLayout());
-        bodyPanel.setBorder(GuiUtil.createTitledBorder("配置CSV数据"));
+        bodyPanel.setBorder(JMeterGuiUtil.createTitledBorder("配置CSV数据"));
 
-        bodyPanel.add(createVariableNamesLabel(), GuiUtil.GridBag.labelConstraints);
-        bodyPanel.add(createVariableNamesTextField(), GuiUtil.GridBag.editorConstraints);
+        bodyPanel.add(createVariableNamesLabel(), JMeterGuiUtil.GridBag.labelConstraints);
+        bodyPanel.add(createVariableNamesTextField(), JMeterGuiUtil.GridBag.editorConstraints);
 
-        bodyPanel.add(createDataLabel(), GuiUtil.GridBag.labelConstraints);
-        bodyPanel.add(GuiUtil.createBlankPanel(), GuiUtil.GridBag.editorConstraints);
-        bodyPanel.add(createDataPanel(), GuiUtil.GridBag.fillBottomConstraints);
+        bodyPanel.add(createDataLabel(), JMeterGuiUtil.GridBag.labelConstraints);
+        bodyPanel.add(JMeterGuiUtil.createBlankPanel(), JMeterGuiUtil.GridBag.editorConstraints);
+        bodyPanel.add(createDataPanel(), JMeterGuiUtil.GridBag.fillBottomConstraints);
         return bodyPanel;
     }
 
     private Component createNoteArea() {
-        return GuiUtil.createNoteArea(NOTE, this.getBackground());
+        return JMeterGuiUtil.createNoteArea(NOTE, this.getBackground());
     }
 
 }

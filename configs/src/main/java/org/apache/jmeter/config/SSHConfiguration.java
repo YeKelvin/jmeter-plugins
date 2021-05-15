@@ -5,7 +5,7 @@ import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;
 import org.apache.jmeter.common.utils.ExceptionUtil;
-import org.apache.jmeter.common.utils.JMeterVarsUtil;
+import org.apache.jmeter.common.jmeter.JMeterVariablesUtil;
 import org.apache.jmeter.samplers.Interruptible;
 import org.apache.jmeter.testelement.TestStateListener;
 import org.apache.jmeter.util.JMeterUtils;
@@ -126,7 +126,7 @@ public class SSHConfiguration extends ConfigTestElement implements TestStateList
 
     private boolean isSSHPortForwarding() {
         return JMeterUtils.getPropDefault(
-                "sshPortForwarding", JMeterVarsUtil.getDefaultAsBoolean(SSH_PORT_FORWARDING, false));
+                "sshPortForwarding", JMeterVariablesUtil.getDefaultAsBoolean(SSH_PORT_FORWARDING, false));
     }
 
     @Override

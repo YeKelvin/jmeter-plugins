@@ -1,6 +1,6 @@
 package org.apache.jmeter.config.gui;
 
-import org.apache.jmeter.common.utils.GuiUtil;
+import org.apache.jmeter.common.jmeter.JMeterGuiUtil;
 import org.apache.jmeter.config.TraversalEmptyValue;
 import org.apache.jmeter.gui.util.JSyntaxTextArea;
 import org.apache.jmeter.gui.util.JTextScrollPane;
@@ -89,7 +89,7 @@ public class TraversalEmptyValueGui extends AbstractConfigGui {
 
     private Component createBlankTypeComboBox() {
         if (blankTypeComboBox == null) {
-            blankTypeComboBox = GuiUtil.createComboBox(TraversalEmptyValue.BLANK_TYPE);
+            blankTypeComboBox = JMeterGuiUtil.createComboBox(TraversalEmptyValue.BLANK_TYPE);
             blankTypeComboBox.addItem("null");
             blankTypeComboBox.addItem("\"\"");
         }
@@ -97,18 +97,18 @@ public class TraversalEmptyValueGui extends AbstractConfigGui {
     }
 
     private Component createBlankTypeLabel() {
-        return GuiUtil.createLabel("空类型：", createBlankTypeComboBox());
+        return JMeterGuiUtil.createLabel("空类型：", createBlankTypeComboBox());
     }
 
     private Component createParamsTextArea() {
         if (paramsTextArea == null) {
-            paramsTextArea = GuiUtil.createTextArea(TraversalEmptyValue.PATAMS, 20);
+            paramsTextArea = JMeterGuiUtil.createTextArea(TraversalEmptyValue.PATAMS, 20);
         }
         return paramsTextArea;
     }
 
     private Component createParamsLabel() {
-        return GuiUtil.createLabel("请求报文：", createParamsTextArea());
+        return JMeterGuiUtil.createLabel("请求报文：", createParamsTextArea());
     }
 
     private Component createParamsPanel() {
@@ -117,14 +117,14 @@ public class TraversalEmptyValueGui extends AbstractConfigGui {
 
     private Component createEmptyCheckExpressionTextArea() {
         if (emptyCheckExpressionTextArea == null) {
-            emptyCheckExpressionTextArea = GuiUtil.createTextArea(TraversalEmptyValue.EMPTY_CHECK_EXPRESSION, 20);
+            emptyCheckExpressionTextArea = JMeterGuiUtil.createTextArea(TraversalEmptyValue.EMPTY_CHECK_EXPRESSION, 20);
         }
         return emptyCheckExpressionTextArea;
 
     }
 
     private Component createEmptyCheckExpressionLabel() {
-        return GuiUtil.createLabel("预期结果：", createEmptyCheckExpressionTextArea());
+        return JMeterGuiUtil.createLabel("预期结果：", createEmptyCheckExpressionTextArea());
     }
 
     private Component createEmptyCheckExpressionPanel() {
@@ -133,15 +133,15 @@ public class TraversalEmptyValueGui extends AbstractConfigGui {
 
     private Component createJTabbedPane() {
         JPanel interfacePanel = new JPanel(new GridBagLayout());
-        interfacePanel.setBorder(GuiUtil.createTitledBorder("配置非空校验信息"));
-        interfacePanel.add(createBlankTypeLabel(), GuiUtil.GridBag.labelConstraints);
-        interfacePanel.add(createBlankTypeComboBox(), GuiUtil.GridBag.editorConstraints);
-        interfacePanel.add(createParamsLabel(), GuiUtil.GridBag.labelConstraints);
-        interfacePanel.add(GuiUtil.createBlankPanel(), GuiUtil.GridBag.editorConstraints);
-        interfacePanel.add(createParamsPanel(), GuiUtil.GridBag.multiLineEditorConstraints);
-        interfacePanel.add(createEmptyCheckExpressionLabel(), GuiUtil.GridBag.labelConstraints);
-        interfacePanel.add(GuiUtil.createBlankPanel(), GuiUtil.GridBag.editorConstraints);
-        interfacePanel.add(createEmptyCheckExpressionPanel(), GuiUtil.GridBag.multiLineEditorConstraints);
+        interfacePanel.setBorder(JMeterGuiUtil.createTitledBorder("配置非空校验信息"));
+        interfacePanel.add(createBlankTypeLabel(), JMeterGuiUtil.GridBag.labelConstraints);
+        interfacePanel.add(createBlankTypeComboBox(), JMeterGuiUtil.GridBag.editorConstraints);
+        interfacePanel.add(createParamsLabel(), JMeterGuiUtil.GridBag.labelConstraints);
+        interfacePanel.add(JMeterGuiUtil.createBlankPanel(), JMeterGuiUtil.GridBag.editorConstraints);
+        interfacePanel.add(createParamsPanel(), JMeterGuiUtil.GridBag.multiLineEditorConstraints);
+        interfacePanel.add(createEmptyCheckExpressionLabel(), JMeterGuiUtil.GridBag.labelConstraints);
+        interfacePanel.add(JMeterGuiUtil.createBlankPanel(), JMeterGuiUtil.GridBag.editorConstraints);
+        interfacePanel.add(createEmptyCheckExpressionPanel(), JMeterGuiUtil.GridBag.multiLineEditorConstraints);
 
         JTabbedPane tabbedPane = new JTabbedPane();
         tabbedPane.add("非空校验配置", interfacePanel);
@@ -151,7 +151,7 @@ public class TraversalEmptyValueGui extends AbstractConfigGui {
     }
 
     private Component createNoteArea() {
-        return GuiUtil.createNoteArea(NOTE, this.getBackground());
+        return JMeterGuiUtil.createNoteArea(NOTE, this.getBackground());
     }
 
 }
