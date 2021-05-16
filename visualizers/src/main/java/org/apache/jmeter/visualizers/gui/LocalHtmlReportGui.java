@@ -54,6 +54,9 @@ public class LocalHtmlReportGui extends AbstractListenerGui {
         return info;
     }
 
+    /**
+     * TestElement -> GUI
+     */
     @Override
     public void configure(TestElement el) {
         super.configure(el);
@@ -61,6 +64,9 @@ public class LocalHtmlReportGui extends AbstractListenerGui {
         isAppendComboBox.setSelectedItem(el.getPropertyAsString(ReportCollector.IS_APPEND));
     }
 
+    /**
+     * GUI -> TestElement
+     */
     @Override
     public void modifyTestElement(TestElement el) {
         super.configureTestElement(el);

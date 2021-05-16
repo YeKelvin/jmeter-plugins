@@ -18,7 +18,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 
 /**
- * @author KelvinYe
+ * @author Kelvin.Ye
  */
 public class RedisCluster {
     private static final Logger log = LoggerFactory.getLogger(RedisCluster.class);

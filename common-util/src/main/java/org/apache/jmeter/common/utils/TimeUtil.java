@@ -8,7 +8,7 @@ import java.util.Calendar;
 import java.util.Date;
 
 /**
- * @author KelvinYe
+ * @author Kelvin.Ye
  */
 public class TimeUtil {
 

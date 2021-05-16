@@ -21,11 +21,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Description
- *
- * @author KelvinYe
- * Date     2019-01-24
- * Time     16:51
+ * @author  Kelvin.Ye
+ * @date    2019-01-24 16:51
  */
 public class ReportManager {
 

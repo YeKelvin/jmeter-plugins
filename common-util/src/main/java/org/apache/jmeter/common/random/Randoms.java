@@ -7,7 +7,7 @@ import org.apache.jmeter.common.random.MobilePhone;
 import java.util.Random;
 
 /**
- * @author KelvinYe
+ * @author Kelvin.Ye
  */
 public class Randoms {
     /**

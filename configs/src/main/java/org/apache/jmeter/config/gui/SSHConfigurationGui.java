@@ -57,7 +57,7 @@ public class SSHConfigurationGui extends AbstractConfigGui {
     }
 
     /**
-     * 将数据从GUI元素移动到TestElement
+     * GUI -> TestElement
      */
     @Override
     public void modifyTestElement(TestElement el) {
@@ -71,7 +71,7 @@ public class SSHConfigurationGui extends AbstractConfigGui {
     }
 
     /**
-     * 将数据设置到GUI元素中
+     * TestElement -> GUI
      */
     @Override
     public void configure(TestElement el) {

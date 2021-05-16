@@ -14,7 +14,7 @@ import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 
 /**
- * @author KelvinYe
+ * @author Kelvin.Ye
  */
 public class SSHUtil {
     /**

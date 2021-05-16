@@ -8,11 +8,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 /**
- * Description
- *
- * @author KelvinYe
- * Date     2019-01-24
- * Time     16:38
+ * @author  Kelvin.Ye
+ * @date     2019-01-24 16:38
  */
 @Setter
 @Getter

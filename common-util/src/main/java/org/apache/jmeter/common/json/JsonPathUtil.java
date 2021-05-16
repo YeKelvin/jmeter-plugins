@@ -17,11 +17,8 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Description
- *
- * @author KelvinYe
- * Date     2019-02-14
- * Time     10:16
+ * @author  Kelvin.Ye
+ * @date    2019-02-14 10:16
  */
 public class JsonPathUtil {
 

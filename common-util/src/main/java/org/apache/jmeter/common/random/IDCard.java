@@ -7,7 +7,7 @@ import java.util.Set;
 /**
  * 生成随机身份证号
  *
- * @author KelvinYe
+ * @author Kelvin.Ye
  */
 public class IDCard {
     /**

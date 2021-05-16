@@ -20,7 +20,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * @author KelvinYe
+ * @author Kelvin.Ye
  */
 public class ExcelUtil {
     public static final String XLS = "xls";

@@ -1,11 +1,8 @@
 package org.apache.jmeter.common.exceptions;
 
 /**
- * Description
- *
- * @author KelvinYe
- * Date     2019-02-28
- * Time     14:53
+ * @author  Kelvin.Ye
+ * @date    2019-02-28 14:53
  */
 public class ServiceException extends RuntimeException {
 

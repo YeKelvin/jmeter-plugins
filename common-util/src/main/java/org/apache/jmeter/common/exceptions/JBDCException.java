@@ -2,7 +2,7 @@ package org.apache.jmeter.common.exceptions;
 
 
 /**
- * @author KelvinYe
+ * @author Kelvin.Ye
  */
 public class JBDCException extends RuntimeException {
 

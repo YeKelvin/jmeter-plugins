@@ -12,11 +12,8 @@ import java.io.OutputStreamWriter;
 import java.nio.charset.StandardCharsets;
 
 /**
- * Description
- *
- * @author KelvinYe
- * Date     2019-01-29
- * Time     11:27
+ * @author  Kelvin.Ye
+ * @date    2019-01-29 11:27
  */
 public class JsoupUtil {
 

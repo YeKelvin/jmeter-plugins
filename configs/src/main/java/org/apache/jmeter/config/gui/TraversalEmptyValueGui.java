@@ -10,9 +10,8 @@ import javax.swing.*;
 import java.awt.*;
 
 /**
- * @author KelvinYe
- * Date: 2018-04-17
- * Time: 11:10
+ * @author  Kelvin.Ye
+ * @date    2018-04-17 11:10
  */
 public class TraversalEmptyValueGui extends AbstractConfigGui {
 
@@ -56,7 +55,7 @@ public class TraversalEmptyValueGui extends AbstractConfigGui {
     }
 
     /**
-     * 将数据从GUI元素移动到TestElement
+     * GUI -> TestElement
      */
     @Override
     public void modifyTestElement(TestElement el) {
@@ -67,7 +66,7 @@ public class TraversalEmptyValueGui extends AbstractConfigGui {
     }
 
     /**
-     * 将数据设置到GUI元素中
+     * TestElement -> GUI
      */
     @Override
     public void configure(TestElement el) {

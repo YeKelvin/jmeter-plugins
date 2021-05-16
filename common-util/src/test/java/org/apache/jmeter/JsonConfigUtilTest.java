@@ -6,9 +6,8 @@ import org.testng.annotations.Test;
 import java.util.HashMap;
 
 /**
- * User: KelvinYe
- * Date: 2018-03-28
- * Time: 14:46
+ * @author  Kelvin.Ye
+ * @date    2018-03-28 14:46
  */
 public class JsonConfigUtilTest {
 

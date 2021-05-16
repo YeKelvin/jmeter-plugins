@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * @author KelvinYe
+ * @author Kelvin.Ye
  */
 public class AreaCode {
     public static final Map<String, Integer> code = new HashMap<>();

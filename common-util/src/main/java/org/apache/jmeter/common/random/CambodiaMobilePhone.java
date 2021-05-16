@@ -6,7 +6,7 @@ import java.util.Random;
 /**
  * 柬埔寨手机号随机数
  *
- * @author KelvinYe
+ * @author Kelvin.Ye
  */
 public class CambodiaMobilePhone {
     private static final ArrayList<String[]> PHONE_RULE = new ArrayList<>();

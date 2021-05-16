@@ -10,11 +10,8 @@ import javax.swing.*;
 import java.awt.*;
 
 /**
- * User: KelvinYe
- * Date: 2018-04-17
- * Time: 11:10
- *
- * @author Kaiwen.Ye
+ * @author  KelvinYe
+ * @date    2018-04-17 11:10
  */
 public class TraversalDataSetGui extends AbstractConfigGui {
 
@@ -57,7 +54,7 @@ public class TraversalDataSetGui extends AbstractConfigGui {
     }
 
     /**
-     * 将数据从GUI元素移动到TestElement
+     * GUI -> TestElement
      */
     @Override
     public void modifyTestElement(TestElement el) {
@@ -67,7 +64,7 @@ public class TraversalDataSetGui extends AbstractConfigGui {
     }
 
     /**
-     * 将数据设置到GUI元素中
+     * TestElement -> GUI
      */
     @Override
     public void configure(TestElement el) {

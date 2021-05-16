@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.Random;
 
 /**
- * @author KelvinYe
+ * @author Kelvin.Ye
  */
 public class MobilePhone {
     private static final ArrayList<String> PHONE_CODE = new ArrayList<>();

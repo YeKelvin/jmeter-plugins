@@ -7,11 +7,8 @@ import org.apache.jorphan.gui.ObjectTableModel;
 import org.apache.jorphan.reflect.Functor;
 
 /**
- * Description:
- *
- * @author: KelvinYe
- * Date: 2021-05-13
- * Time: 00:20
+ * @author  Kelvin.Ye
+ * @date    2021-05-13 00:20
  */
 public class ScriptArgumentsDescriptorGui extends ArgumentsPanel {
 

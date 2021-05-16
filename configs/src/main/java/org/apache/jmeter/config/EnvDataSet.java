@@ -16,9 +16,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * @author: KelvinYe
- * Date: 2018-04-08
- * Time: 17:11
+ * @author  Kelvin.Ye
+ * @date    2018-04-08 17:11
  */
 public class EnvDataSet extends ConfigTestElement implements TestStateListener, NoThreadClone, NoConfigMerge {
 

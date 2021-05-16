@@ -16,11 +16,8 @@ import java.io.OutputStreamWriter;
 import java.nio.charset.StandardCharsets;
 
 /**
- * Description
- *
- * @author KelvinYe
- * Date     2019-02-14
- * Time     14:53
+ * @author  Kelvin.Ye
+ * @date    2019-02-14 14:53
  */
 public class FileUtil {
 

@@ -9,10 +9,7 @@ import org.apache.jmeter.common.utils.ExceptionUtil;
 import org.apache.jmeter.common.jmeter.JMeterVariablesUtil;
 import org.apache.jmeter.common.utils.PathUtil;
 import org.apache.jmeter.common.json.JsonUtil;
-import org.apache.jmeter.config.Argument;
-import org.apache.jmeter.config.Arguments;
-import org.apache.jmeter.config.EnvDataSet;
-import org.apache.jmeter.config.SSHConfiguration;
+import org.apache.jmeter.config.*;
 import org.apache.jmeter.control.LoopController;
 import org.apache.jmeter.engine.StandardJMeterEngine;
 import org.apache.jmeter.exceptions.IllegalUserActionException;
@@ -273,18 +270,21 @@ public class JMeterScriptSampler extends AbstractSampler implements Interruptibl
         SearchByClass<SSHConfiguration> sshSearcher = new SearchByClass<>(SSHConfiguration.class);
         SearchByClass<ReportCollector> reportSearcher = new SearchByClass<>(ReportCollector.class);
         SearchByClass<ResultCollector> resultCollectorSearcher = new SearchByClass<>(ResultCollector.class);
+        SearchByClass<ScriptArgumentsDescriptor> argsDescSearcher = new SearchByClass<>(ScriptArgumentsDescriptor.class);
 
         testPlanTree.traverse(setupSearcher);
         testPlanTree.traverse(groupSearcher);
         testPlanTree.traverse(sshSearcher);
         testPlanTree.traverse(reportSearcher);
         testPlanTree.traverse(resultCollectorSearcher);
+        testPlanTree.traverse(argsDescSearcher);
 
         Iterator<SetupThreadGroup> setupIter = setupSearcher.getSearchResults().iterator();
         Iterator<AbstractThreadGroup> threadGroupIter = groupSearcher.getSearchResults().iterator();
         Iterator<SSHConfiguration> sshIter = sshSearcher.getSearchResults().iterator();
         Iterator<ReportCollector> reportIter = reportSearcher.getSearchResults().iterator();
         Iterator<ResultCollector> resultCollectorIter = resultCollectorSearcher.getSearchResults().iterator();
+        Iterator<ScriptArgumentsDescriptor> argsDescIter = argsDescSearcher.getSearchResults().iterator();
 
         // 遍历删除以上搜索的对象
         // 删除 TestPlan下的组件
@@ -323,6 +323,12 @@ public class JMeterScriptSampler extends AbstractSampler implements Interruptibl
             for (ResultCollector resultCollector : resultCollectorSearcher.getSearchResults()) {
                 threadGroupTree.remove(resultCollector);
             }
+        }
+
+        while (argsDescIter.hasNext()) {
+            // 删除 脚本参数描述器
+            ScriptArgumentsDescriptor argsDesc = argsDescIter.next();
+            testPlanTree.remove(argsDesc);
         }
     }
 

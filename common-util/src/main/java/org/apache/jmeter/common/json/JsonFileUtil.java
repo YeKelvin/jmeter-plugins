@@ -15,7 +15,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 
 /**
- * @author KelvinYe
+ * @author Kelvin.Ye
  */
 public class JsonFileUtil {
     

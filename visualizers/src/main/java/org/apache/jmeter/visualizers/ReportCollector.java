@@ -23,7 +23,7 @@ import java.io.File;
 
 
 /**
- * @author KelvinYe
+ * @author Kelvin.Ye
  */
 public class ReportCollector extends AbstractTestElement
         implements TestStateListener, ThreadListener, SampleListener, Interruptible, NoThreadClone {

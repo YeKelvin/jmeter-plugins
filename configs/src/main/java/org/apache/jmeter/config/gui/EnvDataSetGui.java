@@ -28,7 +28,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * @author KelvinYe
+ * @author Kelvin.Ye
  */
 public class EnvDataSetGui extends AbstractConfigGui implements ActionListener {
 
@@ -83,7 +83,7 @@ public class EnvDataSetGui extends AbstractConfigGui implements ActionListener {
     }
 
     /**
-     * 将数据从GUI元素移动到TestElement
+     * GUI -> TestElement
      */
     @Override
     public void modifyTestElement(TestElement el) {
@@ -94,7 +94,7 @@ public class EnvDataSetGui extends AbstractConfigGui implements ActionListener {
     }
 
     /**
-     * 将数据设置到GUI元素中
+     * TestElement -> GUI
      */
     @Override
     public void configure(TestElement el) {

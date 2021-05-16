@@ -23,11 +23,8 @@ import java.util.Map;
 import java.util.Properties;
 
 /**
- * Description
- *
- * @author KelvinYe
- * Date     2019-02-22
- * Time     11:47
+ * @author  Kelvin.Ye
+ * @date    2019-02-22 11:47
  */
 public class DubboTelnetSampler extends AbstractSampler {
 

@@ -15,7 +15,7 @@ import java.nio.charset.StandardCharsets;
 
 
 /**
- * @author KelvinYe
+ * @author Kelvin.Ye
  */
 public class TelnetUtil {
 

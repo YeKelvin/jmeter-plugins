@@ -5,11 +5,8 @@ import lombok.Setter;
 import lombok.ToString;
 
 /**
- * Description
- *
- * @author KelvinYe
- * Date     2019-01-24
- * Time     16:39
+ * @author  Kelvin.Ye
+ * @date    2019-01-24 16:39
  */
 @Setter
 @Getter

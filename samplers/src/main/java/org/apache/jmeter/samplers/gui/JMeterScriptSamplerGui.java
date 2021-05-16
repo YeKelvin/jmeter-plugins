@@ -7,7 +7,6 @@ import org.apache.jmeter.JMeter;
 import org.apache.jmeter.common.jmeter.JMeterGuiUtil;
 import org.apache.jmeter.common.jmeter.ValueReplaceUtil;
 import org.apache.jmeter.common.utils.DesktopUtil;
-import org.apache.jmeter.common.utils.ExceptionUtil;
 import org.apache.jmeter.common.utils.YamlUtil;
 import org.apache.jmeter.config.Argument;
 import org.apache.jmeter.config.Arguments;
@@ -36,6 +35,7 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -51,16 +51,15 @@ public class JMeterScriptSamplerGui extends AbstractSamplerGui implements Action
     /**
      * Action命令
      */
-    private static final String OPEN_SCRIPT_ACTION = "OPEN_SCRIPT";
     private static final String OPEN_DIRECTORY_ACTION = "OPEN_DIRECTORY";
-    private static final String PULL_ARGUMENTS_ACTION = "PULL_ARGUMENTS";
+    private static final String OPEN_SCRIPT_ACTION = "OPEN_SCRIPT";
 
     /**
      * 脚本后缀名称
      */
     private static final String JMX_SUFFIX = ".jmx";
 
-    private static final String INVALID_ARGUMENTS_MSG = "无效参数，请删除";
+    private static final String INVALID_ARGUMENTS_MSG = "无效参数，建议删除";
 
     /**
      * swing组件
@@ -95,6 +94,7 @@ public class JMeterScriptSamplerGui extends AbstractSamplerGui implements Action
     private String cachedConfigName;
     private Map<String, String> cachedConfigVariables = new HashMap<>();
     private String cachedScriptPath;
+    private long cachedScriptFileLastModified = 0;
     private Arguments cachedArguments;
 
     /**
@@ -210,9 +210,6 @@ public class JMeterScriptSamplerGui extends AbstractSamplerGui implements Action
             case OPEN_DIRECTORY_ACTION:
                 openScriptDirectory();
                 break;
-            case PULL_ARGUMENTS_ACTION:
-                pullArguments();
-                break;
             case OPEN_SCRIPT_ACTION:
                 openScript();
                 break;
@@ -222,29 +219,24 @@ public class JMeterScriptSamplerGui extends AbstractSamplerGui implements Action
     }
 
     private void openScript() {
-    }
-
-    /**
-     * 从脚本中拉取Arguments对象，合并后返回给Gui
-     */
-    private void pullArguments() {
-        Arguments argsDesc = getArgumentsDescriptor();
-        if (argsDesc != null) {
-            argsDesc.getArgumentsAsMap().forEach((key, value) -> {
-                log.info("key={}, value={}", key, value);
-            });
-        }
-
-        log.info("no ScriptArgumentsDescriptor");
+        // 还没实现呢
     }
 
     private Arguments mergeArguments(Arguments selfArgs) {
-        Arguments targetArgs = getScriptArguments();
+        Arguments targetArgs;
+        try {
+            targetArgs = getScriptArgumentsWithCache();
+        } catch (IOException | IllegalUserActionException e) {
+            log.debug(e.getMessage());
+            return selfArgs;
+        }
 
+        // 指定脚本的参数个数为0 且 调用者的参数个数也为0时，直接返回调用者的参数
         if (targetArgs.getArgumentCount() == 0 && selfArgs.getArgumentCount() == 0) {
             return selfArgs;
         }
 
+        // 指定脚本的参数个数为0 且 调用者的参数个数大于0时，提示调用者的参数为无效参数
         if (targetArgs.getArgumentCount() == 0 && selfArgs.getArgumentCount() > 0) {
             for (JMeterProperty selfProp : selfArgs) {
                 Argument selfArg = (Argument) selfProp.getObjectValue();
@@ -253,6 +245,7 @@ public class JMeterScriptSamplerGui extends AbstractSamplerGui implements Action
             return selfArgs;
         }
 
+        // 指定脚本的参数个数大于0 且 调用者的参数个数为0时，复制指定脚本的参数给调用者
         if (targetArgs.getArgumentCount() > 0 && selfArgs.getArgumentCount() == 0) {
             for (JMeterProperty targetProp : targetArgs) {
                 Argument targetArg = (Argument) targetProp.getObjectValue();
@@ -266,6 +259,8 @@ public class JMeterScriptSamplerGui extends AbstractSamplerGui implements Action
             return selfArgs;
         }
 
+        // 以下是双方参数个数都大于0的情况
+        // 遍历指定脚本的参数，判断调用者是否存在相同的参数，存在则更新描述，不存在则新增参数
         for (JMeterProperty targetProp : targetArgs) {
             Argument targetArg = (Argument) targetProp.getObjectValue();
             String targetArgName = targetArg.getName();
@@ -273,6 +268,7 @@ public class JMeterScriptSamplerGui extends AbstractSamplerGui implements Action
             boolean exist = false;
             for (JMeterProperty selfProp : selfArgs) {
                 Argument selfArg = (Argument) selfProp.getObjectValue();
+                // 存在时更新描述后退出for循环
                 if (selfArg.getName().equals(targetArgName)) {
                     selfArg.setDescription(targetArg.getDescription());
                     exist = true;
@@ -280,6 +276,7 @@ public class JMeterScriptSamplerGui extends AbstractSamplerGui implements Action
                 }
             }
 
+            // 不存在时添加
             if (!exist) {
                 selfArgs.addArgument(
                         targetArg.getName(),
@@ -289,6 +286,7 @@ public class JMeterScriptSamplerGui extends AbstractSamplerGui implements Action
             }
         }
 
+        // 遍历调用者的参数，判断指定脚本是否存在相同的参数，存在则更新描述，不存在则新增参数
         for (JMeterProperty selfProp : selfArgs) {
             Argument selfArg = (Argument) selfProp.getObjectValue();
             String selfArgName = selfArg.getName();
@@ -296,12 +294,14 @@ public class JMeterScriptSamplerGui extends AbstractSamplerGui implements Action
             boolean exist = false;
             for (JMeterProperty targetProp : targetArgs) {
                 Argument targetArg = (Argument) targetProp.getObjectValue();
+                // 存在时退出for循环
                 if (targetArg.getName().equals(selfArgName)) {
                     exist = true;
                     break;
                 }
             }
 
+            // 不存在时描述更新为无效的参数
             if (!exist) {
                 selfArg.setDescription(INVALID_ARGUMENTS_MSG);
             }
@@ -338,9 +338,7 @@ public class JMeterScriptSamplerGui extends AbstractSamplerGui implements Action
             if (StringUtils.isNotBlank(configName)) {
                 String configPath = configDirectory + File.separator + configName;
                 Map<String, String> variables = new HashMap<>();
-                YamlUtil.parseYamlAsMap(configPath).forEach((key, value) -> {
-                    variables.put(key, value.toString());
-                });
+                YamlUtil.parseYamlAsMap(configPath).forEach((key, value) -> variables.put(key, value.toString()));
                 cachedConfigName = configName;
                 cachedConfigVariables = variables;
                 log.debug("缓存configName");
@@ -422,7 +420,7 @@ public class JMeterScriptSamplerGui extends AbstractSamplerGui implements Action
 
         scriptPanel.add(scriptNameLabel, JMeterGuiUtil.GridBag.mostLeftConstraints);
         scriptPanel.add(scriptNameField, JMeterGuiUtil.GridBag.middleConstraints);
-        scriptPanel.add(createPullArgumentsButton(), JMeterGuiUtil.GridBag.mostRightConstraints);
+        scriptPanel.add(createOpenScriptButton(), JMeterGuiUtil.GridBag.mostRightConstraints);
 
         scriptPanel.add(syncToPropsLabel, JMeterGuiUtil.GridBag.labelConstraints);
         scriptPanel.add(syncToPropsComboBox, JMeterGuiUtil.GridBag.editorConstraints);
@@ -457,9 +455,9 @@ public class JMeterScriptSamplerGui extends AbstractSamplerGui implements Action
         return button;
     }
 
-    private Component createPullArgumentsButton() {
-        JButton button = new JButton("Pull Args");
-        button.setActionCommand(PULL_ARGUMENTS_ACTION);
+    private Component createOpenScriptButton() {
+        JButton button = new JButton("OPEN");
+        button.setActionCommand(OPEN_SCRIPT_ACTION);
         button.addActionListener(this);
         return button;
     }
@@ -467,18 +465,17 @@ public class JMeterScriptSamplerGui extends AbstractSamplerGui implements Action
     /**
      * 获取脚本绝对路径路径，文件或路径非法时返回空字符
      */
-    private String getScriptPath() {
+    private String getScriptPath() throws FileNotFoundException {
         String scriptName = scriptNameField.getText();
         String scriptDirectory = getScriptDirectoryPath();
 
         if (StringUtils.isBlank(scriptDirectory) || StringUtils.isBlank(scriptName)) {
-            log.debug("脚本路径为空, scriptDirectory:[ {} ] scriptName:[ {} ]", scriptDirectory, scriptName);
-            return "";
+            throw new FileNotFoundException(
+                    String.format("脚本路径为空, scriptDirectory:[ %s ] scriptName:[ %s ]", scriptDirectory, scriptName));
         }
 
         if (!scriptName.endsWith(JMX_SUFFIX)) {
-            log.debug("脚本名称必须包含jmx后缀, scriptName:[ {} ]", scriptName);
-            return "";
+            throw new FileNotFoundException(String.format("脚本非.jmx文件, scriptName:[ %s ]", scriptName));
         }
 
         String scriptPath = scriptDirectory + File.separator + scriptName;
@@ -486,13 +483,14 @@ public class JMeterScriptSamplerGui extends AbstractSamplerGui implements Action
         return scriptPath;
     }
 
-    private File getScriptFile() {
-        String scriptPath = getScriptPath();
+    private File getScriptFile(String scriptPath) throws FileNotFoundException {
+        if (scriptPath == null) {
+            scriptPath = getScriptPath();
+        }
 
         File file = new File(scriptPath);
         if (!file.exists() || !file.isFile()) {
-            log.debug("脚本不存在, scriptPath:[ {} ]", scriptPath);
-            return file;
+            throw new FileNotFoundException(String.format("脚本不存在或非文件, scriptPath:[ %s ]", scriptPath));
         }
 
         // 缓存脚本路径
@@ -504,53 +502,60 @@ public class JMeterScriptSamplerGui extends AbstractSamplerGui implements Action
     /**
      * 获取脚本的HashTree对象，脚本不存在时返回null
      */
-    private HashTree getScriptTree() throws IOException, IllegalUserActionException {
+    private HashTree getScriptTree(File scriptFile) throws IOException, IllegalUserActionException {
+        if (scriptFile == null) {
+            scriptFile = getScriptFile(null);
+        }
         // 加载脚本
-        HashTree tree = SaveService.loadTree(getScriptFile());
+        HashTree tree = SaveService.loadTree(scriptFile);
 
-        // 对脚本做一些处理
+        // 对脚本做一些处理，具体是做啥呢，我也忘了，看源码吧
         JMeterTreeModel treeModel = new JMeterTreeModel(new TestPlan());
         JMeterTreeNode root = (JMeterTreeNode) treeModel.getRoot();
         treeModel.addSubTree(tree, root);
 
-        // 删除已禁用的组件
+        // 删除已禁用的组件并返回
         return JMeter.convertSubTree(tree, false);
     }
 
     /**
      * 获取脚本HashTree对象中的ScriptArgumentsDescriptor对象，不存在时返回null
      */
-    private Arguments getArgumentsDescriptor() {
-        try {
-            // 获取HashTree对象
-            HashTree hashTree = getScriptTree();
-            // 获取TestPlan对象
-            HashTree testPlanTree = hashTree.get(hashTree.getArray()[0]);
-            // 搜索ScriptArgumentsDescriptor对象
-            SearchByClass<ScriptArgumentsDescriptor> argsDescSearcher = new SearchByClass<>(ScriptArgumentsDescriptor.class);
-            testPlanTree.traverse(argsDescSearcher);
-            Iterator<ScriptArgumentsDescriptor> argsDescIter = argsDescSearcher.getSearchResults().iterator();
-            if (!argsDescIter.hasNext()) {
-                return new Arguments();
-            }
-            Arguments argsDesc = argsDescIter.next();
-            // 缓存脚本参数
-            cachedArguments = argsDesc;
-            log.debug("缓存argsDesc");
-            return argsDesc;
-        } catch (IOException | IllegalUserActionException ex) {
-            log.warn(ExceptionUtil.getStackTrace(ex));
+    private Arguments getArgumentsDescriptor(File scriptFile) throws IllegalUserActionException, IOException {
+        if (scriptFile == null) {
+            scriptFile = getScriptFile(null);
         }
-        return new Arguments();
+        // 获取HashTree对象
+        HashTree hashTree = getScriptTree(scriptFile);
+        // 获取TestPlan对象
+        HashTree testPlanTree = hashTree.get(hashTree.getArray()[0]);
+        // 搜索ScriptArgumentsDescriptor对象
+        SearchByClass<ScriptArgumentsDescriptor> argsDescSearcher = new SearchByClass<>(ScriptArgumentsDescriptor.class);
+        testPlanTree.traverse(argsDescSearcher);
+        Iterator<ScriptArgumentsDescriptor> argsDescIter = argsDescSearcher.getSearchResults().iterator();
+        if (!argsDescIter.hasNext()) {
+            return new Arguments();
+        }
+        Arguments argsDesc = argsDescIter.next();
+        // 缓存脚本参数
+        cachedArguments = argsDesc;
+        log.debug("缓存argsDesc");
+        return argsDesc;
     }
 
     /**
      * 获取脚本Arguments对象
      */
-    private Arguments getScriptArguments() {
-        if (cachedScriptPath == null || !cachedScriptPath.equals(getScriptPath())) {
-            cachedArguments = getArgumentsDescriptor();
+    private Arguments getScriptArgumentsWithCache() throws IOException, IllegalUserActionException {
+        String scriptPath = getScriptPath();
+        File scriptFile = getScriptFile(scriptPath);
+        long scriptFileLastModified = scriptFile.lastModified();
+
+        if (cachedScriptPath == null || !cachedScriptPath.equals(scriptPath) || cachedScriptFileLastModified < scriptFileLastModified) {
+            cachedArguments = getArgumentsDescriptor(scriptFile);
+            cachedScriptFileLastModified = scriptFileLastModified;
         }
+
         return cachedArguments;
     }
 }

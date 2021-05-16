@@ -9,11 +9,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Description
- *
- * @author KelvinYe
- * Date     2019-01-30
- * Time     17:45
+ * @author Kelvin.Ye
+ * @date    2019-01-30 17:45
  */
 public class JavaScriptUtil {
 

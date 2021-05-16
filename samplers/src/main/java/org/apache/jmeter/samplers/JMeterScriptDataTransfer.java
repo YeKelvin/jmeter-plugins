@@ -21,9 +21,7 @@ import java.util.Properties;
 
 
 /**
- * Description:
- *
- * @author: KelvinYe
+ * @author Kelvin.Ye
  */
 public class JMeterScriptDataTransfer extends AbstractTestElement
         implements ThreadListener, SampleListener, NoThreadClone {

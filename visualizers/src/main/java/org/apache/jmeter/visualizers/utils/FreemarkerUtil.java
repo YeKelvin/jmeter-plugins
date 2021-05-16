@@ -18,11 +18,8 @@ import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
 /**
- * Description
- *
- * @author KelvinYe
- * Date     2019-01-23
- * Time     14:47
+ * @author  Kelvin.Ye
+ * @date    2019-01-23 14:47
  */
 public class FreemarkerUtil {
 

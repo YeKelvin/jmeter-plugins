@@ -16,11 +16,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 /**
- * Description
- *
- * @author KelvinYe
- * Date     2019-02-22
- * Time     11:47
+ * @author  Kelvin.Ye
+ * @date    2019-02-22 11:47
  */
 public class DubboTelnetSamplerGui extends AbstractSamplerGui implements ActionListener {
 
@@ -93,6 +90,9 @@ public class DubboTelnetSamplerGui extends AbstractSamplerGui implements ActionL
         return dubboTelnet;
     }
 
+    /**
+     * GUI -> TestElement
+     */
     @Override
     public void modifyTestElement(TestElement element) {
         super.configureTestElement(element);
@@ -104,6 +104,9 @@ public class DubboTelnetSamplerGui extends AbstractSamplerGui implements ActionL
         element.setProperty(DubboTelnetSampler.PARAMS, getParamsText());
     }
 
+    /**
+     * TestElement -> GUI
+     */
     @Override
     public void configure(TestElement el) {
         super.configure(el);

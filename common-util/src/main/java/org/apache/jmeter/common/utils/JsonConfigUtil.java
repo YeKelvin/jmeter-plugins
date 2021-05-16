@@ -11,7 +11,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 
 /**
- * @author KelvinYe
+ * @author Kelvin.Ye
  */
 public class JsonConfigUtil {
     /**

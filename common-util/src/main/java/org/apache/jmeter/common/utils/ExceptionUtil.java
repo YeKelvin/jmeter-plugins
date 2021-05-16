@@ -6,9 +6,8 @@ import java.io.StringWriter;
 /**
  * 异常工具类
  *
- * @author KelvinYe
- * Date     2018-09-30
- * Time     10:25
+ * @author  Kelvin.Ye
+ * @date    2018-09-30 10:25
  */
 public class ExceptionUtil {
     /**

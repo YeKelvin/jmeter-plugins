@@ -7,11 +7,8 @@ import javax.swing.border.TitledBorder;
 import java.awt.*;
 
 /**
- * Description
- *
- * @author KelvinYe
- * Date     2019-03-05
- * Time     14:11
+ * @author  Kelvin.Ye
+ * @date    2019-03-05
  */
 public class JMeterGuiUtil {
 

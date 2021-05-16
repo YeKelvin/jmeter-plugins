@@ -12,11 +12,8 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Description:
- *
- * @author: KelvinYe
- * Date: 2019-06-22
- * Time: 10:41
+ * @author  Kelvin.Ye
+ * @date    2019-06-22 10:41
  */
 public class MapTypeAdapter extends TypeAdapter<Object> {
 

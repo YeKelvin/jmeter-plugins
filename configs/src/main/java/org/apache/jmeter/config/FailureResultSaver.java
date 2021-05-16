@@ -13,7 +13,7 @@ import java.io.File;
 
 
 /**
- * @author KelvinYe
+ * @author Kelvin.Ye
  */
 public class FailureResultSaver extends ConfigTestElement implements SampleListener {
 

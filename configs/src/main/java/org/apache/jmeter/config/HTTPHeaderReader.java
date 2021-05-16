@@ -22,9 +22,9 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * @author KelvinYe
- *
  * HTTP请求头文件读取器
+ *
+ * @author Kelvin.Ye
  */
 public class HTTPHeaderReader extends HeaderManager implements TestStateListener {
 

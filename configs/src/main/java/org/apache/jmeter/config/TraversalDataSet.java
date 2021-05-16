@@ -11,9 +11,8 @@ import java.util.Iterator;
 import java.util.List;
 
 /**
- * @author KelvinYe
- * Date: 2018-04-17
- * Time: 11:10
+ * @author  Kelvin.Ye
+ * @date    2018-04-17 11:10
  */
 public class TraversalDataSet extends ConfigTestElement implements LoopIterationListener, NoConfigMerge {
 

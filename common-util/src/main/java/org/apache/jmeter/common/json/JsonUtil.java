@@ -17,7 +17,7 @@ import java.util.Map;
 import java.util.regex.Pattern;
 
 /**
- * @author KelvinYe
+ * @author Kelvin.Ye
  */
 public class JsonUtil {
 

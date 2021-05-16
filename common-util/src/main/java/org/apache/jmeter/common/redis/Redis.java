@@ -4,7 +4,7 @@ package org.apache.jmeter.common.redis;
 import redis.clients.jedis.Jedis;
 
 /**
- * @author KelvinYe
+ * @author Kelvin.Ye
  */
 public class Redis {
     /**

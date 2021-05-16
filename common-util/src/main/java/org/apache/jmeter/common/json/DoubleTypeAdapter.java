@@ -8,11 +8,8 @@ import com.google.gson.JsonSerializer;
 import java.lang.reflect.Type;
 
 /**
- * Description:
- *
- * @author: KelvinYe
- * Date: 2019-06-22
- * Time: 10:52
+ * @author  Kelvin.Ye
+ * @date    2019-06-22 10:52
  */
 public class DoubleTypeAdapter implements JsonSerializer<Double> {
     @Override
