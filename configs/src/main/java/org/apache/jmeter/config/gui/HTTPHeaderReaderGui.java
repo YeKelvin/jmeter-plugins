@@ -7,6 +7,7 @@ import org.apache.jmeter.common.utils.YamlUtil;
 import org.apache.jmeter.config.Argument;
 import org.apache.jmeter.config.HTTPHeaderReader;
 import org.apache.jmeter.gui.util.HeaderAsPropertyRenderer;
+import org.apache.jmeter.services.FileServer;
 import org.apache.jmeter.testelement.TestElement;
 import org.apache.jmeter.util.JMeterUtils;
 import org.apache.jorphan.gui.GuiUtils;
@@ -42,9 +43,14 @@ public class HTTPHeaderReaderGui extends AbstractConfigGui implements ActionList
     private JTable table;
     private ObjectTableModel tableModel;
 
+    private final String scriptName;
     private final String headerDirectory;
+    //    private long cachedHeaderFileLastModified = 0;
+
+    //    public static final HashMap<String, String> CACHED_HEADER_VARIABLES = new HashMap<>();
 
     public HTTPHeaderReaderGui() {
+        scriptName = FileServer.getFileServer().getScriptName();
         headerDirectory = JMeterUtils.getJMeterHome() + File.separator + "header";
         init();
     }

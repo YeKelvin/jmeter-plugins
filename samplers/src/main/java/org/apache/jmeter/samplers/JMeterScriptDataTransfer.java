@@ -31,7 +31,7 @@ public class JMeterScriptDataTransfer extends AbstractTestElement
     public static final String CALLER_VARIABLES = "JMeterScriptDataTransfer.callerVariables";
     public static final String INCREMENTAL_VARIABLES = "JMeterScriptDataTransfer.incrementalVariables";
 
-    private Properties props = JMeterUtils.getJMeterProperties();
+    private final Properties props = JMeterUtils.getJMeterProperties();
 
     private Map<String, Object> clonedVars;
 

@@ -127,6 +127,9 @@ public class ReportCollector extends AbstractTestElement
         testCaseStep.setRequest(result.getSamplerData());
         testCaseStep.setResponse(result.getResponseDataAsString());
 
+        // 添加子集
+        addSubResultTohtml(result.getSubResults(), testCase);
+
         // 设置测试结果
         if (result.isSuccessful()) {
             testCaseStep.pass();
@@ -155,6 +158,26 @@ public class ReportCollector extends AbstractTestElement
     @Override
     public void sampleStopped(SampleEvent sampleEvent) {
         // pass
+    }
+
+    private void addSubResultTohtml(SampleResult[] subResults, TestCaseData testCase) {
+        if (subResults.length <= 0) {
+            return;
+        }
+
+        for (SampleResult subResult : subResults) {
+            TestCaseStepData testCaseStep = new TestCaseStepData();
+            testCaseStep.setTile(subResult.getSampleLabel());
+            testCaseStep.setElapsedTime(getSampleElapsedTime(subResult));
+            testCaseStep.setRequest(subResult.getSamplerData());
+            testCaseStep.setResponse(subResult.getResponseDataAsString());
+            testCase.putTestCaseStep(testCaseStep);
+
+            SampleResult[] innerSubResults = subResult.getSubResults();
+            if (innerSubResults.length >0 ) {
+                addSubResultTohtml(innerSubResults, testCase);
+            }
+        }
     }
 
     /**

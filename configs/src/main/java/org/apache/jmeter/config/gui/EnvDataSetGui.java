@@ -46,8 +46,10 @@ public class EnvDataSetGui extends AbstractConfigGui implements ActionListener {
 
     private final String scriptName;
     private final String configDirectory;
+//    private long cachedConfigFileLastModified = 0;
 
     public static final HashMap<String, String> CACHED_CONFIG_NAME_WITH_SCRIPT = new HashMap<>();
+//    public static final HashMap<String, String> CACHED_CONFIG_VARIABLES = new HashMap<>();
 
     public EnvDataSetGui() {
         scriptName = FileServer.getFileServer().getScriptName();
