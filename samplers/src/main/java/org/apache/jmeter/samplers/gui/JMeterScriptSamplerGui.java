@@ -412,7 +412,7 @@ public class JMeterScriptSamplerGui extends AbstractSamplerGui implements Action
 
     private JPanel createScriptPanel() {
         JPanel scriptPanel = new JPanel(new GridBagLayout());
-        scriptPanel.setBorder(JMeterGuiUtil.createTitledBorder("配置执行脚本信息"));
+        scriptPanel.setBorder(JMeterGuiUtil.createTitledBorder("脚本配置"));
 
         scriptPanel.add(scriptDirectoryLabel, JMeterGuiUtil.GridBag.mostLeftConstraints);
         scriptPanel.add(scriptDirectoryField, JMeterGuiUtil.GridBag.middleConstraints);
