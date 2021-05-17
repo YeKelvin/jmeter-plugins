@@ -35,14 +35,18 @@ public class EnvDataSet extends ConfigTestElement implements TestStateListener, 
      * 获取环境变量配置文件名称
      */
     public String getConfigName() {
-        return JMeterUtils.getPropDefault(CliOptions.CONFIG_NAME, getPropertyAsString(CONFIG_NAME));
+        String configName = JMeterUtils.getPropDefault(CliOptions.CONFIG_NAME, getPropertyAsString(CONFIG_NAME));
+        log.debug("configName:[ {} ]", configName);
+        return configName;
     }
 
     /**
      * 获取环境变量配置文件路径
      */
     public String getConfigPath() {
-        return JMeterUtils.getJMeterHome() + File.separator + "config" + File.separator + getConfigName();
+        String configPath = JMeterUtils.getJMeterHome() + File.separator + "config" + File.separator + getConfigName();
+        log.debug("configPath:[ {} ]", configPath);
+        return configPath;
     }
 
     /**

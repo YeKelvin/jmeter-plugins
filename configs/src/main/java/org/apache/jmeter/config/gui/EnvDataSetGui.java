@@ -52,10 +52,6 @@ public class EnvDataSetGui extends AbstractConfigGui implements ActionListener {
     private final JPanel tablePanel;
 
     /**
-     * 当前脚本名称
-     */
-    private final String scriptName;
-    /**
      * 配置目录路径
      */
     private final String configDirectory;
@@ -63,7 +59,7 @@ public class EnvDataSetGui extends AbstractConfigGui implements ActionListener {
     /**
      * 静态缓存
      */
-    public static final Map<String, String> CACHED_CONFIG_PATH = new HashMap<>();
+    public static final Map<String, String> CACHED_SELECTED_CONFIG_PATH = new HashMap<>();
     public static final Map<String, Long> CACHED_CONFIG_LAST_MODIFIED = new HashMap<>();
     public static final Map<String, Map<String, String>> CACHED_CONFIG_VARIABLES = new HashMap<>();
 
@@ -75,7 +71,7 @@ public class EnvDataSetGui extends AbstractConfigGui implements ActionListener {
                     "2、Non-Gui命令说明：存在 -JconfigName 选项时，优先读取 ${__P(configName)} 配置文件";
 
     public EnvDataSetGui() {
-        scriptName = FileServer.getFileServer().getScriptName();
+        log.debug("start new EnvDataSetGui");
         configDirectory = JMeterUtils.getJMeterHome() + File.separator + "config";
 
         configNameComboBox = createConfigNameComboBox();
@@ -89,6 +85,7 @@ public class EnvDataSetGui extends AbstractConfigGui implements ActionListener {
     }
 
     private void init() {
+        log.debug("start init");
         setLayout(new BorderLayout());
         setBorder(makeBorder());
         add(makeTitlePanel(), BorderLayout.NORTH);
@@ -123,6 +120,7 @@ public class EnvDataSetGui extends AbstractConfigGui implements ActionListener {
         super.configureTestElement(el);
         String configName = (String) configNameComboBox.getSelectedItem();
         el.setProperty(EnvDataSet.CONFIG_NAME, configName);
+        cachedSelectedConfig(configName);
     }
 
     /**
@@ -154,6 +152,12 @@ public class EnvDataSetGui extends AbstractConfigGui implements ActionListener {
         }
     }
 
+    private synchronized void cachedSelectedConfig(String configName) {
+        String configPath = getConfigPath(configName);
+        log.debug("缓存configPath:[ {} ]", configPath);
+        CACHED_SELECTED_CONFIG_PATH.put(getScriptName(), configPath);
+    }
+
     private void configureTable(TestElement el) {
         tableModel.clearData();
 
@@ -172,24 +176,25 @@ public class EnvDataSetGui extends AbstractConfigGui implements ActionListener {
         getConfigVariables(file).forEach((key, value) -> tableModel.addRow(new Argument(key, value)));
     }
 
-    private Map<String, String> getConfigVariables(File file) {
+    private synchronized Map<String, String> getConfigVariables(File file) {
         String configPath = file.getPath();
         long configLastModified = file.lastModified();
 
         // 获取静态缓存
         Map<String, String> cachedConfigVariables = CACHED_CONFIG_VARIABLES.get(configPath);
         long cachedConfigLastModified = CACHED_CONFIG_LAST_MODIFIED.getOrDefault(configPath, (long) 0);
+        log.debug("cachedConfigVariables:[ {} ]", cachedConfigVariables);
+        log.debug("cachedConfigLastModified:[ {} ]", cachedConfigLastModified);
 
         // 如果缓存为空或配置文件有修改，则重新读取文件
         if (cachedConfigVariables == null || cachedConfigLastModified < configLastModified) {
             log.info("配置数据为空或配置文件有更新，重新缓存");
 
-            log.debug("缓存configVariables");
-            log.debug("缓存configLastModified");
-            log.debug("缓存configPath");
-            CACHED_CONFIG_VARIABLES.put(configPath, loadYaml(file));
+            Map<String, String> configVariables = loadYaml(file);
+            log.debug("缓存configVariables:[ {} ]", configVariables);
+            log.debug("缓存configLastModified:[ {} ]", configLastModified);
+            CACHED_CONFIG_VARIABLES.put(configPath, configVariables);
             CACHED_CONFIG_LAST_MODIFIED.put(configPath, configLastModified);
-            CACHED_CONFIG_PATH.put(scriptName, configPath);
         }
 
         return CACHED_CONFIG_VARIABLES.get(configPath);
@@ -319,5 +324,14 @@ public class EnvDataSetGui extends AbstractConfigGui implements ActionListener {
      */
     private String getConfigPath(String configName) {
         return configDirectory + File.separator + configName;
+    }
+
+    /**
+     * 获取当前脚本名称
+     */
+    private String getScriptName() {
+        String scriptName = FileServer.getFileServer().getScriptName();
+        log.debug("scriptName:[ {} ]", scriptName);
+        return scriptName;
     }
 }

@@ -2,7 +2,6 @@ package org.apache.jmeter.samplers.gui;
 
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.jmeter.JMeter;
 import org.apache.jmeter.common.jmeter.JMeterGuiUtil;
 import org.apache.jmeter.common.jmeter.ValueReplaceUtil;
 import org.apache.jmeter.common.utils.DesktopUtil;
@@ -12,13 +11,10 @@ import org.apache.jmeter.config.ScriptArgumentsDescriptor;
 import org.apache.jmeter.config.gui.ArgumentsPanel;
 import org.apache.jmeter.config.gui.EnvDataSetGui;
 import org.apache.jmeter.exceptions.IllegalUserActionException;
-import org.apache.jmeter.gui.tree.JMeterTreeModel;
-import org.apache.jmeter.gui.tree.JMeterTreeNode;
 import org.apache.jmeter.samplers.JMeterScriptSampler;
 import org.apache.jmeter.save.SaveService;
 import org.apache.jmeter.services.FileServer;
 import org.apache.jmeter.testelement.TestElement;
-import org.apache.jmeter.testelement.TestPlan;
 import org.apache.jmeter.testelement.property.JMeterProperty;
 import org.apache.jorphan.collections.HashTree;
 import org.apache.jorphan.collections.SearchByClass;
@@ -56,6 +52,9 @@ public class JMeterScriptSamplerGui extends AbstractSamplerGui implements Action
      */
     private static final String JMX_SUFFIX = ".jmx";
 
+    /**
+     * 无效参数提示
+     */
     private static final String INVALID_ARGUMENTS_MSG = "无效参数，建议删除";
 
     /**
@@ -76,16 +75,10 @@ public class JMeterScriptSamplerGui extends AbstractSamplerGui implements Action
     private final ArgumentsPanel argsPanel;
 
     /**
-     * 当前脚本名称
-     */
-    private final String scriptName;
-
-    /**
      * 缓存数据
      */
-    private String cachedScriptPath;
-    private long cachedScriptFileLastModified = 0;
-    private Arguments cachedArguments;
+    public static final Map<String, Arguments> CACHED_SCRIPT_ARGUMENTS = new HashMap<>();
+    public static final Map<String, Long> CACHED_SCRIPT_LAST_MODIFIED = new HashMap<>();
 
     /**
      * 插件说明
@@ -99,8 +92,6 @@ public class JMeterScriptSamplerGui extends AbstractSamplerGui implements Action
                     "       4.2、执行结束时将目标脚本新增的线程变量返回给调用方";
 
     public JMeterScriptSamplerGui() {
-        scriptName = FileServer.getFileServer().getScriptName();
-
         scriptDirectoryField = createScriptDirectoryTextField();
         scriptDirectoryLabel = createScriptDirectoryLabel();
 
@@ -217,7 +208,7 @@ public class JMeterScriptSamplerGui extends AbstractSamplerGui implements Action
         try {
             targetArgs = getScriptArgumentsWithCache();
         } catch (IOException | IllegalUserActionException e) {
-            log.debug(e.getMessage());
+            log.info(e.getMessage());
             return selfArgs;
         }
 
@@ -323,12 +314,20 @@ public class JMeterScriptSamplerGui extends AbstractSamplerGui implements Action
      * 根据配置文件名称反序列化yaml文件并返回，
      */
     private Map<String, String> getConfigVariables() {
-        String configPath = EnvDataSetGui.CACHED_CONFIG_PATH.get(scriptName);
-        if (configPath==null) {
-            return new HashMap<>();
+        String configPath = EnvDataSetGui.CACHED_SELECTED_CONFIG_PATH.get(getScriptName());
+        log.debug("configPath:[ {} ]", configPath);
+        if (configPath == null) {
+            log.debug("CACHED_CONFIG_PATH:[ {} ]", EnvDataSetGui.CACHED_SELECTED_CONFIG_PATH);
+
+            Map<String, String> blankVariables = new HashMap<>();
+            log.debug("configVariables:[ {} ]", blankVariables);
+            return blankVariables;
         }
 
-        return EnvDataSetGui.CACHED_CONFIG_VARIABLES.getOrDefault(configPath, new HashMap<>());
+        Map<String, String> configVariables =
+                EnvDataSetGui.CACHED_CONFIG_VARIABLES.getOrDefault(configPath, new HashMap<>());
+        log.debug("configVariables:[ {} ]", configVariables);
+        return configVariables;
     }
 
     /**
@@ -473,50 +472,20 @@ public class JMeterScriptSamplerGui extends AbstractSamplerGui implements Action
 
     private File getScriptFile(String scriptPath) throws FileNotFoundException {
         File file = new File(scriptPath);
-        if (!file.exists() || !file.isFile()) {
-            throw new FileNotFoundException(String.format("脚本不存在或非文件, scriptPath:[ %s ]", scriptPath));
+        if (!file.exists() || !file.isFile() || !scriptPath.endsWith(JMX_SUFFIX)) {
+            throw new FileNotFoundException(String.format("脚本不存在或非.jmx文件, scriptPath:[ %s ]", scriptPath));
         }
 
-        // 缓存脚本路径
-        log.debug("缓存scriptPath");
-        cachedScriptPath = scriptPath;
         return file;
-    }
-
-    private HashTree getScriptTree() throws IOException, IllegalUserActionException {
-        File scriptFile = getScriptFile();
-        return getScriptTree(scriptFile);
-    }
-
-    /**
-     * 获取脚本的HashTree对象
-     */
-    private HashTree getScriptTree(File scriptFile) throws IOException, IllegalUserActionException {
-        // 加载脚本
-        HashTree tree = SaveService.loadTree(scriptFile);
-
-        // 对脚本做一些处理，具体是做啥呢，我也忘了，看源码吧
-        JMeterTreeModel treeModel = new JMeterTreeModel(new TestPlan());
-        JMeterTreeNode root = (JMeterTreeNode) treeModel.getRoot();
-        treeModel.addSubTree(tree, root);
-
-        // 删除已禁用的组件并返回
-        return JMeter.convertSubTree(tree, false);
-    }
-
-
-    private Arguments getArgumentsDescriptor() throws IllegalUserActionException, IOException {
-        File scriptFile = getScriptFile();
-        return getArgumentsDescriptor(scriptFile);
     }
 
     /**
      * 获取脚本HashTree对象中的ScriptArgumentsDescriptor对象
      */
     private Arguments getArgumentsDescriptor(File scriptFile) throws IllegalUserActionException, IOException {
-        // 获取HashTree对象
-        HashTree hashTree = getScriptTree(scriptFile);
-        // 获取TestPlan对象
+        // 加载脚本
+        HashTree hashTree = SaveService.loadTree(scriptFile);
+        // 获取TestPlan的HashTree对象
         HashTree testPlanTree = hashTree.get(hashTree.getArray()[0]);
         // 搜索ScriptArgumentsDescriptor对象
         SearchByClass<ScriptArgumentsDescriptor> argsDescSearcher = new SearchByClass<>(ScriptArgumentsDescriptor.class);
@@ -525,27 +494,41 @@ public class JMeterScriptSamplerGui extends AbstractSamplerGui implements Action
         if (!argsDescIter.hasNext()) {
             return new Arguments();
         }
-        Arguments argsDesc = argsDescIter.next();
-        // 缓存脚本参数
-        log.debug("缓存argsDesc");
-        cachedArguments = argsDesc;
-        return argsDesc;
+        return argsDescIter.next();
     }
 
     /**
      * 获取脚本Arguments对象
      */
-    private Arguments getScriptArgumentsWithCache() throws IOException, IllegalUserActionException {
+    private synchronized Arguments getScriptArgumentsWithCache() throws IOException, IllegalUserActionException {
         String scriptPath = getScriptPath();
         File scriptFile = getScriptFile(scriptPath);
-        long scriptFileLastModified = scriptFile.lastModified();
+        long scriptLastModified = scriptFile.lastModified();
 
-        if (cachedScriptPath == null || !cachedScriptPath.equals(scriptPath) || cachedScriptFileLastModified < scriptFileLastModified) {
+        // 获取静态缓存
+        Arguments cachedScriptArguments = CACHED_SCRIPT_ARGUMENTS.get(scriptPath);
+        long cachedScriptLastModified = CACHED_SCRIPT_LAST_MODIFIED.getOrDefault(scriptPath, (long) 0);
+
+        // 如果缓存为空或脚本有更新，则重新读取脚本
+        if (cachedScriptArguments == null || cachedScriptLastModified < scriptLastModified) {
             log.info("脚本有更新，重新缓存");
-            cachedArguments = getArgumentsDescriptor(scriptFile);
-            cachedScriptFileLastModified = scriptFileLastModified;
+
+            Arguments scriptArguments = getArgumentsDescriptor(scriptFile);
+            log.debug("缓存scriptArguments:[ {} ]", scriptArguments);
+            log.debug("缓存scriptLastModified:[ {} ]", scriptLastModified);
+            CACHED_SCRIPT_ARGUMENTS.put(scriptPath, scriptArguments);
+            CACHED_SCRIPT_LAST_MODIFIED.put(scriptPath, scriptLastModified);
         }
 
-        return cachedArguments;
+        return CACHED_SCRIPT_ARGUMENTS.get(scriptPath);
+    }
+
+    /**
+     * 获取当前脚本名称
+     */
+    private String getScriptName() {
+        String scriptName = FileServer.getFileServer().getScriptName();
+        log.debug("scriptName:[ {} ]", scriptName);
+        return scriptName;
     }
 }

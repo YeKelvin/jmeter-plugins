@@ -18,6 +18,8 @@ import org.apache.jmeter.util.JMeterUtils;
 import org.apache.jmeter.visualizers.vo.TestCaseStepVO;
 import org.apache.jmeter.visualizers.vo.TestCaseVO;
 import org.apache.jmeter.visualizers.vo.TestSuiteVO;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 
@@ -27,6 +29,8 @@ import java.io.File;
  */
 public class ReportCollector extends AbstractTestElement
         implements TestStateListener, ThreadListener, SampleListener, Interruptible, NoThreadClone {
+
+    private static final Logger log = LoggerFactory.getLogger(ReportCollector.class);
 
     public static final String DATE_FORMAT_PATTERN = "yyyy.MM.dd HH:mm:ss";
     public static final String REPORT_NAME = "ReportCollector.reportName";
@@ -185,6 +189,7 @@ public class ReportCollector extends AbstractTestElement
      */
     private String getScriptName() {
         String scriptName = FileServer.getFileServer().getScriptName();
+        log.debug("scriptName:[ {} ]", scriptName);
         return scriptName.substring(0, scriptName.length() - 4).trim();
     }
 

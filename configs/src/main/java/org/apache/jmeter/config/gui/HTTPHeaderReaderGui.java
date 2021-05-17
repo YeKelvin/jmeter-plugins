@@ -165,7 +165,7 @@ public class HTTPHeaderReaderGui extends AbstractConfigGui implements ActionList
         getHeaderVariables(file).forEach((key, value) -> tableModel.addRow(new Argument(key, value)));
     }
 
-    private Map<String, String> getHeaderVariables(File file) {
+    private synchronized Map<String, String> getHeaderVariables(File file) {
         String headerPath = file.getPath();
         long configLastModified = file.lastModified();
 
