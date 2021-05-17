@@ -14,15 +14,18 @@ import java.awt.*;
  */
 public class LocalHtmlReportGui extends AbstractListenerGui {
 
+    private JTextField reportNameTextField;
+    private JComboBox<String> isAppendComboBox;
+
+    /**
+     * 插件说明
+     */
     private static final String NOTE =
             "1、测试报告生成路径为 ${JMETER_HOME}/htmlreport/${reportName}\n" +
                     "2、执行前必须先在 ${JMETER_HOME} 下创建 htmlreport 目录\n" +
                     "3、Non-Gui命令说明：\n" +
                     "       3.1、存在 -JreportName 选项时，优先读取 ${__P(reportName)} HTML报告名称\n" +
                     "       3.2、存在 -JisAppend 选项时，优先读取 ${__P(isAppend)} 追加模式\n";
-
-    private JTextField reportNameTextField;
-    private JComboBox<String> isAppendComboBox;
 
     public LocalHtmlReportGui() {
         init();

@@ -15,14 +15,17 @@ import java.awt.*;
  */
 public class TraversalEmptyValueGui extends AbstractConfigGui {
 
+    private JComboBox<String> blankTypeComboBox;
+    private JSyntaxTextArea paramsTextArea;
+    private JSyntaxTextArea emptyCheckExpressionTextArea;
+
+    /**
+     * 插件说明
+     */
     private static final String NOTE =
             "1、请将线程组设置为无限循环，数据遍历完毕时线程组将自动停止循环\n" +
                     "2、请求报文变量名=params，预期结果变量名=expression，当前 JsonPath变量名=jsonPath\n" +
                     "3、该插件中数据引用变量或函数不会替换为具体的值，请在使用的位置利用 ${__eval(${params})} 函数替换";
-
-    private JComboBox<String> blankTypeComboBox;
-    private JSyntaxTextArea paramsTextArea;
-    private JSyntaxTextArea emptyCheckExpressionTextArea;
 
     public TraversalEmptyValueGui() {
         init();

@@ -3,11 +3,11 @@ package org.apache.jmeter.config.gui;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.jmeter.common.jmeter.JMeterGuiUtil;
 import org.apache.jmeter.common.utils.DesktopUtil;
+import org.apache.jmeter.common.utils.ExceptionUtil;
 import org.apache.jmeter.common.utils.YamlUtil;
 import org.apache.jmeter.config.Argument;
 import org.apache.jmeter.config.HTTPHeaderReader;
 import org.apache.jmeter.gui.util.HeaderAsPropertyRenderer;
-import org.apache.jmeter.services.FileServer;
 import org.apache.jmeter.testelement.TestElement;
 import org.apache.jmeter.util.JMeterUtils;
 import org.apache.jorphan.gui.GuiUtils;
@@ -22,7 +22,10 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -34,23 +37,47 @@ public class HTTPHeaderReaderGui extends AbstractConfigGui implements ActionList
 
     private static final Logger log = LoggerFactory.getLogger(HTTPHeaderReaderGui.class);
 
-    private static final String NOTE = "HTTP请求头文件为yaml格式，目前仅支持放置在 ${JMETER_HOME}/header 目录下";
-
+    /**
+     * Action命令
+     */
     private static final String OPEN_ACTION = "OPEN";
 
-    private JComboBox<String> headerFileNameComboBox;
-    private JTable table;
-    private ObjectTableModel tableModel;
+    /**
+     * swing组件
+     */
+    private final JComboBox<String> headerFileNameComboBox;
+    private final JLabel headerFileNameLabel;
 
-    private final String scriptName;
+    private final ObjectTableModel tableModel;
+    private final JTable table;
+    private final JPanel tablePanel;
+
+    /**
+     * Header目录路径
+     */
     private final String headerDirectory;
-    //    private long cachedHeaderFileLastModified = 0;
 
-    //    public static final HashMap<String, String> CACHED_HEADER_VARIABLES = new HashMap<>();
+    /**
+     * 静态缓存
+     */
+    public static final Map<String, Long> CACHED_HEADER_FILE_LAST_MODIFIED = new HashMap<>();
+    public static final Map<String, Map<String, String>> CACHED_HEADER_VARIABLES = new HashMap<>();
+
+    /**
+     * 插件说明
+     */
+    private static final String NOTE = "HTTP请求头文件为yaml格式，目前仅支持放置在 ${JMETER_HOME}/header 目录下";
 
     public HTTPHeaderReaderGui() {
-        scriptName = FileServer.getFileServer().getScriptName();
         headerDirectory = JMeterUtils.getJMeterHome() + File.separator + "header";
+
+        headerFileNameComboBox = createHeadersFileNameComboBox();
+        headerFileNameLabel = createHeadersFileNameLabel();
+
+        tableModel = createTableModel();
+        table = createTable();
+        tablePanel = createTablePanel();
+
         init();
     }
 
@@ -98,7 +125,7 @@ public class HTTPHeaderReaderGui extends AbstractConfigGui implements ActionList
         super.configure(el);
         String fileName = el.getPropertyAsString(HTTPHeaderReader.HEADER_FILE_NAME);
         headerFileNameComboBox.setSelectedItem(fileName);
-        configureTable(el, fileName);
+        configureTable(el);
     }
 
     @Override
@@ -120,19 +147,53 @@ public class HTTPHeaderReaderGui extends AbstractConfigGui implements ActionList
         }
     }
 
-    private void configureTable(TestElement el, String fileName) {
+    private void configureTable(TestElement el) {
         tableModel.clearData();
-        if (StringUtils.isBlank(fileName)) {
+
+        if (!(el instanceof HTTPHeaderReader)) {
             return;
         }
 
-        if (el instanceof HTTPHeaderReader) {
-            HTTPHeaderReader httpHeaderReader = (HTTPHeaderReader) el;
-            Map<String, String> headerMap = httpHeaderReader.getHeaderMap(httpHeaderReader.getHeadersFilePath());
-            for (Map.Entry<String, String> entry : headerMap.entrySet()) {
-                tableModel.addRow(new Argument(entry.getKey(), entry.getValue()));
-            }
+        HTTPHeaderReader httpHeaderReader = (HTTPHeaderReader) el;
+        String headerFilePath = httpHeaderReader.getHeaderFilePath();
+        File file = new File(headerFilePath);
+        if (!file.exists() || !file.isFile() || !headerFilePath.endsWith(YamlUtil.YAML_SUFFIX)) {
+            log.debug("配置文件不存在或非.yaml文件，headerFilePath:[ {} ]", headerFilePath);
+            return;
         }
+
+        getHeaderVariables(file).forEach((key, value) -> tableModel.addRow(new Argument(key, value)));
+    }
+
+    private Map<String, String> getHeaderVariables(File file) {
+        String headerPath = file.getPath();
+        long configLastModified = file.lastModified();
+
+        // 获取静态缓存
+        Map<String, String> cachedHeaderVariables = CACHED_HEADER_VARIABLES.get(headerPath);
+        long cachedHeaderLastModified = CACHED_HEADER_FILE_LAST_MODIFIED.getOrDefault(headerPath, (long) 0);
+
+        // 如果缓存为空或配置文件有修改，则重新读取文件
+        if (cachedHeaderVariables == null || cachedHeaderLastModified < configLastModified) {
+            log.info("配置数据为空或配置文件有更改，重新缓存");
+
+            log.debug("缓存headerVariables");
+            log.debug("缓存headerLastModified");
+            CACHED_HEADER_VARIABLES.put(headerPath, loadYaml(file));
+            CACHED_HEADER_FILE_LAST_MODIFIED.put(headerPath, configLastModified);
+        }
+
+        return CACHED_HEADER_VARIABLES.get(headerPath);
+    }
+
+    private Map<String, String> loadYaml(File file) {
+        Map<String, String> variables = new HashMap<>();
+        try {
+            YamlUtil.parseYamlAsMap(file).forEach((key, value) -> variables.put(key, value.toString()));
+        } catch (FileNotFoundException | UnsupportedEncodingException e) {
+            log.error(ExceptionUtil.getStackTrace(e));
+        }
+        return variables;
     }
 
     private void openDirectoryOrHeader() {
@@ -146,33 +207,20 @@ public class HTTPHeaderReaderGui extends AbstractConfigGui implements ActionList
         DesktopUtil.openFile(openPath);
     }
 
-    private Component createHeadersFileNameComboBox() {
-        if (headerFileNameComboBox == null) {
-            headerFileNameComboBox = JMeterGuiUtil.createComboBox(HTTPHeaderReader.HEADER_FILE_NAME);
-            comboBoxAddItem(getHeaderFileList(headerDirectory));
+    private JComboBox<String> createHeadersFileNameComboBox() {
+        JComboBox<String> comboBox = JMeterGuiUtil.createComboBox(HTTPHeaderReader.HEADER_FILE_NAME);
+        comboBox.addItem("");
+        for (File file : getHeaderFileList(headerDirectory)) {
+            comboBox.addItem(file.getName());
         }
-        return headerFileNameComboBox;
+        return comboBox;
     }
 
-    private Component createHeadersFileNameLabel() {
-        return JMeterGuiUtil.createLabel("HTTP请求头文件名称：", createHeadersFileNameComboBox());
+    private JLabel createHeadersFileNameLabel() {
+        return JMeterGuiUtil.createLabel("HTTP请求头文件名称：", headerFileNameComboBox);
     }
 
     private JPanel createTablePanel() {
-        // 初始化表格模型
-        initializeTableModel();
-        // 列排序
-        TableRowSorter<ObjectTableModel> sorter = new TableRowSorter<>(tableModel);
-        // 设置只有第一列可以排序，其他均不可以
-        sorter.setSortable(0, true);
-        sorter.setSortable(1, false);
-
-        table = new JTable(tableModel);
-        table.getTableHeader().setDefaultRenderer(new HeaderAsPropertyRenderer());
-        table.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
-        table.revalidate();
-        table.setRowSorter(sorter);
-
         JPanel panel = new JPanel(new BorderLayout(10, 10));
         panel.add(makeScrollPane(table), BorderLayout.CENTER);
         panel.add(Box.createVerticalStrut(70), BorderLayout.WEST);
@@ -182,10 +230,13 @@ public class HTTPHeaderReaderGui extends AbstractConfigGui implements ActionList
     private Component createBodyPanel() {
         JPanel bodyPanel = new JPanel(new GridBagLayout());
         bodyPanel.setBorder(JMeterGuiUtil.createTitledBorder("通过文件配置请求头"));
-        bodyPanel.add(createHeadersFileNameLabel(), JMeterGuiUtil.GridBag.mostLeftConstraints);
-        bodyPanel.add(createHeadersFileNameComboBox(), JMeterGuiUtil.GridBag.middleConstraints);
+
+        bodyPanel.add(headerFileNameLabel, JMeterGuiUtil.GridBag.mostLeftConstraints);
+        bodyPanel.add(headerFileNameComboBox, JMeterGuiUtil.GridBag.middleConstraints);
         bodyPanel.add(createButton(), JMeterGuiUtil.GridBag.mostRightConstraints);
-        bodyPanel.add(createTablePanel(), JMeterGuiUtil.GridBag.fillBottomConstraints);
+
+        bodyPanel.add(tablePanel, JMeterGuiUtil.GridBag.fillBottomConstraints);
+
         return bodyPanel;
     }
 
@@ -204,8 +255,8 @@ public class HTTPHeaderReaderGui extends AbstractConfigGui implements ActionList
     /**
      * 初始化表格模型
      */
-    private void initializeTableModel() {
-        tableModel = new ObjectTableModel(new String[]{"HeaderName", "HeaderValue"},
+    private ObjectTableModel createTableModel() {
+        return new ObjectTableModel(new String[]{"HeaderName", "HeaderValue"},
                 Argument.class,
                 new Functor[]{
                         new Functor("getName"),
@@ -216,11 +267,20 @@ public class HTTPHeaderReaderGui extends AbstractConfigGui implements ActionList
                 new Class[]{String.class, String.class});
     }
 
-    private void comboBoxAddItem(ArrayList<File> fileList) {
-        headerFileNameComboBox.addItem("");
-        for (File file : fileList) {
-            headerFileNameComboBox.addItem(file.getName());
-        }
+    private JTable createTable() {
+        // 列排序
+        TableRowSorter<ObjectTableModel> sorter = new TableRowSorter<>(tableModel);
+        // 设置只有第一列可以排序，其他均不可以
+        sorter.setSortable(0, true);
+        sorter.setSortable(1, false);
+
+        JTable table = new JTable(tableModel);
+        table.getTableHeader().setDefaultRenderer(new HeaderAsPropertyRenderer());
+        table.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
+        table.revalidate();
+        table.setRowSorter(sorter);
+
+        return table;
     }
 
     /**

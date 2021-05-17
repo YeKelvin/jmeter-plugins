@@ -7,9 +7,10 @@ import org.yaml.snakeyaml.Yaml;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
-import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -35,24 +36,19 @@ public class YamlUtil {
         }
     }
 
-    public static Map<String, Object> parseYamlAsMap(String filePath) {
+    public static Map<String, Object> parseYamlAsMap(String filePath)
+            throws FileNotFoundException, UnsupportedEncodingException {
         File file = new File(filePath);
-        if (file.isFile() && filePath.endsWith(YAML_SUFFIX)) {
-            return parseYamlAsMap(file);
+        if (!file.exists() || !file.isFile() || !filePath.endsWith(YAML_SUFFIX)) {
+            throw new FileNotFoundException(String.format("文件不存在或非.yaml文件，filePath:[ %s ]", filePath));
         }
-        log.error("非yaml文件，路径:[ {} ]", filePath);
-        return new HashMap<>();
+        return parseYamlAsMap(file);
     }
 
-    public static Map<String, Object> parseYamlAsMap(File file) {
-        try (
-                FileInputStream input = new FileInputStream(file);
-                InputStreamReader reader = new InputStreamReader(input, StandardCharsets.UTF_8.name())
-        ) {
-            return YAML.loadAs(reader, Map.class);
-        } catch (Exception e) {
-            log.error(ExceptionUtil.getStackTrace(e));
-        }
-        return new HashMap<>();
+    public static Map<String, Object> parseYamlAsMap(File file)
+            throws FileNotFoundException, UnsupportedEncodingException {
+        FileInputStream input = new FileInputStream(file);
+        InputStreamReader reader = new InputStreamReader(input, StandardCharsets.UTF_8.name());
+        return YAML.loadAs(reader, Map.class);
     }
 }

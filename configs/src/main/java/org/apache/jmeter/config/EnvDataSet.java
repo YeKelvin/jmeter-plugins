@@ -12,6 +12,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -48,32 +50,42 @@ public class EnvDataSet extends ConfigTestElement implements TestStateListener, 
      *
      * @param filePath 文件路径
      */
-    public HashMap<String, String> getEnvMap(String filePath) {
-        HashMap<String, String> envMap = new HashMap<>();
-        File file = new File(filePath);
-        // 判断是否为 yaml文件
-        if (file.isFile() && filePath.endsWith("yaml")) {
-            try {
-                envMap = parseYaml(file);
-            } catch (Exception e) {
-                log.error(ExceptionUtil.getStackTrace(e));
-            }
-        } else {
-            log.error("{} 非 yaml文件", filePath);
-        }
-        return envMap;
-    }
+//    public HashMap<String, String> getEnvironmentVariables(String filePath) {
+//        HashMap<String, String> envMap = new HashMap<>();
+//        File file = new File(filePath);
+//        // 判断是否为 yaml文件
+//        if (file.isFile() && filePath.endsWith("yaml")) {
+//            try {
+//                envMap = parseYaml(file);
+//            } catch (Exception e) {
+//                log.error(ExceptionUtil.getStackTrace(e));
+//            }
+//        } else {
+//            log.error("{} 非 yaml文件", filePath);
+//        }
+//        return envMap;
+//    }
 
-    private HashMap<String, String> parseYaml(File file) {
-        HashMap<String, String> map = new HashMap<>();
-        @SuppressWarnings("unchecked")
-        Map<String, Object> yamlMap = (Map<String, Object>) YamlUtil.parseYaml(file);
-        if (yamlMap != null) {
-            yamlMap.forEach((key, value) -> {
-                map.put(key, String.valueOf(value));
-            });
+//    private HashMap<String, String> parseYaml(File file) {
+//        HashMap<String, String> map = new HashMap<>();
+//        @SuppressWarnings("unchecked")
+//        Map<String, Object> yamlMap = (Map<String, Object>) YamlUtil.parseYaml(file);
+//        if (yamlMap != null) {
+//            yamlMap.forEach((key, value) -> {
+//                map.put(key, String.valueOf(value));
+//            });
+//        }
+//        return map;
+//    }
+
+    private Map<String, String> getEnvironmentVariables(String filePath) {
+        Map<String, String> variables = new HashMap<>();
+        try {
+            YamlUtil.parseYamlAsMap(filePath).forEach((key, value) -> variables.put(key, value.toString()));
+        } catch (FileNotFoundException | UnsupportedEncodingException e) {
+            log.error(ExceptionUtil.getStackTrace(e));
         }
-        return map;
+        return variables;
     }
 
     @Override
@@ -83,11 +95,11 @@ public class EnvDataSet extends ConfigTestElement implements TestStateListener, 
 
     @Override
     public void testStarted(String s) {
-        // 把测试环境配置文件名添加到jmeter变量中
+        // 添加配置文件名到JMeter变量中
         JMeterContextService.getContext().getVariables().put(CONFIG_NAME, getConfigName());
-        // 将配置文件中的所有属性逐一添加到jmeter变量中
-        HashMap<String, String> envMap = getEnvMap(getConfigPath());
-        envMap.forEach((key, value) -> getThreadContext().getVariables().put(key, value));
+        // 反序列化配置文件，添加所有配置变量到JMeter变量中
+        Map<String, String> envVariables = getEnvironmentVariables(getConfigPath());
+        envVariables.forEach((key, value) -> getThreadContext().getVariables().put(key, value));
     }
 
     @Override

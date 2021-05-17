@@ -3,6 +3,7 @@ package org.apache.jmeter.config.gui;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.jmeter.common.jmeter.JMeterGuiUtil;
 import org.apache.jmeter.common.utils.DesktopUtil;
+import org.apache.jmeter.common.utils.ExceptionUtil;
 import org.apache.jmeter.common.utils.YamlUtil;
 import org.apache.jmeter.config.Argument;
 import org.apache.jmeter.config.EnvDataSet;
@@ -22,6 +23,8 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -49,14 +52,20 @@ public class EnvDataSetGui extends AbstractConfigGui implements ActionListener {
     private final JTable table;
     private final JPanel tablePanel;
 
+    /**
+     * 当前脚本名称
+     */
     private final String scriptName;
+    /**
+     * 配置目录路径
+     */
     private final String configDirectory;
 
     /**
      * 静态缓存
      */
-    public static final Map<String, String> CACHED_CONFIG_NAME = new HashMap<>();
-    public static final Map<String, Long> CACHED_CONFIG_FILE_LAST_MODIFIED = new HashMap<>();
+    public static final Map<String, String> CACHED_CONFIG_PATH = new HashMap<>();
+    public static final Map<String, Long> CACHED_CONFIG_LAST_MODIFIED = new HashMap<>();
     public static final Map<String, Map<String, String>> CACHED_CONFIG_VARIABLES = new HashMap<>();
 
     /**
@@ -115,7 +124,6 @@ public class EnvDataSetGui extends AbstractConfigGui implements ActionListener {
         super.configureTestElement(el);
         String configName = (String) configNameComboBox.getSelectedItem();
         el.setProperty(EnvDataSet.CONFIG_NAME, configName);
-        CACHED_CONFIG_NAME.put(scriptName, configName);
     }
 
     /**
@@ -157,18 +165,8 @@ public class EnvDataSetGui extends AbstractConfigGui implements ActionListener {
         EnvDataSet envDataSet = (EnvDataSet) el;
         String configPath = envDataSet.getConfigPath();
         File file = new File(configPath);
-        if (!file.exists()) {
-            log.debug("配置不存在");
-            return;
-        }
-
-        if (!file.isFile()) {
-            log.debug("配置路径非文件");
-            return;
-        }
-
-        if (!configPath.endsWith(YamlUtil.YAML_SUFFIX)) {
-            log.debug("配置文件非.yaml文件");
+        if (!file.exists() || !file.isFile() || !configPath.endsWith(YamlUtil.YAML_SUFFIX)) {
+            log.debug("配置文件不存在或非.yaml文件，configPath:[ {} ]", configPath);
             return;
         }
 
@@ -181,23 +179,31 @@ public class EnvDataSetGui extends AbstractConfigGui implements ActionListener {
 
         // 获取静态缓存
         Map<String, String> cachedConfigVariables = CACHED_CONFIG_VARIABLES.get(configPath);
-        long cachedConfigLastModified = CACHED_CONFIG_FILE_LAST_MODIFIED.getOrDefault(configPath, (long) 0);
+        long cachedConfigLastModified = CACHED_CONFIG_LAST_MODIFIED.getOrDefault(configPath, (long) 0);
 
         // 如果缓存为空或配置文件有修改，则重新读取文件
         if (cachedConfigVariables == null || cachedConfigLastModified < configLastModified) {
             log.info("配置数据为空或配置文件有更改，重新缓存");
 
-            Map<String, String> variables = new HashMap<>();
-            YamlUtil.parseYamlAsMap(configPath).forEach((key, value) -> variables.put(key, value.toString()));
-
-            // 缓存数据
             log.debug("缓存configVariables");
             log.debug("缓存configLastModified");
-            CACHED_CONFIG_VARIABLES.put(configPath, variables);
-            CACHED_CONFIG_FILE_LAST_MODIFIED.put(configPath, configLastModified);
+            log.debug("缓存configPath");
+            CACHED_CONFIG_VARIABLES.put(configPath, loadYaml(file));
+            CACHED_CONFIG_LAST_MODIFIED.put(configPath, configLastModified);
+            CACHED_CONFIG_PATH.put(scriptName, configPath);
         }
 
         return CACHED_CONFIG_VARIABLES.get(configPath);
+    }
+
+    private Map<String, String> loadYaml(File file) {
+        Map<String, String> variables = new HashMap<>();
+        try {
+            YamlUtil.parseYamlAsMap(file).forEach((key, value) -> variables.put(key, value.toString()));
+        } catch (FileNotFoundException | UnsupportedEncodingException e) {
+            log.error(ExceptionUtil.getStackTrace(e));
+        }
+        return variables;
     }
 
     private void openDirectoryOrConfig() {
@@ -213,7 +219,10 @@ public class EnvDataSetGui extends AbstractConfigGui implements ActionListener {
 
     private JComboBox<String> createConfigNameComboBox() {
         JComboBox<String> comboBox = JMeterGuiUtil.createComboBox(EnvDataSet.CONFIG_NAME);
-        comboBoxAddItem(getConfigList(configDirectory));
+        comboBox.addItem("");
+        for (File file : getConfigList(configDirectory)) {
+            comboBox.addItem(file.getName());
+        }
         return comboBox;
     }
 
@@ -280,13 +289,6 @@ public class EnvDataSetGui extends AbstractConfigGui implements ActionListener {
         table.setRowSorter(sorter);
 
         return table;
-    }
-
-    private void comboBoxAddItem(ArrayList<File> fileList) {
-        configNameComboBox.addItem("");
-        for (File file : fileList) {
-            configNameComboBox.addItem(file.getName());
-        }
     }
 
     /**

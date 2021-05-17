@@ -15,6 +15,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.HashMap;
@@ -45,7 +47,7 @@ public class HTTPHeaderReader extends HeaderManager implements TestStateListener
     public void init() {
         if (!alreadyRead) {
             try {
-                Map<String, String> headerMap = getHeaderMap(getHeadersFilePath());
+                Map<String, String> headerMap = getHeaderVariables(getHeaderFilePath());
                 for (Map.Entry<String, String> entry : headerMap.entrySet()) {
                     Header header = new Header(entry.getKey(), entry.getValue());
                     REPLACER.replaceValues(header);
@@ -76,35 +78,45 @@ public class HTTPHeaderReader extends HeaderManager implements TestStateListener
         return getPropertyAsString(HEADER_FILE_NAME);
     }
 
-    public String getHeadersFilePath() {
+    public String getHeaderFilePath() {
         return JMeterUtils.getJMeterHome() + File.separator + "header" + File.separator + getHeadersFileName();
     }
 
-    public Map<String, String> getHeaderMap(String filePath) {
-        File file = new File(filePath);
+//    public Map<String, String> getHeaderMap(String filePath) {
+//        File file = new File(filePath);
+//
+//        Map<String, String> headerMap = new HashMap<>();
+//        // 判断是否为 yaml文件
+//        if (file.isFile() && filePath.endsWith("yaml")) {
+//            try {
+//                headerMap = parseYaml(file);
+//            } catch (Exception e) {
+//                log.error(ExceptionUtil.getStackTrace(e));
+//            }
+//        } else {
+//            log.error("{} 非 yaml文件", filePath);
+//        }
+//        return headerMap;
+//    }
+//
+//    @SuppressWarnings("unchecked")
+//    private Map<String, String> parseYaml(File file) {
+//        Map<String, String> map = new HashMap<>();
+//        Map<String, Object> yamlMap = (Map<String, Object>) YamlUtil.parseYaml(file);
+//        if (yamlMap != null) {
+//            yamlMap.forEach((key, value) -> map.put(key, String.valueOf(value)));
+//        }
+//        return map;
+//    }
 
-        Map<String, String> headerMap = new HashMap<>();
-        // 判断是否为 yaml文件
-        if (file.isFile() && filePath.endsWith("yaml")) {
-            try {
-                headerMap = parseYaml(file);
-            } catch (Exception e) {
-                log.error(ExceptionUtil.getStackTrace(e));
-            }
-        } else {
-            log.error("{} 非 yaml文件", filePath);
+    private Map<String, String> getHeaderVariables(String filePath) {
+        Map<String, String> variables = new HashMap<>();
+        try {
+            YamlUtil.parseYamlAsMap(filePath).forEach((key, value) -> variables.put(key, value.toString()));
+        } catch (FileNotFoundException | UnsupportedEncodingException e) {
+            log.error(ExceptionUtil.getStackTrace(e));
         }
-        return headerMap;
-    }
-
-    @SuppressWarnings("unchecked")
-    private Map<String, String> parseYaml(File file) {
-        Map<String, String> map = new HashMap<>();
-        Map<String, Object> yamlMap = (Map<String, Object>) YamlUtil.parseYaml(file);
-        if (yamlMap != null) {
-            yamlMap.forEach((key, value) -> map.put(key, String.valueOf(value)));
-        }
-        return map;
+        return variables;
     }
 
     @Override

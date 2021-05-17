@@ -1,13 +1,11 @@
 package org.apache.jmeter.samplers.gui;
 
 
-import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.jmeter.JMeter;
 import org.apache.jmeter.common.jmeter.JMeterGuiUtil;
 import org.apache.jmeter.common.jmeter.ValueReplaceUtil;
 import org.apache.jmeter.common.utils.DesktopUtil;
-import org.apache.jmeter.common.utils.YamlUtil;
 import org.apache.jmeter.config.Argument;
 import org.apache.jmeter.config.Arguments;
 import org.apache.jmeter.config.ScriptArgumentsDescriptor;
@@ -22,7 +20,6 @@ import org.apache.jmeter.services.FileServer;
 import org.apache.jmeter.testelement.TestElement;
 import org.apache.jmeter.testelement.TestPlan;
 import org.apache.jmeter.testelement.property.JMeterProperty;
-import org.apache.jmeter.util.JMeterUtils;
 import org.apache.jorphan.collections.HashTree;
 import org.apache.jorphan.collections.SearchByClass;
 import org.apache.jorphan.gui.ObjectTableModel;
@@ -84,15 +81,8 @@ public class JMeterScriptSamplerGui extends AbstractSamplerGui implements Action
     private final String scriptName;
 
     /**
-     * 配置目录路径
-     */
-    private final String configDirectory;
-
-    /**
      * 缓存数据
      */
-    private String cachedConfigName;
-    private Map<String, String> cachedConfigVariables = new HashMap<>();
     private String cachedScriptPath;
     private long cachedScriptFileLastModified = 0;
     private Arguments cachedArguments;
@@ -110,7 +100,6 @@ public class JMeterScriptSamplerGui extends AbstractSamplerGui implements Action
 
     public JMeterScriptSamplerGui() {
         scriptName = FileServer.getFileServer().getScriptName();
-        configDirectory = JMeterUtils.getJMeterHome() + File.separator + "config";
 
         scriptDirectoryField = createScriptDirectoryTextField();
         scriptDirectoryLabel = createScriptDirectoryLabel();
@@ -333,19 +322,12 @@ public class JMeterScriptSamplerGui extends AbstractSamplerGui implements Action
      * 根据配置文件名称反序列化yaml文件并返回，
      */
     private Map<String, String> getConfigVariables() {
-        String configName = EnvDataSetGui.CACHED_CONFIG_NAME.getOrDefault(scriptName, "");
-        if (MapUtils.isEmpty(cachedConfigVariables) || !cachedConfigName.equals(configName)) {
-            if (StringUtils.isNotBlank(configName)) {
-                String configPath = configDirectory + File.separator + configName;
-                Map<String, String> variables = new HashMap<>();
-                YamlUtil.parseYamlAsMap(configPath).forEach((key, value) -> variables.put(key, value.toString()));
-                cachedConfigName = configName;
-                cachedConfigVariables = variables;
-                log.debug("缓存configName");
-                log.debug("缓存configVariables");
-            }
+        String configPath = EnvDataSetGui.CACHED_CONFIG_PATH.get(scriptName);
+        if (configPath==null) {
+            return new HashMap<>();
         }
-        return cachedConfigVariables;
+
+        return EnvDataSetGui.CACHED_CONFIG_VARIABLES.getOrDefault(configPath, new HashMap<>());
     }
 
     /**
