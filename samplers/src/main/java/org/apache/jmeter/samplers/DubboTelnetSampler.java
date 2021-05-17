@@ -2,14 +2,14 @@ package org.apache.jmeter.samplers;
 
 import com.jcraft.jsch.JSchException;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.jmeter.common.utils.ExceptionUtil;
-import org.apache.jmeter.common.jmeter.JMeterVariablesUtil;
 import org.apache.jmeter.common.exceptions.ServiceException;
+import org.apache.jmeter.common.jmeter.JMeterVariablesUtil;
 import org.apache.jmeter.common.ssh.SSHTelnetClient;
+import org.apache.jmeter.common.telnet.TelnetUtil;
+import org.apache.jmeter.common.utils.ExceptionUtil;
 import org.apache.jmeter.config.SSHConfiguration;
 import org.apache.jmeter.engine.util.ValueReplacer;
 import org.apache.jmeter.functions.InvalidVariableException;
-import org.apache.jmeter.samplers.utils.TelnetUtil;
 import org.apache.jmeter.threads.JMeterContextService;
 import org.apache.jmeter.threads.JMeterVariables;
 import org.apache.jmeter.util.JMeterUtils;

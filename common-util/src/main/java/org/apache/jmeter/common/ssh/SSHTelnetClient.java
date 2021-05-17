@@ -5,8 +5,8 @@ import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.jmeter.common.utils.ExceptionUtil;
 import org.apache.jmeter.common.exceptions.ServiceException;
+import org.apache.jmeter.common.utils.ExceptionUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -19,15 +19,17 @@ import java.nio.charset.Charset;
  * @author Kaiwen.Ye
  */
 public class SSHTelnetClient {
+
     private static final Logger log = LoggerFactory.getLogger(SSHTelnetClient.class);
     private static final String DUBBO_FLAG = "dubbo>";
 
-    private Session session;
+    private final Session session;
+    private final String charsetName;
+    private final int timeout;
+
     private InputStreamReader in;
     private PrintStream out;
     private ChannelShell channelShell;
-    private String charsetName;
-    private int timeout;
 
     /**
      * ssh连接
@@ -38,8 +40,6 @@ public class SSHTelnetClient {
      * @param password    密码
      * @param charsetName 编码名称
      * @param timeout     超时等待时间
-     * @throws JSchException
-     * @throws IOException
      */
     public SSHTelnetClient(String host, int port,
                            String userName, String password,
@@ -67,8 +67,6 @@ public class SSHTelnetClient {
      * @param secretKey   google动态码秘钥
      * @param charsetName 编码名称
      * @param timeout     超时等待时间
-     * @throws JSchException
-     * @throws IOException
      */
     public SSHTelnetClient(String host, int port,
                            String userName, String password, String secretKey,
@@ -134,7 +132,7 @@ public class SSHTelnetClient {
         log.debug("result={}", result);
         // 第一次invoke命令后会返回一个dubbo>标识符，接收响应后还会再返回一个dubbo>标识符
         // 判断第一次读取是否只读到一个dubbo>标识符，如果是则再读取一次
-        if (result.equals("dubbo>")) {
+        if ("dubbo>".equals(result)) {
             log.debug("再读一次dubbo响应");
             result = readUntil(DUBBO_FLAG);
             log.debug("result={}", result);
@@ -160,10 +158,6 @@ public class SSHTelnetClient {
         }
         responseData = responseData.substring(startIndex, endIndex);
 
-//        if (responseData.contains("elapsed:")) {
-//            String[] responseDatas = responseData.split("\n");
-//            responseData = responseDatas[0];
-//        }
         return responseData;
     }
 

@@ -1,8 +1,7 @@
-package org.apache.jmeter.samplers.utils;
+package org.apache.jmeter.common.telnet;
 
 
 import org.apache.commons.net.telnet.TelnetClient;
-import org.slf4j.Logger;
 import org.apache.jmeter.common.utils.ExceptionUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,7 +27,6 @@ public class TelnetUtil {
     private final TelnetClient telnet = new TelnetClient(WINDOWS);
     private InputStreamReader in;
     private PrintStream out;
-    // shell响应等待时间
     private int timeout;
 
     public TelnetUtil(String host, String port) throws IOException {
