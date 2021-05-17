@@ -175,7 +175,7 @@ public class HTTPHeaderReaderGui extends AbstractConfigGui implements ActionList
 
         // 如果缓存为空或配置文件有修改，则重新读取文件
         if (cachedHeaderVariables == null || cachedHeaderLastModified < configLastModified) {
-            log.info("配置数据为空或配置文件有更改，重新缓存");
+            log.info("配置数据为空或配置文件有更新，重新缓存");
 
             log.debug("缓存headerVariables");
             log.debug("缓存headerLastModified");

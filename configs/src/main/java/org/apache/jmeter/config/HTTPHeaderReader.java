@@ -82,33 +82,9 @@ public class HTTPHeaderReader extends HeaderManager implements TestStateListener
         return JMeterUtils.getJMeterHome() + File.separator + "header" + File.separator + getHeadersFileName();
     }
 
-//    public Map<String, String> getHeaderMap(String filePath) {
-//        File file = new File(filePath);
-//
-//        Map<String, String> headerMap = new HashMap<>();
-//        // 判断是否为 yaml文件
-//        if (file.isFile() && filePath.endsWith("yaml")) {
-//            try {
-//                headerMap = parseYaml(file);
-//            } catch (Exception e) {
-//                log.error(ExceptionUtil.getStackTrace(e));
-//            }
-//        } else {
-//            log.error("{} 非 yaml文件", filePath);
-//        }
-//        return headerMap;
-//    }
-//
-//    @SuppressWarnings("unchecked")
-//    private Map<String, String> parseYaml(File file) {
-//        Map<String, String> map = new HashMap<>();
-//        Map<String, Object> yamlMap = (Map<String, Object>) YamlUtil.parseYaml(file);
-//        if (yamlMap != null) {
-//            yamlMap.forEach((key, value) -> map.put(key, String.valueOf(value)));
-//        }
-//        return map;
-//    }
-
+    /**
+     * 反序列化配置文件
+     */
     private Map<String, String> getHeaderVariables(String filePath) {
         Map<String, String> variables = new HashMap<>();
         try {

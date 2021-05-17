@@ -183,7 +183,7 @@ public class EnvDataSetGui extends AbstractConfigGui implements ActionListener {
 
         // 如果缓存为空或配置文件有修改，则重新读取文件
         if (cachedConfigVariables == null || cachedConfigLastModified < configLastModified) {
-            log.info("配置数据为空或配置文件有更改，重新缓存");
+            log.info("配置数据为空或配置文件有更新，重新缓存");
 
             log.debug("缓存configVariables");
             log.debug("缓存configLastModified");

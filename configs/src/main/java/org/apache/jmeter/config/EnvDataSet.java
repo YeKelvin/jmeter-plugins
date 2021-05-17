@@ -46,38 +46,8 @@ public class EnvDataSet extends ConfigTestElement implements TestStateListener, 
     }
 
     /**
-     * 读取json文件转换为HashMap
-     *
-     * @param filePath 文件路径
+     * 反序列化配置文件
      */
-//    public HashMap<String, String> getEnvironmentVariables(String filePath) {
-//        HashMap<String, String> envMap = new HashMap<>();
-//        File file = new File(filePath);
-//        // 判断是否为 yaml文件
-//        if (file.isFile() && filePath.endsWith("yaml")) {
-//            try {
-//                envMap = parseYaml(file);
-//            } catch (Exception e) {
-//                log.error(ExceptionUtil.getStackTrace(e));
-//            }
-//        } else {
-//            log.error("{} 非 yaml文件", filePath);
-//        }
-//        return envMap;
-//    }
-
-//    private HashMap<String, String> parseYaml(File file) {
-//        HashMap<String, String> map = new HashMap<>();
-//        @SuppressWarnings("unchecked")
-//        Map<String, Object> yamlMap = (Map<String, Object>) YamlUtil.parseYaml(file);
-//        if (yamlMap != null) {
-//            yamlMap.forEach((key, value) -> {
-//                map.put(key, String.valueOf(value));
-//            });
-//        }
-//        return map;
-//    }
-
     private Map<String, String> getEnvironmentVariables(String filePath) {
         Map<String, String> variables = new HashMap<>();
         try {
