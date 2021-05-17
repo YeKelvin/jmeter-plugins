@@ -32,15 +32,15 @@ public class EnvDataSet extends ConfigTestElement implements TestStateListener, 
     /**
      * 获取环境变量配置文件名称
      */
-    public String getFileName() {
+    public String getConfigName() {
         return JMeterUtils.getPropDefault(CliOptions.CONFIG_NAME, getPropertyAsString(CONFIG_NAME));
     }
 
     /**
      * 获取环境变量配置文件路径
      */
-    public String getFilePath() {
-        return JMeterUtils.getJMeterHome() + File.separator + "config" + File.separator + getFileName();
+    public String getConfigPath() {
+        return JMeterUtils.getJMeterHome() + File.separator + "config" + File.separator + getConfigName();
     }
 
     /**
@@ -84,9 +84,9 @@ public class EnvDataSet extends ConfigTestElement implements TestStateListener, 
     @Override
     public void testStarted(String s) {
         // 把测试环境配置文件名添加到jmeter变量中
-        JMeterContextService.getContext().getVariables().put(CONFIG_NAME, getFileName());
+        JMeterContextService.getContext().getVariables().put(CONFIG_NAME, getConfigName());
         // 将配置文件中的所有属性逐一添加到jmeter变量中
-        HashMap<String, String> envMap = getEnvMap(getFilePath());
+        HashMap<String, String> envMap = getEnvMap(getConfigPath());
         envMap.forEach((key, value) -> getThreadContext().getVariables().put(key, value));
     }
 

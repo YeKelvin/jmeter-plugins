@@ -1,8 +1,8 @@
 package org.apache.jmeter.config.gui;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.jmeter.common.utils.ExceptionUtil;
 import org.apache.jmeter.common.jmeter.JMeterGuiUtil;
+import org.apache.jmeter.common.utils.DesktopUtil;
 import org.apache.jmeter.common.utils.YamlUtil;
 import org.apache.jmeter.config.Argument;
 import org.apache.jmeter.config.HTTPHeaderReader;
@@ -22,7 +22,6 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Map;
 
@@ -99,15 +98,7 @@ public class HTTPHeaderReaderGui extends AbstractConfigGui implements ActionList
         super.configure(el);
         String fileName = el.getPropertyAsString(HTTPHeaderReader.HEADER_FILE_NAME);
         headerFileNameComboBox.setSelectedItem(fileName);
-        tableModel.clearData();
-        if (el instanceof HTTPHeaderReader && StringUtils.isNotBlank(fileName)) {
-            HTTPHeaderReader httpHeaderReader = (HTTPHeaderReader) el;
-            Map<String, String> headerMap = httpHeaderReader.getHeaderMap(httpHeaderReader.getHeadersFilePath());
-            for (Map.Entry<String, String> entry : headerMap.entrySet()) {
-                Argument arg = new Argument(entry.getKey(), entry.getValue());
-                tableModel.addRow(arg);
-            }
-        }
+        configureTable(el, fileName);
     }
 
     @Override
@@ -125,19 +116,34 @@ public class HTTPHeaderReaderGui extends AbstractConfigGui implements ActionList
     public void actionPerformed(ActionEvent e) {
         String action = e.getActionCommand();
         if (action.equals(OPEN_ACTION)) {
-            try {
-                String headersFileName = String.valueOf(headerFileNameComboBox.getSelectedItem());
-                String openFilePath;
-                if (StringUtils.isNotBlank(headersFileName)) {
-                    openFilePath = getHeaderFilePath(headersFileName);
-                } else {
-                    openFilePath = headerDirectory;
-                }
-                Desktop.getDesktop().open(new File(openFilePath));
-            } catch (IOException ioException) {
-                log.error(ExceptionUtil.getStackTrace(ioException));
+            openDirectoryOrHeader();
+        }
+    }
+
+    private void configureTable(TestElement el, String fileName) {
+        tableModel.clearData();
+        if (StringUtils.isBlank(fileName)) {
+            return;
+        }
+
+        if (el instanceof HTTPHeaderReader) {
+            HTTPHeaderReader httpHeaderReader = (HTTPHeaderReader) el;
+            Map<String, String> headerMap = httpHeaderReader.getHeaderMap(httpHeaderReader.getHeadersFilePath());
+            for (Map.Entry<String, String> entry : headerMap.entrySet()) {
+                tableModel.addRow(new Argument(entry.getKey(), entry.getValue()));
             }
         }
+    }
+
+    private void openDirectoryOrHeader() {
+        String headersFileName = String.valueOf(headerFileNameComboBox.getSelectedItem());
+        String openPath;
+        if (StringUtils.isNotBlank(headersFileName)) {
+            openPath = getHeaderFilePath(headersFileName);
+        } else {
+            openPath = headerDirectory;
+        }
+        DesktopUtil.openFile(openPath);
     }
 
     private Component createHeadersFileNameComboBox() {
@@ -226,15 +232,18 @@ public class HTTPHeaderReaderGui extends AbstractConfigGui implements ActionList
         ArrayList<File> fileList = new ArrayList<>();
         File dir = new File(dirPath);
         File[] files = dir.listFiles();
-        if (files != null) {
-            for (File file : files) {
-                if (file.isDirectory()) {
-                    fileList.addAll(getHeaderFileList(file.getAbsolutePath()));
-                } else if (file.getName().endsWith(YamlUtil.YAML_SUFFIX)) {
-                    fileList.add(file);
-                }
+        if (files == null) {
+            return fileList;
+        }
+
+        for (File file : files) {
+            if (file.isDirectory()) {
+                fileList.addAll(getHeaderFileList(file.getAbsolutePath()));
+            } else if (file.getName().endsWith(YamlUtil.YAML_SUFFIX)) {
+                fileList.add(file);
             }
         }
+
         return fileList;
     }
 

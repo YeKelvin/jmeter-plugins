@@ -33,7 +33,8 @@ public class DesktopUtil {
         try {
             Desktop.getDesktop().open(file);
         } catch (IOException ex) {
-            log.error(ExceptionUtil.getStackTrace(ex));
+            log.warn(ex.getMessage());
+            log.debug(ExceptionUtil.getStackTrace(ex));
         }
     }
 }

@@ -333,7 +333,7 @@ public class JMeterScriptSamplerGui extends AbstractSamplerGui implements Action
      * 根据配置文件名称反序列化yaml文件并返回，
      */
     private Map<String, String> getConfigVariables() {
-        String configName = EnvDataSetGui.CACHED_CONFIG_NAME_WITH_SCRIPT.getOrDefault(scriptName, "");
+        String configName = EnvDataSetGui.CACHED_CONFIG_NAME.getOrDefault(scriptName, "");
         if (MapUtils.isEmpty(cachedConfigVariables) || !cachedConfigName.equals(configName)) {
             if (StringUtils.isNotBlank(configName)) {
                 String configPath = configDirectory + File.separator + configName;
@@ -463,7 +463,7 @@ public class JMeterScriptSamplerGui extends AbstractSamplerGui implements Action
     }
 
     /**
-     * 获取脚本绝对路径路径，文件或路径非法时返回空字符
+     * 获取脚本绝对路径路径
      */
     private String getScriptPath() throws FileNotFoundException {
         String scriptName = scriptNameField.getText();
@@ -483,11 +483,12 @@ public class JMeterScriptSamplerGui extends AbstractSamplerGui implements Action
         return scriptPath;
     }
 
-    private File getScriptFile(String scriptPath) throws FileNotFoundException {
-        if (scriptPath == null) {
-            scriptPath = getScriptPath();
-        }
+    private File getScriptFile() throws FileNotFoundException {
+        String scriptPath = getScriptPath();
+        return getScriptFile(scriptPath);
+    }
 
+    private File getScriptFile(String scriptPath) throws FileNotFoundException {
         File file = new File(scriptPath);
         if (!file.exists() || !file.isFile()) {
             throw new FileNotFoundException(String.format("脚本不存在或非文件, scriptPath:[ %s ]", scriptPath));
@@ -499,13 +500,15 @@ public class JMeterScriptSamplerGui extends AbstractSamplerGui implements Action
         return file;
     }
 
+    private HashTree getScriptTree() throws IOException, IllegalUserActionException {
+        File scriptFile = getScriptFile();
+        return getScriptTree(scriptFile);
+    }
+
     /**
-     * 获取脚本的HashTree对象，脚本不存在时返回null
+     * 获取脚本的HashTree对象
      */
     private HashTree getScriptTree(File scriptFile) throws IOException, IllegalUserActionException {
-        if (scriptFile == null) {
-            scriptFile = getScriptFile(null);
-        }
         // 加载脚本
         HashTree tree = SaveService.loadTree(scriptFile);
 
@@ -518,13 +521,16 @@ public class JMeterScriptSamplerGui extends AbstractSamplerGui implements Action
         return JMeter.convertSubTree(tree, false);
     }
 
+
+    private Arguments getArgumentsDescriptor() throws IllegalUserActionException, IOException {
+        File scriptFile = getScriptFile();
+        return getArgumentsDescriptor(scriptFile);
+    }
+
     /**
-     * 获取脚本HashTree对象中的ScriptArgumentsDescriptor对象，不存在时返回null
+     * 获取脚本HashTree对象中的ScriptArgumentsDescriptor对象
      */
     private Arguments getArgumentsDescriptor(File scriptFile) throws IllegalUserActionException, IOException {
-        if (scriptFile == null) {
-            scriptFile = getScriptFile(null);
-        }
         // 获取HashTree对象
         HashTree hashTree = getScriptTree(scriptFile);
         // 获取TestPlan对象
