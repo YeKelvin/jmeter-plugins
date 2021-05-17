@@ -3,7 +3,7 @@ package org.apache.jmeter.visualizers.utils;
 import com.jayway.jsonpath.DocumentContext;
 import org.apache.jmeter.common.json.JsonPathUtil;
 import org.apache.jmeter.common.json.JsonUtil;
-import org.apache.jmeter.visualizers.data.OverviewInfo;
+import org.apache.jmeter.visualizers.vo.OverviewInfo;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -23,9 +23,9 @@ public class JavaScriptUtil {
     private static final String OVERVIEW_INFO_NAME = "overviewInfo: ";
     private static final String OVERVIEW_INFO_VALUE_PATTERN = "overviewInfo: .*";
 
-    private static Pattern testSuiteListRegex = Pattern.compile(TEST_SUITE_LIST_VALUE_PATTERN);
-    private static Pattern reportInfoRegex = Pattern.compile(REPORT_INFO_VALUE_PATTERN);
-    private static Pattern overviewInfoRegex = Pattern.compile(OVERVIEW_INFO_VALUE_PATTERN);
+    private static final Pattern testSuiteListRegex = Pattern.compile(TEST_SUITE_LIST_VALUE_PATTERN);
+    private static final Pattern reportInfoRegex = Pattern.compile(REPORT_INFO_VALUE_PATTERN);
+    private static final Pattern overviewInfoRegex = Pattern.compile(OVERVIEW_INFO_VALUE_PATTERN);
 
     /**
      * 提取js脚本中 testSuiteList的值

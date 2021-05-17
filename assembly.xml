@@ -4,47 +4,17 @@
 
     <id>jar</id>
 
-    <!--打包的文件格式-->
     <formats>
         <format>dir</format>
     </formats>
 
     <includeBaseDirectory>false</includeBaseDirectory>
 
-    <!--需要打包的路径-->
     <fileSets>
         <fileSet>
-            <directory>${basedir}/common-util/target</directory>
+            <directory>${basedir}/infautomator/target</directory>
             <includes>
-                <include>*.jar</include>
-            </includes>
-            <outputDirectory>/</outputDirectory>
-        </fileSet>
-        <fileSet>
-            <directory>${basedir}/configs/target</directory>
-            <includes>
-                <include>*.jar</include>
-            </includes>
-            <outputDirectory>/</outputDirectory>
-        </fileSet>
-        <fileSet>
-            <directory>${basedir}/functions/target</directory>
-            <includes>
-                <include>*.jar</include>
-            </includes>
-            <outputDirectory>/</outputDirectory>
-        </fileSet>
-        <fileSet>
-            <directory>${basedir}/samplers/target</directory>
-            <includes>
-                <include>*.jar</include>
-            </includes>
-            <outputDirectory>/</outputDirectory>
-        </fileSet>
-        <fileSet>
-            <directory>${basedir}/visualizers/target</directory>
-            <includes>
-                <include>*.jar</include>
+                <include>jmeter-plugins-*.jar</include>
             </includes>
             <outputDirectory>/</outputDirectory>
         </fileSet>

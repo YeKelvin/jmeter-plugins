@@ -36,7 +36,6 @@ public class EnvDataSetGui extends AbstractConfigGui implements ActionListener {
 
     private static final Logger log = LoggerFactory.getLogger(EnvDataSetGui.class);
 
-
     /**
      * Action命令
      */

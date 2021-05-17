@@ -47,8 +47,7 @@ public class JsoupUtil {
      */
     public static void documentToFile(Document doc, String filePath) throws IOException {
         BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(
-                new FileOutputStream(
-                        new File(filePath), false), StandardCharsets.UTF_8));
+                new FileOutputStream(filePath, false), StandardCharsets.UTF_8));
         bw.write(doc.html());
         bw.close();
     }

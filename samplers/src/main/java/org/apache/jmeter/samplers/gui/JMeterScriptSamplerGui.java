@@ -114,6 +114,7 @@ public class JMeterScriptSamplerGui extends AbstractSamplerGui implements Action
         syncToVarsLabel = createSyncToVarsLabel();
 
         argsPanel = createArgumentsPanel();
+
         init();
     }
 
@@ -156,8 +157,8 @@ public class JMeterScriptSamplerGui extends AbstractSamplerGui implements Action
             el.setProperty(JMeterScriptSampler.SCRIPT_NAME, scriptNameField.getText());
             el.setProperty(JMeterScriptSampler.SYNC_TO_PROPS, (String) syncToPropsComboBox.getSelectedItem());
             el.setProperty(JMeterScriptSampler.SYNC_TO_VARS, (String) syncToVarsComboBox.getSelectedItem());
-            Arguments selfArguments = (Arguments) argsPanel.createTestElement();
-            Arguments mergedArguments = mergeArguments(selfArguments);
+
+            Arguments mergedArguments = mergeArguments((Arguments) argsPanel.createTestElement());
             for (JMeterProperty mergedProp : mergedArguments) {
                 Argument arg = (Argument) mergedProp.getObjectValue();
                 arg.setDescription("");
@@ -477,8 +478,8 @@ public class JMeterScriptSamplerGui extends AbstractSamplerGui implements Action
         }
 
         // 缓存脚本路径
-        cachedScriptPath = scriptPath;
         log.debug("缓存scriptPath");
+        cachedScriptPath = scriptPath;
         return file;
     }
 
@@ -526,8 +527,8 @@ public class JMeterScriptSamplerGui extends AbstractSamplerGui implements Action
         }
         Arguments argsDesc = argsDescIter.next();
         // 缓存脚本参数
-        cachedArguments = argsDesc;
         log.debug("缓存argsDesc");
+        cachedArguments = argsDesc;
         return argsDesc;
     }
 
@@ -540,6 +541,7 @@ public class JMeterScriptSamplerGui extends AbstractSamplerGui implements Action
         long scriptFileLastModified = scriptFile.lastModified();
 
         if (cachedScriptPath == null || !cachedScriptPath.equals(scriptPath) || cachedScriptFileLastModified < scriptFileLastModified) {
+            log.info("脚本有更新，重新缓存");
             cachedArguments = getArgumentsDescriptor(scriptFile);
             cachedScriptFileLastModified = scriptFileLastModified;
         }

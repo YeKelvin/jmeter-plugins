@@ -1,4 +1,4 @@
-package org.apache.jmeter.visualizers.data;
+package org.apache.jmeter.visualizers.vo;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -16,25 +16,25 @@ import java.util.HashMap;
 @ToString(exclude = "testSuiteMap")
 public class ReportDataSet {
 
-    private ArrayList<TestSuiteData> testSuiteList;
+    private ArrayList<TestSuiteVO> testSuiteList;
 
-    private transient HashMap<String, TestSuiteData> testSuiteMap;
+    private transient HashMap<String, TestSuiteVO> testSuiteMap;
 
     public ReportDataSet() {
         testSuiteMap = new HashMap<>(16);
     }
 
     public void createTestSuite(String title) {
-        TestSuiteData testSuite = new TestSuiteData();
+        TestSuiteVO testSuite = new TestSuiteVO();
         testSuite.setTitle(title);
         testSuiteMap.put(title, testSuite);
     }
 
-    public void putTestSuite(TestSuiteData testSuite) {
+    public void putTestSuite(TestSuiteVO testSuite) {
         testSuiteMap.put(testSuite.getTitle(), testSuite);
     }
 
-    public TestSuiteData getTestSuite(String title) {
+    public TestSuiteVO getTestSuite(String title) {
         return testSuiteMap.get(title);
     }
 

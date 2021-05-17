@@ -1,20 +1,23 @@
 package org.apache.jmeter.visualizers;
 
-import org.apache.jmeter.common.utils.TimeUtil;
 import org.apache.jmeter.common.json.JsonUtil;
+import org.apache.jmeter.common.utils.ExceptionUtil;
+import org.apache.jmeter.common.utils.TimeUtil;
 import org.apache.jmeter.util.JMeterUtils;
-import org.apache.jmeter.visualizers.data.OverviewInfo;
-import org.apache.jmeter.visualizers.data.ReportDataSet;
-import org.apache.jmeter.visualizers.data.ReportInfo;
-import org.apache.jmeter.visualizers.data.TestCaseData;
-import org.apache.jmeter.visualizers.data.TestCaseStepData;
-import org.apache.jmeter.visualizers.data.TestSuiteData;
 import org.apache.jmeter.visualizers.utils.FreemarkerUtil;
 import org.apache.jmeter.visualizers.utils.JavaScriptUtil;
 import org.apache.jmeter.visualizers.utils.JsoupUtil;
+import org.apache.jmeter.visualizers.vo.OverviewInfo;
+import org.apache.jmeter.visualizers.vo.ReportDataSet;
+import org.apache.jmeter.visualizers.vo.ReportInfo;
+import org.apache.jmeter.visualizers.vo.TestCaseStepVO;
+import org.apache.jmeter.visualizers.vo.TestCaseVO;
+import org.apache.jmeter.visualizers.vo.TestSuiteVO;
 import org.jsoup.nodes.DataNode;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -25,6 +28,8 @@ import java.util.Map;
  * @date    2019-01-24 16:51
  */
 public class ReportManager {
+
+    private static final Logger log = LoggerFactory.getLogger(ReportManager.class);
 
     public static final String DATE_FORMAT_PATTERN = "yyyy.MM.dd HH:mm:ss";
 
@@ -44,10 +49,10 @@ public class ReportManager {
      */
     public static void traverseReportData() {
         reportDataSet.testSuiteMapConvertToList();
-        for (TestSuiteData testSuite : reportDataSet.getTestSuiteList()) {
+        for (TestSuiteVO testSuite : reportDataSet.getTestSuiteList()) {
             testSuite.testCaseMapConvertToList();
             testSuite.sort();
-            for (TestCaseData testCase : testSuite.getTestCaseList()) {
+            for (TestCaseVO testCase : testSuite.getTestCaseList()) {
                 testCase.testCaseStepMapConvertToList();
                 testCase.sort();
             }
@@ -73,20 +78,20 @@ public class ReportManager {
         OverviewInfo overviewInfo = new OverviewInfo();
         // 添加 TestPlan的数据
         overviewInfo.testSuiteAddOne();
-        TestSuiteData testSuite = reportDataSet.getTestSuiteList().get(0);
+        TestSuiteVO testSuite = reportDataSet.getTestSuiteList().get(0);
         overviewInfo.setTestSuiteAverageElapsedTime(testSuite.getElapsedTime());
         if (!testSuite.isStatus()) {
             overviewInfo.errorTestSuiteAddOne();
         }
         // 遍历添加 ThreadGroup的数据
-        for (TestCaseData testCase : testSuite.getTestCaseList()) {
+        for (TestCaseVO testCase : testSuite.getTestCaseList()) {
             overviewInfo.testCaseAddOne();
             if (!testCase.isStatus()) {
                 overviewInfo.errorTestCaseAddOne();
             }
             overviewInfo.setTestCaseAverageElapsedTime(testCase.getElapsedTime());
             // 遍历添加 Sampler的数据
-            for (TestCaseStepData testCaseStep : testCase.getTestCaseStepList()) {
+            for (TestCaseStepVO testCaseStep : testCase.getTestCaseStepList()) {
                 overviewInfo.testCaseStepAddOne();
                 if (!testCaseStep.isStatus()) {
                     overviewInfo.errorTestCaseStepAddOne();
@@ -142,7 +147,7 @@ public class ReportManager {
             // 按顺序整理测试报告数据
             traverseReportData();
             // 循环向数组添加新数据
-            for (TestSuiteData testSuite : reportDataSet.getTestSuiteList()) {
+            for (TestSuiteVO testSuite : reportDataSet.getTestSuiteList()) {
                 testSuiteListValue = JavaScriptUtil.appendTestSuiteList(testSuiteListValue, testSuite);
             }
             // 更新js脚本内容
@@ -154,7 +159,7 @@ public class ReportManager {
             // 将更新后的 html写入文件
             JsoupUtil.documentToFile(doc, reportPath);
         } catch (IOException e) {
-            e.printStackTrace();
+            log.error(ExceptionUtil.getStackTrace(e));
         }
     }
 

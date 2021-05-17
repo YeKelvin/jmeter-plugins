@@ -1,4 +1,4 @@
-package org.apache.jmeter.visualizers.data;
+package org.apache.jmeter.visualizers.vo;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -15,7 +15,7 @@ import java.util.HashMap;
 @Setter
 @Getter
 @ToString(exclude = "testCaseStepMap")
-public class TestCaseData {
+public class TestCaseVO {
 
     private String id;
 
@@ -29,36 +29,36 @@ public class TestCaseData {
 
     private String elapsedTime;
 
-    private ArrayList<TestCaseStepData> testCaseStepList;
+    private ArrayList<TestCaseStepVO> testCaseStepList;
 
     private transient String testCaseStepPrefixID;
 
     private transient int testCaseStepstartID = 1;
 
-    private transient HashMap<String, TestCaseStepData> testCaseStepMap;
+    private transient HashMap<String, TestCaseStepVO> testCaseStepMap;
 
-    public TestCaseData() {
+    public TestCaseVO() {
         testCaseStepMap = new HashMap<>(16);
     }
 
-    public TestCaseData(String prefixID) {
+    public TestCaseVO(String prefixID) {
         testCaseStepPrefixID = prefixID + "-";
         testCaseStepMap = new HashMap<>(16);
     }
 
     public void createTestCaseStep(String title) {
-        TestCaseStepData testCaseStep = new TestCaseStepData();
+        TestCaseStepVO testCaseStep = new TestCaseStepVO();
         testCaseStep.setTile(title);
         testCaseStep.setId(testCaseStepPrefixID + testCaseStepstartID++);
         testCaseStepMap.put(title, testCaseStep);
     }
 
-    public void putTestCaseStep(TestCaseStepData testCaseStep) {
+    public void putTestCaseStep(TestCaseStepVO testCaseStep) {
         testCaseStep.setId(testCaseStepPrefixID + testCaseStepstartID++);
         testCaseStepMap.put(testCaseStep.getTile(), testCaseStep);
     }
 
-    public TestCaseStepData getTestCaseStep(String title) {
+    public TestCaseStepVO getTestCaseStep(String title) {
         return testCaseStepMap.get(title);
     }
 

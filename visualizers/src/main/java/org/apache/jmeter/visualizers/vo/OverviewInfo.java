@@ -1,4 +1,4 @@
-package org.apache.jmeter.visualizers.data;
+package org.apache.jmeter.visualizers.vo;
 
 import lombok.Getter;
 import lombok.ToString;
@@ -106,9 +106,9 @@ public class OverviewInfo {
         if (testCaseStepAverageElapsedTime == null) {
             testCaseStepAverageElapsedTime = elapsedTime;
         } else {
-            long testCaseStepAverageElapsedTimeAsLong = Long.valueOf(
+            long testCaseStepAverageElapsedTimeAsLong = Long.parseLong(
                     testCaseStepAverageElapsedTime.substring(0, testCaseStepAverageElapsedTime.length() - 2));
-            long elapsedTimeAsLong = Long.valueOf(elapsedTime.substring(0, elapsedTime.length() - 2));
+            long elapsedTimeAsLong = Long.parseLong(elapsedTime.substring(0, elapsedTime.length() - 2));
             long averageElapsedTime = (testCaseStepAverageElapsedTimeAsLong + elapsedTimeAsLong) / 2;
             testCaseStepAverageElapsedTime = averageElapsedTime + "ms";
         }

@@ -1,4 +1,4 @@
-package org.apache.jmeter.visualizers.data;
+package org.apache.jmeter.visualizers.vo;
 
 import lombok.Getter;
 import lombok.Setter;

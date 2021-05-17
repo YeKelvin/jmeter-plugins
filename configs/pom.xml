@@ -16,8 +16,6 @@
         <dependency>
             <groupId>jmeter-plugins</groupId>
             <artifactId>common-util</artifactId>
-            <exclusions>
-            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.apache.jmeter</groupId>

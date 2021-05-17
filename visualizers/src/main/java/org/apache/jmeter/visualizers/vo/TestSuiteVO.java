@@ -1,4 +1,4 @@
-package org.apache.jmeter.visualizers.data;
+package org.apache.jmeter.visualizers.vo;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -15,7 +15,7 @@ import java.util.HashMap;
 @Setter
 @Getter
 @ToString(exclude = "testCaseMap")
-public class TestSuiteData {
+public class TestSuiteVO {
 
     private boolean status = true;
 
@@ -27,30 +27,30 @@ public class TestSuiteData {
 
     private String title;
 
-    private ArrayList<TestCaseData> testCaseList;
+    private ArrayList<TestCaseVO> testCaseList;
 
     private transient int testCaseStartID = 1;
 
-    private transient HashMap<String, TestCaseData> testCaseMap;
+    private transient HashMap<String, TestCaseVO> testCaseMap;
 
-    public TestSuiteData() {
+    public TestSuiteVO() {
         testCaseMap = new HashMap<>(16);
     }
 
     public void createTestCase(String title) {
-        TestCaseData testCase = new TestCaseData(String.valueOf(testCaseStartID));
+        TestCaseVO testCase = new TestCaseVO(String.valueOf(testCaseStartID));
         testCase.setTitle(title);
         testCase.setId(String.valueOf(testCaseStartID++));
         testCaseMap.put(title, testCase);
     }
 
-    public void putTestCase(TestCaseData testCase) {
+    public void putTestCase(TestCaseVO testCase) {
         testCase.setTestCaseStepPrefixID(String.valueOf(testCaseStartID));
         testCase.setId(String.valueOf(testCaseStartID++));
         testCaseMap.put(testCase.getTitle(), testCase);
     }
 
-    public TestCaseData getTestCase(String title) {
+    public TestCaseVO getTestCase(String title) {
         return testCaseMap.get(title);
     }
 

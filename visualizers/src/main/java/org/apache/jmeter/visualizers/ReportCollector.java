@@ -15,9 +15,9 @@ import org.apache.jmeter.testelement.TestStateListener;
 import org.apache.jmeter.testelement.ThreadListener;
 import org.apache.jmeter.threads.JMeterContextService;
 import org.apache.jmeter.util.JMeterUtils;
-import org.apache.jmeter.visualizers.data.TestCaseData;
-import org.apache.jmeter.visualizers.data.TestCaseStepData;
-import org.apache.jmeter.visualizers.data.TestSuiteData;
+import org.apache.jmeter.visualizers.vo.TestCaseStepVO;
+import org.apache.jmeter.visualizers.vo.TestCaseVO;
+import org.apache.jmeter.visualizers.vo.TestSuiteVO;
 
 import java.io.File;
 
@@ -58,7 +58,7 @@ public class ReportCollector extends AbstractTestElement
         if (startCount == 0) {
             scriptName = getScriptName();
             reportName = getReportName();
-            TestSuiteData testSuiteData = new TestSuiteData();
+            TestSuiteVO testSuiteData = new TestSuiteVO();
             testSuiteData.setTitle(scriptName);
             testSuiteData.setStartTime(getStringTime());
             ReportManager.getReport().putTestSuite(testSuiteData);
@@ -78,7 +78,7 @@ public class ReportCollector extends AbstractTestElement
     public void testEnded(String host) {
         startCount--;
         if (startCount == 0) {
-            TestSuiteData testSuiteData = ReportManager.getReport().getTestSuite(scriptName);
+            TestSuiteVO testSuiteData = ReportManager.getReport().getTestSuite(scriptName);
             testSuiteData.setEndTime(getStringTime());
             testSuiteData.setElapsedTime(getElapsedTime(testSuiteData.getStartTime(), testSuiteData.getEndTime()));
 
@@ -99,8 +99,8 @@ public class ReportCollector extends AbstractTestElement
      */
     @Override
     public void threadStarted() {
-        TestSuiteData testSuiteData = ReportManager.getReport().getTestSuite(getScriptName());
-        TestCaseData testCaseData = new TestCaseData(String.valueOf(testSuiteData.getTestCaseStartID()));
+        TestSuiteVO testSuiteData = ReportManager.getReport().getTestSuite(getScriptName());
+        TestCaseVO testCaseData = new TestCaseVO(String.valueOf(testSuiteData.getTestCaseStartID()));
         testCaseData.setTitle(getThreadName());
         testCaseData.setStartTime(getStringTime());
         testSuiteData.putTestCase(testCaseData);
@@ -116,9 +116,9 @@ public class ReportCollector extends AbstractTestElement
      */
     @Override
     public void sampleOccurred(SampleEvent sampleEvent) {
-        TestSuiteData testSuite = ReportManager.getReport().getTestSuite(getScriptName());
-        TestCaseData testCase = testSuite.getTestCase(getThreadName());
-        TestCaseStepData testCaseStep = new TestCaseStepData();
+        TestSuiteVO testSuite = ReportManager.getReport().getTestSuite(getScriptName());
+        TestCaseVO testCase = testSuite.getTestCase(getThreadName());
+        TestCaseStepVO testCaseStep = new TestCaseStepVO();
 
         // 设置测试数据
         SampleResult result = sampleEvent.getResult();
@@ -160,13 +160,13 @@ public class ReportCollector extends AbstractTestElement
         // pass
     }
 
-    private void addSubResultTohtml(SampleResult[] subResults, TestCaseData testCase) {
+    private void addSubResultTohtml(SampleResult[] subResults, TestCaseVO testCase) {
         if (subResults.length <= 0) {
             return;
         }
 
         for (SampleResult subResult : subResults) {
-            TestCaseStepData testCaseStep = new TestCaseStepData();
+            TestCaseStepVO testCaseStep = new TestCaseStepVO();
             testCaseStep.setTile(subResult.getSampleLabel());
             testCaseStep.setElapsedTime(getSampleElapsedTime(subResult));
             testCaseStep.setRequest(subResult.getSamplerData());
@@ -207,13 +207,13 @@ public class ReportCollector extends AbstractTestElement
      * 获取测试报告路径
      */
     private String getReportPath() {
-        return JMeterUtils.getJMeterHome() + File.separator + "htmlreport" + File.separator + appendHTMLSuffix(reportName);
+        return JMeterUtils.getJMeterHome() + File.separator + "htmlreport" + File.separator + appendHtmlSuffix(reportName);
     }
 
     /**
      * 为测试报告名称添加.html后缀
      */
-    private String appendHTMLSuffix(String name) {
+    private String appendHtmlSuffix(String name) {
         if (name.endsWith(ReportManager.HTML_SUFFIX)) {
             return name;
         } else {
