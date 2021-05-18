@@ -204,14 +204,15 @@ public class JMeterScriptSamplerGui extends AbstractSamplerGui implements Action
 
     private void openScript() {
         try {
-            String jmeterHome = JMeterUtils.getJMeterHome();
             String scriptPath = getScriptPath();
             if (StringUtils.isBlank(scriptPath)) {
                 return;
             }
 
-            String command = jmeterHome + File.separator + "jmeter.bat " + scriptPath;
-            RuntimeUtil.exec(command, new File(jmeterHome));
+            String jmeterBinDir = JMeterUtils.getJMeterBinDir();
+            String logPath = jmeterBinDir + File.separator + "jmeter-inner-script.log";
+            String command = "jmeter -t " + scriptPath + "-j " + logPath;
+            RuntimeUtil.exec(command, jmeterBinDir);
         } catch (IOException e) {
             log.info(e.getMessage());
         }

@@ -120,6 +120,7 @@ public class ReportCollector extends AbstractTestElement
 
         // 设置测试数据
         SampleResult result = sampleEvent.getResult();
+        log.info("html:sampler:title:[ {} ]", result.getSampleLabel());
         testCaseStep.setTile(result.getSampleLabel());
         testCaseStep.setElapsedTime(getSampleElapsedTime(result));
         testCaseStep.setRequest(result.getSamplerData());
@@ -165,6 +166,7 @@ public class ReportCollector extends AbstractTestElement
 
         for (SampleResult subResult : subResults) {
             TestCaseStepVO testCaseStep = new TestCaseStepVO();
+            log.info("html:sampler:title:[ {} ]", subResult.getSampleLabel());
             testCaseStep.setTile(subResult.getSampleLabel());
             testCaseStep.setElapsedTime(getSampleElapsedTime(subResult));
             testCaseStep.setRequest(subResult.getSamplerData());
@@ -178,6 +180,7 @@ public class ReportCollector extends AbstractTestElement
 
             SampleResult[] innerSubResults = subResult.getSubResults();
             if (innerSubResults.length >0 ) {
+                log.info("innerSubResults.length:[ {} ]", innerSubResults.length);
                 addSubResultTohtml(innerSubResults, testCase);
             }
         }
