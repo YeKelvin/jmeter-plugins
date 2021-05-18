@@ -5,23 +5,25 @@ import org.apache.commons.collections4.MapUtils;
 import org.apache.jmeter.JMeter;
 import org.apache.jmeter.common.cli.CliOptions;
 import org.apache.jmeter.common.exceptions.ServiceException;
-import org.apache.jmeter.common.utils.ExceptionUtil;
 import org.apache.jmeter.common.jmeter.JMeterVariablesUtil;
-import org.apache.jmeter.common.utils.PathUtil;
 import org.apache.jmeter.common.json.JsonUtil;
-import org.apache.jmeter.config.*;
+import org.apache.jmeter.common.utils.ExceptionUtil;
+import org.apache.jmeter.common.utils.PathUtil;
+import org.apache.jmeter.config.Argument;
+import org.apache.jmeter.config.Arguments;
+import org.apache.jmeter.config.EnvDataSet;
+import org.apache.jmeter.config.SSHConfiguration;
+import org.apache.jmeter.config.ScriptArgumentsDescriptor;
 import org.apache.jmeter.control.LoopController;
 import org.apache.jmeter.engine.StandardJMeterEngine;
 import org.apache.jmeter.exceptions.IllegalUserActionException;
-import org.apache.jmeter.gui.tree.JMeterTreeModel;
-import org.apache.jmeter.gui.tree.JMeterTreeNode;
 import org.apache.jmeter.reporters.ResultCollector;
 import org.apache.jmeter.save.SaveService;
-import org.apache.jmeter.testelement.TestPlan;
 import org.apache.jmeter.testelement.property.JMeterProperty;
 import org.apache.jmeter.testelement.property.TestElementProperty;
 import org.apache.jmeter.threads.AbstractThreadGroup;
 import org.apache.jmeter.threads.JMeterContextService;
+import org.apache.jmeter.threads.JMeterVariables;
 import org.apache.jmeter.threads.PostThreadGroup;
 import org.apache.jmeter.threads.SetupThreadGroup;
 import org.apache.jmeter.util.JMeterUtils;
@@ -66,7 +68,7 @@ public class JMeterScriptSampler extends AbstractSampler implements Interruptibl
         result.setSampleLabel(getName());
         result.setEncodingAndType(StandardCharsets.UTF_8.name());
         try {
-            String argsData = setArgumentsToVariables();
+            String argsData = setArgumentsToVariablesOrProperties();
             result.setSamplerData(getSamplerData(scriptPath, argsData));
             result.sampleStart();
             result.setSuccessful(true);
@@ -89,19 +91,27 @@ public class JMeterScriptSampler extends AbstractSampler implements Interruptibl
     }
 
     private String getScriptDirectory() {
+        String scriptDirectory = getPropertyAsString(SCRIPT_DIRECTORY);
+        log.debug("scriptDirectory:[ {} ]", scriptDirectory);
         return getPropertyAsString(SCRIPT_DIRECTORY);
     }
 
     private String getScriptName() {
-        return getPropertyAsString(SCRIPT_NAME);
+        String scriptName = getPropertyAsString(SCRIPT_NAME);
+        log.debug("scriptName:[ {} ]", scriptName);
+        return scriptName;
     }
 
-    private boolean isSyncToProps() {
-        return getPropertyAsBoolean(SYNC_TO_PROPS);
+    private boolean syncToProps() {
+        boolean syncToProps = getPropertyAsBoolean(SYNC_TO_PROPS);
+        log.debug("syncToProps:[ {} ]", syncToProps);
+        return syncToProps;
     }
 
-    private boolean isSyncToVars() {
-        return getPropertyAsBoolean(SYNC_TO_VARS);
+    private boolean syncToVars() {
+        boolean syncToVars = getPropertyAsBoolean(SYNC_TO_VARS);
+        log.debug("syncToVars:[ {} ]", syncToVars);
+        return syncToVars;
     }
 
     private String getScriptPath() {
@@ -118,15 +128,23 @@ public class JMeterScriptSampler extends AbstractSampler implements Interruptibl
                 .toString();
     }
 
-    private String setArgumentsToVariables() {
+    private synchronized String setArgumentsToVariablesOrProperties() {
         StringBuffer sb = new StringBuffer();
         Arguments args = getArguments();
         args.setRunningVersion(true);
+        JMeterVariables variables = getThreadContext().getVariables();
+
         for (JMeterProperty jMeterProperty : args) {
             Argument arg = (Argument) jMeterProperty.getObjectValue();
-            getThreadContext().getVariables().put(arg.getName(), arg.getValue());
-            sb.append(arg.getName()).append(": ").append(arg.getValue()).append("\n");
+            variables.put(arg.getName(), arg.getValue());
+
+            if (syncToProps()) {
+                props.put(arg.getName(), arg.getValue());
+            }
+
+            sb.append(arg.getName()).append("=").append(arg.getValue()).append("\n");
         }
+
         return sb.toString();
     }
 
@@ -157,7 +175,8 @@ public class JMeterScriptSampler extends AbstractSampler implements Interruptibl
         props.put(CliOptions.CONFIG_NAME, JMeterVariablesUtil.getDefault(EnvDataSet.CONFIG_NAME));
 
         // 判断是否需要把当前线程的局部变量同步至脚本
-        if (isSyncToVars()) {
+        // TODO: 并发时估计会有问题吧???
+        if (syncToVars()) {
             props.put(JMeterScriptDataTransfer.CALLER_VARIABLES, getThreadContext().getVariables());
         }
 
@@ -190,12 +209,13 @@ public class JMeterScriptSampler extends AbstractSampler implements Interruptibl
                 (Map<String, Object>) props.get(JMeterScriptDataTransfer.INCREMENTAL_VARIABLES);
 
         // 把脚本中的增量局部变量同步至当前线程的局部变量中
-        if (isSyncToVars()) {
+        JMeterVariables variables = getThreadContext().getVariables();
+        if (syncToVars()) {
             incrementalVariables.forEach((key, value) -> {
                 if (value instanceof String) {
-                    getThreadContext().getVariables().put(key, (String) value);
+                    variables.put(key, (String) value);
                 } else {
-                    getThreadContext().getVariables().putObject(key, value);
+                    variables.putObject(key, value);
                 }
             });
         }
@@ -216,11 +236,6 @@ public class JMeterScriptSampler extends AbstractSampler implements Interruptibl
         // 加载脚本
         File file = new File(scriptAbsPath);
         HashTree tree = SaveService.loadTree(file);
-
-        // 对脚本做一些处理
-        JMeterTreeModel treeModel = new JMeterTreeModel(new TestPlan());
-        JMeterTreeNode root = (JMeterTreeNode) treeModel.getRoot();
-        treeModel.addSubTree(tree, root);
 
         // 删除已禁用的组件
         HashTree testTree = JMeter.convertSubTree(tree, false);
@@ -245,11 +260,11 @@ public class JMeterScriptSampler extends AbstractSampler implements Interruptibl
         StringBuffer response = new StringBuffer("Added Variables:\n");
         incrementalVariables.forEach((key, value) -> {
             if (value == null) {
-                response.append(key).append(": ").append("\n");
+                response.append(key).append("=").append("\n");
             } else if (value instanceof String) {
-                response.append(key).append(": ").append((String) value).append("\n");
+                response.append(key).append("=").append((String) value).append("\n");
             } else {
-                response.append(key).append(": ").append(JsonUtil.toJson(value)).append("\n");
+                response.append(key).append("=").append(JsonUtil.toJson(value)).append("\n");
             }
         });
         return response.toString();
@@ -372,14 +387,14 @@ public class JMeterScriptSampler extends AbstractSampler implements Interruptibl
     /**
      * 清空外部脚本的执行结果
      */
-    private void clearScriptProps() {
+    private synchronized void clearScriptProps() {
         props.remove(CliOptions.CONFIG_NAME);
         props.remove(JMeterScriptDataTransfer.INCREMENTAL_VARIABLES);
         props.remove(JMeterScriptDataTransfer.CALLER_VARIABLES);
     }
 
-    private void setProps(Map<String, Object> incrementalVariables) {
-        if (!isSyncToProps()) {
+    private synchronized void setProps(Map<String, Object> incrementalVariables) {
+        if (!syncToProps()) {
             return;
         }
 
