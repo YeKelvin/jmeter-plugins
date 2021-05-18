@@ -23,14 +23,14 @@ public class TestCaseVO {
     private String endTime;
     private String elapsedTime;
 
-    private ArrayList<TestStepVO> testCaseStepList;
+    private ArrayList<TestStepVO> testStepList;
     private transient String prefixId;
     private transient int startId;
 
     public TestCaseVO() {
         status = true;
         startId = 1;
-        testCaseStepList = new ArrayList<>();
+        testStepList = new ArrayList<>();
     }
 
     public TestCaseVO(String prefixId) {
@@ -38,16 +38,16 @@ public class TestCaseVO {
         this.prefixId = prefixId + "-";
     }
 
-    public void addTestCaseStep(TestStepVO testCaseStep) {
-        testCaseStep.setId(prefixId + startId++);
-        testCaseStepList.add(testCaseStep);
+    public void addTestStep(TestStepVO testStep) {
+        testStep.setId(prefixId + startId++);
+        testStepList.add(testStep);
     }
 
     /**
      * list升序排序
      */
     public void sort() {
-        testCaseStepList.sort(Comparator.comparingInt(obj -> Integer.parseInt(obj.getId())));
+        testStepList.sort(Comparator.comparingInt(obj -> Integer.parseInt(obj.getId())));
     }
 
     /**

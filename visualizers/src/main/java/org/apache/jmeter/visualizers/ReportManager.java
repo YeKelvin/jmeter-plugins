@@ -48,6 +48,7 @@ public class ReportManager {
      */
     public synchronized static void traverseReportData() {
         testDataSet.testSuiteMapConvertToList();
+
         for (TestSuiteVO testSuite : testDataSet.getTestSuiteList()) {
             testSuite.testCaseMapConvertToList();
             testSuite.sort();
@@ -63,9 +64,11 @@ public class ReportManager {
     private synchronized static ReportInfoVO createReportInfo() {
         ReportInfoVO reportInfo = new ReportInfoVO();
         String currentTime = TimeUtil.currentTimeAsString(DATE_FORMAT_PATTERN);
+
         reportInfo.setCreateTime(currentTime);
         reportInfo.setLastUpdateTime(currentTime);
         reportInfo.setToolName("Jmeter " + JMeterUtils.getJMeterVersion());
+
         return reportInfo;
     }
 
@@ -74,6 +77,7 @@ public class ReportManager {
      */
     private synchronized static OverviewInfoVO createOverviewInfo() {
         OverviewInfoVO overviewInfo = new OverviewInfoVO();
+
         // 添加 TestPlan的数据
         overviewInfo.increaseTestSuiteTotal();
         TestSuiteVO testSuite = testDataSet.getTestSuiteList().get(0);
@@ -81,6 +85,7 @@ public class ReportManager {
         if (!testSuite.getStatus()) {
             overviewInfo.increaseErrorTestSuiteTotal();
         }
+
         // 遍历添加 ThreadGroup的数据
         for (TestCaseVO testCase : testSuite.getTestCaseList()) {
             overviewInfo.increaseTestCaseTotal();
@@ -88,8 +93,9 @@ public class ReportManager {
                 overviewInfo.increaseErrorTestCaseTotal();
             }
             overviewInfo.setTestCaseAverageElapsedTime(testCase.getElapsedTime());
+
             // 遍历添加 Sampler的数据
-            for (TestStepVO testCaseStep : testCase.getTestCaseStepList()) {
+            for (TestStepVO testCaseStep : testCase.getTestStepList()) {
                 overviewInfo.increaseTestStepTotal();
                 if (!testCaseStep.getStatus()) {
                     overviewInfo.increaseErrorTestStepTotal();
@@ -97,6 +103,7 @@ public class ReportManager {
                 overviewInfo.setTestStepAverageElapsedTime(testCaseStep.getElapsedTime());
             }
         }
+
         return overviewInfo;
     }
 
@@ -106,9 +113,11 @@ public class ReportManager {
     private synchronized static Map<String, Object> getTemplateRootData() {
         Map<String, Object> root = new HashMap<>(1);
         traverseReportData();
+
         root.put("reportInfo", JsonUtil.toJson(createReportInfo()));
         root.put("overviewInfo", JsonUtil.toJson(createOverviewInfo()));
         root.put("testSuiteList", JsonUtil.toJson(testDataSet.getTestSuiteList()));
+
         return root;
     }
 

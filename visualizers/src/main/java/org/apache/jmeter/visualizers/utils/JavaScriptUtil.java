@@ -10,22 +10,21 @@ import java.util.regex.Pattern;
 
 /**
  * @author Kelvin.Ye
- * @date    2019-01-30 17:45
+ * @date 2019-01-30 17:45
  */
 public class JavaScriptUtil {
 
     private static final String TEST_SUITE_LIST_NAME = "testSuiteList: ";
-    private static final String TEST_SUITE_LIST_VALUE_PATTERN = "testSuiteList: .*";
-
     private static final String REPORT_INFO_NAME = "reportInfo: ";
-    private static final String REPORT_INFO_VALUE_PATTERN = "reportInfo: .*";
-
     private static final String OVERVIEW_INFO_NAME = "overviewInfo: ";
+
+    private static final String TEST_SUITE_LIST_VALUE_PATTERN = "testSuiteList: .*";
+    private static final String REPORT_INFO_VALUE_PATTERN = "reportInfo: .*";
     private static final String OVERVIEW_INFO_VALUE_PATTERN = "overviewInfo: .*";
 
-    private static final Pattern testSuiteListRegex = Pattern.compile(TEST_SUITE_LIST_VALUE_PATTERN);
-    private static final Pattern reportInfoRegex = Pattern.compile(REPORT_INFO_VALUE_PATTERN);
-    private static final Pattern overviewInfoRegex = Pattern.compile(OVERVIEW_INFO_VALUE_PATTERN);
+    private static final Pattern TEST_SUITE_LIST_REGEX = Pattern.compile(TEST_SUITE_LIST_VALUE_PATTERN);
+    private static final Pattern REPORT_INFO_REGEX = Pattern.compile(REPORT_INFO_VALUE_PATTERN);
+    private static final Pattern OVERVIEW_INFO_REGEX = Pattern.compile(OVERVIEW_INFO_VALUE_PATTERN);
 
     /**
      * 提取js脚本中 testSuiteList的值
@@ -34,7 +33,7 @@ public class JavaScriptUtil {
      * @return str
      */
     public static String extractTestSuiteList(String jsContent) {
-        Matcher matcher = testSuiteListRegex.matcher(jsContent);
+        Matcher matcher = TEST_SUITE_LIST_REGEX.matcher(jsContent);
         if (matcher.find()) {
             return matcher.group(0).substring(TEST_SUITE_LIST_NAME.length());
         }
@@ -48,7 +47,7 @@ public class JavaScriptUtil {
      * @return str
      */
     public static String extractReportInfo(String jsContent) {
-        Matcher matcher = reportInfoRegex.matcher(jsContent);
+        Matcher matcher = REPORT_INFO_REGEX.matcher(jsContent);
         if (matcher.find()) {
             String result = matcher.group(0);
             return result.substring(REPORT_INFO_NAME.length(), result.length() - 1);
@@ -63,7 +62,7 @@ public class JavaScriptUtil {
      * @return str
      */
     public static String extractOverviewInfo(String jsContent) {
-        Matcher matcher = overviewInfoRegex.matcher(jsContent);
+        Matcher matcher = OVERVIEW_INFO_REGEX.matcher(jsContent);
         if (matcher.find()) {
             String result = matcher.group(0);
             return result.substring(OVERVIEW_INFO_NAME.length(), result.length() - 1);
@@ -79,7 +78,7 @@ public class JavaScriptUtil {
      * @return str
      */
     public static String updateTestSuiteList(String jsContent, String newValue) {
-        Matcher matcher = testSuiteListRegex.matcher(jsContent);
+        Matcher matcher = TEST_SUITE_LIST_REGEX.matcher(jsContent);
         return matcher.replaceAll(
                 Matcher.quoteReplacement(TEST_SUITE_LIST_NAME + newValue));
     }
@@ -94,7 +93,7 @@ public class JavaScriptUtil {
      */
     public static String updateReportInfo(String jsContent, String oldValue, Object lastUpdateTime) {
         String newValue = updateLastUpdateTime(oldValue, lastUpdateTime);
-        Matcher matcher = reportInfoRegex.matcher(jsContent);
+        Matcher matcher = REPORT_INFO_REGEX.matcher(jsContent);
         return matcher.replaceAll(
                 Matcher.quoteReplacement(REPORT_INFO_NAME + newValue + ","));
     }
@@ -110,7 +109,7 @@ public class JavaScriptUtil {
     public static String updateOverviewInfo(String jsContent, String oldValue, OverviewInfoVO currentInfo) {
         OverviewInfoVO overviewInfo = JsonUtil.fromJson(oldValue, OverviewInfoVO.class);
         overviewInfo.add(currentInfo);
-        Matcher matcher = overviewInfoRegex.matcher(jsContent);
+        Matcher matcher = OVERVIEW_INFO_REGEX.matcher(jsContent);
         return matcher.replaceAll(
                 Matcher.quoteReplacement(OVERVIEW_INFO_NAME + JsonUtil.toJson(overviewInfo) + ","));
     }

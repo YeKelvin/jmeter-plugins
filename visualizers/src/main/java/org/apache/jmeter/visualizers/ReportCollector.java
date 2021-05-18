@@ -120,7 +120,6 @@ public class ReportCollector extends AbstractTestElement
 
         // 设置测试数据
         SampleResult result = sampleEvent.getResult();
-        log.info("html:sampler:title:[ {} ]", result.getSampleLabel());
         testCaseStep.setTile(result.getSampleLabel());
         testCaseStep.setElapsedTime(getSampleElapsedTime(result));
         testCaseStep.setRequest(result.getSamplerData());
@@ -136,7 +135,7 @@ public class ReportCollector extends AbstractTestElement
         }
 
         // 把测试步骤数据添加至测试案例集中
-        testCase.addTestCaseStep(testCaseStep);
+        testCase.addTestStep(testCaseStep);
 
         // 每次sampler执行完毕覆盖testCase的完成时间和耗时
         testCase.setEndTime(getStringTime());
@@ -166,7 +165,6 @@ public class ReportCollector extends AbstractTestElement
 
         for (SampleResult subResult : subResults) {
             TestStepVO testCaseStep = new TestStepVO();
-            log.info("html:sampler:title:[ {} ]", subResult.getSampleLabel());
             testCaseStep.setTile(subResult.getSampleLabel());
             testCaseStep.setElapsedTime(getSampleElapsedTime(subResult));
             testCaseStep.setRequest(subResult.getSamplerData());
@@ -176,11 +174,10 @@ public class ReportCollector extends AbstractTestElement
                 testCaseStep.pass();
             }
 
-            testCase.addTestCaseStep(testCaseStep);
+            testCase.addTestStep(testCaseStep);
 
             SampleResult[] innerSubResults = subResult.getSubResults();
             if (innerSubResults.length >0 ) {
-                log.info("innerSubResults.length:[ {} ]", innerSubResults.length);
                 addSubResultTohtml(innerSubResults, testCase);
             }
         }

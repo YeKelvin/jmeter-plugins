@@ -525,28 +525,28 @@
                                 </template>
 
                                 <div class="test-case-step">
-                                    <el-collapse v-model="testCaseStepActiveName" accordion>
-                                        <el-collapse-item v-for="testCaseStep in testCase['testCaseStepList']" :name="testCaseStep['id']"
-                                                          :key="testCaseStep['id']">
+                                    <el-collapse v-model="testStepActiveName" accordion>
+                                        <el-collapse-item v-for="testStep in testCase['testStepList']" :name="testStep['id']"
+                                                          :key="testStep['id']">
                                             <template slot="title">
                                                 <div class="container test-case-step__title">
                                                     <svg class="icon" aria-hidden="true">
-                                                        <use v-if="testCaseStep['status']" xlink:href="#icon-pass"></use>
+                                                        <use v-if="testStep['status']" xlink:href="#icon-pass"></use>
                                                         <use v-else xlink:href="#icon-failure"></use>
                                                     </svg>
-                                                    <span class="break-word" :class="{failure : !testCaseStep['status']}">{{ testCaseStep['tile'] }}</span>
-                                                    <el-tag class="time-tag" size="mini">{{ testCaseStep['elapsedTime'] }}</el-tag>
+                                                    <span class="break-word" :class="{failure : !testStep['status']}">{{ testStep['tile'] }}</span>
+                                                    <el-tag class="time-tag" size="mini">{{ testStep['elapsedTime'] }}</el-tag>
                                                 </div>
                                             </template>
                                             <div class="test-case-step__detail">
                                                 <table>
                                                     <tr>
                                                         <td>Request:</td>
-                                                        <td class="break-word">{{ testCaseStep['request'] }}</td>
+                                                        <td class="break-word">{{ testStep['request'] }}</td>
                                                     </tr>
                                                     <tr>
                                                         <td>Response:</td>
-                                                        <td class="break-word">{{ testCaseStep['response'] }}</td>
+                                                        <td class="break-word">{{ testStep['response'] }}</td>
                                                     </tr>
                                                 </table>
                                             </div>
@@ -568,7 +568,7 @@
           isShowOverview: true,
           currentTestSuiteIndex: 0,
           testCaseActiveName: '',
-          testCaseStepActiveName: '',
+          testStepActiveName: '',
           testSuiteFilterValue: null,
           testCaseFilterValue: null,
           reportInfo: ${reportInfo},
@@ -580,7 +580,7 @@
             this.isShowOverview = false
             this.currentTestSuiteIndex = index
             this.testCaseActiveName = ''
-            this.testCaseStepActiveName = ''
+            this.testStepActiveName = ''
             this.testCaseFilterValue = null
           },
           isTrueFilter: function(currentObj) {
@@ -604,13 +604,13 @@
             this.testSuiteFilterValue = newValue
             this.currentTestSuiteIndex = 0
             this.testCaseActiveName = ''
-            this.testCaseStepActiveName = ''
+            this.testStepActiveName = ''
             this.testCaseFilterValue = null
           },
           updateTestCaseFilterValue: function(newValue) {
             this.testCaseFilterValue = newValue
             this.testCaseActiveName = ''
-            this.testCaseStepActiveName = ''
+            this.testStepActiveName = ''
           },
           successRate: function(total, errorTotal){
             return Math.round(((total - errorTotal) / total) * 10000) / 100 + '%'
@@ -672,31 +672,31 @@
                 totalType:'总数',
                 scriptTotal:this.overviewInfo.testSuiteTotal,
                 threadTotal:this.overviewInfo.testCaseTotal,
-                samplerTotal:this.overviewInfo.testCaseStepTotal
+                samplerTotal:this.overviewInfo.testStepTotal
               },
               {
                 totalType:'成功总数',
                 scriptTotal:this.overviewInfo.testSuiteTotal - this.overviewInfo.errorTestSuiteTotal,
                 threadTotal:this.overviewInfo.testCaseTotal - this.overviewInfo.errorTestCaseTotal,
-                samplerTotal:this.overviewInfo.testCaseStepTotal - this.overviewInfo.errorTestCaseStepTotal
+                samplerTotal:this.overviewInfo.testStepTotal - this.overviewInfo.errorTestStepTotal
               },
               {
                 totalType:'失败总数',
                 scriptTotal:this.overviewInfo.errorTestSuiteTotal,
                 threadTotal:this.overviewInfo.errorTestCaseTotal,
-                samplerTotal:this.overviewInfo.errorTestCaseStepTotal
+                samplerTotal:this.overviewInfo.errorTestStepTotal
               },
               {
                 totalType:'成功率',
                 scriptTotal:this.successRate(this.overviewInfo.testSuiteTotal, this.overviewInfo.errorTestSuiteTotal),
                 threadTotal:this.successRate(this.overviewInfo.testCaseTotal, this.overviewInfo.errorTestCaseTotal),
-                samplerTotal:this.successRate(this.overviewInfo.testCaseStepTotal, this.overviewInfo.errorTestCaseStepTotal)
+                samplerTotal:this.successRate(this.overviewInfo.testStepTotal, this.overviewInfo.errorTestStepTotal)
               },
               {
                 totalType:'平均响应时间',
                 scriptTotal:this.overviewInfo.testSuiteAverageElapsedTime,
                 threadTotal:this.overviewInfo.testCaseAverageElapsedTime,
-                samplerTotal:this.overviewInfo.testCaseStepAverageElapsedTime
+                samplerTotal:this.overviewInfo.testStepAverageElapsedTime
               }
             ]
           },
@@ -706,14 +706,14 @@
           testCasePieChartOption: function() {
             return this.getPieChartOption('线程组', this.overviewInfo.testCaseTotal, this.overviewInfo.errorTestCaseTotal)
           },
-          testCaseStepPieChartOption: function() {
-            return this.getPieChartOption('请求', this.overviewInfo.testCaseStepTotal, this.overviewInfo.errorTestCaseStepTotal)
+          testStepPieChartOption: function() {
+            return this.getPieChartOption('请求', this.overviewInfo.testStepTotal, this.overviewInfo.errorTestStepTotal)
           }
         },
         mounted: function() {
           echarts.init(document.getElementById('overview_script_pie_chart')).setOption(this.testSuitePieChartOption)
           echarts.init(document.getElementById('overview_thread_pie_chart')).setOption(this.testCasePieChartOption)
-          echarts.init(document.getElementById('overview_sampler_pie_chart')).setOption(this.testCaseStepPieChartOption)
+          echarts.init(document.getElementById('overview_sampler_pie_chart')).setOption(this.testStepPieChartOption)
         }
       })
     </script>
