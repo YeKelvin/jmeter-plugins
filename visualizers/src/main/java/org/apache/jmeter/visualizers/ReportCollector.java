@@ -103,7 +103,7 @@ public class ReportCollector extends AbstractTestElement
      */
     @Override
     public void threadStarted() {
-        TestSuiteVO testSuiteData = ReportManager.getReport().getTestSuite(getScriptName());
+        TestSuiteVO testSuiteData = ReportManager.getReport().getTestSuite(scriptName);
         TestCaseVO testCaseData = new TestCaseVO(String.valueOf(testSuiteData.getTestCaseStartID()));
         testCaseData.setTitle(getThreadName());
         testCaseData.setStartTime(getStringTime());
@@ -120,7 +120,7 @@ public class ReportCollector extends AbstractTestElement
      */
     @Override
     public void sampleOccurred(SampleEvent sampleEvent) {
-        TestSuiteVO testSuite = ReportManager.getReport().getTestSuite(getScriptName());
+        TestSuiteVO testSuite = ReportManager.getReport().getTestSuite(scriptName);
         TestCaseVO testCase = testSuite.getTestCase(getThreadName());
         TestCaseStepVO testCaseStep = new TestCaseStepVO();
 

@@ -5,12 +5,12 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.jmeter.common.json.JsonUtil;
-import org.apache.jmeter.common.utils.ExceptionUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
@@ -23,6 +23,7 @@ import java.util.TreeMap;
  * @author Kelvin.Ye
  */
 public class Signature {
+
     private static final Logger log = LoggerFactory.getLogger(Signature.class);
 
     /**
@@ -32,35 +33,36 @@ public class Signature {
      * @param prefix 加签前缀
      * @return 报文加签md5密文
      */
-    public static String sign(String json, String prefix) {
+    public static String sign(String json, String prefix) throws JsonSyntaxException, NoSuchAlgorithmException {
+        if (StringUtils.isBlank(json)) {
+            return "";
+        }
+
         try {
-            if (StringUtils.isBlank(json)) {
-                return "";
-            }
+            StringBuffer sortedSb = new StringBuffer();
 
             // 排序Json
             Map<Object, Object> resultMap = sortMapByKey(JsonUtil.fromJson(json, JsonUtil.mapType));
-            StringBuffer orderedSB = new StringBuffer();
             if (resultMap != null) {
-                resultMap.forEach((key, value) -> traverse(orderedSB, key, value));
+                resultMap.forEach((key, value) -> traverse(sortedSb, key, value));
             }
-            String sign = orderedSB.substring(0, orderedSB.length() - 1);
+            String sign = sortedSb.substring(0, sortedSb.length() - 1);
 
             // 拼接前缀
             if (StringUtils.isNotBlank(prefix)) {
                 sign = prefix + "&" + sign;
             }
-            log.debug("sign={}", sign);
 
+            log.debug("sign={}", sign);
             // md5加密
             if (StringUtils.isNotBlank(sign)) {
                 sign = md5(sign);
             }
+            log.debug("md5sign={}", sign);
             return sign;
         } catch (JsonSyntaxException e) {
-            log.error(ExceptionUtil.getStackTrace(e));
             log.error("Sign函数目前仅支持Json格式报文");
-            return "";
+            throw e;
         }
     }
 
@@ -86,10 +88,12 @@ public class Signature {
         if (MapUtils.isEmpty(map)) {
             return sb.append("{}").toString();
         }
+
         Map<Object, Object> sortedMap = sortMapByKey(map);
         if (MapUtils.isEmpty(sortedMap)) {
             return sb.append("{}").toString();
         }
+
         sb.append("{");
         sortedMap.forEach((key, value) -> traverse(sb, key, value));
         return sb.substring(0, sb.length() - 1) + "}";
@@ -104,6 +108,7 @@ public class Signature {
         if (CollectionUtils.isEmpty(list)) {
             return sb.append("[]").toString();
         }
+
         sb.append("[");
         list.forEach(item -> {
             if (item instanceof Map) {
@@ -122,9 +127,10 @@ public class Signature {
      * 根据 key排序 Map
      */
     private static Map<Object, Object> sortMapByKey(Map<Object, Object> map) {
-        if (map == null || map.isEmpty()) {
+        if (MapUtils.isEmpty(map)) {
             return null;
         }
+
         // 降序排序
         Map<Object, Object> sortMap = new TreeMap<>(Comparator.comparing(Object::toString));
         sortMap.putAll(map);
@@ -134,24 +140,21 @@ public class Signature {
     /**
      * md5加密
      */
-    private static String md5(String str) {
-        String strDigest = "";
-        try {
-            MessageDigest md5 = MessageDigest.getInstance("MD5");
-            byte[] data;
-            data = md5.digest(str.getBytes(StandardCharsets.UTF_8));
-            strDigest = bytesToHexString(data).toLowerCase();
-        } catch (Exception e) {
-            log.error(ExceptionUtil.getStackTrace(e));
-        }
+    private static String md5(String value) throws NoSuchAlgorithmException {
+        MessageDigest md5 = MessageDigest.getInstance("MD5");
+        byte[] data;
+        data = md5.digest(value.getBytes(StandardCharsets.UTF_8));
+        String strDigest = bytesToHexString(data).toLowerCase();
+        log.debug("md5str:[ {} ]", strDigest);
         return strDigest;
     }
 
     private static String bytesToHexString(byte[] src) {
-        StringBuffer sb = new StringBuffer();
         if (src == null || src.length <= 0) {
             return "";
         }
+
+        StringBuffer sb = new StringBuffer();
         for (byte b : src) {
             int v = b & 0xFF;
             String hv = Integer.toHexString(v);
