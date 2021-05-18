@@ -33,6 +33,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * @author Kelvin.Ye
@@ -77,8 +78,8 @@ public class JMeterScriptSamplerGui extends AbstractSamplerGui implements Action
     /**
      * 缓存数据
      */
-    public static final Map<String, Arguments> CACHED_SCRIPT_ARGUMENTS = new HashMap<>();
-    public static final Map<String, Long> CACHED_SCRIPT_LAST_MODIFIED = new HashMap<>();
+    public static final Map<String, Arguments> CACHED_SCRIPT_ARGUMENTS = new ConcurrentHashMap<>();
+    public static final Map<String, Long> CACHED_SCRIPT_LAST_MODIFIED = new ConcurrentHashMap<>();
 
     /**
      * 插件说明
