@@ -16,7 +16,6 @@ import org.apache.jmeter.config.SSHConfiguration;
 import org.apache.jmeter.config.ScriptArgumentsDescriptor;
 import org.apache.jmeter.control.LoopController;
 import org.apache.jmeter.engine.StandardJMeterEngine;
-import org.apache.jmeter.exceptions.IllegalUserActionException;
 import org.apache.jmeter.reporters.ResultCollector;
 import org.apache.jmeter.save.SaveService;
 import org.apache.jmeter.testelement.property.JMeterProperty;
@@ -102,13 +101,13 @@ public class JMeterScriptSampler extends AbstractSampler implements Interruptibl
         return scriptName;
     }
 
-    private boolean syncToProps() {
+    private boolean isSyncToProps() {
         boolean syncToProps = getPropertyAsBoolean(SYNC_TO_PROPS);
         log.debug("syncToProps:[ {} ]", syncToProps);
         return syncToProps;
     }
 
-    private boolean syncToVars() {
+    private boolean isSyncToVars() {
         boolean syncToVars = getPropertyAsBoolean(SYNC_TO_VARS);
         log.debug("syncToVars:[ {} ]", syncToVars);
         return syncToVars;
@@ -138,7 +137,7 @@ public class JMeterScriptSampler extends AbstractSampler implements Interruptibl
             Argument arg = (Argument) jMeterProperty.getObjectValue();
             variables.put(arg.getName(), arg.getValue());
 
-            if (syncToProps()) {
+            if (isSyncToProps()) {
                 props.put(arg.getName(), arg.getValue());
             }
 
@@ -157,6 +156,7 @@ public class JMeterScriptSampler extends AbstractSampler implements Interruptibl
         if (args == null) {
             args = new Arguments();
         }
+
         return args;
     }
 
@@ -166,18 +166,17 @@ public class JMeterScriptSampler extends AbstractSampler implements Interruptibl
      * @param scriptAbsPath 脚本绝对路径
      * @return 执行结果
      */
-    private String runJMeterScript(String scriptAbsPath, SampleResult result)
-            throws IllegalUserActionException, IOException, InterruptedException {
+    private String runJMeterScript(String scriptAbsPath, SampleResult result) throws IOException, InterruptedException {
         // 加载脚本
         HashTree testTree = loadScriptTree(scriptAbsPath, result);
 
         // 设置全局变量，用于传递给脚本使用
-        props.put(CliOptions.CONFIG_NAME, JMeterVariablesUtil.getDefault(EnvDataSet.CONFIG_NAME));
+        setGlobalConfigName();
 
         // 判断是否需要把当前线程的局部变量同步至脚本
         // TODO: 并发时估计会有问题吧???
-        if (syncToVars()) {
-            props.put(JMeterScriptDataTransfer.CALLER_VARIABLES, getThreadContext().getVariables());
+        if (isSyncToVars()) {
+            props.put(JMeterScriptDataForwarder.CALLER_VARIABLES, getThreadContext().getVariables());
         }
 
         // 开始执行脚本
@@ -204,24 +203,13 @@ public class JMeterScriptSampler extends AbstractSampler implements Interruptibl
         }
 
         // 提取脚本的执行结果
-        @SuppressWarnings("unchecked")
-        Map<String, Object> incrementalVariables =
-                (Map<String, Object>) props.get(JMeterScriptDataTransfer.INCREMENTAL_VARIABLES);
+        Map<String, Object> incrementalVariables = incrementalVariables();
 
         // 把脚本中的增量局部变量同步至当前线程的局部变量中
-        JMeterVariables variables = getThreadContext().getVariables();
-        if (syncToVars()) {
-            incrementalVariables.forEach((key, value) -> {
-                if (value instanceof String) {
-                    variables.put(key, (String) value);
-                } else {
-                    variables.putObject(key, value);
-                }
-            });
-        }
+        syncVariables(incrementalVariables);
 
         // 把脚本中新增的局部变量同步至全局变量中
-        setProps(incrementalVariables);
+        syncProperties(incrementalVariables);
 
         return formatResponse(incrementalVariables);
     }
@@ -232,7 +220,7 @@ public class JMeterScriptSampler extends AbstractSampler implements Interruptibl
      * @param scriptAbsPath 脚本绝对路径
      * @return 脚本的 HashTree对象
      */
-    private HashTree loadScriptTree(String scriptAbsPath, SampleResult result) throws IOException, IllegalUserActionException {
+    private HashTree loadScriptTree(String scriptAbsPath, SampleResult result) throws IOException {
         // 加载脚本
         File file = new File(scriptAbsPath);
         HashTree tree = SaveService.loadTree(file);
@@ -244,7 +232,7 @@ public class JMeterScriptSampler extends AbstractSampler implements Interruptibl
         removeUnwantedComponents(testTree);
 
         // 校验脚本中是否仅存在一个线程组
-        // 设置该线程组配置，修改如下
+        // 修改脚本的线程组配置
         // 错误动作=ON_SAMPLE_ERROR_START_NEXT_LOOP
         // 线程数=1
         // 循环次数=1
@@ -389,12 +377,31 @@ public class JMeterScriptSampler extends AbstractSampler implements Interruptibl
      */
     private synchronized void clearScriptProps() {
         props.remove(CliOptions.CONFIG_NAME);
-        props.remove(JMeterScriptDataTransfer.INCREMENTAL_VARIABLES);
-        props.remove(JMeterScriptDataTransfer.CALLER_VARIABLES);
+        props.remove(JMeterScriptDataForwarder.INCREMENTAL_VARIABLES);
+        props.remove(JMeterScriptDataForwarder.CALLER_VARIABLES);
     }
 
-    private synchronized void setProps(Map<String, Object> incrementalVariables) {
-        if (!syncToProps()) {
+    private synchronized void syncVariables(Map<String, Object> incrementalVariables) {
+        if (!isSyncToVars()) {
+            return;
+        }
+
+        if (MapUtils.isEmpty(incrementalVariables)) {
+            return;
+        }
+
+        JMeterVariables variables = getThreadContext().getVariables();
+        incrementalVariables.forEach((key, value) -> {
+            if (value instanceof String) {
+                variables.put(key, (String) value);
+            } else {
+                variables.putObject(key, value);
+            }
+        });
+    }
+
+    private synchronized void syncProperties(Map<String, Object> incrementalVariables) {
+        if (!isSyncToProps()) {
             return;
         }
 
@@ -443,12 +450,7 @@ public class JMeterScriptSampler extends AbstractSampler implements Interruptibl
         Object testPlan = hashTree.getArray()[0];
 
         // 添加 JMeter脚本数据传递组件
-        hashTree.add(testPlan, new JMeterScriptDataTransfer(result));
-
-        // 添加调用者的 HTML报告组件
-        for (ReportCollector reportCollector : getReportCollectorIter()) {
-            hashTree.add(testPlan, reportCollector);
-        }
+        hashTree.add(testPlan, new JMeterScriptDataForwarder(result));
     }
 
     /**
@@ -461,5 +463,14 @@ public class JMeterScriptSampler extends AbstractSampler implements Interruptibl
         Matcher m = r.matcher(threadName);
         threadName = m.replaceAll("");
         return threadName;
+    }
+
+    @SuppressWarnings("unchecked")
+    private Map<String, Object> incrementalVariables() {
+        return (Map<String, Object>) props.get(JMeterScriptDataForwarder.INCREMENTAL_VARIABLES);
+    }
+
+    private void setGlobalConfigName() {
+        props.put(CliOptions.CONFIG_NAME, JMeterVariablesUtil.getDefault(EnvDataSet.CONFIG_NAME));
     }
 }

@@ -23,10 +23,10 @@ import java.util.Properties;
 /**
  * @author Kelvin.Ye
  */
-public class JMeterScriptDataTransfer extends AbstractTestElement
+public class JMeterScriptDataForwarder extends AbstractTestElement
         implements ThreadListener, SampleListener, NoThreadClone {
 
-    private static final Logger log = LoggerFactory.getLogger(JMeterScriptDataTransfer.class);
+    private static final Logger log = LoggerFactory.getLogger(JMeterScriptDataForwarder.class);
 
     public static final String CALLER_VARIABLES = "JMeterScriptDataTransfer.callerVariables";
     public static final String INCREMENTAL_VARIABLES = "JMeterScriptDataTransfer.incrementalVariables";
@@ -39,7 +39,7 @@ public class JMeterScriptDataTransfer extends AbstractTestElement
 
     private SampleResult parentResult;
 
-    public JMeterScriptDataTransfer(SampleResult parentResult) {
+    public JMeterScriptDataForwarder(SampleResult parentResult) {
         super();
         this.incrementalVariables = new HashMap<>();
         this.clonedVars = new HashMap<>();

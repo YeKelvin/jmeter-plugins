@@ -5,6 +5,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.jmeter.common.jmeter.JMeterGuiUtil;
 import org.apache.jmeter.common.jmeter.ValueReplaceUtil;
 import org.apache.jmeter.common.utils.DesktopUtil;
+import org.apache.jmeter.common.utils.RuntimeUtil;
 import org.apache.jmeter.config.Argument;
 import org.apache.jmeter.config.Arguments;
 import org.apache.jmeter.config.ScriptArgumentsDescriptor;
@@ -16,6 +17,7 @@ import org.apache.jmeter.save.SaveService;
 import org.apache.jmeter.services.FileServer;
 import org.apache.jmeter.testelement.TestElement;
 import org.apache.jmeter.testelement.property.JMeterProperty;
+import org.apache.jmeter.util.JMeterUtils;
 import org.apache.jorphan.collections.HashTree;
 import org.apache.jorphan.collections.SearchByClass;
 import org.apache.jorphan.gui.ObjectTableModel;
@@ -201,7 +203,18 @@ public class JMeterScriptSamplerGui extends AbstractSamplerGui implements Action
     }
 
     private void openScript() {
-        // 还没实现呢
+        try {
+            String jmeterHome = JMeterUtils.getJMeterHome();
+            String scriptPath = getScriptPath();
+            if (StringUtils.isBlank(scriptPath)) {
+                return;
+            }
+
+            String command = String.format("jmeter.bat %s", scriptPath);
+            RuntimeUtil.exec(command, new File(jmeterHome));
+        } catch (IOException e) {
+            log.info(e.getMessage());
+        }
     }
 
     private Arguments mergeArguments(Arguments selfArgs) {

@@ -59,6 +59,8 @@ public class ReportCollector extends AbstractTestElement
      */
     @Override
     public void testStarted(String host) {
+        log.info("start html:[ {} ]", FileServer.getFileServer().getScriptName());
+
         if (startCount == 0) {
             scriptName = getScriptName();
             reportName = getReportName();
@@ -80,8 +82,10 @@ public class ReportCollector extends AbstractTestElement
      */
     @Override
     public void testEnded(String host) {
+        log.info("end html:[ {} ]", FileServer.getFileServer().getScriptName());
         startCount--;
         if (startCount == 0) {
+            log.info("脚本执行完成，开始生成HTML报告");
             TestSuiteVO testSuiteData = ReportManager.getReport().getTestSuite(scriptName);
             testSuiteData.setEndTime(getStringTime());
             testSuiteData.setElapsedTime(getElapsedTime(testSuiteData.getStartTime(), testSuiteData.getEndTime()));
@@ -143,14 +147,14 @@ public class ReportCollector extends AbstractTestElement
             testSuite.fail();
         }
 
-        // 每次sample执行完毕覆盖testCase的完成时间和耗时
+        // 每次sampler执行完毕覆盖testCase的完成时间和耗时
         testCase.setEndTime(getStringTime());
         testCase.setElapsedTime(getElapsedTime(testCase.getStartTime(), testCase.getEndTime()));
 
         // 把测试步骤数据添加至测试案例集中
         testCase.putTestCaseStep(testCaseStep);
 
-        // 另外把 sample 执行结果打印到控制台
+        // 另外把sampler执行结果打印到控制台
         consoleInfo(result.isSuccessful(), getThreadName());
     }
 
@@ -229,8 +233,8 @@ public class ReportCollector extends AbstractTestElement
     /**
      * 控制台打印执行状态信息
      */
-    private void consoleInfo(boolean isSuccessful, String message) {
-        if (isSuccessful) {
+    private void consoleInfo(boolean successful, String message) {
+        if (successful) {
             System.out.println("[true] - " + message);
         } else {
             System.err.println("[false]- " + message);
