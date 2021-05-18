@@ -14,20 +14,14 @@ import java.util.HashMap;
 @Setter
 @Getter
 @ToString(exclude = "testSuiteMap")
-public class ReportDataSet {
+public class TestDataSet {
 
     private ArrayList<TestSuiteVO> testSuiteList;
 
     private transient HashMap<String, TestSuiteVO> testSuiteMap;
 
-    public ReportDataSet() {
+    public TestDataSet() {
         testSuiteMap = new HashMap<>();
-    }
-
-    public void createTestSuite(String title) {
-        TestSuiteVO testSuite = new TestSuiteVO();
-        testSuite.setTitle(title);
-        testSuiteMap.put(title, testSuite);
     }
 
     public void putTestSuite(TestSuiteVO testSuite) {

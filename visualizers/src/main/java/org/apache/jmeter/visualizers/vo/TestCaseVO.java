@@ -6,7 +6,6 @@ import lombok.ToString;
 
 import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.HashMap;
 
 /**
  * @author Kelvin.Ye
@@ -14,64 +13,34 @@ import java.util.HashMap;
  */
 @Setter
 @Getter
-@ToString(exclude = "testCaseStepMap")
+@ToString
 public class TestCaseVO {
 
     private String id;
-
     private Boolean status;
-
     private String title;
-
     private String startTime;
-
     private String endTime;
-
     private String elapsedTime;
 
-    private ArrayList<TestCaseStepVO> testCaseStepList;
-
-    private transient String testCaseStepPrefixId;
-
-    private transient int testCaseStepstartId;
-
-    private transient HashMap<String, TestCaseStepVO> testCaseStepMap;
+    private ArrayList<TestStepVO> testCaseStepList;
+    private transient String prefixId;
+    private transient int startId;
 
     public TestCaseVO() {
         status = true;
-        testCaseStepstartId = 1;
-        testCaseStepMap = new HashMap<>();
+        startId = 1;
+        testCaseStepList = new ArrayList<>();
     }
 
     public TestCaseVO(String prefixId) {
         this();
-        testCaseStepPrefixId = prefixId + "-";
+        this.prefixId = prefixId + "-";
     }
 
-    public void createTestCaseStep(String title) {
-        TestCaseStepVO testCaseStep = new TestCaseStepVO();
-        testCaseStep.setTile(title);
-        testCaseStep.setId(testCaseStepPrefixId + testCaseStepstartId++);
-        testCaseStepMap.put(title, testCaseStep);
-    }
-
-    public void putTestCaseStep(TestCaseStepVO testCaseStep) {
-        testCaseStep.setId(testCaseStepPrefixId + testCaseStepstartId++);
-        testCaseStepMap.put(testCaseStep.getTile(), testCaseStep);
-    }
-
-    public TestCaseStepVO getTestCaseStep(String title) {
-        return testCaseStepMap.get(title);
-    }
-
-    /**
-     * map转list
-     */
-    public void testCaseStepMapConvertToList() {
-        testCaseStepList = new ArrayList<>();
-        for (String key : testCaseStepMap.keySet()) {
-            testCaseStepList.add(testCaseStepMap.get(key));
-        }
+    public void addTestCaseStep(TestStepVO testCaseStep) {
+        testCaseStep.setId(prefixId + startId++);
+        testCaseStepList.add(testCaseStep);
     }
 
     /**

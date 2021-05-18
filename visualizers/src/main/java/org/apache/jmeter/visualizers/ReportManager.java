@@ -7,11 +7,11 @@ import org.apache.jmeter.util.JMeterUtils;
 import org.apache.jmeter.visualizers.utils.FreemarkerUtil;
 import org.apache.jmeter.visualizers.utils.JavaScriptUtil;
 import org.apache.jmeter.visualizers.utils.JsoupUtil;
-import org.apache.jmeter.visualizers.vo.OverviewInfo;
-import org.apache.jmeter.visualizers.vo.ReportDataSet;
-import org.apache.jmeter.visualizers.vo.ReportInfo;
-import org.apache.jmeter.visualizers.vo.TestCaseStepVO;
+import org.apache.jmeter.visualizers.vo.OverviewInfoVO;
+import org.apache.jmeter.visualizers.vo.TestDataSet;
+import org.apache.jmeter.visualizers.vo.ReportInfoVO;
 import org.apache.jmeter.visualizers.vo.TestCaseVO;
+import org.apache.jmeter.visualizers.vo.TestStepVO;
 import org.apache.jmeter.visualizers.vo.TestSuiteVO;
 import org.jsoup.nodes.DataNode;
 import org.jsoup.nodes.Document;
@@ -32,28 +32,26 @@ public class ReportManager {
     private static final Logger log = LoggerFactory.getLogger(ReportManager.class);
 
     public static final String DATE_FORMAT_PATTERN = "yyyy.MM.dd HH:mm:ss";
-
     public static final String HTML_SUFFIX = ".html";
 
-    private static ReportDataSet reportDataSet;
+    private static TestDataSet testDataSet;
 
-    public static ReportDataSet getReport() {
-        if (reportDataSet == null) {
-            reportDataSet = new ReportDataSet();
+    public synchronized static TestDataSet getReport() {
+        if (testDataSet == null) {
+            testDataSet = new TestDataSet();
         }
-        return reportDataSet;
+        return testDataSet;
     }
 
     /**
      * 将测试报告数据集中的map转为list，且list升序排序
      */
-    public static void traverseReportData() {
-        reportDataSet.testSuiteMapConvertToList();
-        for (TestSuiteVO testSuite : reportDataSet.getTestSuiteList()) {
+    public synchronized static void traverseReportData() {
+        testDataSet.testSuiteMapConvertToList();
+        for (TestSuiteVO testSuite : testDataSet.getTestSuiteList()) {
             testSuite.testCaseMapConvertToList();
             testSuite.sort();
             for (TestCaseVO testCase : testSuite.getTestCaseList()) {
-                testCase.testCaseStepMapConvertToList();
                 testCase.sort();
             }
         }
@@ -62,8 +60,8 @@ public class ReportManager {
     /**
      * 获取报告创建时间、最后更新时间和jmeter版本信息
      */
-    private static ReportInfo createReportInfo() {
-        ReportInfo reportInfo = new ReportInfo();
+    private synchronized static ReportInfoVO createReportInfo() {
+        ReportInfoVO reportInfo = new ReportInfoVO();
         String currentTime = TimeUtil.currentTimeAsString(DATE_FORMAT_PATTERN);
         reportInfo.setCreateTime(currentTime);
         reportInfo.setLastUpdateTime(currentTime);
@@ -74,11 +72,11 @@ public class ReportManager {
     /**
      * 获取报告分析的基础数据，包括总数、成功数、失败数和平均耗时
      */
-    private static OverviewInfo createOverviewInfo() {
-        OverviewInfo overviewInfo = new OverviewInfo();
+    private synchronized static OverviewInfoVO createOverviewInfo() {
+        OverviewInfoVO overviewInfo = new OverviewInfoVO();
         // 添加 TestPlan的数据
         overviewInfo.testSuiteAddOne();
-        TestSuiteVO testSuite = reportDataSet.getTestSuiteList().get(0);
+        TestSuiteVO testSuite = testDataSet.getTestSuiteList().get(0);
         overviewInfo.setTestSuiteAverageElapsedTime(testSuite.getElapsedTime());
         if (!testSuite.getStatus()) {
             overviewInfo.errorTestSuiteAddOne();
@@ -91,12 +89,12 @@ public class ReportManager {
             }
             overviewInfo.setTestCaseAverageElapsedTime(testCase.getElapsedTime());
             // 遍历添加 Sampler的数据
-            for (TestCaseStepVO testCaseStep : testCase.getTestCaseStepList()) {
+            for (TestStepVO testCaseStep : testCase.getTestCaseStepList()) {
                 overviewInfo.testCaseStepAddOne();
                 if (!testCaseStep.getStatus()) {
                     overviewInfo.errorTestCaseStepAddOne();
                 }
-                overviewInfo.setTestCaseStepAverageElapsedTime(testCaseStep.getElapsedTime());
+                overviewInfo.setTestStepAverageElapsedTime(testCaseStep.getElapsedTime());
             }
         }
         return overviewInfo;
@@ -105,12 +103,12 @@ public class ReportManager {
     /**
      * 组装并返回 freemarker引擎所需变量
      */
-    private static Map<String, Object> getTemplateRootData() {
+    private synchronized static Map<String, Object> getTemplateRootData() {
         Map<String, Object> root = new HashMap<>(1);
         traverseReportData();
         root.put("reportInfo", JsonUtil.toJson(createReportInfo()));
         root.put("overviewInfo", JsonUtil.toJson(createOverviewInfo()));
-        root.put("testSuiteList", JsonUtil.toJson(reportDataSet.getTestSuiteList()));
+        root.put("testSuiteList", JsonUtil.toJson(testDataSet.getTestSuiteList()));
         return root;
     }
 
@@ -147,7 +145,7 @@ public class ReportManager {
             // 按顺序整理测试报告数据
             traverseReportData();
             // 循环向数组添加新数据
-            for (TestSuiteVO testSuite : reportDataSet.getTestSuiteList()) {
+            for (TestSuiteVO testSuite : testDataSet.getTestSuiteList()) {
                 testSuiteListValue = JavaScriptUtil.appendTestSuiteList(testSuiteListValue, testSuite);
             }
             // 更新js脚本内容
@@ -166,8 +164,8 @@ public class ReportManager {
     /**
      * 设置reportDataSet为null
      */
-    public static void clearReportDataSet() {
-        reportDataSet = null;
+    public synchronized static void clearReportDataSet() {
+        testDataSet = null;
     }
 
 }

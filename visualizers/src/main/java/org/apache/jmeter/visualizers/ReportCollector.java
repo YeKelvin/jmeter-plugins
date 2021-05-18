@@ -15,8 +15,8 @@ import org.apache.jmeter.testelement.TestStateListener;
 import org.apache.jmeter.testelement.ThreadListener;
 import org.apache.jmeter.threads.JMeterContextService;
 import org.apache.jmeter.util.JMeterUtils;
-import org.apache.jmeter.visualizers.vo.TestCaseStepVO;
 import org.apache.jmeter.visualizers.vo.TestCaseVO;
+import org.apache.jmeter.visualizers.vo.TestStepVO;
 import org.apache.jmeter.visualizers.vo.TestSuiteVO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -116,7 +116,7 @@ public class ReportCollector extends AbstractTestElement
     public void sampleOccurred(SampleEvent sampleEvent) {
         TestSuiteVO testSuite = ReportManager.getReport().getTestSuite(scriptName);
         TestCaseVO testCase = testSuite.getTestCase(getThreadName());
-        TestCaseStepVO testCaseStep = new TestCaseStepVO();
+        TestStepVO testCaseStep = new TestStepVO();
 
         // 设置测试数据
         SampleResult result = sampleEvent.getResult();
@@ -136,7 +136,7 @@ public class ReportCollector extends AbstractTestElement
         }
 
         // 把测试步骤数据添加至测试案例集中
-        testCase.putTestCaseStep(testCaseStep);
+        testCase.addTestCaseStep(testCaseStep);
 
         // 每次sampler执行完毕覆盖testCase的完成时间和耗时
         testCase.setEndTime(getStringTime());
@@ -146,7 +146,7 @@ public class ReportCollector extends AbstractTestElement
         addSubResultTohtml(result.getSubResults(), testCase);
 
         // 另外把sampler执行结果打印到控制台
-        consoleInfo(result.isSuccessful(), getThreadName());
+        outputConsole(result.isSuccessful(), getThreadName());
     }
 
     @Override
@@ -165,7 +165,7 @@ public class ReportCollector extends AbstractTestElement
         }
 
         for (SampleResult subResult : subResults) {
-            TestCaseStepVO testCaseStep = new TestCaseStepVO();
+            TestStepVO testCaseStep = new TestStepVO();
             log.info("html:sampler:title:[ {} ]", subResult.getSampleLabel());
             testCaseStep.setTile(subResult.getSampleLabel());
             testCaseStep.setElapsedTime(getSampleElapsedTime(subResult));
@@ -176,7 +176,7 @@ public class ReportCollector extends AbstractTestElement
                 testCaseStep.pass();
             }
 
-            testCase.putTestCaseStep(testCaseStep);
+            testCase.addTestCaseStep(testCaseStep);
 
             SampleResult[] innerSubResults = subResult.getSubResults();
             if (innerSubResults.length >0 ) {
@@ -231,7 +231,7 @@ public class ReportCollector extends AbstractTestElement
     /**
      * 控制台打印执行状态信息
      */
-    private void consoleInfo(boolean successful, String message) {
+    private void outputConsole(boolean successful, String message) {
         if (successful) {
             System.out.println("[true] - " + message);
         } else {

@@ -238,6 +238,7 @@
 
         .test-case {
             overflow: auto;
+            margin-bottom: 80px;
         }
 
         .test-case__header {
@@ -383,6 +384,11 @@
             height: 100%;
             line-height: 20px;
         }
+
+        .test-case .el-collapse-item__content{
+            padding-bottom: 10px;
+        }
+
         .test-case-step .el-collapse-item:last-child .el-collapse-item__wrap {
             border-bottom: 0;
         }

@@ -9,36 +9,29 @@ import org.apache.jmeter.common.utils.TimeUtil;
  */
 @Getter
 @ToString
-public class OverviewInfo {
+public class OverviewInfoVO {
 
-    private int testSuiteTotal;
-
-    private int testCaseTotal;
-
-    private int testCaseStepTotal;
-
-    private int errorTestSuiteTotal;
-
-    private int errorTestCaseTotal;
-
-    private int errorTestCaseStepTotal;
+    private Integer testSuiteTotal;
+    private Integer testCaseTotal;
+    private Integer testStepTotal;
+    private Integer errorTestSuiteTotal;
+    private Integer errorTestCaseTotal;
+    private Integer errorTestStepTotal;
 
     private String testSuiteAverageElapsedTime;
-
     private String testCaseAverageElapsedTime;
+    private String testStepAverageElapsedTime;
 
-    private String testCaseStepAverageElapsedTime;
-
-    public void add(OverviewInfo overviewInfo) {
+    public void add(OverviewInfoVO overviewInfo) {
         testSuiteTotal += overviewInfo.getTestSuiteTotal();
         testCaseTotal += overviewInfo.getTestCaseTotal();
-        testCaseStepTotal += overviewInfo.getTestCaseStepTotal();
+        testStepTotal += overviewInfo.getTestStepTotal();
         errorTestSuiteTotal += overviewInfo.getErrorTestSuiteTotal();
         errorTestCaseTotal += overviewInfo.getErrorTestCaseTotal();
-        errorTestCaseStepTotal += overviewInfo.getErrorTestCaseStepTotal();
+        errorTestStepTotal += overviewInfo.getErrorTestStepTotal();
         setTestSuiteAverageElapsedTime(overviewInfo.getTestSuiteAverageElapsedTime());
         setTestCaseAverageElapsedTime(overviewInfo.getTestCaseAverageElapsedTime());
-        setTestCaseStepAverageElapsedTime(overviewInfo.getTestCaseStepAverageElapsedTime());
+        setTestStepAverageElapsedTime(overviewInfo.getTestStepAverageElapsedTime());
     }
 
     public void testSuiteAddOne() {
@@ -50,7 +43,7 @@ public class OverviewInfo {
     }
 
     public void testCaseStepAddOne() {
-        testCaseStepTotal++;
+        testStepTotal++;
     }
 
     public synchronized void errorTestSuiteAddOne() {
@@ -62,7 +55,7 @@ public class OverviewInfo {
     }
 
     public void errorTestCaseStepAddOne() {
-        errorTestCaseStepTotal++;
+        errorTestStepTotal++;
     }
 
     /**
@@ -102,15 +95,15 @@ public class OverviewInfo {
      *
      * @param elapsedTime 当前 sampler的耗时
      */
-    public void setTestCaseStepAverageElapsedTime(String elapsedTime) {
-        if (testCaseStepAverageElapsedTime == null) {
-            testCaseStepAverageElapsedTime = elapsedTime;
+    public void setTestStepAverageElapsedTime(String elapsedTime) {
+        if (testStepAverageElapsedTime == null) {
+            testStepAverageElapsedTime = elapsedTime;
         } else {
-            long testCaseStepAverageElapsedTimeAsLong = Long.parseLong(
-                    testCaseStepAverageElapsedTime.substring(0, testCaseStepAverageElapsedTime.length() - 2));
+            long testStepAverageElapsedTimeAsLong = Long.parseLong(
+                    testStepAverageElapsedTime.substring(0, testStepAverageElapsedTime.length() - 2));
             long elapsedTimeAsLong = Long.parseLong(elapsedTime.substring(0, elapsedTime.length() - 2));
-            long averageElapsedTime = (testCaseStepAverageElapsedTimeAsLong + elapsedTimeAsLong) / 2;
-            testCaseStepAverageElapsedTime = averageElapsedTime + "ms";
+            long averageElapsedTime = (testStepAverageElapsedTimeAsLong + elapsedTimeAsLong) / 2;
+            testStepAverageElapsedTime = averageElapsedTime + "ms";
         }
     }
 

@@ -11,20 +11,14 @@ import lombok.ToString;
 @Setter
 @Getter
 @ToString
-public class TestCaseStepVO {
+public class TestStepVO {
 
     private String id;
-
     private Boolean status;
-
     private String elapsedTime;
-
     private String tile;
-
     private String description;
-
     private String request;
-
     private String response;
 
     /**

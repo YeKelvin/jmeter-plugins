@@ -48,7 +48,7 @@ public class TestSuiteVO {
     }
 
     public void putTestCase(TestCaseVO testCase) {
-        testCase.setTestCaseStepPrefixId(String.valueOf(testCaseStartId));
+        testCase.setPrefixId(String.valueOf(testCaseStartId));
         testCase.setId(String.valueOf(testCaseStartId++));
         testCaseMap.put(testCase.getTitle(), testCase);
     }

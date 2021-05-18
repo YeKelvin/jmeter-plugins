@@ -11,7 +11,7 @@ import lombok.ToString;
 @Setter
 @Getter
 @ToString
-public class ReportInfo {
+public class ReportInfoVO {
 
     private String createTime;
     private String lastUpdateTime;

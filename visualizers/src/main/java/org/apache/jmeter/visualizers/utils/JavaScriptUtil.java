@@ -3,7 +3,7 @@ package org.apache.jmeter.visualizers.utils;
 import com.jayway.jsonpath.DocumentContext;
 import org.apache.jmeter.common.json.JsonPathUtil;
 import org.apache.jmeter.common.json.JsonUtil;
-import org.apache.jmeter.visualizers.vo.OverviewInfo;
+import org.apache.jmeter.visualizers.vo.OverviewInfoVO;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -107,8 +107,8 @@ public class JavaScriptUtil {
      * @param currentInfo 当前的 OverviewInfo对象
      * @return str
      */
-    public static String updateOverviewInfo(String jsContent, String oldValue, OverviewInfo currentInfo) {
-        OverviewInfo overviewInfo = JsonUtil.fromJson(oldValue, OverviewInfo.class);
+    public static String updateOverviewInfo(String jsContent, String oldValue, OverviewInfoVO currentInfo) {
+        OverviewInfoVO overviewInfo = JsonUtil.fromJson(oldValue, OverviewInfoVO.class);
         overviewInfo.add(currentInfo);
         Matcher matcher = overviewInfoRegex.matcher(jsContent);
         return matcher.replaceAll(
