@@ -75,24 +75,24 @@ public class ReportManager {
     private synchronized static OverviewInfoVO createOverviewInfo() {
         OverviewInfoVO overviewInfo = new OverviewInfoVO();
         // 添加 TestPlan的数据
-        overviewInfo.testSuiteAddOne();
+        overviewInfo.increaseTestSuiteTotal();
         TestSuiteVO testSuite = testDataSet.getTestSuiteList().get(0);
         overviewInfo.setTestSuiteAverageElapsedTime(testSuite.getElapsedTime());
         if (!testSuite.getStatus()) {
-            overviewInfo.errorTestSuiteAddOne();
+            overviewInfo.increaseErrorTestSuiteTotal();
         }
         // 遍历添加 ThreadGroup的数据
         for (TestCaseVO testCase : testSuite.getTestCaseList()) {
-            overviewInfo.testCaseAddOne();
+            overviewInfo.increaseTestCaseTotal();
             if (!testCase.getStatus()) {
-                overviewInfo.errorTestCaseAddOne();
+                overviewInfo.increaseErrorTestCaseTotal();
             }
             overviewInfo.setTestCaseAverageElapsedTime(testCase.getElapsedTime());
             // 遍历添加 Sampler的数据
             for (TestStepVO testCaseStep : testCase.getTestCaseStepList()) {
-                overviewInfo.testCaseStepAddOne();
+                overviewInfo.increaseTestStepTotal();
                 if (!testCaseStep.getStatus()) {
-                    overviewInfo.errorTestCaseStepAddOne();
+                    overviewInfo.increaseErrorTestStepTotal();
                 }
                 overviewInfo.setTestStepAverageElapsedTime(testCaseStep.getElapsedTime());
             }

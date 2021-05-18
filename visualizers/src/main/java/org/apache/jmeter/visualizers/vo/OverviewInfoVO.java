@@ -22,39 +22,50 @@ public class OverviewInfoVO {
     private String testCaseAverageElapsedTime;
     private String testStepAverageElapsedTime;
 
+    public OverviewInfoVO() {
+        testSuiteTotal = 0;
+        testCaseTotal = 0;
+        testStepTotal = 0;
+        errorTestSuiteTotal = 0;
+        errorTestCaseTotal = 0;
+        errorTestStepTotal = 0;
+    }
+
     public void add(OverviewInfoVO overviewInfo) {
         testSuiteTotal += overviewInfo.getTestSuiteTotal();
         testCaseTotal += overviewInfo.getTestCaseTotal();
         testStepTotal += overviewInfo.getTestStepTotal();
+
         errorTestSuiteTotal += overviewInfo.getErrorTestSuiteTotal();
         errorTestCaseTotal += overviewInfo.getErrorTestCaseTotal();
         errorTestStepTotal += overviewInfo.getErrorTestStepTotal();
+
         setTestSuiteAverageElapsedTime(overviewInfo.getTestSuiteAverageElapsedTime());
         setTestCaseAverageElapsedTime(overviewInfo.getTestCaseAverageElapsedTime());
         setTestStepAverageElapsedTime(overviewInfo.getTestStepAverageElapsedTime());
     }
 
-    public void testSuiteAddOne() {
+    public void increaseTestSuiteTotal() {
         testSuiteTotal++;
     }
 
-    public void testCaseAddOne() {
+    public void increaseTestCaseTotal() {
         testCaseTotal++;
     }
 
-    public void testCaseStepAddOne() {
+    public void increaseTestStepTotal() {
         testStepTotal++;
     }
 
-    public synchronized void errorTestSuiteAddOne() {
+    public synchronized void increaseErrorTestSuiteTotal() {
         errorTestSuiteTotal++;
     }
 
-    public synchronized void errorTestCaseAddOne() {
+    public synchronized void increaseErrorTestCaseTotal() {
         errorTestCaseTotal++;
     }
 
-    public void errorTestCaseStepAddOne() {
+    public void increaseErrorTestStepTotal() {
         errorTestStepTotal++;
     }
 
@@ -67,10 +78,10 @@ public class OverviewInfoVO {
         if (testSuiteAverageElapsedTime == null) {
             testSuiteAverageElapsedTime = elapsedTime;
         } else {
-            long testSuiteAverageElapsedTimeAsLong = TimeUtil.hmsElapsedTimeToLong(testSuiteAverageElapsedTime);
-            long addedElapsedTimeAsLong = TimeUtil.hmsElapsedTimeToLong(elapsedTime);
-            long averageElapsedTime = (testSuiteAverageElapsedTimeAsLong + addedElapsedTimeAsLong) / 2;
-            testSuiteAverageElapsedTime = TimeUtil.formatElapsedTimeAsHMS(averageElapsedTime);
+            long testSuiteAverageElapsedTimestamp = TimeUtil.hmsElapsedTimeToLong(testSuiteAverageElapsedTime);
+            long addedElapsedTimestamp = TimeUtil.hmsElapsedTimeToLong(elapsedTime);
+            long averageElapsedTimestamp = (testSuiteAverageElapsedTimestamp + addedElapsedTimestamp) / 2;
+            testSuiteAverageElapsedTime = TimeUtil.formatElapsedTimeAsHMS(averageElapsedTimestamp);
         }
     }
 
@@ -83,10 +94,10 @@ public class OverviewInfoVO {
         if (testCaseAverageElapsedTime == null) {
             testCaseAverageElapsedTime = elapsedTime;
         } else {
-            long testCaseAverageElapsedTimeAsLong = TimeUtil.msElapsedTimeToLong(testCaseAverageElapsedTime);
-            long addedElapsedTimeAsLong = TimeUtil.msElapsedTimeToLong(elapsedTime);
-            long averageElapsedTime = (testCaseAverageElapsedTimeAsLong + addedElapsedTimeAsLong) / 2;
-            testCaseAverageElapsedTime = TimeUtil.formatElapsedTimeAsMS(averageElapsedTime);
+            long testCaseAverageElapsedTimestamp = TimeUtil.msElapsedTimeToLong(testCaseAverageElapsedTime);
+            long addedElapsedTimestamp = TimeUtil.msElapsedTimeToLong(elapsedTime);
+            long averageElapsedTimestamp = (testCaseAverageElapsedTimestamp + addedElapsedTimestamp) / 2;
+            testCaseAverageElapsedTime = TimeUtil.formatElapsedTimeAsMS(averageElapsedTimestamp);
         }
     }
 
@@ -99,12 +110,15 @@ public class OverviewInfoVO {
         if (testStepAverageElapsedTime == null) {
             testStepAverageElapsedTime = elapsedTime;
         } else {
-            long testStepAverageElapsedTimeAsLong = Long.parseLong(
-                    testStepAverageElapsedTime.substring(0, testStepAverageElapsedTime.length() - 2));
-            long elapsedTimeAsLong = Long.parseLong(elapsedTime.substring(0, elapsedTime.length() - 2));
-            long averageElapsedTime = (testStepAverageElapsedTimeAsLong + elapsedTimeAsLong) / 2;
-            testStepAverageElapsedTime = averageElapsedTime + "ms";
+            long testStepAverageElapsedTimestamp = getTestStepAverageElapsedTimestamp();
+            long elapsedTimestamp = Long.parseLong(elapsedTime.substring(0, elapsedTime.length() - 2));
+            long averageElapsedTimestamp = (testStepAverageElapsedTimestamp + elapsedTimestamp) / 2;
+            testStepAverageElapsedTime = averageElapsedTimestamp + "ms";
         }
+    }
+
+    private long getTestStepAverageElapsedTimestamp() {
+        return Long.parseLong(testStepAverageElapsedTime.substring(0, testStepAverageElapsedTime.length() - 2));
     }
 
 }
