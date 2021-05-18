@@ -15,7 +15,7 @@ public class TestCaseStepVO {
 
     private String id;
 
-    private boolean status;
+    private Boolean status;
 
     private String elapsedTime;
 

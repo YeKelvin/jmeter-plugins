@@ -210,7 +210,7 @@ public class JMeterScriptSamplerGui extends AbstractSamplerGui implements Action
                 return;
             }
 
-            String command = String.format("jmeter.bat %s", scriptPath);
+            String command = jmeterHome + File.separator + "jmeter.bat " + scriptPath;
             RuntimeUtil.exec(command, new File(jmeterHome));
         } catch (IOException e) {
             log.info(e.getMessage());
@@ -329,8 +329,8 @@ public class JMeterScriptSamplerGui extends AbstractSamplerGui implements Action
      */
     private Map<String, String> getConfigVariables() {
         String configPath = EnvDataSetGui.CACHED_SELECTED_CONFIG_PATH.get(getScriptName());
-        log.debug("configPath:[ {} ]", configPath);
         if (configPath == null) {
+            log.debug("configPath:[ null ]");
             log.debug("CACHED_CONFIG_PATH:[ {} ]", EnvDataSetGui.CACHED_SELECTED_CONFIG_PATH);
 
             Map<String, String> blankVariables = new HashMap<>();
@@ -338,6 +338,7 @@ public class JMeterScriptSamplerGui extends AbstractSamplerGui implements Action
             return blankVariables;
         }
 
+        log.debug("configPath:[ {} ]", configPath);
         Map<String, String> configVariables =
                 EnvDataSetGui.CACHED_CONFIG_VARIABLES.getOrDefault(configPath, new HashMap<>());
         log.debug("configVariables:[ {} ]", configVariables);

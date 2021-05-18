@@ -36,7 +36,6 @@ public class ReportCollector extends AbstractTestElement
     public static final String REPORT_NAME = "ReportCollector.reportName";
     public static final String IS_APPEND = "ReportCollector.isAppend";
 
-    private int startCount;
     private String scriptName;
     private String reportName;
 
@@ -59,17 +58,13 @@ public class ReportCollector extends AbstractTestElement
      */
     @Override
     public void testStarted(String host) {
-        log.info("start html:[ {} ]", FileServer.getFileServer().getScriptName());
+        scriptName = getScriptName();
+        reportName = getReportName();
 
-        if (startCount == 0) {
-            scriptName = getScriptName();
-            reportName = getReportName();
-            TestSuiteVO testSuiteData = new TestSuiteVO();
-            testSuiteData.setTitle(scriptName);
-            testSuiteData.setStartTime(getStringTime());
-            ReportManager.getReport().putTestSuite(testSuiteData);
-        }
-        startCount++;
+        TestSuiteVO testSuiteData = new TestSuiteVO();
+        testSuiteData.setTitle(scriptName);
+        testSuiteData.setStartTime(getStringTime());
+        ReportManager.getReport().putTestSuite(testSuiteData);
     }
 
     @Override
@@ -82,24 +77,19 @@ public class ReportCollector extends AbstractTestElement
      */
     @Override
     public void testEnded(String host) {
-        log.info("end html:[ {} ]", FileServer.getFileServer().getScriptName());
-        startCount--;
-        if (startCount == 0) {
-            log.info("脚本执行完成，开始生成HTML报告");
-            TestSuiteVO testSuiteData = ReportManager.getReport().getTestSuite(scriptName);
-            testSuiteData.setEndTime(getStringTime());
-            testSuiteData.setElapsedTime(getElapsedTime(testSuiteData.getStartTime(), testSuiteData.getEndTime()));
+        TestSuiteVO testSuiteData = ReportManager.getReport().getTestSuite(scriptName);
+        testSuiteData.setEndTime(getStringTime());
+        testSuiteData.setElapsedTime(getElapsedTime(testSuiteData.getStartTime(), testSuiteData.getEndTime()));
 
-            // 如判断为追加模式且 html文件存在时，以追加模式写入数据，否则以新建模式写入数据
-            if (Boolean.parseBoolean(getIsAppend()) && FileUtil.exists(getReportPath())) {
-                ReportManager.appendDataToHtmlFile(getReportPath());
-            } else {
-                ReportManager.flush(getReportPath());
-            }
-
-            // 测试结束时重置测试数据集
-            ReportManager.clearReportDataSet();
+        // 如判断为追加模式且 html文件存在时，以追加模式写入数据，否则以新建模式写入数据
+        if (Boolean.parseBoolean(getIsAppend()) && FileUtil.exists(getReportPath())) {
+            ReportManager.appendDataToHtmlFile(getReportPath());
+        } else {
+            ReportManager.flush(getReportPath());
         }
+
+        // 测试结束时重置测试数据集
+        ReportManager.clearReportDataSet();
     }
 
     /**
@@ -108,7 +98,7 @@ public class ReportCollector extends AbstractTestElement
     @Override
     public void threadStarted() {
         TestSuiteVO testSuiteData = ReportManager.getReport().getTestSuite(scriptName);
-        TestCaseVO testCaseData = new TestCaseVO(String.valueOf(testSuiteData.getTestCaseStartID()));
+        TestCaseVO testCaseData = new TestCaseVO(String.valueOf(testSuiteData.getTestCaseStartId()));
         testCaseData.setTitle(getThreadName());
         testCaseData.setStartTime(getStringTime());
         testSuiteData.putTestCase(testCaseData);
@@ -135,9 +125,6 @@ public class ReportCollector extends AbstractTestElement
         testCaseStep.setRequest(result.getSamplerData());
         testCaseStep.setResponse(result.getResponseDataAsString());
 
-        // 添加子集
-        addSubResultTohtml(result.getSubResults(), testCase);
-
         // 设置测试结果
         if (result.isSuccessful()) {
             testCaseStep.pass();
@@ -147,12 +134,15 @@ public class ReportCollector extends AbstractTestElement
             testSuite.fail();
         }
 
+        // 把测试步骤数据添加至测试案例集中
+        testCase.putTestCaseStep(testCaseStep);
+
         // 每次sampler执行完毕覆盖testCase的完成时间和耗时
         testCase.setEndTime(getStringTime());
         testCase.setElapsedTime(getElapsedTime(testCase.getStartTime(), testCase.getEndTime()));
 
-        // 把测试步骤数据添加至测试案例集中
-        testCase.putTestCaseStep(testCaseStep);
+        // 添加子集
+        addSubResultTohtml(result.getSubResults(), testCase);
 
         // 另外把sampler执行结果打印到控制台
         consoleInfo(result.isSuccessful(), getThreadName());
@@ -179,6 +169,11 @@ public class ReportCollector extends AbstractTestElement
             testCaseStep.setElapsedTime(getSampleElapsedTime(subResult));
             testCaseStep.setRequest(subResult.getSamplerData());
             testCaseStep.setResponse(subResult.getResponseDataAsString());
+
+            if (subResult.isSuccessful()) {
+                testCaseStep.pass();
+            }
+
             testCase.putTestCaseStep(testCaseStep);
 
             SampleResult[] innerSubResults = subResult.getSubResults();

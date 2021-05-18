@@ -7,17 +7,18 @@ import lombok.ToString;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.Map;
 
 /**
- * @author  Kelvin.Ye
- * @date    2019-01-24 16:39
+ * @author Kelvin.Ye
+ * @date 2019-01-24 16:39
  */
 @Setter
 @Getter
 @ToString(exclude = "testCaseMap")
 public class TestSuiteVO {
 
-    private boolean status = true;
+    private Boolean status;
 
     private String startTime;
 
@@ -29,24 +30,26 @@ public class TestSuiteVO {
 
     private ArrayList<TestCaseVO> testCaseList;
 
-    private transient int testCaseStartID = 1;
+    private transient int testCaseStartId;
 
-    private transient HashMap<String, TestCaseVO> testCaseMap;
+    private transient Map<String, TestCaseVO> testCaseMap;
 
     public TestSuiteVO() {
-        testCaseMap = new HashMap<>(16);
+        status = true;
+        testCaseStartId = 1;
+        testCaseMap = new HashMap<>();
     }
 
     public void createTestCase(String title) {
-        TestCaseVO testCase = new TestCaseVO(String.valueOf(testCaseStartID));
+        TestCaseVO testCase = new TestCaseVO(String.valueOf(testCaseStartId));
         testCase.setTitle(title);
-        testCase.setId(String.valueOf(testCaseStartID++));
+        testCase.setId(String.valueOf(testCaseStartId++));
         testCaseMap.put(title, testCase);
     }
 
     public void putTestCase(TestCaseVO testCase) {
-        testCase.setTestCaseStepPrefixID(String.valueOf(testCaseStartID));
-        testCase.setId(String.valueOf(testCaseStartID++));
+        testCase.setTestCaseStepPrefixId(String.valueOf(testCaseStartId));
+        testCase.setId(String.valueOf(testCaseStartId++));
         testCaseMap.put(testCase.getTitle(), testCase);
     }
 

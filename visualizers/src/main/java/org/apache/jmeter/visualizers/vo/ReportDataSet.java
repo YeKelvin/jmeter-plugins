@@ -21,7 +21,7 @@ public class ReportDataSet {
     private transient HashMap<String, TestSuiteVO> testSuiteMap;
 
     public ReportDataSet() {
-        testSuiteMap = new HashMap<>(16);
+        testSuiteMap = new HashMap<>();
     }
 
     public void createTestSuite(String title) {

@@ -14,9 +14,7 @@ import lombok.ToString;
 public class ReportInfo {
 
     private String createTime;
-
     private String lastUpdateTime;
-
     private String toolName;
 
 }

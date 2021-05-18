@@ -9,8 +9,8 @@ import java.util.Comparator;
 import java.util.HashMap;
 
 /**
- * @author  Kelvin.Ye
- * @date    2019-01-24 16:39
+ * @author Kelvin.Ye
+ * @date 2019-01-24 16:39
  */
 @Setter
 @Getter
@@ -19,7 +19,7 @@ public class TestCaseVO {
 
     private String id;
 
-    private boolean status = true;
+    private Boolean status;
 
     private String title;
 
@@ -31,30 +31,32 @@ public class TestCaseVO {
 
     private ArrayList<TestCaseStepVO> testCaseStepList;
 
-    private transient String testCaseStepPrefixID;
+    private transient String testCaseStepPrefixId;
 
-    private transient int testCaseStepstartID = 1;
+    private transient int testCaseStepstartId;
 
     private transient HashMap<String, TestCaseStepVO> testCaseStepMap;
 
     public TestCaseVO() {
-        testCaseStepMap = new HashMap<>(16);
+        status = true;
+        testCaseStepstartId = 1;
+        testCaseStepMap = new HashMap<>();
     }
 
-    public TestCaseVO(String prefixID) {
-        testCaseStepPrefixID = prefixID + "-";
-        testCaseStepMap = new HashMap<>(16);
+    public TestCaseVO(String prefixId) {
+        this();
+        testCaseStepPrefixId = prefixId + "-";
     }
 
     public void createTestCaseStep(String title) {
         TestCaseStepVO testCaseStep = new TestCaseStepVO();
         testCaseStep.setTile(title);
-        testCaseStep.setId(testCaseStepPrefixID + testCaseStepstartID++);
+        testCaseStep.setId(testCaseStepPrefixId + testCaseStepstartId++);
         testCaseStepMap.put(title, testCaseStep);
     }
 
     public void putTestCaseStep(TestCaseStepVO testCaseStep) {
-        testCaseStep.setId(testCaseStepPrefixID + testCaseStepstartID++);
+        testCaseStep.setId(testCaseStepPrefixId + testCaseStepstartId++);
         testCaseStepMap.put(testCaseStep.getTile(), testCaseStep);
     }
 

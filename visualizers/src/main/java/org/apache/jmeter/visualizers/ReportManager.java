@@ -80,20 +80,20 @@ public class ReportManager {
         overviewInfo.testSuiteAddOne();
         TestSuiteVO testSuite = reportDataSet.getTestSuiteList().get(0);
         overviewInfo.setTestSuiteAverageElapsedTime(testSuite.getElapsedTime());
-        if (!testSuite.isStatus()) {
+        if (!testSuite.getStatus()) {
             overviewInfo.errorTestSuiteAddOne();
         }
         // 遍历添加 ThreadGroup的数据
         for (TestCaseVO testCase : testSuite.getTestCaseList()) {
             overviewInfo.testCaseAddOne();
-            if (!testCase.isStatus()) {
+            if (!testCase.getStatus()) {
                 overviewInfo.errorTestCaseAddOne();
             }
             overviewInfo.setTestCaseAverageElapsedTime(testCase.getElapsedTime());
             // 遍历添加 Sampler的数据
             for (TestCaseStepVO testCaseStep : testCase.getTestCaseStepList()) {
                 overviewInfo.testCaseStepAddOne();
-                if (!testCaseStep.isStatus()) {
+                if (!testCaseStep.getStatus()) {
                     overviewInfo.errorTestCaseStepAddOne();
                 }
                 overviewInfo.setTestCaseStepAverageElapsedTime(testCaseStep.getElapsedTime());

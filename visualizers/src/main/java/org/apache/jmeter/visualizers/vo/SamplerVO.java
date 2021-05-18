@@ -22,7 +22,7 @@ public class SamplerVO {
     private String startTime;
     private String endTime;
     private String elapsedTime;
-    private boolean status;
+    private Boolean status;
     private String request;
     private String response;
 
