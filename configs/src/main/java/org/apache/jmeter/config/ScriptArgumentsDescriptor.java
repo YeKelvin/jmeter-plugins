@@ -22,8 +22,10 @@ public class ScriptArgumentsDescriptor extends Arguments implements TestStateLis
 
         for (JMeterProperty prop : this) {
             Argument arg = (Argument) prop.getObjectValue();
-            String value = ((CompoundVariable)arg.getProperty(Argument.VALUE).getObjectValue()).execute();
-            variables.put(arg.getName(), value);
+            Object value = arg.getProperty(Argument.VALUE).getObjectValue();
+            if (value instanceof CompoundVariable) {
+                variables.put(arg.getName(), ((CompoundVariable) value).execute());
+            }
         }
     }
 
