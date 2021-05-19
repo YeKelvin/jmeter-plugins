@@ -107,7 +107,7 @@ public class ReportCollector extends AbstractTestElement
         testCase.setId(id);
         testCase.setTitle(id + LINKER_SYMBOL + getThreadName());
         testCase.setStartTime(getStringTime());
-        testCase.setStartTimestamp(getThreadStartTime());
+        testCase.setStartTimestamp(TimeUtil.currentTimestamp());
         testSuite.putTestCase(getThreadHashCode(), testCase);
     }
 
@@ -211,10 +211,6 @@ public class ReportCollector extends AbstractTestElement
 
     private int getThreadHashCode() {
         return JMeterContextService.getContext().getThread().hashCode();
-    }
-
-    private long getThreadStartTime() {
-        return JMeterContextService.getContext().getThread().getStartTime();
     }
 
     private String getReportName() {

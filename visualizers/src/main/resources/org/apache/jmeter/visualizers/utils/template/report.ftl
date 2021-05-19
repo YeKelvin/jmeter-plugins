@@ -444,7 +444,7 @@
                             </div>
                         </div>
                         <div class="container overview" @click="isShowOverview=true">
-                            <span>报告分析</span>
+                            <span>数据统计</span>
                             <svg class="icon" aria-hidden="true">
                                 <use xlink:href="#icon-report"></use>
                             </svg>

@@ -52,6 +52,7 @@ public class ReportManager {
         for (TestSuiteVO testSuite : testDataSet.getTestSuiteList()) {
             testSuite.setTestCaseList();
             testSuite.sort();
+
             for (TestCaseVO testCase : testSuite.getTestCaseList()) {
                 testCase.sort();
             }
