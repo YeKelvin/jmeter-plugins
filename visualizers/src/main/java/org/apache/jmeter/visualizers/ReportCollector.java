@@ -188,6 +188,8 @@ public class ReportCollector extends AbstractTestElement
             testStep.setStartTimestamp(result.getStartTime());
             if (result.isSuccessful()) {
                 testStep.pass();
+            } else {
+                testStep.fail();
             }
 
             testCase.addTestStep(testStep);
