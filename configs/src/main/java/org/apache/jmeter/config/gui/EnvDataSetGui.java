@@ -26,9 +26,9 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * @author Kelvin.Ye
@@ -60,9 +60,9 @@ public class EnvDataSetGui extends AbstractConfigGui implements ActionListener {
     /**
      * 静态缓存
      */
-    public static final Map<String, String> CACHED_SELECTED_CONFIG_PATH = new ConcurrentHashMap<>();
-    public static final Map<String, Long> CACHED_CONFIG_LAST_MODIFIED = new ConcurrentHashMap<>();
-    public static final Map<String, Map<String, String>> CACHED_CONFIG_VARIABLES = new ConcurrentHashMap<>();
+    public static final Map<String, String> CACHED_SELECTED_CONFIG_PATH = Collections.synchronizedMap(new HashMap<>());
+    public static final Map<String, Long> CACHED_CONFIG_LAST_MODIFIED = Collections.synchronizedMap(new HashMap<>());
+    public static final Map<String, Map<String, String>> CACHED_CONFIG_VARIABLES = Collections.synchronizedMap(new HashMap<>());
 
     /**
      * 插件说明

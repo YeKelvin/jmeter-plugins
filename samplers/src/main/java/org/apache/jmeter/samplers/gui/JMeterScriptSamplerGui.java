@@ -32,10 +32,10 @@ import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * @author Kelvin.Ye
@@ -80,8 +80,8 @@ public class JMeterScriptSamplerGui extends AbstractSamplerGui implements Action
     /**
      * 缓存数据
      */
-    public static final Map<String, Arguments> CACHED_SCRIPT_ARGUMENTS = new ConcurrentHashMap<>();
-    public static final Map<String, Long> CACHED_SCRIPT_LAST_MODIFIED = new ConcurrentHashMap<>();
+    public static final Map<String, Arguments> CACHED_SCRIPT_ARGUMENTS = Collections.synchronizedMap(new HashMap<>());
+    public static final Map<String, Long> CACHED_SCRIPT_LAST_MODIFIED = Collections.synchronizedMap(new HashMap<>());
 
     /**
      * 插件说明
@@ -330,8 +330,9 @@ public class JMeterScriptSamplerGui extends AbstractSamplerGui implements Action
      */
     private Map<String, String> getConfigVariables() {
         String configPath = EnvDataSetGui.CACHED_SELECTED_CONFIG_PATH.get(getScriptName());
+        log.debug("configPath:[ {} ]", configPath);
+
         if (configPath == null) {
-            log.debug("configPath:[ null ]");
             log.debug("CACHED_CONFIG_PATH:[ {} ]", EnvDataSetGui.CACHED_SELECTED_CONFIG_PATH);
 
             Map<String, String> blankVariables = new HashMap<>();

@@ -25,9 +25,9 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * HTTP请求头文件读取器
@@ -61,8 +61,8 @@ public class HTTPHeaderReaderGui extends AbstractConfigGui implements ActionList
     /**
      * 静态缓存
      */
-    public static final Map<String, Long> CACHED_HEADER_FILE_LAST_MODIFIED = new ConcurrentHashMap<>();
-    public static final Map<String, Map<String, String>> CACHED_HEADER_VARIABLES = new ConcurrentHashMap<>();
+    public static final Map<String, Long> CACHED_HEADER_FILE_LAST_MODIFIED = Collections.synchronizedMap(new HashMap<>());
+    public static final Map<String, Map<String, String>> CACHED_HEADER_VARIABLES = Collections.synchronizedMap(new HashMap<>());
 
     /**
      * 插件说明
