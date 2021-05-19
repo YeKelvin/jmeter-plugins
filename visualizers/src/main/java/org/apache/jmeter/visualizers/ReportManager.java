@@ -47,10 +47,10 @@ public class ReportManager {
      * 将测试报告数据集中的map转为list，且list升序排序
      */
     public synchronized static void traverseReportData() {
-        testDataSet.testSuiteMapConvertToList();
+        testDataSet.setTestSuiteList();
 
         for (TestSuiteVO testSuite : testDataSet.getTestSuiteList()) {
-            testSuite.testCaseMapConvertToList();
+            testSuite.setTestCaseList();
             testSuite.sort();
             for (TestCaseVO testCase : testSuite.getTestCaseList()) {
                 testCase.sort();
@@ -67,7 +67,7 @@ public class ReportManager {
 
         reportInfo.setCreateTime(currentTime);
         reportInfo.setLastUpdateTime(currentTime);
-        reportInfo.setToolName("Jmeter " + JMeterUtils.getJMeterVersion());
+        reportInfo.setToolName("JMeter " + JMeterUtils.getJMeterVersion());
 
         return reportInfo;
     }
@@ -173,7 +173,7 @@ public class ReportManager {
     /**
      * 设置reportDataSet为null
      */
-    public synchronized static void clearReportDataSet() {
+    public synchronized static void clearDataSet() {
         testDataSet = null;
     }
 

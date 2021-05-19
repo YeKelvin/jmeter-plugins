@@ -24,22 +24,20 @@ public class TestCaseVO {
     private String elapsedTime;
 
     private ArrayList<TestStepVO> testStepList;
-    private transient String prefixId;
+    private transient Long startTimestamp;
     private transient int startId;
 
     public TestCaseVO() {
         status = true;
-        startId = 1;
+        startId = 0;
         testStepList = new ArrayList<>();
     }
 
-    public TestCaseVO(String prefixId) {
-        this();
-        this.prefixId = prefixId + "-";
+    public synchronized String nextId() {
+        return String.valueOf(++startId);
     }
 
     public void addTestStep(TestStepVO testStep) {
-        testStep.setId(prefixId + startId++);
         testStepList.add(testStep);
     }
 
@@ -47,7 +45,7 @@ public class TestCaseVO {
      * list升序排序
      */
     public void sort() {
-        testStepList.sort(Comparator.comparingInt(obj -> Integer.parseInt(obj.getId())));
+        testStepList.sort(Comparator.comparingLong(TestStepVO::getStartTimestamp));
     }
 
     /**

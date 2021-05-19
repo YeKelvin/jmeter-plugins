@@ -15,11 +15,13 @@ public class TestStepVO {
 
     private String id;
     private Boolean status;
-    private String elapsedTime;
     private String tile;
     private String description;
     private String request;
     private String response;
+    private String elapsedTime;
+
+    private transient Long startTimestamp;
 
     /**
      * 设置TestCaseStep为测试通过

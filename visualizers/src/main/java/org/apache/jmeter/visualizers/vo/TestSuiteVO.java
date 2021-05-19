@@ -19,37 +19,20 @@ import java.util.Map;
 public class TestSuiteVO {
 
     private Boolean status;
-
-    private String startTime;
-
-    private String endTime;
-
-    private String elapsedTime;
-
     private String title;
-
+    private String startTime;
+    private String endTime;
+    private String elapsedTime;
     private ArrayList<TestCaseVO> testCaseList;
-
-    private transient int testCaseStartId;
 
     private transient Map<String, TestCaseVO> testCaseMap;
 
     public TestSuiteVO() {
         status = true;
-        testCaseStartId = 1;
         testCaseMap = new HashMap<>();
     }
 
-    public void createTestCase(String title) {
-        TestCaseVO testCase = new TestCaseVO(String.valueOf(testCaseStartId));
-        testCase.setTitle(title);
-        testCase.setId(String.valueOf(testCaseStartId++));
-        testCaseMap.put(title, testCase);
-    }
-
     public void putTestCase(TestCaseVO testCase) {
-        testCase.setPrefixId(String.valueOf(testCaseStartId));
-        testCase.setId(String.valueOf(testCaseStartId++));
         testCaseMap.put(testCase.getTitle(), testCase);
     }
 
@@ -60,7 +43,7 @@ public class TestSuiteVO {
     /**
      * map转list
      */
-    public void testCaseMapConvertToList() {
+    public void setTestCaseList() {
         testCaseList = new ArrayList<>();
         for (String key : testCaseMap.keySet()) {
             testCaseList.add(testCaseMap.get(key));
@@ -71,7 +54,7 @@ public class TestSuiteVO {
      * list升序排序
      */
     public void sort() {
-        testCaseList.sort(Comparator.comparingInt(obj -> Integer.parseInt(obj.getId())));
+        testCaseList.sort(Comparator.comparingLong(TestCaseVO::getStartTimestamp));
     }
 
     /**

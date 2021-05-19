@@ -35,7 +35,7 @@ public class TestDataSet {
     /**
      * map转list
      */
-    public void testSuiteMapConvertToList() {
+    public void setTestSuiteList() {
         testSuiteList = new ArrayList<>();
         testSuiteMap.keySet().forEach(key->testSuiteList.add(testSuiteMap.get(key)));
     }
