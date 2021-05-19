@@ -25,19 +25,25 @@ public class TestSuiteVO {
     private String elapsedTime;
     private ArrayList<TestCaseVO> testCaseList;
 
-    private transient Map<String, TestCaseVO> testCaseMap;
+    private transient Map<Integer, TestCaseVO> testCaseMap;
+    private transient volatile int startId;
 
     public TestSuiteVO() {
         status = true;
+        startId = 0;
         testCaseMap = new HashMap<>();
     }
 
-    public void putTestCase(TestCaseVO testCase) {
-        testCaseMap.put(testCase.getTitle(), testCase);
+    public synchronized String nextId() {
+        return String.valueOf(++startId);
     }
 
-    public TestCaseVO getTestCase(String title) {
-        return testCaseMap.get(title);
+    public void putTestCase(int threadHashCode, TestCaseVO testCase) {
+        testCaseMap.put(threadHashCode, testCase);
+    }
+
+    public TestCaseVO getTestCase(int threadHashCode) {
+        return testCaseMap.get(threadHashCode);
     }
 
     /**
@@ -45,9 +51,7 @@ public class TestSuiteVO {
      */
     public void setTestCaseList() {
         testCaseList = new ArrayList<>();
-        for (String key : testCaseMap.keySet()) {
-            testCaseList.add(testCaseMap.get(key));
-        }
+        testCaseList.addAll(testCaseMap.values());
     }
 
     /**

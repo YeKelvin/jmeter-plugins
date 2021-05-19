@@ -66,6 +66,7 @@ public class ReportCollector extends AbstractTestElement
         TestSuiteVO testSuite = new TestSuiteVO();
         testSuite.setTitle(scriptName);
         testSuite.setStartTime(getStringTime());
+
         ReportManager.getReport().putTestSuite(testSuite);
     }
 
@@ -101,11 +102,13 @@ public class ReportCollector extends AbstractTestElement
     public void threadStarted() {
         TestSuiteVO testSuite = ReportManager.getReport().getTestSuite(scriptName);
         TestCaseVO testCase = new TestCaseVO();
-        testCase.setTitle(getThreadName());
+
+        String id = testSuite.nextId();
+        testCase.setId(id);
+        testCase.setTitle(id + LINKER_SYMBOL + getThreadName());
         testCase.setStartTime(getStringTime());
-        // startTimestamp用于排序
         testCase.setStartTimestamp(getThreadStartTime());
-        testSuite.putTestCase(testCase);
+        testSuite.putTestCase(getThreadHashCode(), testCase);
     }
 
     @Override
@@ -121,7 +124,7 @@ public class ReportCollector extends AbstractTestElement
         SampleResult result = sampleEvent.getResult();
 
         TestSuiteVO testSuite = ReportManager.getReport().getTestSuite(scriptName);
-        TestCaseVO testCase = testSuite.getTestCase(getThreadName());
+        TestCaseVO testCase = testSuite.getTestCase(getThreadHashCode());
         TestStepVO testStep = new TestStepVO();
 
         // 设置测试数据
@@ -204,6 +207,10 @@ public class ReportCollector extends AbstractTestElement
     @Override
     public String getThreadName() {
         return JMeterContextService.getContext().getThread().getThreadName();
+    }
+
+    private int getThreadHashCode() {
+        return JMeterContextService.getContext().getThread().hashCode();
     }
 
     private long getThreadStartTime() {

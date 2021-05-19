@@ -5,8 +5,8 @@ import lombok.Setter;
 import lombok.ToString;
 
 /**
- * @author  Kelvin.Ye
- * @date    2019-01-24 16:39
+ * @author Kelvin.Ye
+ * @date 2019-01-24 16:39
  */
 @Setter
 @Getter
@@ -22,6 +22,10 @@ public class TestStepVO {
     private String elapsedTime;
 
     private transient Long startTimestamp;
+
+    public TestStepVO() {
+        status = true;
+    }
 
     /**
      * 设置TestCaseStep为测试通过

@@ -95,12 +95,12 @@ public class ReportManager {
             overviewInfo.setTestCaseAverageElapsedTime(testCase.getElapsedTime());
 
             // 遍历添加 Sampler的数据
-            for (TestStepVO testCaseStep : testCase.getTestStepList()) {
+            for (TestStepVO testStep : testCase.getTestStepList()) {
                 overviewInfo.increaseTestStepTotal();
-                if (!testCaseStep.getStatus()) {
+                if (!testStep.getStatus()) {
                     overviewInfo.increaseErrorTestStepTotal();
                 }
-                overviewInfo.setTestStepAverageElapsedTime(testCaseStep.getElapsedTime());
+                overviewInfo.setTestStepAverageElapsedTime(testStep.getElapsedTime());
             }
         }
 

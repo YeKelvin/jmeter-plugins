@@ -25,7 +25,7 @@ public class TestCaseVO {
 
     private ArrayList<TestStepVO> testStepList;
     private transient Long startTimestamp;
-    private transient int startId;
+    private transient volatile int startId;
 
     public TestCaseVO() {
         status = true;

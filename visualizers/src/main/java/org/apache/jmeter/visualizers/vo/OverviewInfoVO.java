@@ -14,6 +14,7 @@ public class OverviewInfoVO {
     private Integer testSuiteTotal;
     private Integer testCaseTotal;
     private Integer testStepTotal;
+
     private Integer errorTestSuiteTotal;
     private Integer errorTestCaseTotal;
     private Integer errorTestStepTotal;
