@@ -210,8 +210,8 @@ public class JMeterScriptSamplerGui extends AbstractSamplerGui implements Action
             }
 
             String jmeterBinDir = JMeterUtils.getJMeterBinDir();
-            String logPath = jmeterBinDir + File.separator + "jmeter-inner-script.log";
-            String command = "jmeter -t " + scriptPath + " -j " + logPath;
+            String logPath = jmeterBinDir + File.separator + "jmeter-subscript.log";
+            String command = String.format("jmeter -t %s -j %s", scriptPath, logPath);
             RuntimeUtil.exec(command, jmeterBinDir);
         } catch (IOException e) {
             log.info(e.getMessage());
