@@ -3,6 +3,7 @@ package org.apache.jmeter.visualizers.vo;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import org.apache.jmeter.common.json.JsonUtil;
 
 /**
  * @author Kelvin.Ye
@@ -17,7 +18,9 @@ public class TestStepVO {
     private Boolean status;
     private String tile;
     private String description;
+    private String reqHeader;
     private String request;
+    private String resHeader;
     private String response;
     private String elapsedTime;
 
@@ -39,6 +42,14 @@ public class TestStepVO {
      */
     public void fail() {
         status = false;
+    }
+
+    public void setResponse(String value) {
+        try {
+            response = JsonUtil.prettyJson(value);
+        } catch (Exception e) {
+            response = value;
+        }
     }
 
 }

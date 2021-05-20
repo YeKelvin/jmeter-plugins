@@ -12,20 +12,24 @@ import java.io.OutputStreamWriter;
 import java.nio.charset.StandardCharsets;
 
 /**
- * @author  Kelvin.Ye
- * @date    2019-01-29 11:27
+ * @author Kelvin.Ye
+ * @date 2019-01-29 11:27
  */
 public class JsoupUtil {
 
     /**
      * 获取 html文档对象
      *
-     * @param htmlFilePath 文件路径
+     * @param filePath 文件路径
      * @return Document对象
      * @throws IOException 文件不存在
      */
-    public static Document getDocument(String htmlFilePath) throws IOException {
-        return Jsoup.parse(new File(htmlFilePath), StandardCharsets.UTF_8.name());
+    public static Document getDocument(String filePath) throws IOException {
+        return getDocument(new File(filePath));
+    }
+
+    public static Document getDocument(File file) throws IOException {
+        return Jsoup.parse(file, StandardCharsets.UTF_8.name());
     }
 
     /**
@@ -46,8 +50,12 @@ public class JsoupUtil {
      * @throws IOException 异常
      */
     public static void documentToFile(Document doc, String filePath) throws IOException {
+        documentToFile(doc, new File(filePath));
+    }
+
+    public static void documentToFile(Document doc, File file) throws IOException {
         BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(
-                new FileOutputStream(filePath, false), StandardCharsets.UTF_8));
+                new FileOutputStream(file, false), StandardCharsets.UTF_8));
         bw.write(doc.html());
         bw.close();
     }

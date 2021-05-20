@@ -2,6 +2,7 @@ package org.apache.jmeter.common.json;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonParser;
 import com.google.gson.reflect.TypeToken;
 import org.apache.jmeter.common.utils.ExceptionUtil;
 import org.apache.jmeter.common.utils.StringUtil;
@@ -26,13 +27,21 @@ public class JsonUtil {
     public static Type mapType = new TypeToken<Map<Object, Object>>() {
     }.getType();
 
-    public static Type mapTypeAsStrObj = new TypeToken<Map<String, Object>>() {
-    }.getType();
-
     private static final Gson gson = newGson();
+    private static final Gson prettyGson = newPrettyGson();
 
     private static Gson newGson() {
-        return new GsonBuilder().serializeNulls()
+        return new GsonBuilder()
+                .serializeNulls()
+                .registerTypeAdapter(mapType, new MapTypeAdapter())
+                .registerTypeAdapter(Double.class, new DoubleTypeAdapter())
+                .create();
+    }
+
+    private static Gson newPrettyGson() {
+        return new GsonBuilder()
+                .setPrettyPrinting()
+                .serializeNulls()
                 .registerTypeAdapter(mapType, new MapTypeAdapter())
                 .registerTypeAdapter(Double.class, new DoubleTypeAdapter())
                 .create();
@@ -131,13 +140,14 @@ public class JsonUtil {
         return gson.toJson(obj);
     }
 
+    public static String prettyJson(String json) {
+        return prettyGson.toJson(JsonParser.parseString(json).getAsJsonObject());
+    }
+
     /**
      * 格式化输出 json（忽略占位符）
-     *
-     * @param json jsonStr
-     * @return str
      */
-    public static String prettyJsonWithPlaceholder(String json) {
+    public static String prettyJsonIgnorePlaceholder(String json) {
         //缩进
         StringBuffer indent = new StringBuffer();
         StringBuffer sb = new StringBuffer();
@@ -211,44 +221,8 @@ public class JsonUtil {
         return sb.toString();
     }
 
-    public static String jsonFormat(String json) {
-        //缩进
-        StringBuffer indent = new StringBuffer();
-        StringBuffer sb = new StringBuffer();
-
-        for (char c : json.toCharArray()) {
-            switch (c) {
-                case '{':
-                    indent.append(" ");
-                    sb.append("{\n").append(indent);
-                    break;
-                case '}':
-                    indent.deleteCharAt(indent.length() - 1);
-                    sb.append("\n").append(indent).append("}");
-                    break;
-                case '[':
-                    indent.append(" ");
-                    sb.append("[\n").append(indent);
-                    break;
-                case ']':
-                    indent.deleteCharAt(indent.length() - 1);
-                    sb.append("\n").append(indent).append("]");
-                    break;
-                case ',':
-                    sb.append(",\n").append(indent);
-                    break;
-                default:
-                    sb.append(c);
-            }
-        }
-        return sb.toString();
-    }
-
     /**
      * 去除json中的空格和换行符
-     *
-     * @param json json字符串
-     * @return
      */
     public static String removeSpacesAndLineBreaks(String json) {
         StringBuffer sb = new StringBuffer();
@@ -276,6 +250,10 @@ public class JsonUtil {
             previous = c;
         }
         return StringUtil.removeLineBreaks(sb.toString());
+    }
+
+    public static void main(String[] args) {
+        System.out.println(prettyJson("aaa"));
     }
 
 }

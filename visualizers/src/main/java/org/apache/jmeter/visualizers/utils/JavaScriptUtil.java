@@ -73,45 +73,48 @@ public class JavaScriptUtil {
     /**
      * 以替换文本的方式更新 js脚本中的 testSuiteList的值
      *
-     * @param jsContent js脚本
-     * @param newValue  新值
+     * @param jsContent     js脚本
+     * @param testSuiteJson 新值
      * @return str
      */
-    public static String updateTestSuiteList(String jsContent, String newValue) {
+    public static String updateTestSuiteList(String jsContent, String testSuiteJson) {
         Matcher matcher = TEST_SUITE_LIST_REGEX.matcher(jsContent);
-        return matcher.replaceAll(
-                Matcher.quoteReplacement(TEST_SUITE_LIST_NAME + newValue));
+        return matcher.replaceAll(Matcher.quoteReplacement(TEST_SUITE_LIST_NAME + testSuiteJson));
     }
 
     /**
      * 以替换文本的方式更新 js脚本中的 reportInfo的值
      *
      * @param jsContent      js脚本
-     * @param oldValue       旧值
+     * @param previousValue  旧值
      * @param lastUpdateTime 最后更新时间
      * @return str
      */
-    public static String updateReportInfo(String jsContent, String oldValue, Object lastUpdateTime) {
-        String newValue = updateLastUpdateTime(oldValue, lastUpdateTime);
+    public static String updateReportInfo(String jsContent, String previousValue, Object lastUpdateTime) {
+        String newValue = updateLastUpdateTime(previousValue, lastUpdateTime);
         Matcher matcher = REPORT_INFO_REGEX.matcher(jsContent);
-        return matcher.replaceAll(
-                Matcher.quoteReplacement(REPORT_INFO_NAME + newValue + ","));
+        return matcher.replaceAll(Matcher.quoteReplacement(REPORT_INFO_NAME + newValue + ","));
     }
 
     /**
      * 以替换文本的方式更新 js脚本中的 overviewInfo的值
      *
-     * @param jsContent   js脚本
-     * @param oldValue    旧值
-     * @param currentInfo 当前的 OverviewInfo对象
+     * @param jsContent       js脚本
+     * @param previousValue   旧值
+     * @param currentOverview 当前的 OverviewInfo对象
      * @return str
      */
-    public static String updateOverviewInfo(String jsContent, String oldValue, OverviewInfoVO currentInfo) {
-        OverviewInfoVO overviewInfo = JsonUtil.fromJson(oldValue, OverviewInfoVO.class);
-        overviewInfo.add(currentInfo);
+    public static String updateOverviewInfo(String jsContent, String previousValue, OverviewInfoVO currentOverview) {
+        OverviewInfoVO overviewInfo = JsonUtil.fromJson(previousValue, OverviewInfoVO.class);
+        overviewInfo.add(currentOverview);
         Matcher matcher = OVERVIEW_INFO_REGEX.matcher(jsContent);
-        return matcher.replaceAll(
-                Matcher.quoteReplacement(OVERVIEW_INFO_NAME + JsonUtil.toJson(overviewInfo) + ","));
+        return matcher.replaceAll(Matcher.quoteReplacement(OVERVIEW_INFO_NAME + JsonUtil.toJson(overviewInfo) + ","));
+    }
+
+    public static String updateOverviewInfo(String jsContent, OverviewInfoVO previousOverview, OverviewInfoVO currentOverview) {
+        previousOverview.add(currentOverview);
+        Matcher matcher = OVERVIEW_INFO_REGEX.matcher(jsContent);
+        return matcher.replaceAll(Matcher.quoteReplacement(OVERVIEW_INFO_NAME + JsonUtil.toJson(previousOverview) + ","));
     }
 
     /**
@@ -131,12 +134,12 @@ public class JavaScriptUtil {
      * 向 js脚本中的 testSuiteList的添加数据
      *
      * @param testSuiteList testSuiteList值
-     * @param appendValue   新值数据
+     * @param testSuite     新testSuite
      * @return str
      */
-    public static String appendTestSuiteList(String testSuiteList, Object appendValue) {
+    public static String appendTestSuiteList(String testSuiteList, Object testSuite) {
         DocumentContext ctx = JsonPathUtil.jsonParse(testSuiteList);
-        ctx.add("$", appendValue);
+        ctx.add("$", testSuite);
         return ctx.jsonString();
     }
 

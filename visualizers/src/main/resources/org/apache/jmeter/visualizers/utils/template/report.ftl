@@ -359,6 +359,10 @@
             background-color: #bdbdbd;
         }
 
+        .http-header {
+            color: #808080;
+        }
+
         /* Element-ui style */
         .test-case .el-collapse {
             margin-left: 20px;
@@ -540,9 +544,17 @@
                                             </template>
                                             <div class="test-case-step__detail">
                                                 <table>
+                                                    <tr v-if="isShowHeader(testStep['reqHeader'])" class="http-header">
+                                                        <td>ReqHeader:</td>
+                                                        <td class="break-word">{{ testStep['reqHeader'] }}</td>
+                                                    </tr>
                                                     <tr>
                                                         <td>Request:</td>
                                                         <td class="break-word">{{ testStep['request'] }}</td>
+                                                    </tr>
+                                                    <tr v-if="isShowHeader(testStep['resHeader'])" class="http-header">
+                                                        <td>ResHeader:</td>
+                                                        <td class="break-word">{{ testStep['resHeader'] }}</td>
                                                     </tr>
                                                     <tr>
                                                         <td>Response:</td>
@@ -614,6 +626,9 @@
           },
           successRate: function(total, errorTotal){
             return Math.round(((total - errorTotal) / total) * 10000) / 100 + '%'
+          },
+          isShowHeader: function(obj) {
+            return !(typeof obj === "undefined" || obj === null || obj === "" || obj.trim().length === 0);
           },
           getPieChartOption: function(title, total, errorTotal) {
             return {

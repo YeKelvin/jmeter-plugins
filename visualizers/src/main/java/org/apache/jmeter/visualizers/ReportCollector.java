@@ -36,7 +36,7 @@ public class ReportCollector extends AbstractTestElement
     public static final String REPORT_NAME = "ReportCollector.reportName";
     public static final String IS_APPEND = "ReportCollector.isAppend";
 
-    private static final String LINKER_SYMBOL = "、";
+    public static final String LINKER_SYMBOL = "、";
 
     private String scriptName;
     private String reportName;
@@ -81,12 +81,13 @@ public class ReportCollector extends AbstractTestElement
     @Override
     public void testEnded(String host) {
         TestSuiteVO testSuite = ReportManager.getReport().getTestSuite(scriptName);
+        testSuite.setTitle("1" + LINKER_SYMBOL + testSuite.getTitle());
         testSuite.setEndTime(getStringTime());
         testSuite.setElapsedTime(getElapsedTime(testSuite.getStartTime(), testSuite.getEndTime()));
 
         // 如判断为追加模式且 html文件存在时，以追加模式写入数据，否则以新建模式写入数据
         if (Boolean.parseBoolean(getIsAppend()) && FileUtil.exists(getReportPath())) {
-            ReportManager.appendDataToHtmlFile(getReportPath());
+            ReportManager.appendHtmlWithLock(getReportPath());
         } else {
             ReportManager.flush(getReportPath());
         }
@@ -131,7 +132,9 @@ public class ReportCollector extends AbstractTestElement
         String id = testCase.nextId();
         testStep.setId(id);
         testStep.setTile(id + LINKER_SYMBOL + result.getSampleLabel());
+        testStep.setReqHeader(result.getRequestHeaders());
         testStep.setRequest(result.getSamplerData());
+        testStep.setResHeader(result.getResponseHeaders());
         testStep.setResponse(result.getResponseDataAsString());
         testStep.setElapsedTime(getSampleElapsedTime(result));
         testStep.setStartTimestamp(result.getStartTime());
@@ -182,7 +185,9 @@ public class ReportCollector extends AbstractTestElement
             TestStepVO testStep = new TestStepVO();
             testStep.setId(id);
             testStep.setTile(id + LINKER_SYMBOL + result.getSampleLabel());
+            testStep.setReqHeader(result.getRequestHeaders());
             testStep.setRequest(result.getSamplerData());
+            testStep.setResHeader(result.getResponseHeaders());
             testStep.setResponse(result.getResponseDataAsString());
             testStep.setElapsedTime(getSampleElapsedTime(result));
             testStep.setStartTimestamp(result.getStartTime());

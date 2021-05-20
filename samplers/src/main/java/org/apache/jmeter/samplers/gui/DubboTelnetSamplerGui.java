@@ -238,7 +238,7 @@ public class DubboTelnetSamplerGui extends AbstractSamplerGui implements ActionL
      */
     private String prettyParams(String params) {
         if (JSON_ACTION.equals(currentParamsContentType)) {
-            return JsonUtil.prettyJsonWithPlaceholder(JsonUtil.removeSpacesAndLineBreaks(params));
+            return JsonUtil.prettyJsonIgnorePlaceholder(JsonUtil.removeSpacesAndLineBreaks(params));
         }
         return params;
     }
