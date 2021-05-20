@@ -156,7 +156,8 @@ public class ReportCollector extends AbstractTestElement
 
         // 每次sampler执行完毕覆盖testCase的完成时间和耗时
         testCase.setEndTime(getStringTime());
-        testCase.setElapsedTime(getElapsedTime(testCase.getStartTime(), testCase.getEndTime()));
+        testCase.setElapsedTime(
+                TimeUtil.formatElapsedTimeAsMS(testCase.getStartTime(), testCase.getEndTime(), DATE_FORMAT_PATTERN));
 
         // 另外把sampler执行结果打印到控制台
         outputConsole(result.isSuccessful(), getThreadName());
