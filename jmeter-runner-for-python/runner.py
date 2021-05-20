@@ -138,7 +138,7 @@ def run(env: str, dirpath: str) -> None:
 
 
 def create_reportname():
-    return 'interface-report-' + datetime.now().strftime('%Y%m%d-%H%M%S') + '.html'
+    return 'inftest-report-' + datetime.now().strftime('%Y.%m.%d-%H.%M.%S') + '.html'
 
 
 def filter_skip_script(jmx_list: list):
