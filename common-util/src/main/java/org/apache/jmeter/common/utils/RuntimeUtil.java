@@ -51,7 +51,7 @@ public class RuntimeUtil {
     }
 
     public static void exec4Windows(String command, File dir) throws IOException {
-        String[] fullCmd = new String[]{"cmd", "/c", "start " + command};
+        String[] fullCmd = new String[]{"cmd", "/c", command};
         log.info("workspace:[ {} ] execute:[ {} ]", dir.getPath(), Joiner.on(" ").join(fullCmd));
         Runtime.getRuntime().exec(fullCmd, null, dir);
     }
