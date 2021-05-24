@@ -1,5 +1,6 @@
 package org.apache.jmeter.config;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.jmeter.common.cli.CliOptions;
 import org.apache.jmeter.common.utils.ExceptionUtil;
 import org.apache.jmeter.common.utils.YamlUtil;
@@ -55,7 +56,16 @@ public class EnvDataSet extends ConfigTestElement implements TestStateListener, 
     private Map<String, String> getEnvironmentVariables(String filePath) {
         Map<String, String> variables = new HashMap<>();
         try {
-            YamlUtil.parseYamlAsMap(filePath).forEach((key, value) -> variables.put(key, value.toString()));
+            YamlUtil.parseYamlAsMap(filePath).forEach((key, value) ->{
+                if (StringUtils.isBlank(key)) {
+                    return;
+                }
+                if (value != null) {
+                    variables.put(key, value.toString());
+                } else {
+                    variables.put(key, "");
+                }
+            });
         } catch (FileNotFoundException | UnsupportedEncodingException e) {
             log.error(ExceptionUtil.getStackTrace(e));
         }

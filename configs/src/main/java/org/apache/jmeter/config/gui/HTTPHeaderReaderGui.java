@@ -190,7 +190,16 @@ public class HTTPHeaderReaderGui extends AbstractConfigGui implements ActionList
     private Map<String, String> loadYaml(File file) {
         Map<String, String> variables = new HashMap<>();
         try {
-            YamlUtil.parseYamlAsMap(file).forEach((key, value) -> variables.put(key, value.toString()));
+            YamlUtil.parseYamlAsMap(file).forEach((key, value) -> {
+                if (StringUtils.isBlank(key)) {
+                    return;
+                }
+                if (value != null) {
+                    variables.put(key, value.toString());
+                } else {
+                    variables.put(key, "");
+                }
+            });
         } catch (FileNotFoundException | UnsupportedEncodingException e) {
             log.error(ExceptionUtil.getStackTrace(e));
         }
