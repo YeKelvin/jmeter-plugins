@@ -7,20 +7,22 @@ import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
+import java.util.Date;
 
 /**
  * @author Kaiwen.Ye
  */
 public class GoogleAuthenticator {
 
-    private static final Base32 base32 = new Base32();
+    private static final Base32 BASE32 = new Base32();
+    private static final Date DATE = new Date();
 
     /**
      * 获取谷歌动态认证码
      */
     public static String getCode(String secretkey) throws NoSuchAlgorithmException, InvalidKeyException {
-        byte[] key = base32.decode(secretkey);
-        long timeMsec = System.currentTimeMillis();
+        byte[] key = BASE32.decode(secretkey);
+        long timeMsec = DATE.getTime();
         long t = (timeMsec / 1000L) / 30L;
         byte[] data = new byte[8];
         long value = t;
@@ -44,7 +46,8 @@ public class GoogleAuthenticator {
         int strLen = code.length();
         while (strLen < 6) {
             StringBuffer sb = new StringBuffer();
-            sb.append("0").append(code);//左补0
+            //左补0
+            sb.append("0").append(code);
             code = sb.toString();
             strLen = code.length();
         }
