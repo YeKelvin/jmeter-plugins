@@ -8,12 +8,12 @@ import redis.clients.jedis.Jedis;
  */
 public class Redis {
     /**
-     * @param redisNodeAddress redis地址，格式为 ip:port
+     * @param nodeAddress redis地址，格式为 ip:port
      * @return Jedis实例
      */
-    public static Jedis redisConnect(String redisNodeAddress) {
-        String[] address = redisNodeAddress.split(":");
-        Jedis redis = new Jedis(address[0], Integer.parseInt(address[1]));
+    public static Jedis redisConnect(String nodeAddress) {
+        String[] addressArray = nodeAddress.split(":");
+        Jedis redis = new Jedis(addressArray[0], Integer.parseInt(addressArray[1]));
         redis.connect();
         return redis;
     }
