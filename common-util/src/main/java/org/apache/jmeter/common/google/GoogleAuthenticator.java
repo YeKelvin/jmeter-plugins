@@ -15,14 +15,13 @@ import java.util.Date;
 public class GoogleAuthenticator {
 
     private static final Base32 BASE32 = new Base32();
-    private static final Date DATE = new Date();
 
     /**
      * 获取谷歌动态认证码
      */
     public static String getCode(String secretkey) throws NoSuchAlgorithmException, InvalidKeyException {
         byte[] key = BASE32.decode(secretkey);
-        long timeMsec = DATE.getTime();
+        long timeMsec = new Date().getTime();
         long t = (timeMsec / 1000L) / 30L;
         byte[] data = new byte[8];
         long value = t;
