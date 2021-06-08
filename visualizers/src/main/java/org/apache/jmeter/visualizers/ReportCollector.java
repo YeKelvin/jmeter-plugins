@@ -65,7 +65,7 @@ public class ReportCollector extends AbstractTestElement
 
         TestSuiteVO testSuite = new TestSuiteVO();
         testSuite.setTitle(scriptName);
-        testSuite.setStartTime(getStringTime());
+        testSuite.setStartTime(getCurrentTime());
 
         ReportManager.getReport().putTestSuite(testSuite);
     }
@@ -82,11 +82,11 @@ public class ReportCollector extends AbstractTestElement
     public void testEnded(String host) {
         TestSuiteVO testSuite = ReportManager.getReport().getTestSuite(scriptName);
         testSuite.setTitle("1" + LINKER_SYMBOL + testSuite.getTitle());
-        testSuite.setEndTime(getStringTime());
+        testSuite.setEndTime(getCurrentTime());
         testSuite.setElapsedTime(getElapsedTime(testSuite.getStartTime(), testSuite.getEndTime()));
 
-        // 如判断为追加模式且 html文件存在时，以追加模式写入数据，否则以新建模式写入数据
-        if (Boolean.parseBoolean(getIsAppend()) && FileUtil.exists(getReportPath())) {
+        // 如果为追加模式且html文件存在时，以追加模式写入数据，否则以覆盖写入数据
+        if (isAppend() && FileUtil.exists(getReportPath())) {
             ReportManager.appendHtmlWithLock(getReportPath());
         } else {
             ReportManager.flush(getReportPath());
@@ -107,7 +107,7 @@ public class ReportCollector extends AbstractTestElement
         String id = testSuite.nextId();
         testCase.setId(id);
         testCase.setTitle(id + LINKER_SYMBOL + getThreadName());
-        testCase.setStartTime(getStringTime());
+        testCase.setStartTime(getCurrentTime());
         testCase.setStartTimestamp(TimeUtil.currentTimestamp());
         testSuite.putTestCase(getThreadHashCode(), testCase);
     }
@@ -155,7 +155,7 @@ public class ReportCollector extends AbstractTestElement
         addSubResultTohtml(result, id, testCase);
 
         // 每次sampler执行完毕覆盖testCase的完成时间和耗时
-        testCase.setEndTime(getStringTime());
+        testCase.setEndTime(getCurrentTime());
         testCase.setElapsedTime(
                 TimeUtil.formatElapsedTimeAsMS(testCase.getStartTime(), testCase.getEndTime(), DATE_FORMAT_PATTERN));
 
@@ -217,8 +217,26 @@ public class ReportCollector extends AbstractTestElement
         return JMeterContextService.getContext().getThread().getThreadName();
     }
 
+    /**
+     * 获取当前线程的hashCode
+     */
     private int getThreadHashCode() {
         return JMeterContextService.getContext().getThread().hashCode();
+    }
+
+    /**
+     * 获取默认报告目录路径 ${JMETER_HOME}/htmlreport
+     */
+    private String getDefaultReportDirectory() {
+        return JMeterUtils.getJMeterHome() + File.separator + "htmlreport";
+    }
+
+    /**
+     * 获取报告目录路径
+     */
+    private String getReportDirectory() {
+        // Non-Gui下，获取命令行的 -JreportDir 选项
+        return JMeterUtils.getPropDefault(CliOptions.REPORT_DIR, getDefaultReportDirectory());
     }
 
     private String getReportName() {
@@ -231,17 +249,21 @@ public class ReportCollector extends AbstractTestElement
         return JMeterUtils.getPropDefault(CliOptions.IS_APPEND, getPropertyAsString(IS_APPEND));
     }
 
+    private boolean isAppend() {
+        return Boolean.parseBoolean(getIsAppend());
+    }
+
     /**
      * 获取测试报告路径
      */
     private String getReportPath() {
-        return JMeterUtils.getJMeterHome() + File.separator + "htmlreport" + File.separator + appendHtmlSuffix(reportName);
+        return getReportDirectory() + File.separator + addHtmlSuffix(reportName);
     }
 
     /**
      * 为测试报告名称添加.html后缀
      */
-    private String appendHtmlSuffix(String name) {
+    private String addHtmlSuffix(String name) {
         if (name.endsWith(ReportManager.HTML_SUFFIX)) {
             return name;
         } else {
@@ -254,14 +276,14 @@ public class ReportCollector extends AbstractTestElement
      */
     private void outputConsole(boolean successful, String message) {
         if (successful) {
-            System.out.println("[true] - " + message);
+            System.out.println("[✔][passed]- " + message);
         } else {
-            System.err.println("[false]- " + message);
+            System.err.println("[✖][failed]- " + message);
         }
     }
 
     /**
-     * 获取 sample的耗时
+     * 获取sampler的耗时
      *
      * @param result SampleResult对象
      * @return 耗时(xxms)
@@ -276,10 +298,16 @@ public class ReportCollector extends AbstractTestElement
         return true;
     }
 
-    private String getStringTime() {
+    private String getCurrentTime() {
         return TimeUtil.currentTimeAsString(DATE_FORMAT_PATTERN);
     }
 
+    /**
+     * 计算耗时
+     *
+     * @param startTime 开始时间
+     * @param endTime   结束时间
+     */
     private String getElapsedTime(String startTime, String endTime) {
         return TimeUtil.formatElapsedTimeAsHMS(startTime, endTime, DATE_FORMAT_PATTERN);
     }

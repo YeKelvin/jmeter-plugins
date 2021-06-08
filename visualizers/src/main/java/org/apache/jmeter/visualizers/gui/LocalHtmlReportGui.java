@@ -46,11 +46,12 @@ public class LocalHtmlReportGui extends AbstractListenerGui implements ActionLis
      * 插件说明
      */
     private static final String NOTE =
-            "1、测试报告生成路径为 ${JMETER_HOME}/htmlreport/${reportName}\n" +
+            "1、测试报告生成路径为${JMETER_HOME}/htmlreport/${reportName}\n" +
                     "2、执行前必须先在 ${JMETER_HOME} 下创建 htmlreport 目录\n" +
                     "3、Non-Gui命令说明：\n" +
                     "       3.1、存在 -JreportName 选项时，优先读取 ${__P(reportName)} HTML报告名称\n" +
-                    "       3.2、存在 -JisAppend 选项时，优先读取 ${__P(isAppend)} 追加模式\n";
+                    "       3.2、存在 -JisAppend 选项时，优先读取 ${__P(isAppend)} 追加模式\n" +
+                    "4、如中文乱码，在 ${JMETER_BIN}/jmeter[.bat|sh]里添加Java启动参数 \"-Dfile.encoding=UTF-8\"\n";
 
     public LocalHtmlReportGui() {
         reportDirectory = JMeterUtils.getJMeterHome() + File.separator + "htmlreport";
@@ -156,7 +157,7 @@ public class LocalHtmlReportGui extends AbstractListenerGui implements ActionLis
     }
 
     private JLabel createIsAppendLabel() {
-        return JMeterGuiUtil.createLabel("追加写报告：",isAppendComboBox);
+        return JMeterGuiUtil.createLabel("追加写报告：", isAppendComboBox);
     }
 
     private Component createBodyPanel() {
@@ -196,7 +197,6 @@ public class LocalHtmlReportGui extends AbstractListenerGui implements ActionLis
         button.addActionListener(this);
         return button;
     }
-
 
     private Component createNoteArea() {
         return JMeterGuiUtil.createNoteArea(NOTE, this.getBackground());
