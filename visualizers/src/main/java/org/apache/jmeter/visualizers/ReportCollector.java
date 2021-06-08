@@ -276,9 +276,9 @@ public class ReportCollector extends AbstractTestElement
      */
     private void outputConsole(boolean successful, String message) {
         if (successful) {
-            System.out.println("[✔][passed]- " + message);
+            System.out.println("[✔][PASSED]- " + message);
         } else {
-            System.err.println("[✖][failed]- " + message);
+            System.err.println("[✖][FAILED]- " + message);
         }
     }
 
