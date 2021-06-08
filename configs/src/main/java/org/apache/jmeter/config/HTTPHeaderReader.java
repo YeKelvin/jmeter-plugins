@@ -110,27 +110,11 @@ public class HTTPHeaderReader extends HeaderManager implements TestStateListener
         testStarted("localhost");
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public void testStarted(String host) {
         if (!alreadyAddedGui) {
             try {
-                Class<?> clazz = HTTPSamplerBase.class;
-                HTTPSamplerProxy httpSampler = new HTTPSamplerProxy();
-
-                Field appliableConfigClassesField = clazz.getDeclaredField("APPLIABLE_CONFIG_CLASSES");
-                appliableConfigClassesField.setAccessible(true);
-
-                Field modifiers = Field.class.getDeclaredField("modifiers");
-                modifiers.setAccessible(true);
-                modifiers.setInt(appliableConfigClassesField, appliableConfigClassesField.getModifiers() & ~Modifier.FINAL);
-
-                Set<String> APPLIABLE_CONFIG_CLASSES = (Set<String>) appliableConfigClassesField.get(httpSampler);
-                APPLIABLE_CONFIG_CLASSES.add(HTTPHeaderReaderGui.class.getName());
-                appliableConfigClassesField.set(httpSampler, APPLIABLE_CONFIG_CLASSES);
-
-                modifiers.setInt(appliableConfigClassesField, appliableConfigClassesField.getModifiers() & ~Modifier.FINAL);
-
+                modifyAppliableConfigClassesField();
                 alreadyAddedGui = true;
             } catch (Exception e) {
                 log.error(ExceptionUtil.getStackTrace(e));
@@ -151,5 +135,27 @@ public class HTTPHeaderReader extends HeaderManager implements TestStateListener
     @Override
     public int replace(String regex, String replaceBy, boolean caseSensitive) {
         return 0;
+    }
+
+    /**
+     * 修改HTTPSampler的APPLIABLE_CONFIG_CLASSES属性
+     */
+    @SuppressWarnings("unchecked")
+    private void modifyAppliableConfigClassesField() throws NoSuchFieldException, IllegalAccessException {
+        Class<?> clazz = HTTPSamplerBase.class;
+        HTTPSamplerProxy httpSampler = new HTTPSamplerProxy();
+
+        Field appliableConfigClassesField = clazz.getDeclaredField("APPLIABLE_CONFIG_CLASSES");
+        appliableConfigClassesField.setAccessible(true);
+
+        Field modifiers = Field.class.getDeclaredField("modifiers");
+        modifiers.setAccessible(true);
+        modifiers.setInt(appliableConfigClassesField, appliableConfigClassesField.getModifiers() & ~Modifier.FINAL);
+
+        Set<String> APPLIABLE_CONFIG_CLASSES = (Set<String>) appliableConfigClassesField.get(httpSampler);
+        APPLIABLE_CONFIG_CLASSES.add(HTTPHeaderReaderGui.class.getName());
+        appliableConfigClassesField.set(httpSampler, APPLIABLE_CONFIG_CLASSES);
+
+        modifiers.setInt(appliableConfigClassesField, appliableConfigClassesField.getModifiers() & ~Modifier.FINAL);
     }
 }
