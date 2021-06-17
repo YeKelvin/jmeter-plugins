@@ -68,7 +68,7 @@ public class EnvDataSetGui extends AbstractConfigGui implements ActionListener {
      * 插件说明
      */
     private static final String NOTE =
-            "1、配置文件为yaml格式 ，目前仅支持放置在 ${JMETER_HOME}/config 目录下\n" +
+            "1、环境变量配置文件为yaml格式 ，文件仅支持配置在 ${JMETER_HOME}/config 目录下\n" +
                     "2、Non-Gui命令说明：存在 -JconfigName 选项时，优先读取 ${__P(configName)} 配置文件";
 
     public EnvDataSetGui() {

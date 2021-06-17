@@ -67,7 +67,7 @@ public class HTTPHeaderReaderGui extends AbstractConfigGui implements ActionList
     /**
      * 插件说明
      */
-    private static final String NOTE = "HTTP请求头文件为yaml格式，目前仅支持放置在 ${JMETER_HOME}/header 目录下";
+    private static final String NOTE = "HTTP请求头部配置文件为yaml格式，文件仅支持配置在 ${JMETER_HOME}/header 目录下";
 
     public HTTPHeaderReaderGui() {
         headerDirectory = JMeterUtils.getJMeterHome() + File.separator + "header";
@@ -239,7 +239,7 @@ public class HTTPHeaderReaderGui extends AbstractConfigGui implements ActionList
 
     private Component createBodyPanel() {
         JPanel bodyPanel = new JPanel(new GridBagLayout());
-        bodyPanel.setBorder(JMeterGuiUtil.createTitledBorder("通过文件配置请求头"));
+        bodyPanel.setBorder(JMeterGuiUtil.createTitledBorder("请选择配置文件"));
 
         bodyPanel.add(headerFileNameLabel, JMeterGuiUtil.GridBag.mostLeftConstraints);
         bodyPanel.add(headerFileNameComboBox, JMeterGuiUtil.GridBag.middleConstraints);
