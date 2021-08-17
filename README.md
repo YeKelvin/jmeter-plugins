@@ -1,6 +1,8 @@
 # jmeter-plugins
 ## 一、项目介绍
 一些自用的JMeter插件，可提高脚本的可维护性，可复用性，可读性和编写效率。
+下图是JMeter + Jenkins + Python的接口自动化测试方案。
+![DubboTelnetSampler](https://github.com/YeKelvin/jmeter-plugins/blob/master/docs/images/JMeter_Jenkins_Python_Interface_Automation_Testplan.png)
 
 ## 二、打包和安装
 1. 编译打包：`mvn clean assembly:assembly`。
