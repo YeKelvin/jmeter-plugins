@@ -5,7 +5,7 @@
     <parent>
         <artifactId>jmeter-plugins</artifactId>
         <groupId>jmeter-plugins</groupId>
-        <version>5.1.1-v3</version>
+        <version>5.5-v1</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>

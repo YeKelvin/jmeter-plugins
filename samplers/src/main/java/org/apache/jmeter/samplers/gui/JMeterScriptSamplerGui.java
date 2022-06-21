@@ -122,7 +122,7 @@ public class JMeterScriptSamplerGui extends AbstractSamplerGui implements Action
 
     @Override
     public String getStaticLabel() {
-        return "JMeter脚本取样器";
+        return "JMX 取样器";
     }
 
 

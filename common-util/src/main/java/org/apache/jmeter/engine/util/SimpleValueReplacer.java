@@ -4,7 +4,7 @@ import org.apache.jmeter.functions.InvalidVariableException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.Map;
 
 /**
@@ -18,7 +18,7 @@ public class SimpleValueReplacer {
 
     private final Map<String, String> variables;
 
-    private LinkedList<Object> compiledComponents;
+    private ArrayList<Object> compiledComponents;
 
     public SimpleValueReplacer(Map<String, String> variables) {
         this.variables = variables;
@@ -41,7 +41,7 @@ public class SimpleValueReplacer {
             return;
         }
 
-        LinkedList<Object> newCompiledComponents = new LinkedList<>();
+        ArrayList<Object> newCompiledComponents = new ArrayList<>();
         compiledComponents = FUNCTION_PARSER.compileString(parameters);
         for (Object item : compiledComponents) {
             if (item instanceof SimpleVariable) {

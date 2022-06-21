@@ -75,7 +75,7 @@ public class DubboTelnetSamplerGui extends AbstractSamplerGui implements ActionL
 
     @Override
     public String getStaticLabel() {
-        return "DubboTelnet取样器";
+        return "DubboTelnet 取样器";
     }
 
     @Override
