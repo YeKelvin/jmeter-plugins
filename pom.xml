@@ -43,7 +43,7 @@
         <commons-lang3.version>3.9</commons-lang3.version>
         <commons-text.version>1.6</commons-text.version>
         <commons-codec.version>1.14</commons-codec.version>
-        <commons-net.version>3.6</commons-net.version>
+        <commons-net.version>3.9.0</commons-net.version>
         <guava.version>30.0-jre</guava.version>
         <poi.version>4.1.1</poi.version>
         <yaml.version>1.26</yaml.version>
