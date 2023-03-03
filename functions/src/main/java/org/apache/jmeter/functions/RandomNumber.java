@@ -19,9 +19,9 @@ import java.util.List;
  * @author Kelvin.Ye
  * @date 2020-04-20 19:38
  */
-public class RNumber extends AbstractFunction {
+public class RandomNumber extends AbstractFunction {
 
-    private static final Logger log = LoggerFactory.getLogger(RNumber.class);
+    private static final Logger log = LoggerFactory.getLogger(RandomNumber.class);
 
     private static final List<String> DESC = new LinkedList<>();
 
@@ -29,7 +29,7 @@ public class RNumber extends AbstractFunction {
         DESC.add("随机生成数字");
     }
 
-    private static final String KEY = "__RNumber";
+    private static final String KEY = "__RandomNumber";
 
     private static final String ERROR_MSG = (
             "格式错误，例如: ${__RNumber(8)}, ${__RNumber(str:8)}, ${__RNumber(8:str)}, ${__RNumber(str:8:str)}, " +

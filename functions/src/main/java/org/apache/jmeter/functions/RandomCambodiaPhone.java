@@ -17,17 +17,17 @@ import java.util.List;
  * @author Kelvin.Ye
  * @date 2020-04-20 19:38
  */
-public class RIdCard extends AbstractFunction {
+public class RandomCambodiaPhone extends AbstractFunction {
 
-    private static final Logger log = LoggerFactory.getLogger(RIdCard.class);
+    private static final Logger log = LoggerFactory.getLogger(RandomCambodiaPhone.class);
 
     private static final List<String> DESC = new LinkedList<>();
 
     static {
-        DESC.add("随机生成国内身份证号");
+        DESC.add("随机柬埔寨手机号");
     }
 
-    private static final String KEY = "__RIdCard";
+    private static final String KEY = "__RandomCambodiaPhone";
 
     private CompoundVariable variable = null;
 
@@ -58,7 +58,7 @@ public class RIdCard extends AbstractFunction {
     public String execute(SampleResult sampleResult, Sampler sampler) {
         String result = "";
         try {
-            result = Randoms.getIdCard();
+            result = Randoms.getCambodiaMobileNumber();
 
             if (this.variable != null) {
                 String variable = this.variable.execute().trim();

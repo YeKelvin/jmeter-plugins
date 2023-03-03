@@ -17,9 +17,9 @@ import java.util.List;
  * @author Kelvin.Ye
  * @date 2020-04-20 19:38
  */
-public class RMobile extends AbstractFunction {
+public class RandomPhone extends AbstractFunction {
 
-    private static final Logger log = LoggerFactory.getLogger(RMobile.class);
+    private static final Logger log = LoggerFactory.getLogger(RandomPhone.class);
 
     private static final List<String> DESC = new LinkedList<>();
 
@@ -27,7 +27,7 @@ public class RMobile extends AbstractFunction {
         DESC.add("随机生成国内手机号");
     }
 
-    private static final String KEY = "__RMobile";
+    private static final String KEY = "__RandomPhone";
 
     private CompoundVariable variable = null;
 

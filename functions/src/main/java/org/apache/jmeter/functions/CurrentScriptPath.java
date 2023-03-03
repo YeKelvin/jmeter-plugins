@@ -20,9 +20,9 @@ import java.util.List;
  * @author  Kelvin.Ye
  * @date    2018-08-22 17:11
  */
-public class ScriptAbsPath extends AbstractFunction {
+public class CurrentScriptPath extends AbstractFunction {
 
-    private static final Logger log = LoggerFactory.getLogger(ScriptAbsPath.class);
+    private static final Logger log = LoggerFactory.getLogger(CurrentScriptPath.class);
 
     /**
      * 自定义function的描述
@@ -36,7 +36,7 @@ public class ScriptAbsPath extends AbstractFunction {
     /**
      * function名称
      */
-    private static final String KEY = "__ScriptAbsPath";
+    private static final String KEY = "__CurrentScriptPath";
 
     /**
      * function传入的参数的值
